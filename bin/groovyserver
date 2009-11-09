@@ -1,0 +1,5 @@
+#!/bin/sh
+
+export CLASSPATH=src/main/groovy
+export OPT="-Dgroovyserver.verbose=true"
+groovy $OPT src/main/groovy/org/jggug/kobo/groovyserv/GroovyServer.groovy
