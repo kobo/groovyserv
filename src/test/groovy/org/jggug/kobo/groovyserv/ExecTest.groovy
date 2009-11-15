@@ -11,13 +11,8 @@ class ExecTest extends GroovyTestCase {
     static final String FS = System.getProperty("file.separator");
 
     void testExec() {
-//        Process p = "bin\\groovyclient.exe -e 'println \"hello\" '".execute()
-        Process p = "bin"+FS+"groovyclient.exe -e 'println \"hello\" '".execute()
-        println "----------------"
-        p.getInputStream().eachLine {
-            assert it == "hello"
-        }
-        println "----------------"
+        Process p = ("bin"+FS+"groovyclient.exe -e \"println('hello')\"").execute()
+        assert p.getInputStream().text == 'hello\n'
         p.getErrorStream().eachLine {
             if (it == 'connect: Connection refused') {
                 println "<"+it+">"

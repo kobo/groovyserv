@@ -1,4 +1,6 @@
 target
 *.log
 *.class
+*.exe
 work
+

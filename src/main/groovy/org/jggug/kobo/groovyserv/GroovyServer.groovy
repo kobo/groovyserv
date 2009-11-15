@@ -150,6 +150,7 @@ class GroovyServer implements Runnable {
     while (true) {
       def soc = serverSocket.accept()
 
+      /*
       new Thread("Thread Killer").start {
         try{
           // if socket is closed by client, stop the worker thred by compulsion.
@@ -165,6 +166,7 @@ class GroovyServer implements Runnable {
           t.printStackTrace(originalErr);
         }
       }
+      */
 
       originalErr.println "accept"
       if (soc.localSocketAddress.address.isLoopbackAddress()) {

@@ -111,6 +111,10 @@ void send_header(int fd, int argn, char** argv) {
   }
 
   *p++ = '\n';
+  if (p - read_buf > BUFFER_SIZE) {
+    fprintf(stderr, "\nheader size too big\n");
+    exit(1);
+  }
   write(fd, read_buf, p-read_buf);
 }
 
@@ -203,7 +207,18 @@ int split_socket_output(FILE* soc_stream, char* stream_identifier, int size) {
     exit(1);
   }
 
-  char read_buf[BUFFER_SIZE];
+  static char* read_buf = NULL;
+  static int read_buf_size = 0;
+  if (read_buf == NULL) {
+    read_buf = malloc(BUFFER_SIZE);
+    read_buf_size = size;
+  }
+  if (read_buf_size < size) {
+    while (read_buf_size < size+1) {
+      read_buf_size *= 2;
+    }
+    read_buf = realloc(read_buf, read_buf_size);
+  }
   fread(read_buf, 1, size, soc_stream);
   write(output_fd, read_buf, size);
   return 0;
@@ -234,9 +249,11 @@ int send_to_server(int fd)
 
 /*
  * session.
- * asynchronus input with the stdin and the socket connection
- * to the server. copy data from stdin to server, and
- * copy receive data from server to stdout/stderr.
+ * asynchronus input (select) with the stdin and the socket connection
+ * to the server. copy input data from stdin to server, and
+ * copy received data from the server to stdout/stderr.
+ * destination of output is stdout or stderr are distinguished by
+ * stream identifier(sid) header is 'o' or 'e'.
  */
 int session(int fd)
 {
