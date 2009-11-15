@@ -213,8 +213,8 @@ int split_socket_output(FILE* soc_stream, char* stream_identifier, int size) {
     read_buf = malloc(BUFFER_SIZE);
     read_buf_size = size;
   }
-  if (read_buf_size < size+1) {
-    while (read_buf_size < size+1) {
+  if (read_buf_size < size) {
+    while (read_buf_size < size) {
       read_buf_size *= 2;
     }
     read_buf = realloc(read_buf, read_buf_size);

@@ -2,4 +2,7 @@
 
 export CLASSPATH=src/main/groovy
 export OPT="-Dgroovyserver.verbose=true"
-groovy $OPT src/main/groovy/org/jggug/kobo/groovyserv/GroovyServer.groovy
+
+GROOVYSERV_HOME=`dirname $0`/..
+
+groovy -cp $GROOVYSERV_HOME/src/main/groovy $OPT $GROOVYSERV_HOME/src/main/groovy/org/jggug/kobo/groovyserv/GroovyServer.groovy
