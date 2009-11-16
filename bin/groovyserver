@@ -5,4 +5,4 @@ export OPT="-Dgroovyserver.verbose=true"
 
 GROOVYSERV_HOME=`dirname $0`/..
 
-groovy -cp $GROOVYSERV_HOME/src/main/groovy $OPT $GROOVYSERV_HOME/src/main/groovy/org/jggug/kobo/groovyserv/GroovyServer.groovy
+exec groovy -cp $GROOVYSERV_HOME/src/main/groovy $OPT $GROOVYSERV_HOME/src/main/groovy/org/jggug/kobo/groovyserv/GroovyServer.groovy
