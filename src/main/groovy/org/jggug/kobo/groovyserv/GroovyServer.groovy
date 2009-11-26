@@ -112,7 +112,7 @@ class GroovyServer implements Runnable {
         def currentDir = headers[HEADER_CURRENT_WORKING_DIR][0]
         System.setProperty('user.dir', currentDir)
 
-        System.setIn(ins);
+        System.setIn(new MultiplexedInputStream(ins));
 //        System.setOut(new ChunkedPrintStream(outs, 'o' as char));
 //        System.setErr(new ChunkedPrintStream(outs, 'e' as char));
         System.setOut(new PrintStream(new ChunkedOutputStream(outs, 'o' as char)));

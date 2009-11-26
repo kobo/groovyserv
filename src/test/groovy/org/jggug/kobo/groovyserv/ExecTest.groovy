@@ -24,4 +24,34 @@ class ExecTest extends GroovyTestCase {
 
   }
 
+  void testMultieLineWrite() {
+    def cmd = """bin${FS}groovyclient.exe -e "[0,1,2].each{println it}" """
+    Process p = cmd.execute()
+    assert p.getInputStream().text == "0"+NL+"1"+NL+"2"+NL
+    p.getErrorStream().eachLine {
+      if (it == 'connect: Connection refused') {
+        println "<"+it+">"
+        assert false : "server may not running"
+      }
+      assert false: "error output returned from server: "+it
+    }
+  }
+
+  void testMultieLineRead() {
+    def cmd = """bin${FS}groovyclient.exe -e "System.in.eachLine{println it+it}" """
+    Process p = cmd.execute()
+    def os =  p.getOutputStream()
+    os.write("A\n".getBytes())
+    os.write("B\n".getBytes())
+    os.close()
+    assert p.getInputStream().text == "AA"+NL+"BB"+NL
+    p.getErrorStream().eachLine {
+      if (it == 'connect: Connection refused') {
+        println "<"+it+">"
+        assert false : "server may not running"
+      }
+      assert false: "error output returned from server: "+it
+    }
+  }
+
 }

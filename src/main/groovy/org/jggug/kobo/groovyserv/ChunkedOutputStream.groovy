@@ -22,56 +22,47 @@ class ChunkedOutputStream extends OutputStream {
 
   char streamIdentifier;
 
-  private final static Object monitor = new Object();
   static WeakHashMap<Thread, OutputStream>map = [:]
 
-  public void flush() throws IOException {
-    synchronized (monitor) {
-      OutputStream outs = map[Thread.currentThread()]
-      if (outs == null) {
-        return;
-      }
-      outs.flush();
+  private OutputStream check(OutputStream outs) {
+    if (outs == null) {
+      throw new IllegalStateException("System.out/err can't access from this thread: "+Thread.currentThread()+":"+Thread.currentThread().id)
     }
+    return outs
   }
 
+  @Override
+  public void flush() throws IOException {
+    OutputStream outs = check(map[Thread.currentThread()])
+    outs.flush();
+  }
+
+  @Override
   public void close() throws IOException {
-    synchronized (monitor) {
-      OutputStream outs = map[Thread.currentThread()]
-      if (outs == null) {
-        return;
-      }
-      outs.close();
-    }
+    OutputStream outs = check(map[Thread.currentThread()])
+    outs.close();
   }
 
   @Override
   public void write(int b) {
-    synchronized (monitor) {
-      byte[] buf = new byte[1]
-      buf[0] = (b>>8*0) & 0x0000ff;
-      write(buf, 0, 1);
-    }
+    byte[] buf = new byte[1]
+    buf[0] = (b>>8*0) & 0x0000ff;
+    write(buf, 0, 1);
   }
 
   @Override
   public void write(byte[] b, int off, int len) {
-    synchronized (monitor) {
-      OutputStream outs = map[Thread.currentThread()]
-      if (outs == null) {
-        return
-      }
-      if (System.getProperty("groovyserver.verbose") == "true") {
-        GroovyServer.originalErr.println("id="+streamIdentifier);
-        GroovyServer.originalErr.println("size="+len);
-        Dump.dump(GroovyServer.originalErr, b, off, len);
-      }
-      GroovyServer.originalErr.println("TID="+Thread.currentThread().id);
-      outs.write((HEADER_STREAM_ID+": "+streamIdentifier+ "\n").bytes);
-      outs.write((HEADER_CHUNK_SIZE+": " + len+"\n").bytes);
-      outs.write("\n".bytes);
-      outs.write(b, off, len);
+    OutputStream outs = check(map[Thread.currentThread()])
+    if (System.getProperty("groovyserver.verbose") == "true") {
+      GroovyServer.originalErr.println("id="+streamIdentifier);
+      GroovyServer.originalErr.println("size="+len);
+      Dump.dump(GroovyServer.originalErr, b, off, len);
     }
+    GroovyServer.originalErr.println("TID="+Thread.currentThread().id);
+    outs.write((HEADER_STREAM_ID+": "+streamIdentifier+ "\n").bytes);
+    outs.write((HEADER_CHUNK_SIZE+": " + len+"\n").bytes);
+    outs.write("\n".bytes);
+    outs.write(b, off, len);
   }
 
   public ChunkedOutputStream(OutputStream outs, char id) {
