@@ -75,7 +75,7 @@ class GroovyServer implements Runnable {
   String getLine(InputStream ins) {
     def sb = new StringBuilder()
     char ch;
-    while ((ch = ins.read()) != LF as char)  {
+    while ((ch = ins.read()) != LF as char && ch != -1)  {
       if (ch != CR as char) {
         sb.append(ch)
       }
@@ -106,14 +106,17 @@ class GroovyServer implements Runnable {
   void run() {
     try {
       soc.withStreams { ins, outs ->
+      originalErr.println "outs="+outs
         Map<String, List<String>> headers = readHeaders(ins);
 
         def currentDir = headers[HEADER_CURRENT_WORKING_DIR][0]
         System.setProperty('user.dir', currentDir)
 
         System.setIn(ins);
-        System.setOut(new ChunkedPrintStream(outs, 'o' as char));
-        System.setErr(new ChunkedPrintStream(outs, 'e' as char));
+//        System.setOut(new ChunkedPrintStream(outs, 'o' as char));
+//        System.setErr(new ChunkedPrintStream(outs, 'e' as char));
+        System.setOut(new PrintStream(new ChunkedOutputStream(outs, 'o' as char)));
+        System.setErr(new PrintStream(new ChunkedOutputStream(outs, 'e' as char)));
 
         try {
           GroovyMain.main(headers[HEADER_ARG] as String[])
@@ -140,6 +143,10 @@ class GroovyServer implements Runnable {
     // I hope original groovy support like "groovy -s(erver) port"
     // to "run as server" option :).
 
+    if (System.getProperty('groovy.server.port') != null) {
+      port = Integer.parseInt(System.getProperty('groovy.server.port'))
+    }
+
     System.setProperty('groovy.runningmode', "server")
 
     System.setSecurityManager(new NoExitSecurityManager());
@@ -149,13 +156,17 @@ class GroovyServer implements Runnable {
     Thread worker = null;
     while (true) {
       def soc = serverSocket.accept()
+      originalErr.println " accept soc="+soc
 
-      /*
-      new Thread("Thread Killer").start {
+      // There is no proper way to detect socket disconnection by the client
+      // in Socket API. The reason comes from TCP/IP design policy itself.
+      // So following is useless (only windows?).
+      // TODO:
+      // make a 'heart beat' handshake protocol for detect disconnection.
+      new Thread("Unconnected thread Killer").start {
         try{
           // if socket is closed by client, stop the worker thred by compulsion.
           while (!soc.isClosed()) {
-            //              soc.outputStream.write("Size: 0\n".bytes);
               Thread.sleep(1000)
           }
           if (worker != null) {
@@ -166,16 +177,15 @@ class GroovyServer implements Runnable {
           t.printStackTrace(originalErr);
         }
       }
-      */
 
       originalErr.println "accept"
       if (soc.localSocketAddress.address.isLoopbackAddress()) {
         // Now, create new thraed for each connections.
-        // But it could be problems with exclusive control.
-        // Because "user.dir" system property is not threadlocal.
-        // It might be better to synchronize?
+        // Don't use ExecutorService or any thread pool system.
+        // Because the output streams are distincted by thread id,
+        // so Thread and thread ids can't be reused.
+        //
         worker = new Thread(new GroovyServer(soc:soc), "worker").start()
-        // TODO: job control for each connection.
       }
       else {
         System.err.println("allow connection from loopback address only")
