@@ -79,7 +79,7 @@ int open_socket(char* server_name, int server_port) {
   }
   if (connect(fd, (struct sockaddr *)&server, sizeof(server)) < 0) {
     perror("connect");
-    exit(2);
+    exit(201);
   }
   return fd;
 }
