@@ -140,7 +140,7 @@ class GroovyServer implements Runnable {
           outs.write("\n".bytes);
         }
         catch (Throwable t) {
-          //          t.printStackTrace()
+          t.printStackTrace()
         }
       }
     }
@@ -200,10 +200,14 @@ class GroovyServer implements Runnable {
 
       originalErr.println "accept"
       if (soc.localSocketAddress.address.isLoopbackAddress()) {
+
         // Now, create new thraed for each connections.
         // Don't use ExecutorService or any thread pool system.
-        // Because the output streams are distincted by thread id,
-        // so Thread and thread ids can't be reused.
+        // Because the System.in/out/err streams are used distinctly
+        // by thread instance.
+        // So 'new Thread()' is nesessary.
+        // (moreover, new Thread created in script can't handle
+        // System.in/out/err correctly.)
         //
         worker = new Thread(new GroovyServer(soc:soc), "worker").start()
       }
