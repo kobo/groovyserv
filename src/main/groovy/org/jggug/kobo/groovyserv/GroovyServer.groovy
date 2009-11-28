@@ -27,43 +27,56 @@ import groovy.ui.GroovyMain;
  * <pre>
  * [Client -> Server]
  *
- * Cwd: <cwd><CR><LF>
- * Arg: <argn><CR><LF>
- * Arg: <arg1><CR><LF>
- * Arg: <arg2><CR><LF>
- * <CR><LF>
- * <data from stdin><EOF>
+ * Initiation
  *
- * where
- *  <cwd> is current working directory.
- *  <argn> is number of given commandline arguments
- *         for groovy command.
- *  <arg1><arg2>.. are commandline arguments.
- *  <CR> is carridge return (0x0d ^M).
- *  <LF> is line feed (0x0a, '\n').
- *  <data from stdin> is byte sequence from standard input.
+ *    INITIATE<CR><LF>
+ *    Cwd: <cwd><CR><LF>
+ *    Arg: <argn><CR><LF>
+ *    Arg: <arg1><CR><LF>
+ *    Arg: <arg2><CR><LF>
+ *    <CR><LF>
+ *    <data from stdin><EOF>
+ *
+ *    where
+ *     <cwd> is current working directory.
+ *     <argn> is number of given commandline arguments
+ *            for groovy command.
+ *     <arg1><arg2>.. are commandline arguments.
+ *     <CR> is carridge return (0x0d ^M).
+ *     <LF> is line feed (0x0a, '\n').
+ *     <data from stdin> is byte sequence from standard input.
+ *
+ * Heartbeat
+ *    HEARTBEAT<CR><LF>
+ *    Status: <CR><LF>
  *
  * [Server -> Client]
  *
- * <id><size><LF>
- * ... chunk data(size bytes) ....
- * <id><size><LF>
- * ... chunk data(size bytes) ....
- * <id><size><LF>
- * ... chunk data(size bytes) ....
- * 
- * where <id> is one of 'o' or 'e'.
- *            'o' means standard output of the program.
- *            'e' means standard error of the program.
- * 
+ * Stream
+ *
+ *    STREAM<CR><LF>
+ *    Channel: <id><CR><LF>
+ *    Size: <size><CR><LF>
+ *    ... chunk data(size bytes) ....
+ *    
+ *    where <id> is 'o' / 'e'.
+ *               'o' means standard output of the program.
+ *               'e' means standard error of the program.
+ *
+ * Exit
+ *
+ *    EXIT<CR><LF>
+ *    Satus: <status><CR><LF>
+ *
  * </pre>
  *
  * @author UEHARA Junji
  */
 class GroovyServer implements Runnable {
 
-  final String HEADER_CURRENT_WORKING_DIR = "Cwd";
-  final String HEADER_ARG = "Arg";
+  final static String HEADER_CURRENT_WORKING_DIR = "Cwd";
+  final static String HEADER_ARG = "Arg";
+  final static String HEADER_STATUS = "Status";
 
   final int CR = 0x0d
   final int LF = 0x0a
@@ -104,25 +117,30 @@ class GroovyServer implements Runnable {
   def soc
 
   void run() {
+    originalErr.println "--------------"
     try {
       soc.withStreams { ins, outs ->
-      originalErr.println "outs="+outs
         Map<String, List<String>> headers = readHeaders(ins);
 
         def currentDir = headers[HEADER_CURRENT_WORKING_DIR][0]
         System.setProperty('user.dir', currentDir)
 
         System.setIn(new MultiplexedInputStream(ins));
-//        System.setOut(new ChunkedPrintStream(outs, 'o' as char));
-//        System.setErr(new ChunkedPrintStream(outs, 'e' as char));
         System.setOut(new PrintStream(new ChunkedOutputStream(outs, 'o' as char)));
         System.setErr(new PrintStream(new ChunkedOutputStream(outs, 'e' as char)));
 
         try {
-          GroovyMain.main(headers[HEADER_ARG] as String[])
+          GroovyMain2.main(headers[HEADER_ARG] as String[])
+        }
+        catch (ExitException e) {
+          //TODO: to catch ExitException correctly,
+          // you must control SecurityException handling deeply.
+          // Because GroovyMain catches SeurityException in it.
+          outs.write((HEADER_STATUS+": "+e.exitStatus+ "\n").bytes);
+          outs.write("\n".bytes);
         }
         catch (Throwable t) {
-          t.printStackTrace()
+          //          t.printStackTrace()
         }
       }
     }
@@ -132,7 +150,7 @@ class GroovyServer implements Runnable {
     }
   }
 
-  static main(args) {
+  static void main(String[] args) {
 
     def port = 1961;
     // TODO: specify port number with commandline option.
@@ -149,7 +167,7 @@ class GroovyServer implements Runnable {
 
     System.setProperty('groovy.runningmode', "server")
 
-    System.setSecurityManager(new NoExitSecurityManager());
+    System.setSecurityManager(new NoExitSecurityManager2());
 
     def serverSocket = new ServerSocket(port)
 
@@ -163,6 +181,7 @@ class GroovyServer implements Runnable {
       // So following is useless (only windows?).
       // TODO:
       // make a 'heart beat' handshake protocol for detect disconnection.
+      /*
       new Thread("Unconnected thread Killer").start {
         try{
           // if socket is closed by client, stop the worker thred by compulsion.
@@ -177,6 +196,7 @@ class GroovyServer implements Runnable {
           t.printStackTrace(originalErr);
         }
       }
+      */
 
       originalErr.println "accept"
       if (soc.localSocketAddress.address.isLoopbackAddress()) {

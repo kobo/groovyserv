@@ -36,8 +36,9 @@ const char * const HEADER_KEY_CURRENT_WORKING_DIR = "Cwd";
 const char * const HEADER_KEY_ARG = "Arg";
 
 /* response headers */
-const char * const HEADER_KEY_STREAM_ID = "Id";
+const char * const HEADER_KEY_CHANNEL = "Channel";
 const char * const HEADER_KEY_CHUNK_SIZE = "Size";
+const char * const HEADER_KEY_STATUS = "Status";
 
 const int CR = 0x0d;
 const int LF = 0x0a;
@@ -286,9 +287,14 @@ int session(int fd)
           return -1;
         }
 
-        char* sid = find_header(headers, HEADER_KEY_STREAM_ID, size);
+        char* status = find_header(headers, HEADER_KEY_STATUS, size);
+        if (status != NULL) {
+          exit(atoi(status));
+        }
+
+        char* sid = find_header(headers, HEADER_KEY_CHANNEL, size);
         if (sid == NULL) {
-          fprintf(stderr, "\nrequired header %s not found\n", HEADER_KEY_STREAM_ID);
+          fprintf(stderr, "\nrequired header %s not found\n", HEADER_KEY_CHANNEL);
           exit(1);
         }
 

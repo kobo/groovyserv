@@ -17,8 +17,8 @@ package org.jggug.kobo.groovyserv
 
 class ChunkedOutputStream extends OutputStream {
 
-  final String HEADER_STREAM_ID = "Id";
-  final String HEADER_CHUNK_SIZE = "Size";
+  final static String HEADER_STREAM_ID = "Channel";
+  final static String HEADER_CHUNK_SIZE = "Size";
 
   char streamIdentifier;
 

@@ -23,7 +23,7 @@ class MultiplexedInputStream extends InputStream {
     if (ins == null) {
       throw new IllegalStateException("System.in can't access from this thread: "+Thread.currentThread()+":"+Thread.currentThread().id)
     }
-    return ins
+    return ins;
   }
 
 

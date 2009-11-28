@@ -7,4 +7,6 @@ fi
 
 GROOVYSERV_HOME=`dirname $0`/..
 
-exec groovy -cp $GROOVYSERV_HOME/src/main/groovy $OPT $* $GROOVYSERV_HOME/src/main/groovy/org/jggug/kobo/groovyserv/GroovyServer.groovy
+#exec groovy -cp $GROOVYSERV_HOME/src/main/groovy $OPT $* $GROOVYSERV_HOME/src/main/groovy/org/jggug/kobo/groovyserv/GroovyServer.groovy
+
+exec groovy -cp src/main/groovy:target/classes $OPT src/main/groovy/org/jggug/kobo/groovyserv/GroovyServer.groovy
