@@ -1,4 +1,4 @@
 
 
-groovyclient: groovyclient.c
-	gcc -g -o groovyclient groovyclient.c
+groovyclient: src/main/c/groovyclient.c
+	gcc -g -o bin/groovyclient.exe src/main/c/groovyclient.c
