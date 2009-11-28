@@ -107,8 +107,7 @@ void send_header(int fd, int argn, char** argv) {
   // send command line arguments.
   for (i=1; i<argn; i++) {
     p += sprintf(p, "%s: %s\n", HEADER_KEY_ARG, argv[i]);
-    //    strcpy(p, argv[i]); // TODO: check buffer overrrun
-    //p += strlen(argv[i]);
+    // TODO: check buffer overrrun
   }
 
   *p++ = '\n';
