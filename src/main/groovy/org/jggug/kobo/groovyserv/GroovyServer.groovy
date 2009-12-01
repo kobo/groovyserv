@@ -117,7 +117,6 @@ class GroovyServer implements Runnable {
   def soc
 
   void run() {
-    originalErr.println "--------------"
     try {
       soc.withStreams { ins, outs ->
         Map<String, List<String>> headers = readHeaders(ins);
@@ -198,7 +197,9 @@ class GroovyServer implements Runnable {
       }
       */
 
-      originalErr.println "accept"
+      if (System.getProperty("groovyserver.verbose") == "true") {
+        originalErr.println "accept"
+      }
       if (soc.localSocketAddress.address.isLoopbackAddress()) {
 
         // Now, create new thraed for each connections.
