@@ -3,4 +3,8 @@ target
 *.class
 *.exe
 work
+*.dSYM
+#*
+.#*
+*.bak
 
