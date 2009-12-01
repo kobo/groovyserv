@@ -26,6 +26,11 @@
 #include <sys/param.h>
 #include <unistd.h>
 
+#if defined(__CYGWIN__)
+#include <sys/cygwin.h>
+#include <w32api/windef.h>
+#endif
+
 #define DESTSERV "localhost"
 #define DESTPORT 1961
 #define MAX_INT_WIDTH 10 /* assume int size is 32bit */
@@ -101,6 +106,11 @@ void send_header(int fd, int argn, char** argv) {
     perror("getcwd");
     exit(1);
   }
+
+#if defined(__CYGWIN__)
+  cygwin_conv_to_win32_path(cwd, p);
+#endif
+
   p += strlen(cwd);
   *p++ = '\n';
 
@@ -111,6 +121,7 @@ void send_header(int fd, int argn, char** argv) {
   }
 
   *p++ = '\n';
+  *p++ = '\0';
   if (p - read_buf > BUFFER_SIZE) {
     fprintf(stderr, "\nheader size too big\n");
     exit(1);
