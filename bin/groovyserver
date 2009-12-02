@@ -5,6 +5,15 @@ if  [ "$OPT"=="" ]; then
   export OPT="-Dgroovyserver.verbose=true"
 fi
 
+if [ "$1" == "-k" -a -f ~/.groovy/groovyserver/pid ]; then
+  kill  `cat ~/.groovy/groovyserver/pid`
+  rm  ~/.groovy/groovyserver/pid
+  exit
+fi
+
 GROOVYSERV_HOME=`dirname $0`/..
 
-exec $GROOVY_HOME/bin/groovy -cp $GROOVYSERV_HOME/src/main/groovy:$GROOVYSERV_HOME/target/classes $OPT $GROOVYSERV_HOME/src/main/groovy/org/jggug/kobo/groovyserv/GroovyServer.groovy
+$GROOVY_HOME/bin/groovy -cp $GROOVYSERV_HOME/src/main/groovy:$GROOVYSERV_HOME/target/classes $OPT $GROOVYSERV_HOME/src/main/groovy/org/jggug/kobo/groovyserv/GroovyServer.groovy "$@" &
+
+echo $! > ~/.groovy/groovyserver/pid
+
