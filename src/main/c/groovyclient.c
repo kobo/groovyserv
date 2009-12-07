@@ -324,12 +324,21 @@ int session(int fd)
   }
 }
 
+static int fd;
+
+static void signal_handler(int sig) {
+  close(fd);
+  exit(0);
+}
+
+
 /*
  * main.
  * open socket and initiate session.
  */
 int main(int argn, char** argv) {
-  int fd = open_socket(DESTSERV, DESTPORT);
+  signal(SIGINT, signal_handler);
+  fd = open_socket(DESTSERV, DESTPORT);
   if (fd == 0) {
     return 1;
   }
