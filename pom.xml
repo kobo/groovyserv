@@ -36,53 +36,75 @@
 
   <build>
     <plugins>
-<!--          <plugin>-->
-<!--            <groupId>org.codehaus.groovy.maven</groupId>-->
-<!--            <artifactId>gmaven-plugin</artifactId>-->
-<!--            <version>1.0-rc-3</version>-->
-<!--            <executions>-->
-<!--              <execution>-->
-<!--                <goals>-->
-<!--                  <goal>generateStubs</goal>-->
-<!--                  <goal>compile</goal>-->
-<!--                  <goal>generateTestStubs</goal>-->
-<!--                  <goal>testCompile</goal>-->
-<!--                </goals>-->
-<!--              </execution>-->
-<!--            </executions>-->
-<!--          </plugin>-->
 
-	  <plugin>
-		<artifactId>maven-assembly-plugin</artifactId>
-		<configuration>
-		  <descriptors>
-			<descriptor>src/main/assembly/bin.xml</descriptor>
-			<descriptor>src/main/assembly/src.xml</descriptor>
-		  </descriptors>
-		</configuration>
-	  </plugin>
-
-	  <plugin>
-		<groupId>org.codehaus.mojo</groupId>
-		<artifactId>exec-maven-plugin</artifactId>
+      <plugin>
+        <groupId>org.codehaus.groovy.maven</groupId>
+        <artifactId>gmaven-plugin</artifactId>
+        <version>1.0-rc-3</version>
         <executions>
           <execution>
-			<phase>compile</phase>
+			<phase>test</phase>
+            <goals>
+              <goal>execute</goal>
+            </goals>
+            <configuration>
+              <source>${pom.basedir}/src/test/groovy/org/jggug/kobo/groovyserv/runtest.groovy</source>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptors>
+            <descriptor>src/main/assembly/bin.xml</descriptor>
+            <descriptor>src/main/assembly/src.xml</descriptor>
+          </descriptors>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <executions>
+          <execution>
+			<id>gcc-compile</id>
+            <phase>compile</phase>
             <goals>
               <goal>exec</goal>
             </goals>
-			<configuration>
-			  <executable>gcc</executable>
-			  <arguments>
-				<argument>-g</argument>
-				<argument>-o</argument>
-				<argument>bin/groovyclient.exe</argument>
-				<argument>src/main/c/groovyclient.c</argument>
-			  </arguments>
-			</configuration>
+            <configuration>
+              <executable>gcc</executable>
+              <arguments>
+                <argument>-g</argument>
+                <argument>-o</argument>
+                <argument>bin/groovyclient.exe</argument>
+                <argument>src/main/c/groovyclient.c</argument>
+              </arguments>
+            </configuration>
           </execution>
+
+<!--
+          <execution>
+			<id>test</id>
+            <phase>test</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>groovy</executable>
+              <arguments>
+                <argument>-cp</argument>
+                <argument>target/classes;src/main/groovy;src/test/groovy</argument>
+                <argument>src/test/groovy/org/jggug/kobo/groovyserv/runtest.groovy</argument>
+              </arguments>
+            </configuration>
+          </execution>
+-->
+
         </executions>
-	  </plugin>
+      </plugin>
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -95,8 +117,19 @@
           <nowarn />
           <compilerArgument>-Xlint:none</compilerArgument>
         </configuration>
-
       </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <additionalClasspathElements>
+            <additionalClasspathElement>src/main/groovy</additionalClasspathElement>
+          </additionalClasspathElements>
+        </configuration>
+      </plugin>
+
+
     </plugins>
   </build>
 
