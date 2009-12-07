@@ -11,6 +11,15 @@ if [ "$1" == "-k" -a -f ~/.groovy/groovyserver/pid ]; then
   exit
 fi
 
+if [ -f ~/.groovy/groovyserver/pid ]; then
+  echo Already running groovy server, pid is `cat ~/.groovy/groovyserver/pid`.
+  echo To kill the server, run "groovyserver -k".
+  echo If groovy server does not ruuning actually, retry after
+  echo removing file: ~/.groovy/groovyserver/pid
+  exit
+fi
+
+
 GROOVYSERV_HOME=`dirname $0`/..
 
 $GROOVY_HOME/bin/groovy -cp $GROOVYSERV_HOME/src/main/groovy:$GROOVYSERV_HOME/target/classes $OPT $GROOVYSERV_HOME/src/main/groovy/org/jggug/kobo/groovyserv/GroovyServer.groovy "$@" &

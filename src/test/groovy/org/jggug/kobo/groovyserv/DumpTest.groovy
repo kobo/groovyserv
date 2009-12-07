@@ -15,8 +15,9 @@ class DumpTest extends GroovyTestCase
 
         Dump.dump(baos, data, 0, data.size())
         assertEquals '\
-30 31 32 33 34 35 36 37 38 39 61 62 63 64 65 66  | 0123456789abcdef'+NL+'\
-30 31 32 33 34 35 36 37 38 39 41 42 43 44 45 46  | 0123456789ABCDEF'+NL,
++-----------+-----------+-----------+-----------+'+NL+'\
+30 31 32 33 34 35 36 37 38 39 61 62 63 64 65 66 | 0123456789abcdef'+NL+'\
+30 31 32 33 34 35 36 37 38 39 41 42 43 44 45 46 | 0123456789ABCDEF'+NL,
         baos.toString()
     }
 
@@ -26,7 +27,8 @@ class DumpTest extends GroovyTestCase
 
         Dump.dump(baos, data, 0, data.size())
         assertEquals '\
-30 31 32 33 34 35 36 37 38 39 61 62 63 64 65     | 0123456789abcde'+NL,
++-----------+-----------+-----------+-----------+'+NL+'\
+30 31 32 33 34 35 36 37 38 39 61 62 63 64 65    | 0123456789abcde'+NL,
         baos.toString()
     }
 
@@ -36,8 +38,10 @@ class DumpTest extends GroovyTestCase
 
         baos.reset();
         Dump.dump(baos, data, 0, data.size())
-        assertEquals '', baos.toString()
 
+        assertEquals '\
++-----------+-----------+-----------+-----------+'+NL,
+        baos.toString()
     }
 
     void testDump0_ofs1() {
@@ -46,8 +50,10 @@ class DumpTest extends GroovyTestCase
 
         baos.reset();
         Dump.dump(baos, data, 1, data.size()-1)
-        assertEquals '', baos.toString()
 
+        assertEquals '\
++-----------+-----------+-----------+-----------+'+NL,
+        baos.toString()
     }
 
     void testDump32_ofs8() {
@@ -55,8 +61,10 @@ class DumpTest extends GroovyTestCase
         byte[] data = "0123456789abcdef0123456789ABCDEF".bytes
 
         Dump.dump(baos, data, 8, 16)
+
         assertEquals '\
-38 39 61 62 63 64 65 66 30 31 32 33 34 35 36 37  | 89abcdef01234567'+NL,
++-----------+-----------+-----------+-----------+'+NL+'\
+38 39 61 62 63 64 65 66 30 31 32 33 34 35 36 37 | 89abcdef01234567'+NL,
         baos.toString()
     }
 

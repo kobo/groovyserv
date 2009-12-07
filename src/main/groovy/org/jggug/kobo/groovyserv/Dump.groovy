@@ -17,35 +17,37 @@
 package org.jggug.kobo.groovyserv
 
 class Dump {
-    
-    static void dump(OutputStream os, byte[] buf, int ofs, int len) {
-        PrintWriter pw = new PrintWriter(os);
 
-        StringBuilder abuf = new StringBuilder()
+  
+  static void dump(OutputStream os, byte[] buf, int ofs, int len) {
+    PrintWriter pw = new PrintWriter(os);
+    pw.println("+-----------+-----------+-----------+-----------+");
 
-        int i;
-        for (i=ofs; i<ofs+len; i++) {
-            if (!Character.isISOControl((char)buf[i])) {
-                abuf.append((char)buf[i])
-            }
-            else {
-                abuf.append("?")
-            }
-            pw.print(String.format("%02x ", buf[i]));
-            if ((i-ofs) % 16 == 15) {
-                pw.print(" | "+abuf);
-                pw.println();
-                abuf.length = 0
-            }
-        }
-        if ((len % 16) != 0) {
-            while (i < (len+16).intdiv(16)*16 + ofs ) {
-                i++;
-                pw.print("   ");
-            }
-            pw.println(" | "+abuf);
-        }
-        pw.flush()
+    StringBuilder abuf = new StringBuilder();
+
+    int i;
+    for (i=ofs; i<ofs+len; i++) {
+      if (!Character.isISOControl((char)buf[i])) {
+        abuf.append((char)buf[i])
+      }
+      else {
+        abuf.append("?")
+      }
+      pw.print(String.format("%02x ", buf[i]));
+      if ((i-ofs) % 16 == 15) {
+        pw.print("| "+abuf);
+        pw.println();
+        abuf.length = 0
+      }
     }
+    if ((len % 16) != 0) {
+      while (i < (len+16).intdiv(16)*16 + ofs ) {
+        i++;
+        pw.print("   ");
+      }
+      pw.println("| "+abuf);
+    }
+    pw.flush()
+  }
 
 }
