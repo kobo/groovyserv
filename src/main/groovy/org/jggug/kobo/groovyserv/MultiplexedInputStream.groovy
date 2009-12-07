@@ -26,17 +26,28 @@ class MultiplexedInputStream extends InputStream {
     return ins;
   }
 
-
   @Override
   public int read() throws IOException {
     InputStream ins = check(map[Thread.currentThread()])
-    return ins.read()
+    int result = ins.read();
+    if (result != -1 && System.getProperty("groovyserver.verbose") == "true") {
+      GroovyServer.originalErr.println("id=in");
+      byte[] b = [result];
+      Dump.dump(GroovyServer.originalErr, b, 0, 1);
+    }
+    return result;
   }
 
   @Override
   public int read(byte[] b, int off, int len) throws IOException {
     InputStream ins = check(map[Thread.currentThread()])
-    return ins.read(b, off, len)
+    int result = ins.read(b, off, len);
+    if (result != 0 && System.getProperty("groovyserver.verbose") == "true") {
+      GroovyServer.originalErr.println("id=in");
+      GroovyServer.originalErr.println("size="+result);
+      Dump.dump(GroovyServer.originalErr, b, off, result);
+    }
+    return result;
   }
 
   @Override
@@ -68,7 +79,6 @@ class MultiplexedInputStream extends InputStream {
     InputStream ins = check(map[Thread.currentThread()])
     ins.markSupported()
   }
-
 
   public MultiplexedInputStream(InputStream ins) {
     map[Thread.currentThread()] = ins
