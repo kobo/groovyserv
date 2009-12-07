@@ -121,7 +121,6 @@ void send_header(int fd, int argn, char** argv) {
   }
 
   *p++ = '\n';
-  *p++ = '\0';
   if (p - read_buf > BUFFER_SIZE) {
     fprintf(stderr, "\nheader size too big\n");
     exit(1);
