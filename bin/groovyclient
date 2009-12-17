@@ -1,8 +1,10 @@
 #!/bin/sh
 
+SERVER_NOT_RUNNING=201
+
 `dirname $0`/groovyclient.exe "$@"
 stat=$?
-if [ $stat == 201 ]; then
+if [ $stat == $SERVER_NOT_RUNNING ]; then
   if [ ! -d ~/.groovy/groovyserver ]; then
     mkdir ~/.groovy/groovyserver 
   fi

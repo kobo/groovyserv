@@ -52,6 +52,8 @@ const int LF = 0x0a;
 #define MAX_HEADER_VALUE_LEN 512
 #define MAX_HEADER 10
 
+#define SERVER_NOT_RUNNING 201
+
 struct header_t {
   char key[MAX_HEADER_KEY_LEN+1];
   char value[MAX_HEADER_VALUE_LEN+1];
@@ -84,7 +86,7 @@ int open_socket(char* server_name, int server_port) {
   }
   if (connect(fd, (struct sockaddr *)&server, sizeof(server)) < 0) {
     perror("connect");
-    exit(201);
+    exit(SERVER_NOT_RUNNING);
   }
   return fd;
 }
@@ -298,7 +300,11 @@ int session(int fd)
 
         char* status = find_header(headers, HEADER_KEY_STATUS, size);
         if (status != NULL) {
-          exit(atoi(status));
+		  int stat = atoi(status);
+		  if (stat == SERVER_NOT_RUNNING) {
+			exit(1);
+		  }
+          exit(stat);
         }
 
         char* sid = find_header(headers, HEADER_KEY_CHANNEL, size);
