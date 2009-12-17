@@ -127,7 +127,16 @@ groovyclientを実行したとき、groovyserverが起動されていなければ、バック
 * groovyの動作に影響を与える環境変数について、groovyclientコマンドを実
   行したときのシェルの状態ではなく､groovyserverが実行されたときの環境変
   数の値が使用されます。環境変数の変更をgroovyコマンドに影響を及ぼすよ
-  うにするためには、groovyserverを再起動する必要があります。
+  うにするためには、groovyserverを再起動する必要があります。特に、
+  CLASSPATHの指定はgroovyserverを起動するときに指定する必要があります。
+
+* groovyclient実行時に-cpオプションによるclasspathを指定しても効果があ
+  りません。
+
+* 新規スレッドから標準出力・標準入力を扱えません。
+
+* exit statusの201は予約されています。このstatusでExitするGroovyスクリ
+  プトを実行した場合、exit status は1として扱われます。
 
 ================
 バグ
