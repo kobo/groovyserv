@@ -3,12 +3,10 @@
 `dirname $0`/groovyclient.exe "$@"
 stat=$?
 if [ $stat == 201 ]; then
-  echo Groovy Server is not running. Initiate Groovy Server. 1>&2
   if [ ! -d ~/.groovy/groovyserver ]; then
     mkdir ~/.groovy/groovyserver 
   fi
   `dirname $0`/groovyserver > ~/.groovy/groovyserver/$$.log 2>&1 &
-  echo Wait 5 sec
   sleep 5
   exec `dirname $0`/groovyclient.exe "$@"
 else
