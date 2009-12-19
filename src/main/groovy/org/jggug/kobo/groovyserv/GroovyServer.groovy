@@ -123,6 +123,7 @@ class GroovyServer implements Runnable {
 
         def currentDir = headers[HEADER_CURRENT_WORKING_DIR][0]
         System.setProperty('user.dir', currentDir)
+        Platform.chdir(currentDir)
 
         System.setIn(new MultiplexedInputStream(ins));
         System.setOut(new PrintStream(new ChunkedOutputStream(outs, 'o' as char)));
@@ -139,7 +140,8 @@ class GroovyServer implements Runnable {
           outs.write("\n".bytes);
         }
         catch (Throwable t) {
-          t.printStackTrace()
+          t.printStackTrace(originalErr)
+          t.printStackTrace(System.err)
         }
       }
     }
@@ -173,7 +175,6 @@ class GroovyServer implements Runnable {
     Thread worker = null;
     while (true) {
       def soc = serverSocket.accept()
-      originalErr.println " accept soc="+soc
 
       // There is no proper way to detect socket disconnection by the client
       // in Socket API. The reason comes from TCP/IP design policy itself.
@@ -198,7 +199,7 @@ class GroovyServer implements Runnable {
       */
 
       if (System.getProperty("groovyserver.verbose") == "true") {
-        originalErr.println "accept"
+        originalErr.println " accept soc="+soc
       }
       if (soc.localSocketAddress.address.isLoopbackAddress()) {
 
