@@ -17,7 +17,9 @@
 package org.jggug.kobo.groovyserv
 
 import org.codehaus.groovy.tools.shell.util.NoExitSecurityManager;
-import groovy.ui.GroovyMain;
+//import groovy.ui.GroovyMain;
+import org.codehaus.groovy.tools.GroovyStarter;
+
 
 /**
  * GroovyServer runs groovy command background.
@@ -127,7 +129,19 @@ class GroovyServer implements Runnable {
         System.setErr(new PrintStream(new ChunkedOutputStream(outs, 'e' as char)));
 
         try {
-          GroovyMain2.main(headers[HEADER_ARG] as String[])
+          //          GroovyMain2.main(headers[HEADER_ARG] as String[])
+          List args = headers[HEADER_ARG];
+          for (Iterator<String> it = headers[HEADER_ARG].iterator(); it.hasNext(); ) {
+            String s = it.next();
+            if (s == "-cp") {
+              it.remove();
+              String classpath = it.next();
+              it.remove();
+              args = ["--classpath", classpath] + args;
+            }
+          }
+          args = ["--main", "groovy.ui.GroovyMain"] + args;
+          GroovyStarter.main(args as String[]);
         }
         catch (ExitException e) {
           //TODO: to catch ExitException correctly,
