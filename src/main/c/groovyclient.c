@@ -85,7 +85,7 @@ int open_socket(char* server_name, int server_port) {
     exit(1);
   }
   if (connect(fd, (struct sockaddr *)&server, sizeof(server)) < 0) {
-    perror("connect");
+    //    perror("connect");
     exit(SERVER_NOT_RUNNING);
   }
   return fd;
