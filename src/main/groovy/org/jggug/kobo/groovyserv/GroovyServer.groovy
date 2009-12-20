@@ -85,21 +85,12 @@ class GroovyServer implements Runnable {
   static OutputStream originalOut = System.out
   static OutputStream originalErr = System.err
 
-  String getLine(InputStream ins) {
-    def sb = new StringBuilder()
-    char ch;
-    while ((ch = ins.read()) != LF as char && ch != -1)  {
-      if (ch != CR as char) {
-        sb.append(ch)
-      }
-    }
-    sb.toString()
-  }
-
   Map<String, List<String>> readHeaders(ins) {
+    BufferedReader bis = new BufferedReader(new InputStreamReader(ins))
+
     def result = [:]
     def line
-    while ((line = getLine(ins)) != "") {
+    while ((line = bis.readLine()) != "") {
       def kv = line.split(':', 2);
       def key = kv[0]
       def value = kv[1]
@@ -120,6 +111,12 @@ class GroovyServer implements Runnable {
     try {
       soc.withStreams { ins, outs ->
         Map<String, List<String>> headers = readHeaders(ins);
+
+        if (System.getProperty("groovyserver.verbose") == "true") {
+          headers.each {k,v ->
+            originalErr.println " $k = $v"
+          }
+        }
 
         def currentDir = headers[HEADER_CURRENT_WORKING_DIR][0]
         System.setProperty('user.dir', currentDir)
@@ -198,10 +195,10 @@ class GroovyServer implements Runnable {
       }
       */
 
-      if (System.getProperty("groovyserver.verbose") == "true") {
-        originalErr.println " accept soc="+soc
-      }
       if (soc.localSocketAddress.address.isLoopbackAddress()) {
+        if (System.getProperty("groovyserver.verbose") == "true") {
+          originalErr.println "accept soc="+soc
+        }
 
         // Now, create new thraed for each connections.
         // Don't use ExecutorService or any thread pool system.
