@@ -90,7 +90,7 @@ public class GroovyMain2 {
      *
      * @param args all command line args.
      */
-    public static void main(String[] args) {
+    public static void main(String args[]) {
         processArgs(args, System.out);
     }
 

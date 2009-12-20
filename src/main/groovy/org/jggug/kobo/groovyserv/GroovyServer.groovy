@@ -140,6 +140,7 @@ class GroovyServer implements Runnable {
               args = ["--classpath", classpath] + args;
             }
           }
+//          args = ["--main", "org.jggug.kobo.groovyserv.GroovyMain2"] + args;
           args = ["--main", "groovy.ui.GroovyMain"] + args;
           GroovyStarter.main(args as String[]);
         }
