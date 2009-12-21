@@ -141,21 +141,6 @@ class GroovyServer implements Runnable {
             }
           }
           GroovyMain2.main(args as String[])
-/*
-          List args = headers[HEADER_ARG];
-          for (Iterator<String> it = headers[HEADER_ARG].iterator(); it.hasNext(); ) {
-            String s = it.next();
-            if (s == "-cp") {
-              it.remove();
-              String classpath = it.next();
-              it.remove();
-              args = ["--classpath", classpath] + args;
-            }
-          }
-//          args = ["--main", "org.jggug.kobo.groovyserv.GroovyMain2"] + args;
-          args = ["--main", "groovy.ui.GroovyMain"] + args;
-          GroovyStarter2.main(args as String[]);
-*/
         }
         catch (ExitException e) {
           //TODO: to catch ExitException correctly,
@@ -200,28 +185,6 @@ class GroovyServer implements Runnable {
     Thread worker = null;
     while (true) {
       def soc = serverSocket.accept()
-
-      // There is no proper way to detect socket disconnection by the client
-      // in Socket API. The reason comes from TCP/IP design policy itself.
-      // So following is useless (only windows?).
-      // TODO:
-      // make a 'heart beat' handshake protocol for detect disconnection.
-      /*
-      new Thread("Unconnected thread Killer").start {
-        try{
-          // if socket is closed by client, stop the worker thred by compulsion.
-          while (!soc.isClosed()) {
-              Thread.sleep(1000)
-          }
-          if (worker != null) {
-              worker.stop()
-          }
-        }
-        catch (Throwable t) {
-          t.printStackTrace(originalErr);
-        }
-      }
-      */
 
       if (soc.localSocketAddress.address.isLoopbackAddress()) {
         if (System.getProperty("groovyserver.verbose") == "true") {
