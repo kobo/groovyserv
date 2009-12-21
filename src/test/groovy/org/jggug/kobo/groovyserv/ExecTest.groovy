@@ -13,11 +13,14 @@ class ExecTest extends GroovyTestCase {
   void testExec() {
     def cmd = """bin${FS}groovyclient.exe -e "println('hello')" """
     Process p = cmd.execute()
+    p.waitFor()
+    if (p.exitValue() == 201) {
+      assert false : "server may not be running"
+    }
 
     assert p.getInputStream().text == "hello"+NL
     p.getErrorStream().eachLine {
       if (it == 'connect: Connection refused') {
-        println "<"+it+">"
         assert false : "server may not be running"
       }
       assert false: "error output returned from the server: "+it
@@ -28,6 +31,10 @@ class ExecTest extends GroovyTestCase {
   void testMultiLineWrite() {
     def cmd = """bin${FS}groovyclient.exe -e "[0,1,2].each{println(it)}" """
     Process p = cmd.execute()
+    p.waitFor()
+    if (p.exitValue() == 201) {
+      assert false : "server may not be running"
+    }
     assert p.getInputStream().text == "0"+NL+"1"+NL+"2"+NL
     p.getErrorStream().eachLine {
       if (it == 'connect: Connection refused') {
@@ -43,6 +50,12 @@ class ExecTest extends GroovyTestCase {
     def os =  p.getOutputStream()
     os.write("A${NL}B${NL}".getBytes())
     os.close()
+
+    p.waitFor()
+    if (p.exitValue() == 201) {
+      assert false : "server may not be running"
+    }
+
     assert p.getInputStream().text == "AA"+NL+"BB"+NL
     p.getErrorStream().eachLine {
       if (it == 'connect: Connection refused') {
