@@ -156,7 +156,9 @@ class GroovyServer implements Runnable {
       }
     }
     finally {
-      originalErr.println("socket close")
+      if (System.getProperty("groovyserver.verbose") == "true") {
+        originalErr.println("socket close")
+      }
       soc.close()
     }
   }
