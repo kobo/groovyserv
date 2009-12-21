@@ -87,7 +87,7 @@ Following aliases might be useful also.
  alias groovyc="groovyclient -e 'org.codehaus.groovy.tools.FileSystemCompiler.main(args)'"
  alias groovysh="groovyclient -e 'groovy.ui.InteractiveShell.main(args)'"
  alias groovyConsole="groovyclient -e 'groovy.ui.Console.main(args)'"
-
+ alias grape="groovyclient -e 'org.codehaus.groovy.tools.GrapeMain.main(args)'"
 
 ================
 Differences
@@ -110,18 +110,16 @@ Differences
 
 * -l option (listen TCP port) cannot be used.
 
-* Environment variables when groovyserver started are used instead of
-  those of groovyclient starting. Especially CLASSPATH, it might be
-  critical.
+* Environment variables when groovyclient is invoked is not used.
+  Especially, CLASSPATH is not used. You have to specify it to -cp
+  option of groovyclient.
 
-* For the same reason, -cp(classpath) option is not available when
-  using groovyclient.[now working]
-
-* A standard output and a standard input cannot be treated from a new
+* Standard output and standard input cannot be treated from a new
   thread.[now working]
 
-* Exit status 201 is reserved. When the Groovy script
-  System.exit(201), the status of the script is regarded as 1.
+* Exit status '201' is reserved. If yo want to exit the Groovy script
+  by status 201, for example "System.exit(201)", the status is
+  converted to fixed number '1' (same as System.exit(1)).
 
 ===================
 groovyserver Options
