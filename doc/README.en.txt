@@ -125,7 +125,8 @@ Differences
 groovyserver Options
 ===================
 
--v Tedious display. Debugging information etc. are displayed. 
+-q quiet.
+-v verbose output. Debugging information etc. are displayed. 
 -k Starting GroovyServer is ended. 
 
 ===================
