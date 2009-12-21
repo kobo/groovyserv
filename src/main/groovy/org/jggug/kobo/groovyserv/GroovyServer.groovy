@@ -79,6 +79,7 @@ class GroovyServer implements Runnable {
   final static String HEADER_CURRENT_WORKING_DIR = "Cwd";
   final static String HEADER_ARG = "Arg";
   final static String HEADER_STATUS = "Status";
+  final static int DEFAULT_PORT = 1961
 
   final int CR = 0x0d
   final int LF = 0x0a
@@ -129,7 +130,18 @@ class GroovyServer implements Runnable {
         System.setErr(new PrintStream(new ChunkedOutputStream(outs, 'e' as char)));
 
         try {
-          //          GroovyMain2.main(headers[HEADER_ARG] as String[])
+          List args = headers[HEADER_ARG];
+          for (Iterator<String> it = headers[HEADER_ARG].iterator(); it.hasNext(); ) {
+            String s = it.next();
+            if (s == "-cp") {
+              it.remove();
+              String classpath = it.next();
+              System.setProperty("groovy.classpath", classpath);
+              it.remove();
+            }
+          }
+          GroovyMain2.main(args as String[])
+/*
           List args = headers[HEADER_ARG];
           for (Iterator<String> it = headers[HEADER_ARG].iterator(); it.hasNext(); ) {
             String s = it.next();
@@ -142,7 +154,8 @@ class GroovyServer implements Runnable {
           }
 //          args = ["--main", "org.jggug.kobo.groovyserv.GroovyMain2"] + args;
           args = ["--main", "groovy.ui.GroovyMain"] + args;
-          GroovyStarter.main(args as String[]);
+          GroovyStarter2.main(args as String[]);
+*/
         }
         catch (ExitException e) {
           //TODO: to catch ExitException correctly,
@@ -165,7 +178,7 @@ class GroovyServer implements Runnable {
 
   static void main(String[] args) {
 
-    def port = 1961;
+    def port = DEFAULT_PORT;
     // TODO: specify port number with commandline option.
     // But command line include options are pass to
     // original groovy command tranparently. So
