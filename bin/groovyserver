@@ -1,8 +1,9 @@
 #!/bin/sh
 
-export CLASSPATH=src/main/groovy
-if  [ "$OPT"=="" ]; then
+if  [ "$1" != "-q" ]; then
   export OPT="-Dgroovyserver.verbose=true"
+else
+  shift
 fi
 
 if [ "$1" == "-k" -o "$1" == "-r" ]; then
@@ -18,19 +19,41 @@ if [ "$1" == "-k" -o "$1" == "-r" ]; then
     exit
   fi
   echo "restart groovy server"
+  shift
 fi
 
 if [ -f ~/.groovy/groovyserver/pid ]; then
-  echo Groovy server already running, pid is `cat ~/.groovy/groovyserver/pid`.
-  echo To kill the server, run "groovyserver -k".
-  echo If groovy server does not ruuning actually,
-  echo retry after removing file ~/.groovy/groovyserver/pid.
-  exit
+  pid=`cat ~/.groovy/groovyserver/pid`
+  if ! ps -p $pid | grep $pid > /dev/null; then
+    rm ~/.groovy/groovyserver/pid
+  else
+    echo Groovy server already running, pid is `cat ~/.groovy/groovyserver/pid`.
+    echo To kill the server, run "groovyserver -k".
+    echo If groovy server does not ruuning actually,
+    echo retry after removing file ~/.groovy/groovyserver/pid.
+    exit
+  fi
 fi
 
 GROOVYSERV_HOME=`dirname $0`/..
 
 CP=$GROOVYSERV_HOME/src/main/groovy:$GROOVYSERV_HOME/target/classes:~/.m2/repository/net/java/dev/jna/jna/3.2.2/jna-3.2.2.jar
+
+# OS specific support (must be 'true' or 'false').
+cygwin=false
+msys=false
+darwin=false
+case "`uname`" in
+  CYGWIN* )
+    cygwin=true
+    ;; 
+  Darwin* )
+    darwin=true
+    ;;
+  MINGW* )
+    msys=true
+    ;;
+esac
 
 if $cygwin ; then
   CP=`cygpath --path --mixed "$CP"`
