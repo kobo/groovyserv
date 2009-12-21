@@ -5,9 +5,11 @@ if  [ "$OPT"=="" ]; then
   export OPT="-Dgroovyserver.verbose=true"
 fi
 
-if [ "$1" == "-k" -a -f ~/.groovy/groovyserver/pid ]; then
-  kill  `cat ~/.groovy/groovyserver/pid`
-  rm  ~/.groovy/groovyserver/pid
+if [ "$1" == "-k" ]; then
+  if [ -f ~/.groovy/groovyserver/pid ]; then
+    kill  `cat ~/.groovy/groovyserver/pid`
+    rm  ~/.groovy/groovyserver/pid
+  fi
   exit
 fi
 
@@ -19,10 +21,20 @@ if [ -f ~/.groovy/groovyserver/pid ]; then
   exit
 fi
 
-
 GROOVYSERV_HOME=`dirname $0`/..
 
-$GROOVY_HOME/bin/groovy -cp $GROOVYSERV_HOME/src/main/groovy:$GROOVYSERV_HOME/target/classes:~/.m2/repository/net/java/dev/jna/jna/3.2.2/jna-3.2.2.jar $OPT $GROOVYSERV_HOME/src/main/groovy/org/jggug/kobo/groovyserv/GroovyServer.groovy "$@" &
+CP=$GROOVYSERV_HOME/src/main/groovy:$GROOVYSERV_HOME/target/classes:~/.m2/repository/net/java/dev/jna/jna/3.2.2/jna-3.2.2.jar
 
-echo $! > ~/.groovy/groovyserver/pid
+if $cygwin ; then
+  CP=`cygpath --path --mixed "$CP"`
+fi
+
+$GROOVY_HOME/bin/groovy -cp $CP $OPT $GROOVYSERV_HOME/src/main/groovy/org/jggug/kobo/groovyserv/GroovyServer.groovy "$@" &
+
+pid=$!
+
+sleep 3
+if ps -p $pid | grep $pid > /dev/null; then
+  echo $pid > ~/.groovy/groovyserver/pid
+fi
 
