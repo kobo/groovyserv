@@ -5,19 +5,26 @@ if  [ "$OPT"=="" ]; then
   export OPT="-Dgroovyserver.verbose=true"
 fi
 
-if [ "$1" == "-k" ]; then
+if [ "$1" == "-k" -o "$1" == "-r" ]; then
   if [ -f ~/.groovy/groovyserver/pid ]; then
-    kill  `cat ~/.groovy/groovyserver/pid`
+    pid=`cat ~/.groovy/groovyserver/pid`
+    kill $pid
+    echo "kill groovy server $pid"
     rm  ~/.groovy/groovyserver/pid
+  else
+    echo "pid file ~/.groovy/groovyserver/pid not found"
   fi
-  exit
+  if [ "$1" == "-k" ]; then
+    exit
+  fi
+  echo "restart groovy server"
 fi
 
 if [ -f ~/.groovy/groovyserver/pid ]; then
-  echo Already running groovy server, pid is `cat ~/.groovy/groovyserver/pid`.
+  echo Groovy server already running, pid is `cat ~/.groovy/groovyserver/pid`.
   echo To kill the server, run "groovyserver -k".
-  echo If groovy server does not ruuning actually, retry after
-  echo removing file: ~/.groovy/groovyserver/pid
+  echo If groovy server does not ruuning actually,
+  echo retry after removing file ~/.groovy/groovyserver/pid.
   exit
 fi
 
@@ -34,7 +41,10 @@ $GROOVY_HOME/bin/groovy -cp $CP $OPT $GROOVYSERV_HOME/src/main/groovy/org/jggug/
 pid=$!
 
 sleep 3
+
 if ps -p $pid | grep $pid > /dev/null; then
   echo $pid > ~/.groovy/groovyserver/pid
 fi
+
+echo "groovy server $pid is successfully started"
 
