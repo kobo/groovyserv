@@ -6,7 +6,12 @@ else
   shift
 fi
 
-if [ "$1" == "-k" -o "$1" == "-r" ]; then
+if [ "x$GROOVY_HOME" = "x" ]; then
+  echo "environment variable GROOVY_HOME must be set."
+  exit 1;
+fi
+
+if [ "$1" = "-k" -o "$1" = "-r" ]; then
   if [ -f ~/.groovy/groovyserver/pid ]; then
     pid=`cat ~/.groovy/groovyserver/pid`
     kill $pid
@@ -15,7 +20,7 @@ if [ "$1" == "-k" -o "$1" == "-r" ]; then
   else
     echo "pid file ~/.groovy/groovyserver/pid not found"
   fi
-  if [ "$1" == "-k" ]; then
+  if [ "$1" = "-k" ]; then
     exit
   fi
   echo "restart groovy server"
@@ -69,5 +74,5 @@ if ps -p $pid | grep $pid > /dev/null; then
   echo $pid > ~/.groovy/groovyserver/pid
 fi
 
-echo "groovy server $pid is successfully started"
+echo "groovy server $pid is successfully started."
 
