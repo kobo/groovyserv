@@ -150,9 +150,8 @@ class GroovyServer implements Runnable {
           GroovyMain2.main(args as String[])
         }
         catch (ExitException e) {
-          //TODO: to catch ExitException correctly,
-          // you must control SecurityException handling deeply.
-          // Because GroovyMain catches SeurityException in it.
+          // GroovyMain2 throws ExitException when
+          // it catches ExitException.
           outs.write((HEADER_STATUS+": "+e.exitStatus+ "\n").bytes);
           outs.write("\n".bytes);
         }
