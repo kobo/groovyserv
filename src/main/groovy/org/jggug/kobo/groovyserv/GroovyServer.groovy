@@ -172,13 +172,6 @@ class GroovyServer implements Runnable {
   static void main(String[] args) {
 
     def port = DEFAULT_PORT;
-    // TODO: specify port number with commandline option.
-    // But command line include options are pass to
-    // original groovy command tranparently. So
-    // special option is not good idea(in future,
-    // it could conflict to groovy's options).
-    // I hope original groovy support like "groovy -s(erver) port"
-    // to "run as server" option :).
 
     if (System.getProperty('groovy.server.port') != null) {
       port = Integer.parseInt(System.getProperty('groovy.server.port'))
