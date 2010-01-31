@@ -202,10 +202,8 @@ class GroovyServer implements Runnable {
         // Now, create new thraed for each connections.
         // Don't use ExecutorService or any thread pool system.
         // Because the System.in/out/err streams are used distinctly
-        // by thread instance.
-        // So 'new Thread()' is nesessary.
-        // (moreover, new Thread created in script can't handle
-        // System.in/out/err correctly.)
+        // by thread instance. In the other words, thread can't be pooled.
+        // So this 'new Thread()' is nesessary.
         //
         worker = new Thread(new GroovyServer(soc:soc), "worker").start()
       }
