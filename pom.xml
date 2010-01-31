@@ -32,6 +32,12 @@
       <version>1.2</version>
     </dependency> 
 
+    <dependency>
+      <groupId>com.sun.jna</groupId>
+      <artifactId>jna</artifactId>
+      <version>3.0.9</version>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -43,7 +49,7 @@
         <version>1.0-rc-3</version>
         <executions>
           <execution>
-			<phase>test</phase>
+            <phase>test</phase>
             <goals>
               <goal>execute</goal>
             </goals>
@@ -69,7 +75,7 @@
         <artifactId>exec-maven-plugin</artifactId>
         <executions>
           <execution>
-			<id>gcc-compile</id>
+            <id>gcc-compile</id>
             <phase>compile</phase>
             <goals>
               <goal>exec</goal>
@@ -87,7 +93,7 @@
 
 <!--
           <execution>
-			<id>test</id>
+            <id>test</id>
             <phase>test</phase>
             <goals>
               <goal>exec</goal>
