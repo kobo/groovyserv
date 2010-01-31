@@ -110,6 +110,18 @@ class GroovyServer implements Runnable {
 
   def soc
 
+  def changeDir(headers) {
+    def currentDir = headers[HEADER_CURRENT_WORKING_DIR][0]
+    System.setProperty('user.dir', currentDir)
+    PlatformMethods.chdir(currentDir)
+  }
+
+  def setupStandardStreams(ins, outs) {
+        System.setIn(new MultiplexedInputStream(ins));
+        System.setOut(new PrintStream(new ChunkedOutputStream(outs, 'o' as char)));
+        System.setErr(new PrintStream(new ChunkedOutputStream(outs, 'e' as char)));
+  }
+
   void run() {
     try {
       soc.withStreams { ins, outs ->
@@ -121,13 +133,8 @@ class GroovyServer implements Runnable {
           }
         }
 
-        def currentDir = headers[HEADER_CURRENT_WORKING_DIR][0]
-        System.setProperty('user.dir', currentDir)
-        PlatformMethods.chdir(currentDir)
-
-        System.setIn(new MultiplexedInputStream(ins));
-        System.setOut(new PrintStream(new ChunkedOutputStream(outs, 'o' as char)));
-        System.setErr(new PrintStream(new ChunkedOutputStream(outs, 'e' as char)));
+        changeDir(headers);
+        setupStandardStreams(ins, outs);
 
         try {
           List args = headers[HEADER_ARG];
