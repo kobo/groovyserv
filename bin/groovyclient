@@ -4,9 +4,12 @@ SERVER_NOT_RUNNING=201
 
 `dirname $0`/groovyclient.exe "$@"
 stat=$?
-if [ $stat == $SERVER_NOT_RUNNING ]; then
-  if [ ! -d ~/.groovy/groovyserver ]; then
-    mkdir ~/.groovy/groovyserver 
+if [ "$stat" -eq "$SERVER_NOT_RUNNING" ]; then
+  if [ ! -d ~/.groovy ]; then
+    mkdir ~/.groovy
+    if [ ! -d ~/.groovy/groovyserver ]; then
+      mkdir ~/.groovy/groovyserver 
+    fi
   fi
   `dirname $0`/groovyserver > ~/.groovy/groovyserver/$$.log 2>&1 &
   sleep 5
