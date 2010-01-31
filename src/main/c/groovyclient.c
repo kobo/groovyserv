@@ -25,6 +25,7 @@
 #include <sys/uio.h>
 #include <sys/param.h>
 #include <unistd.h>
+#include <signal.h>
 
 #if defined(__CYGWIN__)
 #include <sys/cygwin.h>
