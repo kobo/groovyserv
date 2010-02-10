@@ -115,7 +115,7 @@ class GroovyServer implements Runnable {
       soc.withStreams { ins, outs ->
         Map<String, List<String>> headers = readHeaders(ins);
 
-        if (System.getProperty("groovyserver.verbose") == "true") {
+        if (Boolean.valueOf(System.getProperty("groovyserver.verbose"))) {
           headers.each {k,v ->
             originalErr.println " $k = $v"
           }
@@ -156,7 +156,7 @@ class GroovyServer implements Runnable {
       }
     }
     finally {
-      if (System.getProperty("groovyserver.verbose") == "true") {
+      if (Boolean.valueOf(System.getProperty("groovyserver.verbose"))) {
         originalErr.println("socket close")
       }
       soc.close()
@@ -189,7 +189,7 @@ class GroovyServer implements Runnable {
       def soc = serverSocket.accept()
 
       if (soc.localSocketAddress.address.isLoopbackAddress()) {
-        if (System.getProperty("groovyserver.verbose") == "true") {
+        if (Boolean.valueOf(System.getProperty("groovyserver.verbose"))) {
           originalErr.println "accept soc="+soc
         }
 
