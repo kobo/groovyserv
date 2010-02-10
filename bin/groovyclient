@@ -1,6 +1,6 @@
 #!/bin/sh
 
-SERVER_NOT_RUNNING=201
+SERVER_NOT_RUNNING=15
 
 `dirname $0`/groovyclient.exe "$@"
 stat=$?
