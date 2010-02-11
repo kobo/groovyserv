@@ -1,4 +1,5 @@
-package org.jggug.kobo.groovyserv
+package org.jggug.kobo.groovyserv;
+
 
 import groovy.util.GroovyTestCase
 
@@ -6,19 +7,19 @@ import groovy.util.GroovyTestCase
  * Tests for the {@link org.jggug.kobo.groovyserv.Dump} class.
  * Before running this, you must start groovyserver.
  */
-class ExecTest extends GroovyTestCase {
+class EncodingTest extends GroovyTestCase {
   static final String NL = System.getProperty("line.separator");
   static final String FS = System.getProperty("file.separator");
 
   void testExec() {
-    def cmd = """bin${FS}groovyclient.exe -e "println('‚ ‚¢‚¤‚¦‚¨')" """
+    def cmd = """bin${FS}groovyclient.exe -e "println('ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½')" """
     Process p = cmd.execute()
     p.waitFor();
     if (p.exitValue() == 201) {
       assert false : "server may not be running"
     }
 
-    assert p.getInputStream().text == "‚ ‚¢‚¤‚¦‚¨"+NL
+    assert p.getInputStream().text == "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"+NL
     p.getErrorStream().eachLine {
       assert false: "error output returned from the server: "+it
     }

@@ -314,7 +314,7 @@ public class GroovyMain2 {
             System.err.println(e);
             return false;
         } catch (ExitException e) {
-            throw e;
+            throw e; // for GroovyServer.
         } catch (Throwable e) {
             if (e instanceof InvokerInvocationException) {
                 InvokerInvocationException iie = (InvokerInvocationException) e;
