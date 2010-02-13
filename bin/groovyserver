@@ -67,6 +67,7 @@ fi
 $GROOVY_HOME/bin/groovy -cp $CP $OPT $GROOVYSERV_HOME/src/main/groovy/org/jggug/kobo/groovyserv/GroovyServer.groovy "$@" &
 
 pid=$!
+echo $pid
 
 sleep 3
 
