@@ -24,51 +24,36 @@ import org.codehaus.groovy.tools.GroovyStarter;
  * GroovyServer runs groovy command background.
  * This makes groovy response time at startup very quicker.
  *
- * Communication Protocol summary:
+ * Protocol summary:
  * <pre>
- * [Client -> Server]
+ * Request ::= InvocationRequest
+ * Response ::= StreamResponse
  *
- * Initiation
+ * InvocationRequest ::=
+ *    'Cwd:' <cwd> CRLF
+ *    'Arg:' <argn> CRLF
+ *    'Arg:' <arg1> CRLF
+ *    'Arg:' <arg2> CRLF
+ *    'Cp:' <classpath> CRLF
+ *    CRLF
+ *    <data from STDIN>
  *
- *    INITIATE<CR><LF>
- *    Cwd: <cwd><CR><LF>
- *    Arg: <argn><CR><LF>
- *    Arg: <arg1><CR><LF>
- *    Arg: <arg2><CR><LF>
- *    <CR><LF>
- *    <data from stdin><EOF>
+ * StreamResponse ::=
+ *    'Status:' CRLF
+ *    'Channel:' <id> CRLF
+ *    'Size:' <size> CRLF
+ *    CRLF
+ *    <data for STDERR/STDOUT>
+ *  
  *
- *    where
  *     <cwd> is current working directory.
- *     <argn> is number of given commandline arguments
- *            for groovy command.
- *     <arg1><arg2>.. are commandline arguments.
- *     <CR> is carridge return (0x0d ^M).
- *     <LF> is line feed (0x0a, '\n').
- *     <data from stdin> is byte sequence from standard input.
- *
- * Heartbeat
- *    HEARTBEAT<CR><LF>
- *    Status: <CR><LF>
- *
- * [Server -> Client]
- *
- * Stream
- *
- *    STREAM<CR><LF>
- *    Channel: <id><CR><LF>
- *    Size: <size><CR><LF>
- *    ... chunk data(size bytes) ....
- *    
- *    where <id> is 'o' / 'e'.
- *               'o' means standard output of the program.
- *               'e' means standard error of the program.
- *
- * Exit
- *
- *    EXIT<CR><LF>
- *    Satus: <status><CR><LF>
- *
+ *     <arg1><arg2>.. are commandline arguments(optional).
+ *     <classpath>.. is the value of environment variable CLASSPATH(optional).
+ *     CRLF is carridge return (0x0d ^M) and line feed (0x0a, '\n').
+ *     <data from STDIN> is byte sequence from standard input.
+ *     <id> is 'o' or 'e', where 'o' means standard output of the program.
+ *          'e' means standard error of the program.
+ *     
  * </pre>
  *
  * @author UEHARA Junji
@@ -77,6 +62,7 @@ class GroovyServer implements Runnable {
 	
 	final static String HEADER_CURRENT_WORKING_DIR = "Cwd";
 	final static String HEADER_ARG = "Arg";
+	final static String HEADER_CP = "Cp";
 	final static String HEADER_STATUS = "Status";
 	final static int DEFAULT_PORT = 1961
 	
@@ -162,6 +148,11 @@ class GroovyServer implements Runnable {
                   }
                 }
                 changeDir(headers[HEADER_CURRENT_WORKING_DIR][0]);
+
+                if (headers[HEADER_CP] != null) {
+                  addClasspath(headers[HEADER_CP][0]);
+                }
+
                 List args = headers[HEADER_ARG];
                 for (Iterator<String> it = headers[HEADER_ARG].iterator(); it.hasNext(); ) {
                   String s = it.next();
@@ -225,13 +216,11 @@ class GroovyServer implements Runnable {
 				//
 				worker = new Thread(new GroovyServer(soc:soc));
                 worker.start()
-                originalErr.println("new Worker Thread="+worker)
 			}
 			else {
 				System.err.println("allow connection from loopback address only")
 			}
 		}
 	}
-	
 }
 
