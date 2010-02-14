@@ -11,6 +11,7 @@
 	  <outputDirectory>/bin</outputDirectory>
       <includes>
         <include>groovyclient</include>
+        <include>groovyclient.rb</include>
         <include>groovyclient.exe</include>
         <include>groovyserver</include>
       </includes>
