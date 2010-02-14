@@ -87,15 +87,15 @@ CP=$GROOVYSERV_HOME/lib/groovyserv-0.1-SNAPSHOT.jar:$GROOVYSERV_HOME/lib/jna-3.2
 
 $GROOVY_HOME/bin/groovy -cp $GROOVYSERV_HOME/target/classes:$CP $OPT -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)" -- "$@" &
 
-
 pid=$!
 
 SERVER_NOT_RUNNING=201
 
-`dirname $0`/groovyclient.exe "$@"
+`dirname $0`/groovyclient.exe -h "$@" > /dev/null
 stat=$?
 while [ "$stat" = "$SERVER_NOT_RUNNING" ]; do
-  `dirname $0`/groovyclient.exe "$@"
+  sleep 1
+  `dirname $0`/groovyclient.exe -h "$@" > /dev/null
   stat=$?
 done
 

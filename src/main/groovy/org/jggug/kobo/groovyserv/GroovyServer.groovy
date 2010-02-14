@@ -39,7 +39,7 @@ import org.codehaus.groovy.tools.GroovyStarter;
  *    <data from STDIN>
  *
  * StreamResponse ::=
- *    'Status:' CRLF
+ *    'Status:' <status> CRLF
  *    'Channel:' <id> CRLF
  *    'Size:' <size> CRLF
  *    CRLF
@@ -51,8 +51,12 @@ import org.codehaus.groovy.tools.GroovyStarter;
  *     <classpath>.. is the value of environment variable CLASSPATH(optional).
  *     CRLF is carridge return (0x0d ^M) and line feed (0x0a, '\n').
  *     <data from STDIN> is byte sequence from standard input.
+ *
+ *     <status> is exit status of invoked groovy script.
  *     <id> is 'o' or 'e', where 'o' means standard output of the program.
  *          'e' means standard error of the program.
+ *     <size> is the size of chunk.
+ *     <data from STDIN> is byte sequence from standard output/error.
  *     
  * </pre>
  *
