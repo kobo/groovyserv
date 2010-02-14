@@ -5,7 +5,7 @@ require 'socket'
 DESTPORT=1961
 
 s = TCPSocket.open("localhost", DESTPORT)
-s.puts("Cwd: .")
+s.puts("Cwd: "+Dir::getwd)
 ARGV.each {|it|
   s.puts("Arg: "+it)
 }
@@ -23,6 +23,9 @@ end
 
 begin
   headers = readHeaders(s)
+  if (headers['Status'] != nil) then
+    exit(headers['Status'].to_i)
+  end
   data = s.read(headers['Size'].to_i)
   if (data != nil) then
     print data

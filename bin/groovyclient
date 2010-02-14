@@ -30,3 +30,4 @@ while [ "$stat" = "$SERVER_NOT_RUNNING" ]; do
   `dirname $0`/groovyclient.exe "$@"
   stat=$?
 done
+exit $stat
