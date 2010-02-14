@@ -13,7 +13,7 @@ s.puts("")
 
 def readHeaders(soc)
   headers={}
-  while (line = soc.gets) != "\n"
+  while (line = soc.gets) != nil && line != "\n"
     chomp line
     /([A-Za-z]*): (.*)/ =~ line
     headers[$1]=$2;
@@ -21,9 +21,13 @@ def readHeaders(soc)
   headers
 end
 
-headers = readHeaders(s)
-data = s.read(headers['Size'].to_i)
-print data
+begin
+  headers = readHeaders(s)
+  data = s.read(headers['Size'].to_i)
+  if (data != nil) then
+    print data
+  end
+end while data != nil
 
 s.close
 
