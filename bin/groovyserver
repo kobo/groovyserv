@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright 2010- the original author or authors.
+# Copyright 2009-2010 the original author or authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -57,8 +57,6 @@ fi
 
 GROOVYSERV_HOME=`dirname $0`/..
 
-CP=$GROOVYSERV_HOME/lib/groovyserv-0.1-SNAPSHOT.jar:$GROOVYSERV_HOME/lib/jna-3.2.2.jar
-
 # OS specific support (must be 'true' or 'false').
 cygwin=false
 msys=false
@@ -83,12 +81,28 @@ if $cygwin ; then
   CP=`cygpath --path --mixed "$CP"`
 fi
 
-$GROOVY_HOME/bin/groovy -cp $CP $OPT -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)" "$@" &
+CP=$GROOVYSERV_HOME/lib/groovyserv-0.1-SNAPSHOT.jar:$GROOVYSERV_HOME/lib/jna-3.2.2.jar
+
+# $GROOVY_HOME/bin/groovy -cp $CP $OPT -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)" -- "$@" &
+
+$GROOVY_HOME/bin/groovy -cp $GROOVYSERV_HOME/target/classes:$CP $OPT -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)" -- "$@" &
+
 
 pid=$!
 
+SERVER_NOT_RUNNING=201
+
+`dirname $0`/groovyclient.exe "$@"
+stat=$?
+while [ "$stat" = "$SERVER_NOT_RUNNING" ]; do
+  `dirname $0`/groovyclient.exe "$@"
+  stat=$?
+done
+
 if ps -p $pid | grep $pid > /dev/null; then
   echo $pid > ~/.groovy/groovyserver/pid
+else
+  exit
 fi
 
 echo "groovy server $pid is successfully started."

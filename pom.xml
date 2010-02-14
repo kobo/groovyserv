@@ -48,6 +48,8 @@
         <artifactId>gmaven-plugin</artifactId>
         <version>1.0-rc-3</version>
         <executions>
+
+<!--
           <execution>
             <id>test</id>
             <phase>test</phase>
@@ -58,12 +60,15 @@
               <source>${pom.basedir}/src/test/groovy/org/jggug/kobo/groovyserv/runtest.groovy</source>
             </configuration>
           </execution>
-
+-->
           <execution>
+<!--
             <id>compile</id>
             <phase>compile</phase>
+-->
             <goals>
               <goal>compile</goal>
+              <goal>testCompile</goal>
             </goals>
           </execution>
         </executions>
@@ -134,6 +139,7 @@
         </configuration>
       </plugin>
 
+      <!--
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
@@ -143,7 +149,7 @@
           </additionalClasspathElements>
         </configuration>
       </plugin>
-
+      -->
 
     </plugins>
   </build>
