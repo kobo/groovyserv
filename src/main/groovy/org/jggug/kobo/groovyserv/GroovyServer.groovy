@@ -108,12 +108,40 @@ class GroovyServer implements Runnable {
 	}
 	
 	def soc
-	
-	def changeDir(headers) {
-		def currentDir = headers[HEADER_CURRENT_WORKING_DIR][0]
-		System.setProperty('user.dir', currentDir)
-		PlatformMethods.chdir(currentDir)
+
+    static Thread dirOwner
+	def changeDir(currentDir) {
+      if (System.getProperty('user.dir') != currentDir) {
+        synchronized (GroovyServer.class) {
+          if (dirOwner != null && dirOwner != Thread.currentThread()) {
+            throw new GroovyServerException("Can't change current directory because of another session running on different dir: "+currentDir);
+          }
+          else {
+            System.setProperty('user.dir', currentDir)
+            dirOwner = Thread.currentThread()
+            PlatformMethods.chdir(currentDir)
+            addClasspath(currentDir)
+          }
+        }
+      }
 	}
+  
+    def addClasspath(classpath) {
+      def cp = System.getProperty("groovy.classpath")
+      if (cp == null || cp == "") {
+        System.setProperty("groovy.classpath", classpath);
+      }
+      else {
+        def pathes = cp.split(File.pathSeparator) as List
+        def pathToAdd = ""
+        classpath.split(File.pathSeparator).reverseEach {
+          if (!(pathes as List).contains(it)) {
+            pathToAdd = (it + File.pathSeparator + pathToAdd)
+          }
+        }
+        System.setProperty("groovy.classpath", pathToAdd + cp);
+      }
+    }
 	
 	def setupStandardStreams(ins, outs) {
 		System.setIn(new MultiplexedInputStream(ins));
@@ -124,40 +152,38 @@ class GroovyServer implements Runnable {
 	void run() {
 		try {
 			soc.withStreams { ins, outs ->
-				Map<String, List<String>> headers = readHeaders(ins);
+              try {
+                setupStandardStreams(ins, outs);
+                Map<String, List<String>> headers = readHeaders(ins);
 				
-				if (System.getProperty("groovyserver.verbose") == "true") {
-					headers.each {k,v ->
-						originalErr.println " $k = $v"
-					}
-				}
-				
-				changeDir(headers);
-				setupStandardStreams(ins, outs);
-				
-				try {
-					List args = headers[HEADER_ARG];
-					for (Iterator<String> it = headers[HEADER_ARG].iterator(); it.hasNext(); ) {
-						String s = it.next();
-						if (s == "-cp") {
-							it.remove();
-							String classpath = it.next();
-							System.setProperty("groovy.classpath", classpath);
-							it.remove();
-						}
-					}
-					GroovyMain2.main(args as String[])
-				}
-				catch (ExitException e) {
-					// GroovyMain2 throws ExitException when
-					// it catches ExitException.
-					outs.write((HEADER_STATUS+": "+e.exitStatus+ "\n").bytes);
-					outs.write("\n".bytes);
-				}
-				catch (Throwable t) {
-					t.printStackTrace(originalErr)
-					t.printStackTrace(System.err)
-				}
+                if (System.getProperty("groovyserver.verbose") == "true") {
+                  headers.each {k,v ->
+                    originalErr.println " $k = $v"
+                  }
+                }
+                changeDir(headers[HEADER_CURRENT_WORKING_DIR][0]);
+                List args = headers[HEADER_ARG];
+                for (Iterator<String> it = headers[HEADER_ARG].iterator(); it.hasNext(); ) {
+                  String s = it.next();
+                  if (s == "-cp") {
+                    it.remove();
+                    String classpath = it.next();
+                    addClasspath(classpath);
+                    it.remove();
+                  }
+                }
+				GroovyMain2.main(args as String[])
+              }
+              catch (ExitException e) {
+                // GroovyMain2 throws ExitException when
+                // it catches ExitException.
+                outs.write((HEADER_STATUS+": "+e.exitStatus+ "\n").bytes);
+                outs.write("\n".bytes);
+              }
+              catch (Throwable t) {
+                t.printStackTrace(originalErr)
+				t.printStackTrace(System.err)
+              }
 			}
 		}
 		finally {
@@ -197,7 +223,9 @@ class GroovyServer implements Runnable {
 				// by thread instance. In the other words, threads can't be pooled.
 				// So this 'new Thread()' is nesessary.
 				//
-				worker = new Thread(new GroovyServer(soc:soc), "worker").start()
+				worker = new Thread(new GroovyServer(soc:soc));
+                worker.start()
+                originalErr.println("new Worker Thread="+worker)
 			}
 			else {
 				System.err.println("allow connection from loopback address only")
