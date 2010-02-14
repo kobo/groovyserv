@@ -10,18 +10,33 @@
 	  <directory>bin</directory>
 	  <outputDirectory>/bin</outputDirectory>
       <includes>
-        <include>groovyserver.bat</include>
-        <include>groovyserver.sh</include>
+        <include>groovyclient</include>
+        <include>groovyclient.exe</include>
+        <include>groovyserver</include>
       </includes>
+      <fileMode>755</fileMode>
     </fileSet>
 
     <fileSet>
 	  <directory>target</directory>
 	  <outputDirectory>/lib</outputDirectory>
       <includes>
-		<include>groovyserv-server-*-SNAPSHOT.jar</include>
+		<include>groovyserv-*-SNAPSHOT.jar</include>
       </includes>
     </fileSet>
-
   </fileSets>
+
+  <dependencySets>
+    <dependencySet>
+      <unpack>false</unpack>
+      <scope>runtime</scope>
+      <outputDirectory>/lib</outputDirectory>
+
+      <includes>
+		<include>net.java.dev.jna:*</include>
+      </includes>
+    </dependencySet>
+  </dependencySets>
+
+
 </assembly>
