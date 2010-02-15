@@ -15,7 +15,7 @@ class ExitTest extends GroovyTestCase {
     def cmd = """bin${FS}groovyclient.exe -e "System.exit(1)" """
     Process p = cmd.execute();
     p.waitFor();
-    if (p.exitValue() == 201) {
+    if (p.exitValue() == 15) {
       assert false : "server may not be running"
     }
     assert p.exitValue() == 1
@@ -25,18 +25,18 @@ class ExitTest extends GroovyTestCase {
     def cmd = """bin${FS}groovyclient.exe -e "System.exit(33)" """
     Process p = cmd.execute();
     p.waitFor();
-    if (p.exitValue() == 201) {
+    if (p.exitValue() == 15) {
       assert false : "server may not be running"
     }
     assert p.exitValue() == 33
   }
 
-  void testExit201() {
-    def cmd = """bin${FS}groovyclient.exe -e "System.exit(201)" """
-    // 201 is reserverd value.
+  void testExit15() {
+    def cmd = """bin${FS}groovyclient.exe -e "System.exit(15)" """
+    // 15 is reserverd value.
     Process p = cmd.execute();
     p.waitFor();
-    if (p.exitValue() == 201) {
+    if (p.exitValue() == 15) {
       assert false : "server may not be running"
     }
     assert p.exitValue() == 1

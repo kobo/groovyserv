@@ -54,7 +54,7 @@ const int LF = 0x0a;
 #define MAX_HEADER_VALUE_LEN 512
 #define MAX_HEADER 10
 
-#define SERVER_NOT_RUNNING 201
+#define SERVER_NOT_RUNNING 15
 
 struct header_t {
   char key[MAX_HEADER_KEY_LEN+1];

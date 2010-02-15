@@ -89,13 +89,13 @@ $GROOVY_HOME/bin/groovy -cp $GROOVYSERV_HOME/target/classes:$CP $OPT -e "org.jgg
 
 pid=$!
 
-SERVER_NOT_RUNNING=201
+SERVER_NOT_RUNNING=15
 
-`dirname $0`/groovyclient.exe -h "$@" > /dev/null
+`dirname $0`/groovyclient.exe -e "println 'RUOK?'" "$@" > /dev/null
 stat=$?
 while [ "$stat" = "$SERVER_NOT_RUNNING" ]; do
   sleep 1
-  `dirname $0`/groovyclient.exe -h "$@" > /dev/null
+  `dirname $0`/groovyclient.exe  -e "println 'RUOK?'" "$@" > /dev/null
   stat=$?
 done
 
