@@ -1,3 +1,5 @@
+package org.jggug.kobo.groovyserv
+
 import org.jggug.kobo.groovyserv.*;
 import junit.textui.TestRunner;
 import junit.framework.*

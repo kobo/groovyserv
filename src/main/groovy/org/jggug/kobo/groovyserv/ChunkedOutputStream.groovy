@@ -58,7 +58,7 @@ class ChunkedOutputStream extends OutputStream {
       GroovyServer.originalErr.println("size="+len);
       Dump.dump(GroovyServer.originalErr, b, off, len);
     }
-    GroovyServer.originalErr.println("TID="+Thread.currentThread().id);
+    //GroovyServer.originalErr.println("TID="+Thread.currentThread().id);
     outs.write((HEADER_STREAM_ID+": "+streamIdentifier+ "\n").bytes);
     outs.write((HEADER_CHUNK_SIZE+": " + len+"\n").bytes);
     outs.write("\n".bytes);

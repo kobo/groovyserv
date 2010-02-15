@@ -8,9 +8,9 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.jggug.kobo.groovyserv</groupId>
-  <artifactId>groovyserv-server</artifactId>
+  <artifactId>groovyserv</artifactId>
   <name>GroovyServer Project</name>
-  <version>0.9-SNAPSHOT</version>
+  <version>0.1-SNAPSHOT</version>
 
   <dependencies>
     <dependency>
@@ -32,6 +32,12 @@
       <version>1.2</version>
     </dependency> 
 
+    <dependency>
+      <groupId>net.java.dev.jna</groupId>
+      <artifactId>jna</artifactId>
+      <version>3.2.2</version>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -42,14 +48,28 @@
         <artifactId>gmaven-plugin</artifactId>
         <version>1.0-rc-3</version>
         <executions>
+
+<!--
           <execution>
-			<phase>test</phase>
+            <id>test</id>
+            <phase>test</phase>
             <goals>
               <goal>execute</goal>
             </goals>
             <configuration>
               <source>${pom.basedir}/src/test/groovy/org/jggug/kobo/groovyserv/runtest.groovy</source>
             </configuration>
+          </execution>
+-->
+          <execution>
+<!--
+            <id>compile</id>
+            <phase>compile</phase>
+-->
+            <goals>
+              <goal>compile</goal>
+              <goal>testCompile</goal>
+            </goals>
           </execution>
         </executions>
       </plugin>
@@ -69,7 +89,7 @@
         <artifactId>exec-maven-plugin</artifactId>
         <executions>
           <execution>
-			<id>gcc-compile</id>
+            <id>gcc-compile</id>
             <phase>compile</phase>
             <goals>
               <goal>exec</goal>
@@ -87,7 +107,7 @@
 
 <!--
           <execution>
-			<id>test</id>
+            <id>test</id>
             <phase>test</phase>
             <goals>
               <goal>exec</goal>
@@ -119,6 +139,7 @@
         </configuration>
       </plugin>
 
+      <!--
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
@@ -128,7 +149,7 @@
           </additionalClasspathElements>
         </configuration>
       </plugin>
-
+      -->
 
     </plugins>
   </build>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2009 the original author or authors.
+ * Copyright 2009-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@
 #include <sys/uio.h>
 #include <sys/param.h>
 #include <unistd.h>
+#include <signal.h>
 
 #if defined(__CYGWIN__)
 #include <sys/cygwin.h>
@@ -39,6 +40,7 @@
 /* request headers */
 const char * const HEADER_KEY_CURRENT_WORKING_DIR = "Cwd";
 const char * const HEADER_KEY_ARG = "Arg";
+const char * const HEADER_KEY_CP = "Cp";
 
 /* response headers */
 const char * const HEADER_KEY_CHANNEL = "Channel";
@@ -93,8 +95,9 @@ int open_socket(char* server_name, int server_port) {
 
 /*
  * send_header.
- * Send header information include current working direcotry and
- * command line arguments to the server.
+ * Send header information which includes current working direcotry,
+ * command line arguments, and CLASSPATH environment variable
+ * to the server.
  */
 void send_header(int fd, int argn, char** argv) {
   char read_buf[BUFFER_SIZE];
@@ -119,6 +122,12 @@ void send_header(int fd, int argn, char** argv) {
   // send command line arguments.
   for (i=1; i<argn; i++) {
     p += sprintf(p, "%s: %s\n", HEADER_KEY_ARG, argv[i]);
+    // TODO: check buffer overrrun
+  }
+
+  char* cp = getenv("CLASSPATH");
+  if (cp != NULL && *cp != '\0') {
+    p += sprintf(p, "%s: %s\n", HEADER_KEY_CP, cp);
     // TODO: check buffer overrrun
   }
 

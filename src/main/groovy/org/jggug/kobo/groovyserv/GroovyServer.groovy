@@ -14,10 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jggug.kobo.groovyserv
+package org.jggug.kobo.groovyserv;
 
 import org.codehaus.groovy.tools.shell.util.NoExitSecurityManager;
-//import groovy.ui.GroovyMain;
 import org.codehaus.groovy.tools.GroovyStarter;
 
 
@@ -25,189 +24,207 @@ import org.codehaus.groovy.tools.GroovyStarter;
  * GroovyServer runs groovy command background.
  * This makes groovy response time at startup very quicker.
  *
- * Communication Protocol summary:
+ * Protocol summary:
  * <pre>
- * [Client -> Server]
+ * Request ::= InvocationRequest
+ * Response ::= StreamResponse
  *
- * Initiation
+ * InvocationRequest ::=
+ *    'Cwd:' <cwd> CRLF
+ *    'Arg:' <argn> CRLF
+ *    'Arg:' <arg1> CRLF
+ *    'Arg:' <arg2> CRLF
+ *    'Cp:' <classpath> CRLF
+ *    CRLF
+ *    <data from STDIN>
  *
- *    INITIATE<CR><LF>
- *    Cwd: <cwd><CR><LF>
- *    Arg: <argn><CR><LF>
- *    Arg: <arg1><CR><LF>
- *    Arg: <arg2><CR><LF>
- *    <CR><LF>
- *    <data from stdin><EOF>
+ * StreamResponse ::=
+ *    'Status:' <status> CRLF
+ *    'Channel:' <id> CRLF
+ *    'Size:' <size> CRLF
+ *    CRLF
+ *    <data for STDERR/STDOUT>
+ *  
  *
- *    where
  *     <cwd> is current working directory.
- *     <argn> is number of given commandline arguments
- *            for groovy command.
- *     <arg1><arg2>.. are commandline arguments.
- *     <CR> is carridge return (0x0d ^M).
- *     <LF> is line feed (0x0a, '\n').
- *     <data from stdin> is byte sequence from standard input.
+ *     <arg1><arg2>.. are commandline arguments(optional).
+ *     <classpath>.. is the value of environment variable CLASSPATH(optional).
+ *     CRLF is carridge return (0x0d ^M) and line feed (0x0a, '\n').
+ *     <data from STDIN> is byte sequence from standard input.
  *
- * Heartbeat
- *    HEARTBEAT<CR><LF>
- *    Status: <CR><LF>
- *
- * [Server -> Client]
- *
- * Stream
- *
- *    STREAM<CR><LF>
- *    Channel: <id><CR><LF>
- *    Size: <size><CR><LF>
- *    ... chunk data(size bytes) ....
- *    
- *    where <id> is 'o' / 'e'.
- *               'o' means standard output of the program.
- *               'e' means standard error of the program.
- *
- * Exit
- *
- *    EXIT<CR><LF>
- *    Satus: <status><CR><LF>
- *
+ *     <status> is exit status of invoked groovy script.
+ *     <id> is 'o' or 'e', where 'o' means standard output of the program.
+ *          'e' means standard error of the program.
+ *     <size> is the size of chunk.
+ *     <data from STDIN> is byte sequence from standard output/error.
+ *     
  * </pre>
  *
  * @author UEHARA Junji
  */
 class GroovyServer implements Runnable {
+	
+	final static String HEADER_CURRENT_WORKING_DIR = "Cwd";
+	final static String HEADER_ARG = "Arg";
+	final static String HEADER_CP = "Cp";
+	final static String HEADER_STATUS = "Status";
+	final static int DEFAULT_PORT = 1961
+	
+	final int CR = 0x0d
+	final int LF = 0x0a
+	
+	static BufferedInputStream originalIn = System.in
+	static OutputStream originalOut = System.out
+	static OutputStream originalErr = System.err
+	
+	Map<String, List<String>> readHeaders(ins) {
+		BufferedReader bis = new BufferedReader(new InputStreamReader(ins))
+		
+		def result = [:]
+		def line
+		while ((line = bis.readLine()) != "") {
+			def kv = line.split(':', 2);
+			def key = kv[0]
+			def value = kv[1]
+			if (!result.containsKey(key)) {
+				result[key] = []
+			}
+			if (value.charAt(0) == ' ') {
+				value = value.substring(1);
+			}
+			result[key] += value
+		}
+		result
+	}
+	
+	def soc
 
-  final static String HEADER_CURRENT_WORKING_DIR = "Cwd";
-  final static String HEADER_ARG = "Arg";
-  final static String HEADER_STATUS = "Status";
-  final static int DEFAULT_PORT = 1961
-
-  final int CR = 0x0d
-  final int LF = 0x0a
-
-  static BufferedInputStream originalIn = System.in
-  static OutputStream originalOut = System.out
-  static OutputStream originalErr = System.err
-
-  Map<String, List<String>> readHeaders(ins) {
-    BufferedReader bis = new BufferedReader(new InputStreamReader(ins))
-
-    def result = [:]
-    def line
-    while ((line = bis.readLine()) != "") {
-      def kv = line.split(':', 2);
-      def key = kv[0]
-      def value = kv[1]
-      if (!result.containsKey(key)) {
-        result[key] = []
-      }
-      if (value.charAt(0) == ' ') {
-        value = value.substring(1);
-      }
-      result[key] += value
-    }
-    result
-  }
-
-  def soc
-
-  void run() {
-    try {
-      soc.withStreams { ins, outs ->
-        Map<String, List<String>> headers = readHeaders(ins);
-
-        if (Boolean.valueOf(System.getProperty("groovyserver.verbose"))) {
-          headers.each {k,v ->
-            originalErr.println " $k = $v"
+    static Thread dirOwner
+	def changeDir(currentDir) {
+      if (System.getProperty('user.dir') != currentDir) {
+        synchronized (GroovyServer.class) {
+          if (dirOwner != null && dirOwner != Thread.currentThread()) {
+            throw new GroovyServerException("Can't change current directory because of another session running on different dir: "+currentDir);
+          }
+          else {
+            System.setProperty('user.dir', currentDir)
+            dirOwner = Thread.currentThread()
+            PlatformMethods.chdir(currentDir)
+            addClasspath(currentDir)
           }
         }
-
-        def currentDir = headers[HEADER_CURRENT_WORKING_DIR][0]
-        System.setProperty('user.dir', currentDir)
-        PlatformMethods.chdir(currentDir)
-
-        System.setIn(new MultiplexedInputStream(ins));
-        System.setOut(new PrintStream(new ChunkedOutputStream(outs, 'o' as char)));
-        System.setErr(new PrintStream(new ChunkedOutputStream(outs, 'e' as char)));
-
-        try {
-          List args = headers[HEADER_ARG];
-          for (Iterator<String> it = headers[HEADER_ARG].iterator(); it.hasNext(); ) {
-            String s = it.next();
-            if (s == "-cp") {
-              it.remove();
-              String classpath = it.next();
-              System.setProperty("groovy.classpath", classpath);
-              it.remove();
-            }
-          }
-          GroovyMain2.main(args as String[])
-        }
-        catch (ExitException e) {
-          //TODO: to catch ExitException correctly,
-          // you must control SecurityException handling deeply.
-          // Because GroovyMain catches SeurityException in it.
-          outs.write((HEADER_STATUS+": "+e.exitStatus+ "\n").bytes);
-          outs.write("\n".bytes);
-        }
-        catch (Throwable t) {
-          t.printStackTrace(originalErr)
-          t.printStackTrace(System.err)
-        }
       }
-    }
-    finally {
-      if (Boolean.valueOf(System.getProperty("groovyserver.verbose"))) {
-        originalErr.println("socket close")
-      }
-      soc.close()
-    }
-  }
-
-  static void main(String[] args) {
-
-    def port = DEFAULT_PORT;
-    // TODO: specify port number with commandline option.
-    // But command line include options are pass to
-    // original groovy command tranparently. So
-    // special option is not good idea(in future,
-    // it could conflict to groovy's options).
-    // I hope original groovy support like "groovy -s(erver) port"
-    // to "run as server" option :).
-
-    if (System.getProperty('groovy.server.port') != null) {
-      port = Integer.parseInt(System.getProperty('groovy.server.port'))
-    }
-
-    System.setProperty('groovy.runningmode', "server")
-
-    System.setSecurityManager(new NoExitSecurityManager2());
-
-    def serverSocket = new ServerSocket(port)
-
-    Thread worker = null;
-    while (true) {
-      def soc = serverSocket.accept()
-
-      if (soc.localSocketAddress.address.isLoopbackAddress()) {
-        if (Boolean.valueOf(System.getProperty("groovyserver.verbose"))) {
-          originalErr.println "accept soc="+soc
-        }
-
-        // Now, create new thraed for each connections.
-        // Don't use ExecutorService or any thread pool system.
-        // Because the System.in/out/err streams are used distinctly
-        // by thread instance.
-        // So 'new Thread()' is nesessary.
-        // (moreover, new Thread created in script can't handle
-        // System.in/out/err correctly.)
-        //
-        worker = new Thread(new GroovyServer(soc:soc), "worker").start()
+	}
+  
+    def addClasspath(classpath) {
+      def cp = System.getProperty("groovy.classpath")
+      if (cp == null || cp == "") {
+        System.setProperty("groovy.classpath", classpath);
       }
       else {
-        System.err.println("allow connection from loopback address only")
+        def pathes = cp.split(File.pathSeparator) as List
+        def pathToAdd = ""
+        classpath.split(File.pathSeparator).reverseEach {
+          if (!(pathes as List).contains(it)) {
+            pathToAdd = (it + File.pathSeparator + pathToAdd)
+          }
+        }
+        System.setProperty("groovy.classpath", pathToAdd + cp);
       }
     }
-  }
+	
+	def setupStandardStreams(ins, outs) {
+		System.setIn(new MultiplexedInputStream(ins));
+		System.setOut(new PrintStream(new ChunkedOutputStream(outs, 'o' as char)));
+		System.setErr(new PrintStream(new ChunkedOutputStream(outs, 'e' as char)));
+	}
+	
+	void run() {
+		try {
+			soc.withStreams { ins, outs ->
+              try {
+                setupStandardStreams(ins, outs);
+                Map<String, List<String>> headers = readHeaders(ins);
+				
+                if (System.getProperty("groovyserver.verbose") == "true") {
+                  headers.each {k,v ->
+                    originalErr.println " $k = $v"
+                  }
+                }
+                changeDir(headers[HEADER_CURRENT_WORKING_DIR][0]);
 
+                if (headers[HEADER_CP] != null) {
+                  addClasspath(headers[HEADER_CP][0]);
+                }
+
+                List args = headers[HEADER_ARG];
+                for (Iterator<String> it = headers[HEADER_ARG].iterator(); it.hasNext(); ) {
+                  String s = it.next();
+                  if (s == "-cp") {
+                    it.remove();
+                    String classpath = it.next();
+                    addClasspath(classpath);
+                    it.remove();
+                  }
+                }
+				GroovyMain2.main(args as String[])
+              }
+              catch (ExitException e) {
+                // GroovyMain2 throws ExitException when
+                // it catches ExitException.
+                outs.write((HEADER_STATUS+": "+e.exitStatus+ "\n").bytes);
+                outs.write("\n".bytes);
+              }
+              catch (Throwable t) {
+                t.printStackTrace(originalErr)
+				t.printStackTrace(System.err)
+              }
+			}
+		}
+		finally {
+			if (System.getProperty("groovyserver.verbose") == "true") {
+				originalErr.println("socket close")
+			}
+			soc.close()
+		}
+	}
+	
+	static void main(String[] args) {
+		
+		def port = DEFAULT_PORT;
+		
+		if (System.getProperty('groovy.server.port') != null) {
+			port = Integer.parseInt(System.getProperty('groovy.server.port'))
+		}
+		
+		System.setProperty('groovy.runningmode', "server")
+		
+		System.setSecurityManager(new NoExitSecurityManager2());
+		
+		def serverSocket = new ServerSocket(port)
+		
+		Thread worker = null;
+		while (true) {
+			def soc = serverSocket.accept()
+			
+			if (soc.localSocketAddress.address.isLoopbackAddress()) {
+				if (System.getProperty("groovyserver.verbose") == "true") {
+					originalErr.println "accept soc="+soc
+				}
+				
+				// Create new thraed for each connections.
+				// Here, don't use ExecutorService or any thread pool system.
+				// Because the System.(in/out/err) streams are used distinctly
+				// by thread instance. In the other words, threads can't be pooled.
+				// So this 'new Thread()' is nesessary.
+				//
+				worker = new Thread(new GroovyServer(soc:soc));
+                worker.start()
+			}
+			else {
+				System.err.println("allow connection from loopback address only")
+			}
+		}
+	}
 }
 
