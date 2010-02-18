@@ -64,11 +64,11 @@ import org.codehaus.groovy.tools.GroovyStarter;
  */
 class GroovyServer implements Runnable {
 	
-	final static String HEADER_CURRENT_WORKING_DIR = "Cwd";
-	final static String HEADER_ARG = "Arg";
-	final static String HEADER_CP = "Cp";
-	final static String HEADER_STATUS = "Status";
-	final static int DEFAULT_PORT = 1961
+  final static String HEADER_CURRENT_WORKING_DIR = "Cwd";
+  final static String HEADER_ARG = "Arg";
+  final static String HEADER_CP = "Cp";
+  final static String HEADER_STATUS = "Status";
+  final static int DEFAULT_PORT = 1961
 	
 	final int CR = 0x0d
 	final int LF = 0x0a
@@ -78,153 +78,169 @@ class GroovyServer implements Runnable {
 	static OutputStream originalErr = System.err
 	
 	Map<String, List<String>> readHeaders(ins) {
-		BufferedReader bis = new BufferedReader(new InputStreamReader(ins))
+      BufferedReader bis = new BufferedReader(new InputStreamReader(ins))
 		
-		def result = [:]
-		def line
-		while ((line = bis.readLine()) != "") {
-			def kv = line.split(':', 2);
-			def key = kv[0]
-			def value = kv[1]
-			if (!result.containsKey(key)) {
-				result[key] = []
-			}
-			if (value.charAt(0) == ' ') {
-				value = value.substring(1);
-			}
-			result[key] += value
-		}
-		result
+      def result = [:]
+      def line
+      while ((line = bis.readLine()) != "") {
+        def kv = line.split(':', 2);
+        def key = kv[0]
+        def value = kv[1]
+        if (!result.containsKey(key)) {
+          result[key] = []
+        }
+        if (value.charAt(0) == ' ') {
+          value = value.substring(1);
+        }
+        result[key] += value
+      }
+      result
 	}
 	
 	def soc
 
-    static Thread dirOwner
-	def changeDir(currentDir) {
-      if (System.getProperty('user.dir') != currentDir) {
-        synchronized (GroovyServer.class) {
-          if (dirOwner != null && dirOwner != Thread.currentThread()) {
-            throw new GroovyServerException("Can't change current directory because of another session running on different dir: "+currentDir);
-          }
-          else {
-            System.setProperty('user.dir', currentDir)
-            dirOwner = Thread.currentThread()
-            PlatformMethods.chdir(currentDir)
-            addClasspath(currentDir)
-          }
-        }
-      }
-	}
+  static Thread dirOwner
+
+  def changeDir(currentDir) {
+println "currentDir="+currentDir
+    if (System.getProperty('user.dir') != currentDir) {
+      System.setProperty('user.dir', currentDir)
+      dirOwner = Thread.currentThread()
+      PlatformMethods.chdir(currentDir)
+      addClasspath(currentDir)
+    }
+  }
   
-    def addClasspath(classpath) {
-      def cp = System.getProperty("groovy.classpath")
-      if (cp == null || cp == "") {
-        System.setProperty("groovy.classpath", classpath);
-      }
-      else {
-        def pathes = cp.split(File.pathSeparator) as List
-        def pathToAdd = ""
-        classpath.split(File.pathSeparator).reverseEach {
-          if (!(pathes as List).contains(it)) {
-            pathToAdd = (it + File.pathSeparator + pathToAdd)
-          }
+  def addClasspath(classpath) {
+    def cp = System.getProperty("groovy.classpath")
+    if (cp == null || cp == "") {
+      System.setProperty("groovy.classpath", classpath);
+    }
+    else {
+      def pathes = cp.split(File.pathSeparator) as List
+      def pathToAdd = ""
+      classpath.split(File.pathSeparator).reverseEach {
+        if (!(pathes as List).contains(it)) {
+          pathToAdd = (it + File.pathSeparator + pathToAdd)
         }
-        System.setProperty("groovy.classpath", pathToAdd + cp);
+      }
+      System.setProperty("groovy.classpath", pathToAdd + cp);
+    }
+  }
+	
+  def setupStandardStreams(ins, outs) {
+    System.setIn(new MultiplexedInputStream(ins));
+    System.setOut(new PrintStream(new ChunkedOutputStream(outs, 'o' as char)));
+    System.setErr(new PrintStream(new ChunkedOutputStream(outs, 'e' as char)));
+  }
+
+  void process(headers) {
+    if (headers[HEADER_CP] != null) {
+      addClasspath(headers[HEADER_CP][0]);
+    }
+
+    List args = headers[HEADER_ARG];
+    for (Iterator<String> it = headers[HEADER_ARG].iterator(); it.hasNext(); ) {
+      String s = it.next();
+      if (s == "-cp") {
+        it.remove();
+        String classpath = it.next();
+        addClasspath(classpath);
+        it.remove();
       }
     }
+    GroovyMain2.main(args as String[])
+  }
+
+  void checkHeaders(headers) {
+    assert headers[HEADER_CURRENT_WORKING_DIR] != null &&
+       headers[HEADER_CURRENT_WORKING_DIR][0]
+  }
 	
-	def setupStandardStreams(ins, outs) {
-		System.setIn(new MultiplexedInputStream(ins));
-		System.setOut(new PrintStream(new ChunkedOutputStream(outs, 'o' as char)));
-		System.setErr(new PrintStream(new ChunkedOutputStream(outs, 'e' as char)));
-	}
-	
-	void run() {
-		try {
-			soc.withStreams { ins, outs ->
-              try {
-                setupStandardStreams(ins, outs);
-                Map<String, List<String>> headers = readHeaders(ins);
+  void run() {
+    try {
+      soc.withStreams { ins, outs ->
+        try {
+          setupStandardStreams(ins, outs);
+          Map<String, List<String>> headers = readHeaders(ins);
 				
-                if (System.getProperty("groovyserver.verbose") == "true") {
-                  headers.each {k,v ->
-                    originalErr.println " $k = $v"
-                  }
-                }
-                changeDir(headers[HEADER_CURRENT_WORKING_DIR][0]);
+          if (System.getProperty("groovyserver.verbose") == "true") {
+            headers.each {k,v ->
+              originalErr.println " $k = $v"
+            }
+          }
+          checkHeaders(headers)
+          if (System.getProperty('user.dir')
+              != headers[HEADER_CURRENT_WORKING_DIR][0]) {
+originalErr.println "synchronized"
+            synchronized (GroovyServer.class) {
+              changeDir(headers[HEADER_CURRENT_WORKING_DIR][0]);
+              process(headers);
+            }
+          }
+          else {
+            process(headers);
+          }
+        }
+        catch (ExitException e) {
+          // GroovyMain2 throws ExitException when
+          // it catches ExitException.
+          outs.write((HEADER_STATUS+": "+e.exitStatus+ "\n").bytes);
+          outs.write("\n".bytes);
+        }
+        catch (Throwable t) {
+          t.printStackTrace(originalErr)
+          t.printStackTrace(System.err)
+        }
+      }
+    }
+    finally {
+      synchronized (GroovyServer.class) {
+        dirOwner = null;
+      }
+      if (System.getProperty("groovyserver.verbose") == "true") {
+        originalErr.println("socket close")
+      }
+      soc.close()
+    }
+  }
 
-                if (headers[HEADER_CP] != null) {
-                  addClasspath(headers[HEADER_CP][0]);
-                }
-
-                List args = headers[HEADER_ARG];
-                for (Iterator<String> it = headers[HEADER_ARG].iterator(); it.hasNext(); ) {
-                  String s = it.next();
-                  if (s == "-cp") {
-                    it.remove();
-                    String classpath = it.next();
-                    addClasspath(classpath);
-                    it.remove();
-                  }
-                }
-				GroovyMain2.main(args as String[])
-              }
-              catch (ExitException e) {
-                // GroovyMain2 throws ExitException when
-                // it catches ExitException.
-                outs.write((HEADER_STATUS+": "+e.exitStatus+ "\n").bytes);
-                outs.write("\n".bytes);
-              }
-              catch (Throwable t) {
-                t.printStackTrace(originalErr)
-				t.printStackTrace(System.err)
-              }
-			}
-		}
-		finally {
-			if (System.getProperty("groovyserver.verbose") == "true") {
-				originalErr.println("socket close")
-			}
-			soc.close()
-		}
-	}
-	
-	static void main(String[] args) {
+  static void main(String[] args) {
 		
-		def port = DEFAULT_PORT;
+    def port = DEFAULT_PORT;
 		
-		if (System.getProperty('groovy.server.port') != null) {
-			port = Integer.parseInt(System.getProperty('groovy.server.port'))
-		}
+    if (System.getProperty('groovy.server.port') != null) {
+      port = Integer.parseInt(System.getProperty('groovy.server.port'))
+    }
 		
-		System.setProperty('groovy.runningmode', "server")
+    System.setProperty('groovy.runningmode', "server")
 		
-		System.setSecurityManager(new NoExitSecurityManager2());
+    System.setSecurityManager(new NoExitSecurityManager2());
 		
-		def serverSocket = new ServerSocket(port)
+    def serverSocket = new ServerSocket(port)
 		
-		Thread worker = null;
-		while (true) {
-			def soc = serverSocket.accept()
+    Thread worker = null;
+    while (true) {
+      def soc = serverSocket.accept()
 			
-			if (soc.localSocketAddress.address.isLoopbackAddress()) {
-				if (System.getProperty("groovyserver.verbose") == "true") {
-					originalErr.println "accept soc="+soc
-				}
+      if (soc.localSocketAddress.address.isLoopbackAddress()) {
+        if (System.getProperty("groovyserver.verbose") == "true") {
+          originalErr.println "accept soc="+soc
+        }
 				
-				// Create new thraed for each connections.
-				// Here, don't use ExecutorService or any thread pool system.
-				// Because the System.(in/out/err) streams are used distinctly
-				// by thread instance. In the other words, threads can't be pooled.
-				// So this 'new Thread()' is nesessary.
-				//
-				worker = new Thread(new GroovyServer(soc:soc));
-                worker.start()
-			}
-			else {
-				System.err.println("allow connection from loopback address only")
-			}
-		}
-	}
+        // Create new thraed for each connections.
+        // Here, don't use ExecutorService or any thread pool system.
+        // Because the System.(in/out/err) streams are used distinctly
+        // by thread instance. In the other words, threads can't be pooled.
+        // So this 'new Thread()' is nesessary.
+        //
+        worker = new Thread(new GroovyServer(soc:soc));
+        worker.start()
+      }
+      else {
+        System.err.println("allow connection from loopback address only")
+      }
+    }
+  }
 }
 
