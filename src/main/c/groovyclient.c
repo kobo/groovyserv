@@ -26,6 +26,8 @@
 #include <sys/param.h>
 #include <unistd.h>
 #include <signal.h>
+#include <sys/errno.h>
+#include <sys/stat.h>
 
 #if defined(__CYGWIN__)
 #include <sys/cygwin.h>
@@ -87,8 +89,11 @@ int open_socket(char* server_name, int server_port) {
     exit(1);
   }
   if (connect(fd, (struct sockaddr *)&server, sizeof(server)) < 0) {
-    //    perror("connect");
-    exit(SERVER_NOT_RUNNING);
+    if (errno = ECONNREFUSED) {
+      return -1;
+    }
+    perror("connect");
+    exit(1);
   }
   return fd;
 }
@@ -178,7 +183,6 @@ int read_headers(FILE* soc_stream, struct header_t headers[], int header_buf_siz
   while (1) {
     p = fgets(read_buf, BUFFER_SIZE, soc_stream);
     if (p == NULL) {
-      //      return -1;
       return 0;
     }
     if (*p == CR) {
@@ -307,9 +311,6 @@ int session(int fd)
       if (FD_ISSET(fd, &read_set)){ /* socket */
         struct header_t headers[MAX_HEADER];
         int size = read_headers(soc_stream, headers, MAX_HEADER);
-        if (size == -1) {
-          return -1;
-        }
         if (size == 0) {
           continue;
         }
@@ -318,26 +319,23 @@ int session(int fd)
         char* status = find_header(headers, HEADER_KEY_STATUS, size);
         if (status != NULL) {
 		  int stat = atoi(status);
-		  if (stat == SERVER_NOT_RUNNING) { // ignore exit status.
-			exit(1);
-		  }
-          exit(stat);
+          return stat;
         }
 
         // Dispatch data from server to stdout/err.
         char* sid = find_header(headers, HEADER_KEY_CHANNEL, size);
         if (sid == NULL) {
           fprintf(stderr, "\nrequired header %s not found\n", HEADER_KEY_CHANNEL);
-          exit(1);
+          return 1;
         }
 
         char* chunk_size = find_header(headers, HEADER_KEY_SIZE, size);
         if (chunk_size == NULL) {
           fprintf(stderr, "\nrequired header %s not found\n", HEADER_KEY_SIZE);
-          exit(1);
+          return 1;
         }
         if (split_socket_output(soc_stream, sid, atoi(chunk_size)) == EOF) {
-          return;
+          return 0;
         }
       }
     }
@@ -354,6 +352,38 @@ static void signal_handler(int sig) {
   exit(0);
 }
 
+int is_exist_dir(const char* path) {
+  struct stat buf;
+  if (stat(path, &buf) == -1) {
+    if (errno == ENOENT) {
+      return 0;
+    }
+    perror("stat");
+    exit(1);
+  }
+  if (!S_ISDIR(buf.st_mode)) {
+    fprintf(stderr, "\npath %s is not directory.", path);
+    exit(1);
+  }
+  return 1;
+}
+
+void start_server(int argn, char** argv) {
+
+  char path[MAXPATHLEN];
+  sprintf(path, "%s/%s", getenv("HOME"), ".groovy");
+  if (!is_exist_dir(path)) {
+    system("mkdir ~/.groovy");
+  }
+  sprintf(path, "%s/%s", getenv("HOME"), ".groovy/groovyserver");
+  if (!is_exist_dir(path)) {
+    system("mkdir ~/.groovy/groovyserver");
+  }
+  system("groovyserver >> ~/.groovy/groovyserver/groovyserver.log 2>&1");
+  sleep(3);
+}
+
+static const char* const groovyclient_exe = "groovyclient.exe";
 
 /*
  * main.
@@ -361,13 +391,22 @@ static void signal_handler(int sig) {
  */
 int main(int argn, char** argv) {
   signal(SIGINT, signal_handler);
-  fd = open_socket(DESTSERV, DESTPORT);
-  if (fd == 0) {
-    return 1;
+
+  while ((fd = open_socket(DESTSERV, DESTPORT)) == -1) {
+    if (argn == 2 && strcmp(argv[1], "RUOK") == 0) {
+      exit(SERVER_NOT_RUNNING);
+    }
+    fprintf(stderr, "starting server..\n");
+    start_server(argn, argv);
+  }
+
+  if (argn == 2 && strcmp(argv[1], "RUOK") == 0) {
+    char *cmd_line[] = {argv[0], "-e", "println('RUOK?');"};
+    argv = cmd_line;
+    argn = sizeof(cmd_line)/sizeof(cmd_line[0]);
   }
 
   send_header(fd, argn, argv);
-  session(fd);
-
-  exit(0);
+  int status = session(fd);
+  exit(status);
 }

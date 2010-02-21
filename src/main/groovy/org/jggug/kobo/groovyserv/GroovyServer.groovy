@@ -81,7 +81,7 @@ class GroovyServer implements Runnable {
       StringBuffer result = new StringBuffer()
       int ch;
       while ((ch = is.read()) != '\n') {
-        if (ch == null) {
+        if (ch == -1) {
           return result.toString();
         }
         result.append((char)ch);
