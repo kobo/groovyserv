@@ -151,7 +151,7 @@ class GroovyServer implements Runnable {
     System.setErr(new PrintStream(new ChunkedOutputStream(outs, 'e' as char)));
   }
 
-  void process(headers) {
+  def process(headers) {
     if (headers[HEADER_CP] != null) {
       addClasspath(headers[HEADER_CP][0]);
     }
@@ -169,9 +169,14 @@ class GroovyServer implements Runnable {
     GroovyMain2.main(args as String[])
   }
 
-  void checkHeaders(headers) {
+  def checkHeaders(headers) {
     assert headers[HEADER_CURRENT_WORKING_DIR] != null &&
        headers[HEADER_CURRENT_WORKING_DIR][0]
+  }
+
+  def sendExit(outs, status) {
+    outs.write((HEADER_STATUS+": "+status+"\n").bytes);
+    outs.write("\n".bytes);
   }
 
   void run() {
@@ -186,34 +191,31 @@ class GroovyServer implements Runnable {
             }
           }
           checkHeaders(headers)
+
+          def cwd = headers[HEADER_CURRENT_WORKING_DIR][0]
           if (currentDir != null
-              && System.getProperty('user.dir') != headers[HEADER_CURRENT_WORKING_DIR][0]) {
+              && System.getProperty('user.dir') != cwd) {
             
             throw new GroovyServerException("Can't change current directory because of another session running on different dir: "+headers[HEADER_CURRENT_WORKING_DIR][0]);
-            synchronized (GroovyServer.class) {
-              setCurrentDir(headers[HEADER_CURRENT_WORKING_DIR][0]);
-            }
           }
+          setCurrentDir(cwd);
           process(headers);
-          outs.write((HEADER_STATUS+": 0\n").bytes);
-          outs.write("\n".bytes);
+          sendExit(outs, 0)
         }
         catch (ExitException e) {
           // GroovyMain2 throws ExitException when
           // it catches ExitException.
-          outs.write((HEADER_STATUS+": "+e.exitStatus+ "\n").bytes);
-          outs.write("\n".bytes);
+          sendExit(outs, e.exitStatus)
         }
         catch (Throwable t) {
           t.printStackTrace(originalErr)
           t.printStackTrace(System.err)
+          sendExit(outs, 0)
         }
       }
     }
     finally {
-      synchronized (GroovyServer.class) {
-        dirOwner = null;
-      }
+      currentDir = null;
       if (System.getProperty("groovyserver.verbose") == "true") {
         originalErr.println("socket close")
       }
