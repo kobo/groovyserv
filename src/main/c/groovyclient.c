@@ -368,6 +368,7 @@ int is_exist_dir(const char* path) {
   return 1;
 }
 
+
 void start_server(int argn, char** argv) {
 
   char path[MAXPATHLEN];
@@ -379,11 +380,19 @@ void start_server(int argn, char** argv) {
   if (!is_exist_dir(path)) {
     system("mkdir ~/.groovy/groovyserver");
   }
-  system("groovyserver >> ~/.groovy/groovyserver/groovyserver.log 2>&1");
+
+  char groovyserver_path[MAXPATHLEN];
+  strcpy(groovyserver_path, argv[0]);
+  char* p = groovyserver_path + strlen(groovyserver_path);
+  while (p > groovyserver_path && *p != '/') {
+    p--;
+  }
+  strcpy(p, "/groovyserver");
+  strcat(p, " >> ~/.groovy/groovyserver/groovyserver.log 2>&1");
+  printf("%s\n", groovyserver_path);
+  system(groovyserver_path);
   sleep(3);
 }
-
-static const char* const groovyclient_exe = "groovyclient.exe";
 
 /*
  * main.
