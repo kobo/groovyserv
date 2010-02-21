@@ -352,11 +352,14 @@ static void signal_handler(int sig) {
   exit(0);
 }
 
-int is_exist_dir(const char* path) {
+void mk_dir(const char* path) {
   struct stat buf;
   if (stat(path, &buf) == -1) {
     if (errno == ENOENT) {
-      return 0;
+      char cmdbuf[strlen(path) + 7];
+      sprintf(cmdbuf, "mkdir %s", path);
+      system(cmdbuf);
+      return;
     }
     perror("stat");
     exit(1);
@@ -365,19 +368,14 @@ int is_exist_dir(const char* path) {
     fprintf(stderr, "\npath %s is not directory.", path);
     exit(1);
   }
-  return 1;
 }
 
 void start_server(int argn, char** argv) {
   char path[MAXPATHLEN];
   sprintf(path, "%s/%s", getenv("HOME"), ".groovy");
-  if (!is_exist_dir(path)) {
-    system("mkdir ~/.groovy");
-  }
+  mk_dir(path);
   sprintf(path, "%s/%s", getenv("HOME"), ".groovy/groovyserver");
-  if (!is_exist_dir(path)) {
-    system("mkdir ~/.groovy/groovyserver");
-  }
+  mk_dir(path);
 
   char groovyserver_path[MAXPATHLEN];
   strcpy(groovyserver_path, argv[0]);
@@ -387,7 +385,6 @@ void start_server(int argn, char** argv) {
   }
   strcpy(p, "/groovyserver");
   strcat(p, " >> ~/.groovy/groovyserver/groovyserver.log 2>&1");
-  printf("%s\n", groovyserver_path);
   system(groovyserver_path);
   sleep(3);
 }
