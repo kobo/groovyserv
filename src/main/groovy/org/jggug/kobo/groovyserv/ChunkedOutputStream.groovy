@@ -18,7 +18,7 @@ package org.jggug.kobo.groovyserv
 class ChunkedOutputStream extends OutputStream {
 
   final static String HEADER_STREAM_ID = "Channel";
-  final static String HEADER_CHUNK_SIZE = "Size";
+  final static String HEADER_SIZE = "Size";
 
   char streamIdentifier;
 
@@ -54,13 +54,14 @@ class ChunkedOutputStream extends OutputStream {
   public void write(byte[] b, int off, int len) {
     OutputStream outs = check(map[Thread.currentThread()])
     if (System.getProperty("groovyserver.verbose") == "true") {
-      GroovyServer.originalErr.println("id="+streamIdentifier);
-      GroovyServer.originalErr.println("size="+len);
+      GroovyServer.originalErr.println("Server==>Client");
+      GroovyServer.originalErr.println(" id="+streamIdentifier);
+      GroovyServer.originalErr.println(" size="+len);
       Dump.dump(GroovyServer.originalErr, b, off, len);
     }
     //GroovyServer.originalErr.println("TID="+Thread.currentThread().id);
     outs.write((HEADER_STREAM_ID+": "+streamIdentifier+ "\n").bytes);
-    outs.write((HEADER_CHUNK_SIZE+": " + len+"\n").bytes);
+    outs.write((HEADER_SIZE+": " + len+"\n").bytes);
     outs.write("\n".bytes);
     outs.write(b, off, len);
   }

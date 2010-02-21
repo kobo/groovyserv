@@ -15,6 +15,8 @@
  */
 package org.jggug.kobo.groovyserv
 
+import static org.jggug.kobo.groovyserv.GroovyServer.originalErr;
+
 class MultiplexedInputStream extends InputStream {
 
   static WeakHashMap<Thread, InputStream>map = [:]
@@ -31,8 +33,10 @@ class MultiplexedInputStream extends InputStream {
     InputStream ins = check(map[Thread.currentThread()])
     int result = ins.read();
     if (result != -1 && System.getProperty("groovyserver.verbose") == "true") {
-      GroovyServer.originalErr.println("id=in");
       byte[] b = [result];
+      if (System.getProperty("groovyserver.verbose") == "true") {
+        GroovyServer.originalErr.println("Client==>Server");
+      }
       Dump.dump(GroovyServer.originalErr, b, 0, 1);
     }
     return result;
@@ -43,8 +47,9 @@ class MultiplexedInputStream extends InputStream {
     InputStream ins = check(map[Thread.currentThread()])
     int result = ins.read(b, off, len);
     if (result != 0 && System.getProperty("groovyserver.verbose") == "true") {
-      GroovyServer.originalErr.println("id=in");
-      GroovyServer.originalErr.println("size="+result);
+      GroovyServer.originalErr.println("Client==>Server");
+      GroovyServer.originalErr.println(" id=in");
+      GroovyServer.originalErr.println(" size="+result);
       Dump.dump(GroovyServer.originalErr, b, off, result);
     }
     return result;
@@ -81,7 +86,28 @@ class MultiplexedInputStream extends InputStream {
   }
 
   public MultiplexedInputStream(InputStream ins) {
-    map[Thread.currentThread()] = ins
+    def pos = new PipedOutputStream()
+    def pis = new PipedInputStream(pos)
+    Thread worker = new Thread({
+        while (true) {
+          def headers = GroovyServer.readHeaders(ins)
+          def size = Integer.parseInt(headers[ChunkedOutputStream.HEADER_SIZE][0])
+          if (size == 0) {
+            pos.close()
+            return;
+          }
+          for (int i=0; i<size; i++) {
+            int ch = ins.read()
+            if (ch == -1) {
+              break;
+            }
+            pos.write(ch);
+          }
+          pos.flush();
+        }
+      } as Runnable)
+    map[Thread.currentThread()] = pis
+    worker.start();
   }
 
 }

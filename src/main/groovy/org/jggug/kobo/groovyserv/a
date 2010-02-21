@@ -76,23 +76,13 @@ class GroovyServer implements Runnable {
 	static BufferedInputStream originalIn = System.in
 	static OutputStream originalOut = System.out
 	static OutputStream originalErr = System.err
-
-    static readLine(InputStream is) {
-      StringBuffer result = new StringBuffer()
-      int ch;
-      while ((ch = is.read()) != '\n') {
-        if (ch == null) {
-          return result.toString();
-        }
-        result.append((char)ch);
-      }
-      return result.toString();
-    }
 	
-	static Map<String, List<String>> readHeaders(ins) {
+	Map<String, List<String>> readHeaders(ins) {
+      BufferedReader bis = new BufferedReader(new InputStreamReader(ins))
+		
       def result = [:]
       def line
-      while ((line = readLine(ins)) != "") {
+      while ((line = bis.readLine()) != "") {
         def kv = line.split(':', 2);
         def key = kv[0]
         def value = kv[1]
@@ -111,20 +101,13 @@ class GroovyServer implements Runnable {
 
   static Thread dirOwner
 
-  static currentDir = null;
-  def getCurrentDir() {
-    currentDir
-  }
-
-  def setCurrentDir(dir) {
-    synchronized (GroovyServer.class) {
-      currentDir = dir
-      if (System.getProperty('user.dir') != currentDir) {
-        System.setProperty('user.dir', currentDir)
-        dirOwner = Thread.currentThread()
-        PlatformMethods.chdir(currentDir)
-        addClasspath(currentDir)
-      }
+  def changeDir(currentDir) {
+println "currentDir="+currentDir
+    if (System.getProperty('user.dir') != currentDir) {
+      System.setProperty('user.dir', currentDir)
+      dirOwner = Thread.currentThread()
+      PlatformMethods.chdir(currentDir)
+      addClasspath(currentDir)
     }
   }
   
@@ -173,30 +156,31 @@ class GroovyServer implements Runnable {
     assert headers[HEADER_CURRENT_WORKING_DIR] != null &&
        headers[HEADER_CURRENT_WORKING_DIR][0]
   }
-
+	
   void run() {
     try {
       soc.withStreams { ins, outs ->
         try {
-          Map<String, List<String>> headers = readHeaders(ins);
           setupStandardStreams(ins, outs);
+          Map<String, List<String>> headers = readHeaders(ins);
+				
           if (System.getProperty("groovyserver.verbose") == "true") {
             headers.each {k,v ->
               originalErr.println " $k = $v"
             }
           }
           checkHeaders(headers)
-          if (currentDir != null
-              && System.getProperty('user.dir') != headers[HEADER_CURRENT_WORKING_DIR][0]) {
-            
-            throw new GroovyServerException("Can't change current directory because of another session running on different dir: "+headers[HEADER_CURRENT_WORKING_DIR][0]);
-            synchronized (GroovyServer.class) {
-              setCurrentDir(headers[HEADER_CURRENT_WORKING_DIR][0]);
-            }
+          if (System.getProperty('user.dir')
+              != headers[HEADER_CURRENT_WORKING_DIR][0]) {
+            throw new GroovyServerException("Can't change current directory because of another session running on different dir: "+currentDir);
+            //            synchronized (GroovyServer.class) {
+            //              changeDir(headers[HEADER_CURRENT_WORKING_DIR][0]);
+            //              process(headers);
+            //            }
           }
-          process(headers);
-          outs.write((HEADER_STATUS+": 0\n").bytes);
-          outs.write("\n".bytes);
+          else {
+            process(headers);
+          }
         }
         catch (ExitException e) {
           // GroovyMain2 throws ExitException when
@@ -211,9 +195,7 @@ class GroovyServer implements Runnable {
       }
     }
     finally {
-      synchronized (GroovyServer.class) {
-        dirOwner = null;
-      }
+      dirOwner = null;
       if (System.getProperty("groovyserver.verbose") == "true") {
         originalErr.println("socket close")
       }

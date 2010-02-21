@@ -44,7 +44,7 @@ const char * const HEADER_KEY_CP = "Cp";
 
 /* response headers */
 const char * const HEADER_KEY_CHANNEL = "Channel";
-const char * const HEADER_KEY_CHUNK_SIZE = "Size";
+const char * const HEADER_KEY_SIZE = "Size";
 const char * const HEADER_KEY_STATUS = "Status";
 
 const int CR = 0x0d;
@@ -178,7 +178,8 @@ int read_headers(FILE* soc_stream, struct header_t headers[], int header_buf_siz
   while (1) {
     p = fgets(read_buf, BUFFER_SIZE, soc_stream);
     if (p == NULL) {
-      return -1;
+      //      return -1;
+      return 0;
     }
     if (*p == CR) {
       p++;
@@ -249,7 +250,7 @@ int split_socket_output(FILE* soc_stream, char* stream_identifier, int size) {
  * send_to_server.
  * Copy data from stdin and send it to the server.
  */
-int send_to_server(int fd)
+int send_to_server(FILE* soc_stream)
 {
   char read_buf[BUFFER_SIZE];
   int ret;
@@ -258,11 +259,12 @@ int send_to_server(int fd)
     perror("read failure from stdin");
     exit(1);
   }
-  if (ret > 0) {
-    write(fd, read_buf, ret);
-  }
-  else {
-    shutdown(fd, 1);
+  char write_buf[BUFFER_SIZE];
+  sprintf(write_buf, "Size: %d\n\n", ret); // TODO: check size
+  write(fileno(soc_stream), write_buf, strlen(write_buf));
+  write(fileno(soc_stream), read_buf, ret);
+  fflush(soc_stream);
+  if (ret == 0) {
     return 1;
   }
   return 0;
@@ -287,6 +289,8 @@ int session(int fd)
   while (1) {
     /* initialize the set of file descriptor */
     FD_ZERO(&read_set);
+
+    // watch stdin of client and socket.
     FD_SET(0, &read_set);
     FD_SET(fd, &read_set);
 
@@ -298,33 +302,38 @@ int session(int fd)
 
     if (ret != 0) { /* detect changed descriptor */
       if (!stdin_closed && FD_ISSET(0, &read_set)) { /* stdin */
-        stdin_closed = send_to_server(fd);
+        stdin_closed = send_to_server(soc_stream);
       }
-      else if (FD_ISSET(fd, &read_set)){ /* socket */
+      if (FD_ISSET(fd, &read_set)){ /* socket */
         struct header_t headers[MAX_HEADER];
         int size = read_headers(soc_stream, headers, MAX_HEADER);
         if (size == -1) {
           return -1;
         }
+        if (size == 0) {
+          continue;
+        }
 
+        // Process exit
         char* status = find_header(headers, HEADER_KEY_STATUS, size);
         if (status != NULL) {
 		  int stat = atoi(status);
-		  if (stat == SERVER_NOT_RUNNING) {
+		  if (stat == SERVER_NOT_RUNNING) { // ignore exit status.
 			exit(1);
 		  }
           exit(stat);
         }
 
+        // Dispatch data from server to stdout/err.
         char* sid = find_header(headers, HEADER_KEY_CHANNEL, size);
         if (sid == NULL) {
           fprintf(stderr, "\nrequired header %s not found\n", HEADER_KEY_CHANNEL);
           exit(1);
         }
 
-        char* chunk_size = find_header(headers, HEADER_KEY_CHUNK_SIZE, size);
+        char* chunk_size = find_header(headers, HEADER_KEY_SIZE, size);
         if (chunk_size == NULL) {
-          fprintf(stderr, "\nrequired header %s not found\n", HEADER_KEY_CHUNK_SIZE);
+          fprintf(stderr, "\nrequired header %s not found\n", HEADER_KEY_SIZE);
           exit(1);
         }
         if (split_socket_output(soc_stream, sid, atoi(chunk_size)) == EOF) {

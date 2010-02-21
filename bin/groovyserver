@@ -92,11 +92,11 @@ pid=$!
 
 SERVER_NOT_RUNNING=15
 
-`dirname $0`/groovyclient.exe -e "println 'RUOK?'" "$@" > /dev/null
+`dirname $0`/groovyclient.exe -e "println 'RUOK?'" > /dev/null
 stat=$?
 while [ "$stat" = "$SERVER_NOT_RUNNING" ]; do
   sleep 1
-  `dirname $0`/groovyclient.exe  -e "println 'RUOK?'" "$@" > /dev/null
+  `dirname $0`/groovyclient.exe  -e "println 'RUOK?'" > /dev/null
   stat=$?
 done
 
