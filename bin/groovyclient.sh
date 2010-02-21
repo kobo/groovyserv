@@ -17,7 +17,7 @@
 
 SERVER_NOT_RUNNING=15
 
-`dirname $0`/groovyclient.exe "$@"
+`dirname $0`/groovyclient "$@"
 stat=$?
 while [ "$stat" = "$SERVER_NOT_RUNNING" ]; do
   if [ ! -d ~/.groovy ]; then
@@ -27,7 +27,7 @@ while [ "$stat" = "$SERVER_NOT_RUNNING" ]; do
     fi
   fi
   `dirname $0`/groovyserver >> ~/.groovy/groovyserver/groovyserver.log 2>&1
-  `dirname $0`/groovyclient.exe "$@"
+  `dirname $0`/groovyclient "$@"
   stat=$?
 done
 exit $stat
