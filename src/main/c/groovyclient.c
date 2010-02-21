@@ -368,9 +368,7 @@ int is_exist_dir(const char* path) {
   return 1;
 }
 
-
 void start_server(int argn, char** argv) {
-
   char path[MAXPATHLEN];
   sprintf(path, "%s/%s", getenv("HOME"), ".groovy");
   if (!is_exist_dir(path)) {
