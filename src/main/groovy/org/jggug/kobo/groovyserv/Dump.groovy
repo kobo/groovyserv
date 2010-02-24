@@ -18,7 +18,7 @@ package org.jggug.kobo.groovyserv
 
 class Dump {
 
-  
+
   static void dump(OutputStream os, byte[] buf, int ofs, int len) {
     PrintWriter pw = new PrintWriter(os);
     pw.println("+-----------+-----------+-----------+-----------+");

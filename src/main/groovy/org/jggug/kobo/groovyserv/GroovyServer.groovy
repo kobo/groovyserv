@@ -44,7 +44,7 @@ import org.codehaus.groovy.tools.GroovyStarter;
  *    'Size:' <size> CRLF
  *    CRLF
  *    <data for STDERR/STDOUT>
- *  
+ *
  *
  *     <cwd> is current working directory.
  *     <arg1><arg2>.. are commandline arguments(optional).
@@ -57,25 +57,25 @@ import org.codehaus.groovy.tools.GroovyStarter;
  *          'e' means standard error of the program.
  *     <size> is the size of chunk.
  *     <data from STDIN> is byte sequence from standard output/error.
- *     
+ *
  * </pre>
  *
  * @author UEHARA Junji
  */
 class GroovyServer implements Runnable {
-	
+
   final static String HEADER_CURRENT_WORKING_DIR = "Cwd";
   final static String HEADER_ARG = "Arg";
   final static String HEADER_CP = "Cp";
   final static String HEADER_STATUS = "Status";
   final static int DEFAULT_PORT = 1961
-	
-	final int CR = 0x0d
-	final int LF = 0x0a
-	
-	static BufferedInputStream originalIn = System.in
-	static OutputStream originalOut = System.out
-	static OutputStream originalErr = System.err
+
+  final int CR = 0x0d
+  final int LF = 0x0a
+
+  static BufferedInputStream originalIn = System.in
+  static OutputStream originalOut = System.out
+  static OutputStream originalErr = System.err
 
     static readLine(InputStream is) {
       StringBuffer result = new StringBuffer()
@@ -88,8 +88,8 @@ class GroovyServer implements Runnable {
       }
       return result.toString();
     }
-	
-	static Map<String, List<String>> readHeaders(ins) {
+
+  static Map<String, List<String>> readHeaders(ins) {
       def result = [:]
       def line
       while ((line = readLine(ins)) != "") {
@@ -105,9 +105,9 @@ class GroovyServer implements Runnable {
         result[key] += value
       }
       result
-	}
-	
-	def soc
+  }
+
+  def soc
 
   static Thread dirOwner
 
@@ -127,7 +127,7 @@ class GroovyServer implements Runnable {
       }
     }
   }
-  
+
   def addClasspath(classpath) {
     def cp = System.getProperty("groovy.classpath")
     if (cp == null || cp == "") {
@@ -144,7 +144,7 @@ class GroovyServer implements Runnable {
       System.setProperty("groovy.classpath", pathToAdd + cp);
     }
   }
-	
+
   def setupStandardStreams(ins, outs) {
     System.setIn(new MultiplexedInputStream(ins));
     System.setOut(new PrintStream(new ChunkedOutputStream(outs, 'o' as char)));
@@ -195,7 +195,7 @@ class GroovyServer implements Runnable {
           def cwd = headers[HEADER_CURRENT_WORKING_DIR][0]
           if (currentDir != null
               && System.getProperty('user.dir') != cwd) {
-            
+
             throw new GroovyServerException("Can't change current directory because of another session running on different dir: "+headers[HEADER_CURRENT_WORKING_DIR][0]);
           }
           setCurrentDir(cwd);
@@ -224,28 +224,28 @@ class GroovyServer implements Runnable {
   }
 
   static void main(String[] args) {
-		
+
     def port = DEFAULT_PORT;
-		
+
     if (System.getProperty('groovy.server.port') != null) {
       port = Integer.parseInt(System.getProperty('groovy.server.port'))
     }
-		
+
     System.setProperty('groovy.runningmode', "server")
-		
+
     System.setSecurityManager(new NoExitSecurityManager2());
-		
+
     def serverSocket = new ServerSocket(port)
-		
+
     Thread worker = null;
     while (true) {
       def soc = serverSocket.accept()
-			
+
       if (soc.localSocketAddress.address.isLoopbackAddress()) {
         if (System.getProperty("groovyserver.verbose") == "true") {
           originalErr.println "accept soc="+soc
         }
-				
+
         // Create new thraed for each connections.
         // Here, don't use ExecutorService or any thread pool system.
         // Because the System.(in/out/err) streams are used distinctly

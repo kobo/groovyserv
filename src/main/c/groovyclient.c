@@ -318,7 +318,7 @@ int session(int fd)
         // Process exit
         char* status = find_header(headers, HEADER_KEY_STATUS, size);
         if (status != NULL) {
-		  int stat = atoi(status);
+      int stat = atoi(status);
           return stat;
         }
 

@@ -4,7 +4,7 @@ import org.junit.Test;
 
 
 public class MyTest {
-	@Test
-	public void testHoge(){}
+    @Test
+    public void testHoge(){}
 
 }
