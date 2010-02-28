@@ -145,17 +145,15 @@
         </configuration>
       </plugin>
 
-      <!--
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <additionalClasspathElements>
-            <additionalClasspathElement>src/main/groovy</additionalClasspathElement>
-          </additionalClasspathElements>
+          <classesDirectory>
+            ${project.build.outputDirectory}/../groovy-classes
+          </classesDirectory>
         </configuration>
       </plugin>
-      -->
 
     </plugins>
   </build>
