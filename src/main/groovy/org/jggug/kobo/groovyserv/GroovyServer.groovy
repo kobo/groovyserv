@@ -36,6 +36,7 @@ import org.codehaus.groovy.tools.GroovyStarter;
  *    'Arg:' <arg1> CRLF
  *    'Arg:' <arg2> CRLF
  *    'Cp:' <classpath> CRLF
+ *    'Cookie:' <cookie> CRLF
  *    CRLF
  *
  *   where:
@@ -78,6 +79,7 @@ class GroovyServer implements Runnable {
   final static String HEADER_ARG = "Arg";
   final static String HEADER_CP = "Cp";
   final static String HEADER_STATUS = "Status";
+  final static String HEADER_COOKIE = "Cookie";
   final static int DEFAULT_PORT = 1961;
 
   final int CR = 0x0d;
@@ -88,6 +90,7 @@ class GroovyServer implements Runnable {
   static OutputStream originalErr = System.err;
 
   Socket soc;
+  String cookie;
 
   static MultiplexedInputStream mxStdIn = new MultiplexedInputStream();
   static ChunkedOutputStream mxStdOut = new ChunkedOutputStream('o' as char);
@@ -183,7 +186,8 @@ class GroovyServer implements Runnable {
 
   def checkHeaders(headers) {
     assert headers[HEADER_CURRENT_WORKING_DIR] != null &&
-    headers[HEADER_CURRENT_WORKING_DIR][0]
+      headers[HEADER_CURRENT_WORKING_DIR][0]
+    assert headers[HEADER_COOKIE] == cookie
   }
 
   def sendExit(outs, status) {
@@ -295,7 +299,7 @@ class GroovyServer implements Runnable {
         // So this 'new Thread()' is nesessary.
         //
         ThreadGroup tg = new ThreadGroup("groovyserver"+soc);
-        Thread worker = new Thread(tg, new GroovyServer(soc:soc), "worker");
+        Thread worker = new Thread(tg, new GroovyServer(soc:soc, cookie:key), "worker");
         worker.start()
       }
       else {
