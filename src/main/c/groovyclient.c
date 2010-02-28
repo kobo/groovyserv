@@ -383,7 +383,10 @@ void start_server(int argn, char** argv) {
   while (p > groovyserver_path && *p != '/') {
     p--;
   }
-  strcpy(p, "/groovyserver");
+  if (*p == '/') {
+    p++;
+  }
+  strcpy(p, "groovyserver");
   strcat(p, " >> ~/.groovy/groovyserver/groovyserver.log 2>&1");
   system(groovyserver_path);
   sleep(3);
