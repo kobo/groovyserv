@@ -179,6 +179,25 @@ class GroovyServer implements Runnable {
     outs.write("\n".bytes);
   }
 
+  def ensureAllThreadToStop() {
+    ThreadGroup tg = Thread.currentThread().threadGroup;
+    Thread[] threads = new Thread[tg.activeCount()];
+    int tcount = tg.enumerate(threads);
+    while (tcount != threads.size()) {
+      threads = new Thread[tg.activeCount()];
+      tcount = tg.enumerate(threads);
+    }
+    for (int i=0; i<threads.size(); i++) {
+      if (threads[i] != Thread.currentThread()
+          && !threads[i].isDaemon()
+          && threads[i].isAlive()) {
+        threads[i].interrupt()
+        threads[i].join();
+      }
+    }
+  }
+
+
   void run() {
     try {
       soc.withStreams { ins, outs ->
@@ -200,6 +219,7 @@ class GroovyServer implements Runnable {
           }
           setCurrentDir(cwd);
           process(headers);
+          ensureAllThreadToStop()
           sendExit(outs, 0)
         }
         catch (ExitException e) {
@@ -252,7 +272,8 @@ class GroovyServer implements Runnable {
         // by thread instance. In the other words, threads can't be pooled.
         // So this 'new Thread()' is nesessary.
         //
-        worker = new Thread(new GroovyServer(soc:soc));
+        ThreadGroup tg = new ThreadGroup("groovyserver"+soc);
+        worker = new Thread(tg, new GroovyServer(soc:soc));
         worker.start()
       }
       else {
