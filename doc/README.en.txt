@@ -22,6 +22,16 @@ Some IDE might might support incremental compilation, but for writing
 and small script like tools, filters, by using editor, groovyserver is
 useful.
 
+
+================
+Security WARNING
+================
+
+This server have a possibility to run any groovy script from client.
+Connection is limited to from same machine (localhost),
+but still there is a risk some malicious script invoked by
+someone else who logged in your host.
+
 ==========
 System requirements
 ==========
@@ -136,11 +146,3 @@ Log file
 Groovyserver make logs to:
 
 ~/.groovy/groovyserver/<process ID>.log
-
-================
-Security
-================
-
-Remote execution from groovyclient which running on other machine, but
-invocation from other user from same machine on which GroovyServer
-running.

@@ -318,7 +318,7 @@ int session(int fd)
         // Process exit
         char* status = find_header(headers, HEADER_KEY_STATUS, size);
         if (status != NULL) {
-      int stat = atoi(status);
+          int stat = atoi(status);
           return stat;
         }
 
@@ -345,10 +345,11 @@ int session(int fd)
   }
 }
 
-static int fd;
+static int fd_soc;
 
 static void signal_handler(int sig) {
-  close(fd);
+  write(fd_soc, "Size: 0\n\n", 9);
+  close(fd_soc);
   exit(0);
 }
 
@@ -399,21 +400,12 @@ void start_server(int argn, char** argv) {
 int main(int argn, char** argv) {
   signal(SIGINT, signal_handler);
 
-  while ((fd = open_socket(DESTSERV, DESTPORT)) == -1) {
-    if (argn == 2 && strcmp(argv[1], "RUOK") == 0) {
-      exit(SERVER_NOT_RUNNING);
-    }
+  while ((fd_soc = open_socket(DESTSERV, DESTPORT)) == -1) {
     fprintf(stderr, "starting server..\n");
     start_server(argn, argv);
   }
 
-  if (argn == 2 && strcmp(argv[1], "RUOK") == 0) {
-    char *cmd_line[] = {argv[0], "-e", "println('RUOK?');"};
-    argv = cmd_line;
-    argn = sizeof(cmd_line)/sizeof(cmd_line[0]);
-  }
-
-  send_header(fd, argn, argv);
-  int status = session(fd);
+  send_header(fd_soc, argn, argv);
+  int status = session(fd_soc);
   exit(status);
 }

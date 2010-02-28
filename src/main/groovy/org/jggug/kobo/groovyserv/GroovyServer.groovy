@@ -27,7 +27,8 @@ import org.codehaus.groovy.tools.GroovyStarter;
  * Protocol summary:
  * <pre>
  * Request ::= InvocationRequest
- * Response ::= StreamResponse
+ *             ( StreamRequest ) *
+ * Response ::= ( StreamResponse ) *
  *
  * InvocationRequest ::=
  *    'Cwd:' <cwd> CRLF
@@ -36,7 +37,22 @@ import org.codehaus.groovy.tools.GroovyStarter;
  *    'Arg:' <arg2> CRLF
  *    'Cp:' <classpath> CRLF
  *    CRLF
+ *
+ *   where:
+ *     <cwd> is current working directory.
+ *     <arg1><arg2>.. are commandline arguments(optional).
+ *     <classpath>.. is the value of environment variable CLASSPATH(optional).
+ *     CRLF is carridge return (0x0d ^M) and line feed (0x0a, '\n').
+ *
+ * StreamRequest ::=
+ *    'Size:' <size> CRLF
+ *    CRLF
  *    <data from STDIN>
+ *
+ *   where:
+ *     <size> is the size of data to send to server.
+ *            <size>==0 means client exited.
+ *     <data from STDIN> is byte sequence from standard input.
  *
  * StreamResponse ::=
  *    'Status:' <status> CRLF
@@ -45,18 +61,12 @@ import org.codehaus.groovy.tools.GroovyStarter;
  *    CRLF
  *    <data for STDERR/STDOUT>
  *
- *
- *     <cwd> is current working directory.
- *     <arg1><arg2>.. are commandline arguments(optional).
- *     <classpath>.. is the value of environment variable CLASSPATH(optional).
- *     CRLF is carridge return (0x0d ^M) and line feed (0x0a, '\n').
- *     <data from STDIN> is byte sequence from standard input.
- *
+ *   where:
  *     <status> is exit status of invoked groovy script.
  *     <id> is 'o' or 'e', where 'o' means standard output of the program.
  *          'e' means standard error of the program.
- *     <size> is the size of chunk. size==0 means client exited.
- *     <data from STDIN> is byte sequence from standard output/error.
+ *     <size> is the size of chunk.
+ *     <data from STDERR/STDOUT> is byte sequence from standard output/error.
  *
  * </pre>
  *
@@ -193,7 +203,6 @@ class GroovyServer implements Runnable {
       if (threads[i] != Thread.currentThread() && threads[i].isAlive()) {
         if (threads[i].isDaemon()) {
           threads[i].interrupt();
-          threads[i].stop();
         }
         else {
           threads[i].interrupt()
@@ -262,6 +271,7 @@ class GroovyServer implements Runnable {
       port = Integer.parseInt(System.getProperty('groovy.server.port'))
     }
 
+    def key = new File(System.getenv('HOME')+'/.groovy/groovyserver/key').text
     System.setProperty('groovy.runningmode', "server")
 
     System.setSecurityManager(new NoExitSecurityManager2());

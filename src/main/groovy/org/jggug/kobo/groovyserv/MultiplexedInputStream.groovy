@@ -108,6 +108,10 @@ class MultiplexedInputStream extends InputStream {
               }
               pos.flush();
             }
+            else {
+              pos.close();
+              return;
+            }
           }
         }
         catch (java.net.SocketException e) {
