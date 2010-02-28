@@ -23,14 +23,14 @@ class MultiplexedInputStream extends InputStream {
 
   private InputStream check(InputStream ins) {
     if (ins == null) {
-      throw new IllegalStateException("System.in can't access from this thread: "+Thread.currentThread()+":"+Thread.currentThread().id)
+      throw new IllegalStateException("System.in can't access from this thread: "+Thread.currentThread()+":"+Thread.currentThread().id);
     }
     return ins;
   }
 
   @Override
   public int read() throws IOException {
-    InputStream ins = check(map[Thread.currentThread().getThreadGroup()])
+    InputStream ins = check(map[Thread.currentThread().getThreadGroup()]);
     int result = ins.read();
     if (result != -1 && System.getProperty("groovyserver.verbose") == "true") {
       byte[] b = [result];
@@ -44,7 +44,7 @@ class MultiplexedInputStream extends InputStream {
 
   @Override
   public int read(byte[] b, int off, int len) throws IOException {
-    InputStream ins = check(map[Thread.currentThread().getThreadGroup()])
+    InputStream ins = check(map[Thread.currentThread().getThreadGroup()]);
     int result = ins.read(b, off, len);
     if (result != 0 && System.getProperty("groovyserver.verbose") == "true") {
       GroovyServer.originalErr.println("Client==>Server");
@@ -57,50 +57,50 @@ class MultiplexedInputStream extends InputStream {
 
   @Override
   public int available() throws IOException {
-    InputStream ins = check(map[Thread.currentThread().getThreadGroup()])
-    return ins.available()
+    InputStream ins = check(map[Thread.currentThread().getThreadGroup()]);
+    return ins.available();
   }
 
   @Override
   public void close() throws IOException {
-    InputStream ins = check(map[Thread.currentThread().getThreadGroup()])
-    ins.close()
+    InputStream ins = check(map[Thread.currentThread().getThreadGroup()]);
+    ins.close();
   }
 
   @Override
   public void mark(int readlimit) {
-    InputStream ins = check(map[Thread.currentThread().getThreadGroup()])
-    ins.mark()
+    InputStream ins = check(map[Thread.currentThread().getThreadGroup()]);
+    ins.mark();
   }
 
   @Override
   public void reset() throws IOException {
-    InputStream ins = check(map[Thread.currentThread().getThreadGroup()])
-    ins.reset()
+    InputStream ins = check(map[Thread.currentThread().getThreadGroup()]);
+    ins.reset();
   }
 
   @Override
   public boolean markSupported() {
-    InputStream ins = check(map[Thread.currentThread().getThreadGroup()])
-    ins.markSupported()
+    InputStream ins = check(map[Thread.currentThread().getThreadGroup()]);
+    ins.markSupported();
   }
 
-  public MultiplexedInputStream(InputStream ins) {
-    def pos = new PipedOutputStream()
-    def pis = new PipedInputStream(pos)
+  public void bind(InputStream ins, ThreadGroup tg) {
+    def pos = new PipedOutputStream();
+    def pis = new PipedInputStream(pos);
     Thread streamCopyWorker = new Thread({
         try{
           while (true) {
-            def headers = GroovyServer.readHeaders(ins)
-            def sizeHeader = headers[ChunkedOutputStream.HEADER_SIZE]
+            def headers = GroovyServer.readHeaders(ins);
+            def sizeHeader = headers[ChunkedOutputStream.HEADER_SIZE];
             if (sizeHeader != null) {
-              def size = Integer.parseInt(sizeHeader[0])
+              def size = Integer.parseInt(sizeHeader[0]);
               if (size == 0) {
-                pos.close()
+                pos.close();
                 return;
               }
               for (int i=0; i<size; i++) {
-                int ch = ins.read()
+                int ch = ins.read();
                 if (ch == -1) {
                   break;
                 }
@@ -120,10 +120,13 @@ class MultiplexedInputStream extends InputStream {
             GroovyServer.originalErr.println("t="+t);
           }
         }
-      } as Runnable)
-    map[Thread.currentThread().getThreadGroup()] = pis
-    streamCopyWorker.setDaemon(true)
+      } as Runnable, "streamWorker");
+    map[Thread.currentThread().getThreadGroup()] = pis;
+    streamCopyWorker.setDaemon(true);
     streamCopyWorker.start();
+  }
+
+  public MultiplexedInputStream() {
   }
 
 }

@@ -66,8 +66,11 @@ class ChunkedOutputStream extends OutputStream {
     outs.write(b, off, len);
   }
 
-  public ChunkedOutputStream(OutputStream outs, char id) {
-    map[Thread.currentThread().getThreadGroup()] = outs
+  public void bind(OutputStream outs, ThreadGroup tg) {
+    map[tg] = outs
+  }
+
+  public ChunkedOutputStream(char id) {
     streamIdentifier = id;
   }
 
