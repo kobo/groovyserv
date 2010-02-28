@@ -81,25 +81,28 @@ if $cygwin ; then
   CP=`cygpath --path --mixed "$CP"`
 fi
 
-CP=$GROOVYSERV_HOME/lib/groovyserv-0.1-SNAPSHOT.jar:$GROOVYSERV_HOME/lib/jna-3.2.2.jar
+CP1=$GROOVYSERV_HOME/lib/groovyserv-0.1-SNAPSHOT.jar:$GROOVYSERV_HOME/lib/jna-3.2.2.jar
+CP2=$GROOVYSERV_HOME/lib/jna-3.2.2.jar
 
 # $GROOVY_HOME/bin/groovy -cp $CP $OPT -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)" -- "$@" &
 
 #$GROOVY_HOME/bin/groovy -cp $GROOVYSERV_HOME/target/groovyserver-0.1-SNAPSHOT.jar:$CP $OPT -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)" -- "$@" &
 
-$GROOVY_HOME/bin/groovy -cp $GROOVYSERV_HOME/src/main/groovy:$GROOVYSERV_HOME/target/classes:$GROOVYSERV_HOME/target/groovy-classes:$CP $OPT -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)" -- "$@" &
+#$GROOVY_HOME/bin/groovy -cp $GROOVYSERV_HOME/src/main/groovy:$GROOVYSERV_HOME/target/classes:$GROOVYSERV_HOME/target/groovy-classes:$CP $OPT -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)" -- "$@" &
+
+$GROOVY_HOME/bin/groovy -cp $GROOVYSERV_HOME/src/main/groovy:$GROOVYSERV_HOME/target/classes:$CP2 $OPT -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)" -- "$@" &
 
 pid=$!
 
 SERVER_NOT_RUNNING=15
 
-`dirname $0`/groovyclient RUOK > /dev/null
-stat=$?
-while [ "$stat" = "$SERVER_NOT_RUNNING" ]; do
-  sleep 1
-  `dirname $0`/groovyclient RUOK > /dev/null
-  stat=$?
-done
+#`dirname $0`/groovyclient RUOK > /dev/null
+#stat=$?
+#while [ "$stat" = "$SERVER_NOT_RUNNING" ]; do
+#  sleep 1
+#  `dirname $0`/groovyclient RUOK > /dev/null
+#  stat=$?
+#done
 
 if ps -p $pid | grep $pid > /dev/null; then
   echo $pid > ~/.groovy/groovyserver/pid
