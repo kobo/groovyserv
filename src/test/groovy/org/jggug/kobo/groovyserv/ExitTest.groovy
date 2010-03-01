@@ -12,7 +12,7 @@ class ExitTest extends GroovyTestCase {
   static final String FS = System.getProperty("file.separator");
 
   void testExit1() {
-    def cmd = """bin${FS}groovyclient.exe -e "System.exit(1)" """
+    def cmd = """bin${FS}groovyclient -e "System.exit(1)" """
     Process p = cmd.execute();
     p.waitFor();
     if (p.exitValue() == 15) {
@@ -22,7 +22,7 @@ class ExitTest extends GroovyTestCase {
   }
 
   void testExit33() {
-    def cmd = """bin${FS}groovyclient.exe -e "System.exit(33)" """
+    def cmd = """bin${FS}groovyclient -e "System.exit(33)" """
     Process p = cmd.execute();
     p.waitFor();
     if (p.exitValue() == 15) {
