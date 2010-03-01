@@ -27,7 +27,8 @@ import org.codehaus.groovy.tools.GroovyStarter;
  * Protocol summary:
  * <pre>
  * Request ::= InvocationRequest
- * Response ::= StreamResponse
+ *             ( StreamRequest ) *
+ * Response ::= ( StreamResponse ) *
  *
  * InvocationRequest ::=
  *    'Cwd:' <cwd> CRLF
@@ -36,7 +37,22 @@ import org.codehaus.groovy.tools.GroovyStarter;
  *    'Arg:' <arg2> CRLF
  *    'Cp:' <classpath> CRLF
  *    CRLF
+ *
+ *   where:
+ *     <cwd> is current working directory.
+ *     <arg1><arg2>.. are commandline arguments(optional).
+ *     <classpath>.. is the value of environment variable CLASSPATH(optional).
+ *     CRLF is carridge return (0x0d ^M) and line feed (0x0a, '\n').
+ *
+ * StreamRequest ::=
+ *    'Size:' <size> CRLF
+ *    CRLF
  *    <data from STDIN>
+ *
+ *   where:
+ *     <size> is the size of data to send to server.
+ *            <size>==0 means client exited.
+ *     <data from STDIN> is byte sequence from standard input.
  *
  * StreamResponse ::=
  *    'Status:' <status> CRLF
@@ -45,18 +61,12 @@ import org.codehaus.groovy.tools.GroovyStarter;
  *    CRLF
  *    <data for STDERR/STDOUT>
  *
- *
- *     <cwd> is current working directory.
- *     <arg1><arg2>.. are commandline arguments(optional).
- *     <classpath>.. is the value of environment variable CLASSPATH(optional).
- *     CRLF is carridge return (0x0d ^M) and line feed (0x0a, '\n').
- *     <data from STDIN> is byte sequence from standard input.
- *
+ *   where:
  *     <status> is exit status of invoked groovy script.
  *     <id> is 'o' or 'e', where 'o' means standard output of the program.
  *          'e' means standard error of the program.
  *     <size> is the size of chunk.
- *     <data from STDIN> is byte sequence from standard output/error.
+ *     <data from STDERR/STDOUT> is byte sequence from standard output/error.
  *
  * </pre>
  *
@@ -68,50 +78,53 @@ class GroovyServer implements Runnable {
   final static String HEADER_ARG = "Arg";
   final static String HEADER_CP = "Cp";
   final static String HEADER_STATUS = "Status";
-  final static int DEFAULT_PORT = 1961
+  final static int DEFAULT_PORT = 1961;
 
-  final int CR = 0x0d
-  final int LF = 0x0a
+  final int CR = 0x0d;
+  final int LF = 0x0a;
 
-  static BufferedInputStream originalIn = System.in
-  static OutputStream originalOut = System.out
-  static OutputStream originalErr = System.err
+  static BufferedInputStream originalIn = System.in;
+  static OutputStream originalOut = System.out;
+  static OutputStream originalErr = System.err;
 
-    static readLine(InputStream is) {
-      StringBuffer result = new StringBuffer()
-      int ch;
-      while ((ch = is.read()) != '\n') {
-        if (ch == -1) {
-          return result.toString();
-        }
-        result.append((char)ch);
-      }
-      return result.toString();
-    }
+  Socket soc;
 
-  static Map<String, List<String>> readHeaders(ins) {
-      def result = [:]
-      def line
-      while ((line = readLine(ins)) != "") {
-        def kv = line.split(':', 2);
-        def key = kv[0]
-        def value = kv[1]
-        if (!result.containsKey(key)) {
-          result[key] = []
-        }
-        if (value.charAt(0) == ' ') {
-          value = value.substring(1);
-        }
-        result[key] += value
-      }
-      result
-  }
-
-  def soc
-
-  static Thread dirOwner
+  static MultiplexedInputStream mxStdIn = new MultiplexedInputStream();
+  static ChunkedOutputStream mxStdOut = new ChunkedOutputStream('o' as char);
+  static ChunkedOutputStream mxStdErr = new ChunkedOutputStream('e' as char);
 
   static currentDir = null;
+
+  static readLine(InputStream is) {
+    StringBuffer result = new StringBuffer()
+    int ch;
+    while ((ch = is.read()) != '\n') {
+      if (ch == -1) {
+        return result.toString();
+      }
+      result.append((char)ch);
+    }
+    return result.toString();
+  }
+
+  static Map<String, List<String>> readHeaders(ins) {
+    def result = [:]
+    def line
+    while ((line = readLine(ins)) != "") {
+      def kv = line.split(':', 2);
+      def key = kv[0]
+      def value = kv[1]
+      if (!result.containsKey(key)) {
+        result[key] = []
+      }
+      if (value.charAt(0) == ' ') {
+        value = value.substring(1);
+      }
+      result[key] += value
+    }
+    result
+  }
+
   def getCurrentDir() {
     currentDir
   }
@@ -121,7 +134,6 @@ class GroovyServer implements Runnable {
       currentDir = dir
       if (System.getProperty('user.dir') != currentDir) {
         System.setProperty('user.dir', currentDir)
-        dirOwner = Thread.currentThread()
         PlatformMethods.chdir(currentDir)
         addClasspath(currentDir)
       }
@@ -145,10 +157,10 @@ class GroovyServer implements Runnable {
     }
   }
 
-  def setupStandardStreams(ins, outs) {
-    System.setIn(new MultiplexedInputStream(ins));
-    System.setOut(new PrintStream(new ChunkedOutputStream(outs, 'o' as char)));
-    System.setErr(new PrintStream(new ChunkedOutputStream(outs, 'e' as char)));
+  static setupStandardStreams(ins, out, err) {
+    System.setIn(ins);
+    System.setOut(new PrintStream(out));
+    System.setErr(new PrintStream(err));
   }
 
   def process(headers) {
@@ -171,7 +183,7 @@ class GroovyServer implements Runnable {
 
   def checkHeaders(headers) {
     assert headers[HEADER_CURRENT_WORKING_DIR] != null &&
-       headers[HEADER_CURRENT_WORKING_DIR][0]
+    headers[HEADER_CURRENT_WORKING_DIR][0]
   }
 
   def sendExit(outs, status) {
@@ -179,12 +191,34 @@ class GroovyServer implements Runnable {
     outs.write("\n".bytes);
   }
 
+  def ensureAllThreadToStop() {
+    ThreadGroup tg = Thread.currentThread().threadGroup;
+    Thread[] threads = new Thread[tg.activeCount()];
+    int tcount = tg.enumerate(threads);
+    while (tcount != threads.size()) {
+      threads = new Thread[tg.activeCount()];
+      tcount = tg.enumerate(threads);
+    }
+    for (int i=0; i<threads.size(); i++) {
+      if (threads[i] != Thread.currentThread() && threads[i].isAlive()) {
+        if (threads[i].isDaemon()) {
+          threads[i].interrupt();
+        }
+        else {
+          threads[i].interrupt()
+          threads[i].join();
+        }
+      }
+    }
+  }
+
+
   void run() {
     try {
       soc.withStreams { ins, outs ->
         try {
           Map<String, List<String>> headers = readHeaders(ins);
-          setupStandardStreams(ins, outs);
+
           if (System.getProperty("groovyserver.verbose") == "true") {
             headers.each {k,v ->
               originalErr.println " $k = $v"
@@ -199,7 +233,14 @@ class GroovyServer implements Runnable {
             throw new GroovyServerException("Can't change current directory because of another session running on different dir: "+headers[HEADER_CURRENT_WORKING_DIR][0]);
           }
           setCurrentDir(cwd);
+
+          ThreadGroup tg = Thread.currentThread().threadGroup
+          mxStdIn.bind(ins, tg)
+          mxStdOut.bind(outs, tg)
+          mxStdErr.bind(outs, tg)
+
           process(headers);
+          ensureAllThreadToStop()
           sendExit(outs, 0)
         }
         catch (ExitException e) {
@@ -224,20 +265,21 @@ class GroovyServer implements Runnable {
   }
 
   static void main(String[] args) {
-
     def port = DEFAULT_PORT;
 
     if (System.getProperty('groovy.server.port') != null) {
       port = Integer.parseInt(System.getProperty('groovy.server.port'))
     }
 
+    def key = new File(System.getenv('HOME')+'/.groovy/groovyserver/key').text
     System.setProperty('groovy.runningmode', "server")
 
     System.setSecurityManager(new NoExitSecurityManager2());
 
     def serverSocket = new ServerSocket(port)
 
-    Thread worker = null;
+    setupStandardStreams(mxStdIn, mxStdOut, mxStdErr)
+    
     while (true) {
       def soc = serverSocket.accept()
 
@@ -252,7 +294,8 @@ class GroovyServer implements Runnable {
         // by thread instance. In the other words, threads can't be pooled.
         // So this 'new Thread()' is nesessary.
         //
-        worker = new Thread(new GroovyServer(soc:soc));
+        ThreadGroup tg = new ThreadGroup("groovyserver"+soc);
+        Thread worker = new Thread(tg, new GroovyServer(soc:soc), "worker");
         worker.start()
       }
       else {

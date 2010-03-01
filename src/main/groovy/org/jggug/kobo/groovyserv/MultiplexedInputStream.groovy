@@ -19,18 +19,18 @@ import static org.jggug.kobo.groovyserv.GroovyServer.originalErr;
 
 class MultiplexedInputStream extends InputStream {
 
-  static WeakHashMap<Thread, InputStream>map = [:]
+  static WeakHashMap<ThreadGroup, InputStream>map = [:]
 
   private InputStream check(InputStream ins) {
     if (ins == null) {
-      throw new IllegalStateException("System.in can't access from this thread: "+Thread.currentThread()+":"+Thread.currentThread().id)
+      throw new IllegalStateException("System.in can't access from this thread: "+Thread.currentThread()+":"+Thread.currentThread().id);
     }
     return ins;
   }
 
   @Override
   public int read() throws IOException {
-    InputStream ins = check(map[Thread.currentThread()])
+    InputStream ins = check(map[Thread.currentThread().getThreadGroup()]);
     int result = ins.read();
     if (result != -1 && System.getProperty("groovyserver.verbose") == "true") {
       byte[] b = [result];
@@ -44,7 +44,7 @@ class MultiplexedInputStream extends InputStream {
 
   @Override
   public int read(byte[] b, int off, int len) throws IOException {
-    InputStream ins = check(map[Thread.currentThread()])
+    InputStream ins = check(map[Thread.currentThread().getThreadGroup()]);
     int result = ins.read(b, off, len);
     if (result != 0 && System.getProperty("groovyserver.verbose") == "true") {
       GroovyServer.originalErr.println("Client==>Server");
@@ -57,57 +57,80 @@ class MultiplexedInputStream extends InputStream {
 
   @Override
   public int available() throws IOException {
-    InputStream ins = check(map[Thread.currentThread()])
-    return ins.available()
+    InputStream ins = check(map[Thread.currentThread().getThreadGroup()]);
+    return ins.available();
   }
 
   @Override
   public void close() throws IOException {
-    InputStream ins = check(map[Thread.currentThread()])
-    ins.close()
+    InputStream ins = check(map[Thread.currentThread().getThreadGroup()]);
+    ins.close();
   }
 
   @Override
   public void mark(int readlimit) {
-    InputStream ins = check(map[Thread.currentThread()])
-    ins.mark()
+    InputStream ins = check(map[Thread.currentThread().getThreadGroup()]);
+    ins.mark();
   }
 
   @Override
   public void reset() throws IOException {
-    InputStream ins = check(map[Thread.currentThread()])
-    ins.reset()
+    InputStream ins = check(map[Thread.currentThread().getThreadGroup()]);
+    ins.reset();
   }
 
   @Override
   public boolean markSupported() {
-    InputStream ins = check(map[Thread.currentThread()])
-    ins.markSupported()
+    InputStream ins = check(map[Thread.currentThread().getThreadGroup()]);
+    ins.markSupported();
   }
 
-  public MultiplexedInputStream(InputStream ins) {
-    def pos = new PipedOutputStream()
-    def pis = new PipedInputStream(pos)
-    Thread worker = new Thread({
-        while (true) {
-          def headers = GroovyServer.readHeaders(ins)
-          def size = Integer.parseInt(headers[ChunkedOutputStream.HEADER_SIZE][0])
-          if (size == 0) {
-            pos.close()
-            return;
-          }
-          for (int i=0; i<size; i++) {
-            int ch = ins.read()
-            if (ch == -1) {
-              break;
+  public void bind(InputStream ins, ThreadGroup tg) {
+    def pos = new PipedOutputStream();
+    def pis = new PipedInputStream(pos);
+    Thread streamCopyWorker = new Thread({
+        try{
+          while (true) {
+            def headers = GroovyServer.readHeaders(ins);
+            def sizeHeader = headers[ChunkedOutputStream.HEADER_SIZE];
+            if (sizeHeader != null) {
+              def size = Integer.parseInt(sizeHeader[0]);
+              if (size == 0) {
+                pos.close();
+                return;
+              }
+              for (int i=0; i<size; i++) {
+                int ch = ins.read();
+                if (ch == -1) {
+                  break;
+                }
+                pos.write(ch);
+              }
+              pos.flush();
             }
-            pos.write(ch);
+            else {
+              pos.close();
+              return;
+            }
           }
-          pos.flush();
         }
-      } as Runnable)
-    map[Thread.currentThread()] = pis
-    worker.start();
+        catch (java.net.SocketException e) {
+          if (System.getProperty("groovyserver.verbose") == "true") {
+            GroovyServer.originalErr.println("ins closed.");
+          }
+        }
+        catch (Throwable t) {
+          if (System.getProperty("groovyserver.verbose") == "true") {
+            GroovyServer.originalErr.println("t="+t);
+          }
+        }
+      } as Runnable, "streamWorker");
+    map[Thread.currentThread().getThreadGroup()] = pis;
+    streamCopyWorker.setDaemon(true);
+    streamCopyWorker.start();
+  }
+
+  public MultiplexedInputStream() {
   }
 
 }

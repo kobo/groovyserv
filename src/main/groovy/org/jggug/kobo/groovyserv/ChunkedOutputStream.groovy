@@ -22,24 +22,24 @@ class ChunkedOutputStream extends OutputStream {
 
   char streamIdentifier;
 
-  static WeakHashMap<Thread, OutputStream>map = [:]
+  static WeakHashMap<ThreadGroup, OutputStream>map = [:]
 
   private OutputStream check(OutputStream outs) {
     if (outs == null) {
-      throw new IllegalStateException("System.out/err can't access from this thread: "+Thread.currentThread()+":"+Thread.currentThread().id)
+      throw new IllegalStateException("System.out/err can't access from this thread: "+Thread.currentThread()+":"+Thread.currentThread().id+":"+Thread.currentThread().getThreadGroup())
     }
     return outs
   }
 
   @Override
   public void flush() throws IOException {
-    OutputStream outs = check(map[Thread.currentThread()])
+    OutputStream outs = check(map[Thread.currentThread().getThreadGroup()])
     outs.flush();
   }
 
   @Override
   public void close() throws IOException {
-    OutputStream outs = check(map[Thread.currentThread()])
+    OutputStream outs = check(map[Thread.currentThread().getThreadGroup()])
     outs.close();
   }
 
@@ -52,7 +52,7 @@ class ChunkedOutputStream extends OutputStream {
 
   @Override
   public void write(byte[] b, int off, int len) {
-    OutputStream outs = check(map[Thread.currentThread()])
+    OutputStream outs = check(map[Thread.currentThread().getThreadGroup()])
     if (System.getProperty("groovyserver.verbose") == "true") {
       GroovyServer.originalErr.println("Server==>Client");
       GroovyServer.originalErr.println(" id="+streamIdentifier);
@@ -66,8 +66,11 @@ class ChunkedOutputStream extends OutputStream {
     outs.write(b, off, len);
   }
 
-  public ChunkedOutputStream(OutputStream outs, char id) {
-    map[Thread.currentThread()] = outs
+  public void bind(OutputStream outs, ThreadGroup tg) {
+    map[tg] = outs
+  }
+
+  public ChunkedOutputStream(char id) {
     streamIdentifier = id;
   }
 

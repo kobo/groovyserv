@@ -326,7 +326,7 @@ int session(int fd)
         // Process exit
         char* status = find_header(headers, HEADER_KEY_STATUS, size);
         if (status != NULL) {
-      int stat = atoi(status);
+          int stat = atoi(status);
           return stat;
         }
 
@@ -353,10 +353,11 @@ int session(int fd)
   }
 }
 
-static int fd;
+static int fd_soc;
 
 static void signal_handler(int sig) {
-  close(fd);
+  write(fd_soc, "Size: 0\n\n", 9);
+  close(fd_soc);
   exit(0);
 }
 
@@ -391,8 +392,11 @@ void start_server(int argn, char** argv) {
   while (p > groovyserver_path && *p != '/') {
     p--;
   }
-  sprintf(p, "/groovyserver >> %s/.groovy/groovyserver/groovyserver.log 2>&1", 
-		  getenv("HOME"));
+  if (*p == '/') {
+    p++;
+  }
+  strcpy(p, "groovyserver");
+  strcat(p, " >> ~/.groovy/groovyserver/groovyserver.log 2>&1");
   system(groovyserver_path);
   sleep(3);
 }
@@ -404,12 +408,21 @@ void start_server(int argn, char** argv) {
 int main(int argn, char** argv) {
   signal(SIGINT, signal_handler);
 
+<<<<<<< HEAD
   while ((fd = open_socket(DESTSERV, DESTPORT)) == -1) {
+=======
+  while ((fd_soc = open_socket(DESTSERV, DESTPORT)) == -1) {
+>>>>>>> d763fd82247d880084c3503984cc0f8df76baebb
     fprintf(stderr, "starting server..\n");
     start_server(argn, argv);
   }
 
+<<<<<<< HEAD
   send_header(fd, argn, argv);
   int status = session(fd);
+=======
+  send_header(fd_soc, argn, argv);
+  int status = session(fd_soc);
+>>>>>>> d763fd82247d880084c3503984cc0f8df76baebb
   exit(status);
 }

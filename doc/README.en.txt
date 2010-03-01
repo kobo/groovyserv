@@ -22,6 +22,16 @@ Some IDE might might support incremental compilation, but for writing
 and small script like tools, filters, by using editor, groovyserver is
 useful.
 
+
+================
+Security WARNING
+================
+
+This server have a possibility to run any groovy script from client.
+Connection is limited to from same machine (localhost),
+but still there is a risk some malicious script invoked by
+someone else who logged in your host.
+
 ==========
 System requirements
 ==========
@@ -93,13 +103,13 @@ Following aliases might be useful also.
 Differences
 ================
 
-* You can't use multiple different current directory concurrentry.  If
-  execute two or more groovy client at the same time, and assign
-  different current directry like follwing, using subshell, the
-  current directory specified for groovyclient that started after
-  overwrite before one.
+* You can't use multiple different current directory concurrentry. 
+  If execute two or more groovy client at the same time, and assign
+  different current directry like follwing, using subshell expression,
+  it raises an exception.
 
   $ groovyclient  ... | (cd /tmp; groovyclient .. ) 
+
 
 * A static variable is shared by each groovy program executions.  For
   instance, the system property is shared.
@@ -114,12 +124,6 @@ Differences
   Especially, CLASSPATH is not used. You have to specify it to -cp
   option of groovyclient.
 
-* Standard output and standard input cannot be treated from a new
-  thread.[now working]
-
-* Exit status '201' is reserved. If yo want to exit the Groovy script
-  by status 201, for example "System.exit(201)", the status is
-  converted to fixed number '1' (same as System.exit(1)).
 
 ===================
 groovyserver Options
@@ -142,11 +146,3 @@ Log file
 Groovyserver make logs to:
 
 ~/.groovy/groovyserver/<process ID>.log
-
-================
-Security
-================
-
-Remote execution from groovyclient which running on other machine, but
-invocation from other user from same machine on which GroovyServer
-running.

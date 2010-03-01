@@ -59,7 +59,6 @@ def session(s)
           data = $stdin.read_nonblock(512)
         rescue EOFError
           s.write("Size: 0\n\n")
-          s.write(data)
         else
           s.write("Size: #{data.length}\n\n")
           s.write(data)
