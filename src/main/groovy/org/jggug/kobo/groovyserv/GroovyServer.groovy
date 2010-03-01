@@ -297,13 +297,8 @@ class GroovyServer implements Runnable {
       throw new GroovyServerException("failed to create file:"+file3.path);
     }
 
-    // file3.setReadable(false, false);
-    Process p = "chmod og-rwx '${file3.path}'".execute();
-    p.waitFor();
-    def s = p.getInputStream().text
-    if (p.exitValue() != 0) {
-      throw new GroovyServerException("can't change mode of key file:"+file3.path+":"+s);
-    }
+    file3.setReadable(false, false);
+    file3.setReadable(true, true);
 
     String result = Long.toHexString(new Random().nextLong())
     try {
@@ -315,17 +310,8 @@ class GroovyServer implements Runnable {
       throw new GroovyServerException("can't write to key file:"+file3.path);
     }
 
-    // file3.setReadable(false, false);
-    p = "chmod og-rwx '${file3.path}'".execute();
-    p.waitFor();
-    s = p.getInputStream().text
-    if (p.exitValue() != 0) {
-      throw new GroovyServerException("can't change mode of key file(after):"+file3.path+":"+s);
-    }
-
-    p = "ls -la '${file3.path}'".execute();
-    p.waitFor();
-    s = p.getInputStream().text
+    file3.setReadable(false, false);
+    file3.setReadable(true, true);
 
     return result;
   }

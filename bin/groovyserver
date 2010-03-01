@@ -81,9 +81,9 @@ if $cygwin ; then
   CP=`cygpath --path --mixed "$CP"`
 fi
 
-touch ~/.groovy/groovyserver/key
-chmod og-rwx ~/.groovy/groovyserver/key
-echo $RANDOM$RANDOM$RANDOM$RANDOM$RANDOM > ~/.groovy/groovyserver/key
+#touch ~/.groovy/groovyserver/key
+#chmod og-rwx ~/.groovy/groovyserver/key
+# echo $RANDOM$RANDOM$RANDOM$RANDOM$RANDOM > ~/.groovy/groovyserver/key
 
 CP1=$GROOVYSERV_HOME/lib/groovyserv-0.1-SNAPSHOT.jar:$GROOVYSERV_HOME/lib/jna-3.2.2.jar
 CP2=$GROOVYSERV_HOME/lib/jna-3.2.2.jar
