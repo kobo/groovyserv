@@ -301,7 +301,6 @@ class GroovyServer implements Runnable {
     Process p = "chmod og-rwx '${file3.path}'".execute();
     p.waitFor();
     def s = p.getInputStream().text
-    originalErr.println(s)
     if (p.exitValue() != 0) {
       throw new GroovyServerException("can't change mode of key file:"+file3.path+":"+s);
     }
@@ -320,7 +319,6 @@ class GroovyServer implements Runnable {
     p = "chmod og-rwx '${file3.path}'".execute();
     p.waitFor();
     s = p.getInputStream().text
-    originalErr.println(s)
     if (p.exitValue() != 0) {
       throw new GroovyServerException("can't change mode of key file(after):"+file3.path+":"+s);
     }
@@ -328,7 +326,6 @@ class GroovyServer implements Runnable {
     p = "ls -la '${file3.path}'".execute();
     p.waitFor();
     s = p.getInputStream().text
-    originalErr.println(s)
 
     return result;
   }
