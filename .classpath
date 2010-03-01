@@ -1,19 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry including="**/*.java" kind="src" path="src/main/java"/>
+	<classpathentry kind="src" output="target/groovy-classes" path="src/main/groovy"/>
 	<classpathentry kind="src" path="src/test/groovy"/>
 	<classpathentry kind="src" path="src/main/c"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/ant/ant/1.7.1/ant-1.7.1.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/ant/ant-launcher/1.7.1/ant-launcher-1.7.1.jar"/>
 	<classpathentry kind="var" path="M2_REPO/commons-cli/commons-cli/1.2/commons-cli-1.2.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/codehaus/groovy/maven/gmaven-common/1.0-rc-3/gmaven-common-1.0-rc-3.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/codehaus/groovy/maven/feature/gmaven-feature-api/1.0-rc-3/gmaven-feature-api-1.0-rc-3.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/codehaus/groovy/maven/feature/gmaven-feature-support/1.0-rc-3/gmaven-feature-support-1.0-rc-3.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/codehaus/groovy/maven/runtime/gmaven-runtime-1.5/1.0-rc-3/gmaven-runtime-1.5-1.0-rc-3.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/codehaus/groovy/maven/runtime/gmaven-runtime-api/1.0-rc-3/gmaven-runtime-api-1.0-rc-3.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/codehaus/groovy/maven/runtime/gmaven-runtime-default/1.0-rc-3/gmaven-runtime-default-1.0-rc-3.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/codehaus/groovy/maven/runtime/gmaven-runtime-support/1.0-rc-3/gmaven-runtime-support-1.0-rc-3.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/codehaus/groovy/groovy-all-minimal/1.5.6/groovy-all-minimal-1.5.6.jar"/>
 	<classpathentry kind="var" path="M2_REPO/jline/jline/0.9.94/jline-0.9.94.jar"/>
 	<classpathentry kind="var" path="M2_REPO/net/java/dev/jna/jna/3.2.2/jna-3.2.2.jar"/>
 	<classpathentry kind="var" path="M2_REPO/junit/junit/3.8.1/junit-3.8.1.jar"/>
@@ -22,5 +15,6 @@
 	<classpathentry kind="var" path="M2_REPO/org/slf4j/slf4j-api/1.5.0/slf4j-api-1.5.0.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="con" path="GROOVY_SUPPORT"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

@@ -43,6 +43,7 @@
 const char * const HEADER_KEY_CURRENT_WORKING_DIR = "Cwd";
 const char * const HEADER_KEY_ARG = "Arg";
 const char * const HEADER_KEY_CP = "Cp";
+const char * const HEADER_KEY_COOKIE = "Cookie";
 
 /* response headers */
 const char * const HEADER_KEY_CHANNEL = "Channel";
@@ -104,7 +105,7 @@ int open_socket(char* server_name, int server_port) {
  * command line arguments, and CLASSPATH environment variable
  * to the server.
  */
-void send_header(int fd, int argn, char** argv) {
+void send_header(int fd, int argn, char** argv, char* cookie) {
   char read_buf[BUFFER_SIZE];
   char* p = read_buf;
   int i;
@@ -124,9 +125,11 @@ void send_header(int fd, int argn, char** argv) {
   p += strlen(cwd);
   *p++ = '\n';
 
+  p += sprintf(p, "%s: %s\n", HEADER_KEY_COOKIE, cookie);
+
   // send command line arguments.
   for (i=1; i<argn; i++) {
-    p += sprintf(p, "%s: %s\n", HEADER_KEY_ARG, argv[i]);
+	p+= sprintf(p, "%s: %s\n", HEADER_KEY_ARG, argv[i]);
     // TODO: check buffer overrrun
   }
 
@@ -394,18 +397,36 @@ void start_server(int argn, char** argv) {
 }
 
 /*
+ * read authentication cookie. 
+ */
+void read_cookie(char* cookie, int size) {
+  char path[MAX_PATH];
+  sprintf(path, "%s/%s", getenv("HOME"), ".groovy/groovyserver/key");
+  FILE* fp = fopen(path, "r");
+  if (fgets(cookie, size, fp) == NULL) {
+	perror("fgets");
+	exit(1);
+  }
+  fclose(fp);
+  fflush(stdout);
+}
+
+/*
  * main.
  * open socket and initiate session.
  */
 int main(int argn, char** argv) {
   signal(SIGINT, signal_handler);
 
+  char cookie[BUFFER_SIZE];
+  read_cookie(cookie, sizeof(cookie));
+
   while ((fd_soc = open_socket(DESTSERV, DESTPORT)) == -1) {
     fprintf(stderr, "starting server..\n");
     start_server(argn, argv);
   }
 
-  send_header(fd_soc, argn, argv);
+  send_header(fd_soc, argn, argv, cookie);
   int status = session(fd_soc);
   exit(status);
 }

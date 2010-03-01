@@ -92,6 +92,8 @@ class GroovyServer implements Runnable {
   Socket soc;
   String cookie;
 
+  static cookie = null;
+
   static MultiplexedInputStream mxStdIn = new MultiplexedInputStream();
   static ChunkedOutputStream mxStdOut = new ChunkedOutputStream('o' as char);
   static ChunkedOutputStream mxStdErr = new ChunkedOutputStream('e' as char);
@@ -99,15 +101,15 @@ class GroovyServer implements Runnable {
   static currentDir = null;
 
   static readLine(InputStream is) {
-    StringBuffer result = new StringBuffer()
+    ByteArrayOutputStream baos = new ByteArrayOutputStream()
     int ch;
     while ((ch = is.read()) != '\n') {
       if (ch == -1) {
-        return result.toString();
+        return baos.toString();
       }
-      result.append((char)ch);
+      baos.write((byte)ch);
     }
-    return result.toString();
+    return baos.toString();
   }
 
   static Map<String, List<String>> readHeaders(ins) {
@@ -134,8 +136,8 @@ class GroovyServer implements Runnable {
 
   def setCurrentDir(dir) {
     synchronized (GroovyServer.class) {
-      currentDir = dir
-      if (System.getProperty('user.dir') != currentDir) {
+      if (dir != currentDir) {
+        currentDir = dir
         System.setProperty('user.dir', currentDir)
         PlatformMethods.chdir(currentDir)
         addClasspath(currentDir)
@@ -185,9 +187,15 @@ class GroovyServer implements Runnable {
   }
 
   def checkHeaders(headers) {
-    assert headers[HEADER_CURRENT_WORKING_DIR] != null &&
-      headers[HEADER_CURRENT_WORKING_DIR][0]
-    assert headers[HEADER_COOKIE] == cookie
+    if (headers[HEADER_CURRENT_WORKING_DIR] == null
+        || headers[HEADER_CURRENT_WORKING_DIR][0] == null) {
+      throw new GroovyServerException("required header cwd unspecified.");
+    }
+    if (cookie == null || headers[HEADER_COOKIE] == null
+        ||  headers[HEADER_COOKIE][0] != cookie) {
+      Thread.sleep(5000);
+      throw new GroovyServerException("authentication failed.");
+    }
   }
 
   def sendExit(outs, status) {
@@ -231,8 +239,7 @@ class GroovyServer implements Runnable {
           checkHeaders(headers)
 
           def cwd = headers[HEADER_CURRENT_WORKING_DIR][0]
-          if (currentDir != null
-              && System.getProperty('user.dir') != cwd) {
+          if (currentDir != null && currentDir != cwd) {
 
             throw new GroovyServerException("Can't change current directory because of another session running on different dir: "+headers[HEADER_CURRENT_WORKING_DIR][0]);
           }
@@ -268,6 +275,66 @@ class GroovyServer implements Runnable {
     }
   }
 
+  static String makeKey() {
+    File file1 = new File(System.getProperty('user.home')+'/.groovy')
+    boolean b = file1.exists()
+    if (!file1.exists()) {
+      if (file1.mkdir() == false) {
+        throw new GroovyServerException("failed to create directory:"+file1.path);
+      }
+    }
+    File file2 = new File(file1.path + '/groovyserver')
+    if (!file2.exists()) {
+      if (file2.mkdir() == false) {
+        throw new GroovyServerException("failed to create directory:"+file2.path);
+      }
+    }
+    File file3 = new File(file2.path + "/key")
+    if (file3.exists()) {
+      if (file3.delete() == false) {
+        throw new GroovyServerException("failed to delete file:"+file3.path);
+      }
+    }
+    if (file3.createNewFile() == false) {
+      throw new GroovyServerException("failed to create file:"+file3.path);
+    }
+
+    // file3.setReadable(false, false);
+    Process p = "chmod og-rwx '${file3.path}'".execute();
+    p.waitFor();
+    def s = p.getInputStream().text
+    if (p.exitValue() != 0) {
+      throw new GroovyServerException("can't change mode of key file:"+file3.path+":"+s);
+    }
+
+    String result = Long.toHexString(new Random().nextLong())
+    try {
+      FileOutputStream dos = new FileOutputStream(file3)   
+      dos.write(result.getBytes());
+      dos.close();
+    }
+    catch (IOException e) {
+      throw new GroovyServerException("can't write to key file:"+file3.path);
+    }
+
+    // file3.setReadable(false, false);
+    p = "chmod og-rwx '${file3.path}'".execute();
+    p.waitFor();
+    s = p.getInputStream().text
+    if (p.exitValue() != 0) {
+      throw new GroovyServerException("can't change mode of key file(after):"+file3.path+":"+s);
+    }
+
+    p = "ls -la '${file3.path}'".execute();
+    p.waitFor();
+    s = p.getInputStream().text
+
+    return result;
+  }
+
+  /*
+   * main()
+   */
   static void main(String[] args) {
     def port = DEFAULT_PORT;
 
@@ -275,12 +342,13 @@ class GroovyServer implements Runnable {
       port = Integer.parseInt(System.getProperty('groovy.server.port'))
     }
 
-    def key = new File(System.getenv('HOME')+'/.groovy/groovyserver/key').text
     System.setProperty('groovy.runningmode', "server")
 
     System.setSecurityManager(new NoExitSecurityManager2());
 
     def serverSocket = new ServerSocket(port)
+
+    cookie = makeKey()
 
     setupStandardStreams(mxStdIn, mxStdOut, mxStdErr)
     
