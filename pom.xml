@@ -54,6 +54,7 @@
           <outputDirectory>
             ${project.build.outputDirectory}/../groovy-classes
           </outputDirectory>
+		  <sourceEncoding>UTF-8</sourceEncoding>
         </configuration>
 
         <version>1.0-rc-3</version>
