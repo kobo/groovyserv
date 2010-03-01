@@ -131,9 +131,8 @@ class GroovyServer implements Runnable {
 
   def setCurrentDir(dir) {
     synchronized (GroovyServer.class) {
-      currentDir = dir
-      if (System.getProperty('user.dir') != currentDir) {
-        System.setProperty('user.dir', currentDir)
+      if (dir != currentDir) {
+        currentDir = dir
         PlatformMethods.chdir(currentDir)
         addClasspath(currentDir)
       }
@@ -227,8 +226,7 @@ class GroovyServer implements Runnable {
           checkHeaders(headers)
 
           def cwd = headers[HEADER_CURRENT_WORKING_DIR][0]
-          if (currentDir != null
-              && System.getProperty('user.dir') != cwd) {
+          if (currentDir != null && currentDir != cwd) {
 
             throw new GroovyServerException("Can't change current directory because of another session running on different dir: "+headers[HEADER_CURRENT_WORKING_DIR][0]);
           }
