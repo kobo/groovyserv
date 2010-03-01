@@ -90,9 +90,7 @@ class GroovyServer implements Runnable {
   static OutputStream originalErr = System.err;
 
   Socket soc;
-  String cookie;
-
-  static cookie = null;
+  String cookie = null;
 
   static MultiplexedInputStream mxStdIn = new MultiplexedInputStream();
   static ChunkedOutputStream mxStdOut = new ChunkedOutputStream('o' as char);
@@ -348,7 +346,7 @@ class GroovyServer implements Runnable {
 
     def serverSocket = new ServerSocket(port)
 
-    cookie = makeKey()
+    def key = makeKey()
 
     setupStandardStreams(mxStdIn, mxStdOut, mxStdErr)
     

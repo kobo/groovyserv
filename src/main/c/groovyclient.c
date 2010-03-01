@@ -400,7 +400,7 @@ void start_server(int argn, char** argv) {
  * read authentication cookie. 
  */
 void read_cookie(char* cookie, int size) {
-  char path[MAX_PATH];
+  char path[MAXPATHLEN];
   sprintf(path, "%s/%s", getenv("HOME"), ".groovy/groovyserver/key");
   FILE* fp = fopen(path, "r");
   if (fgets(cookie, size, fp) == NULL) {
