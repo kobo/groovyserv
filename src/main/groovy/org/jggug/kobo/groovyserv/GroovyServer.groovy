@@ -78,6 +78,7 @@ class GroovyServer implements Runnable {
   final static String HEADER_ARG = "Arg";
   final static String HEADER_CP = "Cp";
   final static String HEADER_STATUS = "Status";
+  final static String HEADER_COOKIE = "Cookie";
   final static int DEFAULT_PORT = 1961;
 
   final int CR = 0x0d;
@@ -88,6 +89,8 @@ class GroovyServer implements Runnable {
   static OutputStream originalErr = System.err;
 
   Socket soc;
+
+  static cookie = null;
 
   static MultiplexedInputStream mxStdIn = new MultiplexedInputStream();
   static ChunkedOutputStream mxStdOut = new ChunkedOutputStream('o' as char);
@@ -133,6 +136,7 @@ class GroovyServer implements Runnable {
     synchronized (GroovyServer.class) {
       if (dir != currentDir) {
         currentDir = dir
+        System.setProperty('user.dir', currentDir)
         PlatformMethods.chdir(currentDir)
         addClasspath(currentDir)
       }
@@ -181,8 +185,15 @@ class GroovyServer implements Runnable {
   }
 
   def checkHeaders(headers) {
-    assert headers[HEADER_CURRENT_WORKING_DIR] != null &&
-    headers[HEADER_CURRENT_WORKING_DIR][0]
+    if (headers[HEADER_CURRENT_WORKING_DIR] == null
+        || headers[HEADER_CURRENT_WORKING_DIR][0] == null) {
+      throw new GroovyServerException("required header cwd unspecified.");
+    }
+    if (cookie == null || headers[HEADER_COOKIE] == null
+        ||  headers[HEADER_COOKIE][0] != cookie) {
+      Thread.sleep(5000);
+      throw new GroovyServerException("authentication failed.");
+    }
   }
 
   def sendExit(outs, status) {
@@ -262,6 +273,69 @@ class GroovyServer implements Runnable {
     }
   }
 
+  static String makeKey() {
+    File file1 = new File(System.getProperty('user.home')+'/.groovy')
+    boolean b = file1.exists()
+    if (!file1.exists()) {
+      if (file1.mkdir() == false) {
+        throw new GroovyServerException("failed to create directory:"+file1.path);
+      }
+    }
+    File file2 = new File(file1.path + '/groovyserver')
+    if (!file2.exists()) {
+      if (file2.mkdir() == false) {
+        throw new GroovyServerException("failed to create directory:"+file2.path);
+      }
+    }
+    File file3 = new File(file2.path + "/key")
+    if (file3.exists()) {
+      if (file3.delete() == false) {
+        throw new GroovyServerException("failed to delete file:"+file3.path);
+      }
+    }
+    if (file3.createNewFile() == false) {
+      throw new GroovyServerException("failed to create file:"+file3.path);
+    }
+
+    // file3.setReadable(false, false);
+    Process p = "chmod og-rwx '${file3.path}'".execute();
+    p.waitFor();
+    def s = p.getInputStream().text
+    originalErr.println(s)
+    if (p.exitValue() != 0) {
+      throw new GroovyServerException("can't change mode of key file:"+file3.path+":"+s);
+    }
+
+    String result = Long.toHexString(new Random().nextLong())
+    try {
+      FileOutputStream dos = new FileOutputStream(file3)   
+      dos.write(result.getBytes());
+      dos.close();
+    }
+    catch (IOException e) {
+      throw new GroovyServerException("can't write to key file:"+file3.path);
+    }
+
+    // file3.setReadable(false, false);
+    p = "chmod og-rwx '${file3.path}'".execute();
+    p.waitFor();
+    s = p.getInputStream().text
+    originalErr.println(s)
+    if (p.exitValue() != 0) {
+      throw new GroovyServerException("can't change mode of key file(after):"+file3.path+":"+s);
+    }
+
+    p = "ls -la '${file3.path}'".execute();
+    p.waitFor();
+    s = p.getInputStream().text
+    originalErr.println(s)
+
+    return result;
+  }
+
+  /*
+   * main()
+   */
   static void main(String[] args) {
     def port = DEFAULT_PORT;
 
@@ -269,12 +343,13 @@ class GroovyServer implements Runnable {
       port = Integer.parseInt(System.getProperty('groovy.server.port'))
     }
 
-    def key = new File(System.getenv('HOME')+'/.groovy/groovyserver/key').text
     System.setProperty('groovy.runningmode', "server")
 
     System.setSecurityManager(new NoExitSecurityManager2());
 
     def serverSocket = new ServerSocket(port)
+
+    cookie = makeKey()
 
     setupStandardStreams(mxStdIn, mxStdOut, mxStdErr)
     

@@ -36,6 +36,9 @@ def session(s)
   ARGV.each {|it|
     s.puts("Arg: "+it)
   }
+  f = open(ENV['HOME']+"/.groovy/groovyserver/key")
+  s.puts("Cookie: "+f.read)
+  f.close()
   s.puts("")
 
   while true do
