@@ -11,18 +11,20 @@ class EncodingTest extends GroovyTestCase {
   static final String NL = System.getProperty("line.separator");
   static final String FS = System.getProperty("file.separator");
 
-  void testExec() {
-    def cmd = """bin${FS}groovyclient src/test/groovy/org/jggug/kobo/groovyserv/enchelper.groovy"""
-    Process p = cmd.execute()
-    p.waitFor();
-    if (p.exitValue() == 201) {
-      assert false : "server may not be running"
-    }
+  static executeClient(String line) {
+	  def cmd = """bin${FS}groovyclient $line """;
+	  Process p = cmd.execute();
+	  p.waitFor();
+	  return p.getInputStream().text
+  }
 
-    assert p.getInputStream().text == "あいうえお"+NL
-    p.getErrorStream().eachLine {
-      assert false: "error output returned from the server: "+it
-    }
+  static executeClientScript(String script) {
+	  return executeClient("""-e "$script" """);
+  }
+
+  void testExec() {
+	  assert executeClientScript("println 'あいうえお'") == "あいうえお" + NL
+	  assert executeClient("src/test/groovy/org/jggug/kobo/groovyserv/enchelper.groovy") == "あいうえお" + NL
   }
 
 }

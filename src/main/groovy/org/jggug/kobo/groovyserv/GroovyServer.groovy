@@ -96,15 +96,15 @@ class GroovyServer implements Runnable {
   static currentDir = null;
 
   static readLine(InputStream is) {
-    StringBuffer result = new StringBuffer()
+    ByteArrayOutputStream baos = new ByteArrayOutputStream()
     int ch;
     while ((ch = is.read()) != '\n') {
       if (ch == -1) {
-        return result.toString();
+        return baos.toString();
       }
-      result.append((char)ch);
+      baos.write((byte)ch);
     }
-    return result.toString();
+    return baos.toString();
   }
 
   static Map<String, List<String>> readHeaders(ins) {

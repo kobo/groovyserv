@@ -126,13 +126,7 @@ void send_header(int fd, int argn, char** argv) {
 
   // send command line arguments.
   for (i=1; i<argn; i++) {
-//	p+= sprintf(p, "%s: %s\n", HEADER_KEY_ARG, argv[i]);
-	char*pp = p;
-	strcat(p, HEADER_KEY_ARG);
-	strcat(p, ": ");
-	strcat(p, argv[i]);
-	strcat(p, "\n");
-	p += strlen(p);
+	p+= sprintf(p, "%s: %s\n", HEADER_KEY_ARG, argv[i]);
     // TODO: check buffer overrrun
   }
 
