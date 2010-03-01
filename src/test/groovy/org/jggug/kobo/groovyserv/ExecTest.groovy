@@ -12,7 +12,7 @@ class ExecTest extends GroovyTestCase {
   static final String FS = System.getProperty("file.separator");
 
   void testExec() {
-    def cmd = """bin${FS}groovyclient.exe -e "println('hello')" """
+    def cmd = """bin${FS}groovyclient -e "println('hello')" """
     Process p = cmd.execute()
     p.waitFor()
     if (p.exitValue() == 201) {
@@ -30,7 +30,7 @@ class ExecTest extends GroovyTestCase {
   }
 
   void testMultiLineWrite() {
-    def cmd = """bin${FS}groovyclient.exe -e "[0,1,2].each{println(it)}" """
+    def cmd = """bin${FS}groovyclient -e "[0,1,2].each{println(it)}" """
     Process p = cmd.execute()
     p.waitFor()
     if (p.exitValue() == 201) {
@@ -46,7 +46,7 @@ class ExecTest extends GroovyTestCase {
   }
 
   void testMultiLineRead() {
-    def cmd = """bin${FS}groovyclient.exe -e "System.in.eachLine{println(it+it)}" """
+    def cmd = """bin${FS}groovyclient -e "System.in.eachLine{println(it+it)}" """
     Process p = cmd.execute()
     def os =  p.getOutputStream()
     os.write("A${NL}B${NL}".getBytes())
