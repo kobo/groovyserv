@@ -12,14 +12,14 @@ class EncodingTest extends GroovyTestCase {
   static final String FS = System.getProperty("file.separator");
 
   void testExec() {
-    def cmd = """bin${FS}groovyclient.exe -e "println('Ç†Ç¢Ç§Ç¶Ç®')" """
+    def cmd = """bin${FS}groovyclient src/test/groovy/org/jggug/kobo/groovyserv/enchelper.groovy"""
     Process p = cmd.execute()
     p.waitFor();
     if (p.exitValue() == 201) {
       assert false : "server may not be running"
     }
 
-    assert p.getInputStream().text == "Ç†Ç¢Ç§Ç¶Ç®"+NL
+    assert p.getInputStream().text == "„ÅÇ„ÅÑ„ÅÜ„Åà„Åä"+NL
     p.getErrorStream().eachLine {
       assert false: "error output returned from the server: "+it
     }

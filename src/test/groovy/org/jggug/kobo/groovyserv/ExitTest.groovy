@@ -31,14 +31,4 @@ class ExitTest extends GroovyTestCase {
     assert p.exitValue() == 33
   }
 
-  void testExit15() {
-    def cmd = """bin${FS}groovyclient.exe -e "System.exit(15)" """
-    // 15 is reserverd value.
-    Process p = cmd.execute();
-    p.waitFor();
-    if (p.exitValue() == 15) {
-      assert false : "server may not be running"
-    }
-    assert p.exitValue() == 1
-  }
 }

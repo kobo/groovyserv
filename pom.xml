@@ -51,9 +51,12 @@
         <groupId>org.codehaus.groovy.maven</groupId>
         <artifactId>gmaven-plugin</artifactId>
         <configuration>
+<!--
           <outputDirectory>
             ${project.build.outputDirectory}/../groovy-classes
+            ${project.build.outputDirectory}
           </outputDirectory>
+-->
         </configuration>
 
         <version>1.0-rc-3</version>

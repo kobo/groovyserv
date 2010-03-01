@@ -133,8 +133,6 @@ void send_header(int fd, int argn, char** argv) {
 	strcat(p, argv[i]);
 	strcat(p, "\n");
 	p += strlen(p);
-	printf("pp=%s\n", pp);
-	printf("len(pp)=%d\n", strlen(pp));
     // TODO: check buffer overrrun
   }
 
@@ -408,21 +406,12 @@ void start_server(int argn, char** argv) {
 int main(int argn, char** argv) {
   signal(SIGINT, signal_handler);
 
-<<<<<<< HEAD
-  while ((fd = open_socket(DESTSERV, DESTPORT)) == -1) {
-=======
   while ((fd_soc = open_socket(DESTSERV, DESTPORT)) == -1) {
->>>>>>> d763fd82247d880084c3503984cc0f8df76baebb
     fprintf(stderr, "starting server..\n");
     start_server(argn, argv);
   }
 
-<<<<<<< HEAD
-  send_header(fd, argn, argv);
-  int status = session(fd);
-=======
   send_header(fd_soc, argn, argv);
   int status = session(fd_soc);
->>>>>>> d763fd82247d880084c3503984cc0f8df76baebb
   exit(status);
 }
