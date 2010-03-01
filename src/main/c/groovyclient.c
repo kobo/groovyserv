@@ -126,7 +126,15 @@ void send_header(int fd, int argn, char** argv) {
 
   // send command line arguments.
   for (i=1; i<argn; i++) {
-    p += sprintf(p, "%s: %s\n", HEADER_KEY_ARG, argv[i]);
+//	p+= sprintf(p, "%s: %s\n", HEADER_KEY_ARG, argv[i]);
+	char*pp = p;
+	strcat(p, HEADER_KEY_ARG);
+	strcat(p, ": ");
+	strcat(p, argv[i]);
+	strcat(p, "\n");
+	p += strlen(p);
+	printf("pp=%s\n", pp);
+	printf("len(pp)=%d\n", strlen(pp));
     // TODO: check buffer overrrun
   }
 
@@ -383,8 +391,8 @@ void start_server(int argn, char** argv) {
   while (p > groovyserver_path && *p != '/') {
     p--;
   }
-  strcpy(p, "/groovyserver");
-  strcat(p, " >> ~/.groovy/groovyserver/groovyserver.log 2>&1");
+  sprintf(p, "/groovyserver >> %s/.groovy/groovyserver/groovyserver.log 2>&1", 
+		  getenv("HOME"));
   system(groovyserver_path);
   sleep(3);
 }
@@ -397,17 +405,8 @@ int main(int argn, char** argv) {
   signal(SIGINT, signal_handler);
 
   while ((fd = open_socket(DESTSERV, DESTPORT)) == -1) {
-    if (argn == 2 && strcmp(argv[1], "RUOK") == 0) {
-      exit(SERVER_NOT_RUNNING);
-    }
     fprintf(stderr, "starting server..\n");
     start_server(argn, argv);
-  }
-
-  if (argn == 2 && strcmp(argv[1], "RUOK") == 0) {
-    char *cmd_line[] = {argv[0], "-e", "println('RUOK?');"};
-    argv = cmd_line;
-    argn = sizeof(cmd_line)/sizeof(cmd_line[0]);
   }
 
   send_header(fd, argn, argv);
