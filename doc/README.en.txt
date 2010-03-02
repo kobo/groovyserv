@@ -1,148 +1,223 @@
-GroovyServer README
+GroovyServer 0.1 README
+March 3th, 2010
 
 ==========
 Introduction
 ==========
 
-GroovyServer reduce startup time of groovy runtime by running groovy
-as a TCP/IP server. If you know gnuserv/gnuclient of GNU Emacs,
-groovyserver/groovyclient is almost the same as it.
+GroovyServer make startup time quicker, by pre-invoking groovy as a
+TCP/IP server.
 
-====================
-Why groovyserver?
-====================
+(If you know gnuserv/gnuclient, this is like that.)
 
-If you use groovy as scripting language, turn around time of
-try-and-run loop is very important, because such routine work is done
-very frequently. Quick initiation are more necessary in dynamic
-language, more than in static type languages, because you have to find
-type-error at runtime, not compile time,  in many cases.
-
-Some IDE might might support incremental compilation, but for writing
-and small script like tools, filters, by using editor, groovyserver is
-useful.
-
-
-================
-Security WARNING
-================
-
-This server have a possibility to run any groovy script from client.
-Connection is limited to from same machine (localhost),
-but still there is a risk some malicious script invoked by
-someone else who logged in your host.
+For writing script, for example by using groovy, quick response is
+very important. Because it has less static type checking, try-and-run
+loop is repeated frequently. Sometimes 2 seconds or even 1 second
+might be intolerable.
 
 ==========
 System requirements
 ==========
 
-In Windows environment, cygwin is required.
-I also tested it in MacOS X 10.x enviornment.
+GroovyServer develoed for follwing environment.
+
+ - Windows XP+cygwin
+ - Mac OS X 10.5/6
+ - Linux
+
+Please report if it runs on other environment/OS.
+
+=========
+Language
+=========
+
+The Server is written in Java with JNA(Java Native Access.)
+Two type of clients are implemented, one is written in C
+and another is written in Ruby.
+
+================
+Security
+================
+
+GroovyServer have a possibility to run any groovy script from client.
+So server-client connection is limited to the connection from the same
+machine (localhost). And the connection is authenticated by simple
+cookie mechanism. The cookie file is stored at ~/.groovy/groovyserv/key
+and the file mode set to 0400. But in Windows environment, it have no
+effect. So set suitable protection to the file if needed in Windows.
 
 ================
 Version of Groovy
 ================
 
-It confirms the operation by 1.7- RC-1 and 1.6.6. 
+ 1.6 or later.
+
+================================
+Install from binary package
+================================
+
+Download and expand GroovyServer distribution package
+
+  groovyserv-0.1-SNAPSHOT-win32-bin.zip
+
+or 
+
+  groovyserv-0.1-SNAPSHOT-macosx-bin.zip
+
+to any directory. For example:
+
+ > mkdir ~/opt
+ > cd ~/opt
+ > unzip -l groovyserv-0.1-SNAPSHOT-win32-bin.zip
+
+and add bin directory to PATH environment variables.
+bash/bourne shell example is:
+
+ export PATH=~/opt/groovyserv-0.1-SNAPSHOT/bin:$PATH
+
+Setting is all. And then invoke groovyclient then groovyserver starts
+in background. First time, you might have to wait for a few seconds to
+startup.
+
+ > groovyclient -v
+ starting server..
+ Groovy Version: 1.7.0 JVM: 1.6.0_13
+
+
+========================
+Build from source
+========================
+
+Download and expand GroovyServer source package
+groovyserv-0.1-SNAPSHOT-src.zip to any directory.
+For example:
+
+ > mkdir -p ~/opt/src
+ > cd ~/opt/src
+ > unzip -l groovyserv-0.1-SNAPSHOT-src.zip
+
+compile with Maven2.
+
+ > cd ~/opt/src/groovyserv-0.1-SNAPSHOT/
+ > mvn clean compile
+
+In Mac OS or Linux environment,
+
+  ~/opt/src/groovyserv-0.1-SNAPSHOT/bin/groovyclient
+
+will generated. In Windows environment
+
+  ~/opt/src/groovyserv-0.1-SNAPSHOT/bin/groovyclient.exe
+
+will generated. If some tests fail,
+
+ > mvn -Dmaven.test.skip=true clean compile
+
+make skip tests.
 
 ========
-Install
+TIPS
 ========
 
-Expand GroovyServer distribution package.  "$GROOVYSERV_HOME" means
-the directory where expand the GroovyServer distribution package.
+Following aliases might be useful.
 
-  $ unzip groovyserv-1.x.x.zip
-
-========
-Compile
-========
-
-To compile groovyserver, Maven is required. To compile from source
-package:
-
-$ cd $GROOVYSERV_HOME
-$ mvn compile
-
-========
-Test
-========
-
-Set PATH environment variable to:
-
- PATH=$GROOVYSERV_HOME/bin:$PATH
-
-For test installation is succeeded, run following:
-
-$GROOVYSERV_HOME/bin/groovyclient.exe -v
-
-if no problem, followings will output :
-
- Groovy Version: 1.7-rc-2 JVM: 1.6.0_13
-
-First time, You have to wait for a few seconds because GroovyServer
-starts background.
+  alias groovy=groovyclient
+  alias groovyc="groovyclient -e 'org.codehaus.groovy.tools.FileSystemCompiler.main(args)'"
+  alias groovysh="groovyclient -e 'groovy.ui.InteractiveShell.main(args)'"
+  alias groovyConsole="groovyclient -e 'groovy.ui.Console.main(args)'"
 
 ================
 How to use
 ================
 
-You can use 'groovyclient' command as replacement of 'groovy'
-command. And if you like, following aliases might useful.
+You can use 'groovyclient' command as a replacement of 'groovy'
+command. if the server is not running, it starts automatically.
 
- alias groovy=groovyclient
+You can invoke it explicitly.
 
-Following aliases might be useful also.
+ > groovyserver
 
- alias groovyc="groovyclient -e 'org.codehaus.groovy.tools.FileSystemCompiler.main(args)'"
- alias groovysh="groovyclient -e 'groovy.ui.InteractiveShell.main(args)'"
- alias groovyConsole="groovyclient -e 'groovy.ui.Console.main(args)'"
- alias grape="groovyclient -e 'org.codehaus.groovy.tools.GrapeMain.main(args)'"
+About groovyserver command options will be described in following.
 
-================
-Differences
-================
+================================
+Restriction/Differences
+================================
 
-* You can't use multiple different current directory concurrentry. 
-  If execute two or more groovy client at the same time, and assign
-  different current directry like follwing, using subshell expression,
-  it raises an exception.
+* You can't use different current directory concurrently on a server.
+  If execute following, it makes exception.
 
-  $ groovyclient  ... | (cd /tmp; groovyclient .. ) 
+  > groovyclient  ... | (cd /tmp; groovyclient .. ) 
 
+  In this case, following exception thrown:
 
-* A static variable is shared by each groovy program executions.  For
-  instance, the system property is shared.
+    org.jggug.kobo.groovyserv.GroovyServerException: Can't change
+    current directory because of another session running on different
+    dir: ....
 
- $ groovy -e "System.setProperty('a','abc')"
- $ groovy -e "println System.getProperty('a')"
+  If you open 2 or mote console, and use groovyclient simultaneously,
+  the situation is same. But if the running span is not overlapped,
+  there is no problem.
+
+  If needed, you can run multiple groovy server for separated port.
+
+* A static variable is shared among each groovy program
+  executions. For instance, the system property is shared.
+
+ > groovy -e "System.setProperty('a','abc')"
+ > groovy -e "println System.getProperty('a')"
  abc
 
-* -l option (listen TCP port) cannot be used.
-
 * Environment variables when groovyclient is invoked is not used.
-  Especially, CLASSPATH is not used. You have to specify it to -cp
-  option of groovyclient.
+  Groovyserver's environment is used.
+  But CLASSPATH is special, it passed to server and client side
+  value of CLASSPATH is effective.
 
+* Groovy's -cp option value and CLASSPATH value is passed to the
+  server and effective. But it only add to the environment and never
+  removed when the groovy session is over.
 
 ===================
 groovyserver Options
 ===================
 
--q quiet.
--v verbose output. Debugging information etc. are displayed. 
--k Starting GroovyServer is ended. 
+Options are following:
 
-===================
-groovyclient Options
-===================
+  -v verbose output. Debugging information etc. are displayed. 
+  -q quiet.(default)
+  -k kill the running GroovyServer.
+  -r restart GroovyServer.
+  -p <port> specify the port for GroovyServer.
 
-[TBD]
+================
+Port number
+================
+
+To change the port number for which GroovyServer used, you can set it
+to GROOVYSERVER_PORT environment variable.
+
+ > export GROOVYSERVER_PORT=1963
+
+Port number can be specified by using -p option of groovyclient.  -p
+option value is treated prior then GROOVYSERVER_PORT environment
+variable.
 
 ================
 Log file
 ================
 
-Groovyserver make logs to:
+When the GroovyServer invoked by client, those output are logged to:
 
-~/.groovy/groovyserver/<process ID>.log
+~/.groovy/groovyserver/<Process ID>-<Port Number>.log
+
+================
+Support
+================
+
+- github URL
+
+================
+Presented by
+================
+
+- Kobo Project.
+- NTT Software Corp.
