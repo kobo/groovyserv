@@ -73,10 +73,24 @@
           </execution>
 -->
           <execution>
-<!--
+            <id>package</id>
+            <phase>package</phase>
+            <goals>
+              <goal>execute</goal>
+            </goals>
+            <configuration>
+              <source>
+				Process p = "jar -uf target/groovyserv-0.1-SNAPSHOT.jar -C target/groovy-classes .".execute()
+				p.waitFor()
+				println p.inputStream.text
+			  </source>
+            </configuration>
+          </execution>
+
+
+          <execution>
             <id>compile</id>
             <phase>compile</phase>
--->
             <goals>
               <goal>compile</goal>
               <goal>testCompile</goal>
@@ -87,6 +101,14 @@
 
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
+		<!--
+			mvn clean; mvn compile; mvn assembly:assembly
+			mv target/groovyserv-0.1-SNAPSHOT-Windows\ XP-x86-bin.zip \
+			 target/groovyserv-0.1-SNAPSHOT-win32-bin.zip
+			mv target/groovyserv-0.1-SNAPSHOT-Mac\ OS\ X_64.zip \
+ 			  target/groovyserv-0.1-SNAPSHOT-macosx-bin.zip
+			-->
+
         <configuration>
           <descriptors>
             <descriptor>src/main/assembly/bin.xml</descriptor>
@@ -135,6 +157,7 @@
 -->
 
         </executions>
+
       </plugin>
 
       <plugin>
@@ -156,6 +179,16 @@
         <configuration>
           <classesDirectory>
             ${project.build.outputDirectory}/../groovy-classes
+          </classesDirectory>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <classesDirectory>
+            ${project.build.outputDirectory}/../classes
           </classesDirectory>
         </configuration>
       </plugin>
