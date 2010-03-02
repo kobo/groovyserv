@@ -4,98 +4,136 @@ GroovyServer README
 はじめに
 ==========
 
-GroovyServerは、Groovyインタプリタを常駐サーバーとして動作させることで
-groovyコマンドの起動を見た目高速化するものです。groovyコマンドはTCP/IP
-通信を使ってすでに起動しているGroovyランタイムと通信し、結果を出力しま
-す。
+GroovyServerは、Groovy処理系をサーバーとして動作させることでgroovyコマ
+ンドの起動を見た目高速化するものです。groovyコマンドはTCP/IP 通信を使っ
+てすでに起動しているGroovyランタイムと通信し、結果を出力します。
 
 もし、Emacsのemacsserver/Emacsclient(もしくはgnuserver/gnuclient)をご存
 知ならば理解が早いでしょう。
 
-groovyのスクリプトを開発する場合、起動速度がとても重要です。Groovyは動
-的言語であるため、コンパイル時にあらかじめチェックできないエラーについ
-て、実行して初めて判明する場合が多いからです。そのため、実行を繰り返し
-ながら開発をしていくことになります。たとえその起動が1..2秒しかかからな
-くても、体感としてはとても大きく感じられるのではないでしょうか。
+Groovyスクリプトを開発する場合、起動速度がとても重要です。Groovyは動的
+言語であるため、コンパイル時にあらかじめチェックできないエラーについて、
+実行して初めて判明する場合が多いからです。そのため、実行を繰り返しなが
+ら開発をしていくことになります。たとえその起動が1..2秒しかかからなくて
+も、体感としてはとても大きく感じられるのではないでしょうか。
 
 GroovyServerを使うことで、起動時間を短縮し、さくさくと開発を進めていく
-ことができます。Windows XP Core(TM) 2 Duo 2GHzのマシンでは
+ことができます。以下は、Windows XP Core(TM) 2 Duo 2GHzのマシンでの起動
+時間の例です(三回測定した平均値）。
 
+Groovyコマンド(非native版) 2.32 (sec)
+Groovyコマンド(native版)   0.90 (sec)
+GroovyClient               0.10 (sec)
+
+非nateve版と比べると約20倍程度の起動が高速化しています。
 
 ==========
 動作環境
 ==========
 
-UNIX環境およびWindowsのcygwin環境で動作します。UNIX環境についてはMacOS
-Xで動作確認を行っています。
+LinuxおよびWindowsのcygwin, Mac OS X環境で動作確認を行っています。
 
 ================
 Groovyのバージョン
 ================
 
-1.7-RC-1、1.6.6以上で動作確認を行っています。
+Groovy 1.7-RC-1、1.6.6以上で動作確認を行っています。
 
+============================================
+バイナリパッケージからのインストール
+============================================
+
+バイナリパッケージgroovyserv-0.1-SNAPSHOT-win32-bin.zipを適当なフォルダ
+に展開します。例えば、~/optに展開するとします。
+
+ > mkdir ~/opt
+ > cd ~/opt
+ > unzip -l groovyserv-0.1-SNAPSHOT-win32-bin.zip
+
+以降、展開したディレクトリを以降GROOVYSERV_HOMEと呼びます。次に環境変数
+PATHにGROOVYSERV_HOME/binを追加します。仮に、/opt/groovyservに展開した
+場合、以下のように設定します(bashなどの設定)。
+
+ export PATH=~/opt/groovyserv-0.1-SNAPSHOT/bin:$PATH
+
+設定は以上です。groovyclientを実行するとgroovyserverが起動します。
+
+ > groovyclient -v
+ starting server..
+ Groovy Version: 1.7.0 JVM: 1.6.0_13
 
 
 ============================================
-ソースコードでの配布パッケージからのインストール
+ソースコードからのビルド
 ============================================
 
-まず、GroovyServer配布パッケージを展開します。以降では、GroovyServer配
-布パッケージを展開したディレクトリを「$GROOVYSERV_HOME」と表記します。
+まず、GroovyServerのソースコード配布パッケージ
+groovyserv-0.1-SNAPSHOT-src.zip*を展開します。
 
- $ unzip groovyserv-1.x.x.zip
+ > mkdir -p ~/opt/src
+ > cd ~/opt/src
+ > unzip -l groovyserv-0.1-SNAPSHOT-src.zip
 
-mavenを使ってコンパイルします。
+Maven2を使ってコンパイルします。
 
- $ cd $GROOVYSERV_HOME
- $ mvn compile
+ > cd ~/opt/src/groovyserv-0.1-SNAPSHOT/
+ > mvn clean compile
 
 コンパイルした結果、Linux,Mac OS X環境では
 
- $GROOVYSERV_HOME/bin/groovyclient
+  ~/opt/src/groovyserv-0.1-SNAPSHOT/bin/groovyclient
 
-ができれていればコンパイルに成功しています。
-cygwin Windows環境では生成されるのは
+が、cygwin/Windows環境では
 
- $GROOVYSERV_HOME/bin/groovyclient.exe
+  ~/opt/src/groovyserv-0.1-SNAPSHOT/bin/groovyclient.exe
 
-です。次に、環境変数PATHに「$GROOVYSERV_HOME/bin」が含まれるように変更します。
+ができれていればコンパイルに成功しています。テストで失敗する場合以下の
+ようにしてください。
 
-  export PATH=$GROOVYSERV_HOME/bin:$PATH
+ > mvn -Dmaven.test.skip=true clean compile
 
-以下のようにコマンドラインから打ち込んで確認してみてください。
+バイナリパッケージからのインストールの場合と同じように環境変数PATHを設
+定してください。
 
- $ groovyclient -v
+===============
+その他の設定
+===============
 
-また、groovyコマンドを実行するとgroovyclientコマンドが呼び出されるように、
-以下のようにエイリアス(別名)指定を行っておくと便利です。
-以下はbash用のエイリアスの設定です。
+groovyコマンドを実行するとgroovyclientコマンドが呼び出されるように、以
+下のようにエイリアス(別名)指定を行っておくと便利です。以下はbash用のエ
+イリアスの設定です。
 
   alias groovy=groovyclient
   alias groovyc="groovyclient -e 'org.codehaus.groovy.tools.FileSystemCompiler.main(args)'"
   alias groovysh="groovyclient -e 'groovy.ui.InteractiveShell.main(args)'"
   alias groovyConsole="groovyclient -e 'groovy.ui.Console.main(args)'"
 
-
-============================================
-設定
-============================================
-環境変数HOMEをホームディレクトリに設定してください。
-
 ================
 使い方
 ================
 
-groovyコマンドの代わりにgroovyclientコマンドを実行します。前述のように
-エイリアス指定を行っていれば、エイリアスであるgroovyコマンドを、groovy
-コマンドと思って実行すれば良いです。
+groovyコマンドの代わりにgroovyclientコマンドを実行します。groovyclient
+を実行したとき、groovyserverが起動されていなければ、バックグラウンドで
+groovyserverが起動されます。起動されていない場合、起動のために数秒の待
+ち時間の後、サーバが起動し、実行が行われます。
 
-groovyclientを実行したとき、groovyserverが起動されていなければ、バック
-グラウンドでgroovyserverが起動されます。起動されていない場合、起動のた
-めに数秒の待ち時間の後、サーバが起動し、実行が行われます。
+明示的にgroovyserverを起動しておくこともできます。
 
- $ groovyclient -v
+ > groovyserver
+
+起動オプションに-vを指定すると詳細メッセージが表示されます。
+
+ > groovyserver
+
+すでにgroovyserverが起動している場合、エラーメッセージが表示されます。
+その場合、以下のように終了させて実行するか
+
+ > groovyserver -k
+ > groovyserver
+
+-rオプションを使って再起動することもできます。
+
+ > groovyserver -r
 
 ================
 制限・機能の違い
@@ -105,9 +143,18 @@ groovyclientを実行したとき、groovyserverが起動されていなければ、バック
   イプでつないで２つのGroovyコマンドを実行し、それぞれが異なるカレント
   ディレクトリであるように実行することはできません。
 
-   $  groovy -e "..."   | (cd /tmp; groovy -e "......") 
+ >  groovy -e "..."   | (cd /tmp; groovy -e "......") 
 
-  例外が発生します。
+  この場合例外が発生します。
+
+  org.jggug.kobo.groovyserv.GroovyServerException: Can't change
+  current directory because of another session running on different
+  dir: ....
+
+  複数のコンソールから実行した場合で、それぞれのコンソールで異なるカレ
+  ントディレクトリで実行した場合も同じです。同時に実行中になることがなっ
+  ても ければ、異なるカレントディレクトリで、複数のコンソールから利用し
+  ても問題ありません。
 
 * 静的変数はgroovyプログラム間の実行で共有されます。たとえば、システム
   プロパティが共有されます。
@@ -116,28 +163,19 @@ groovyclientを実行したとき、groovyserverが起動されていなければ、バック
   $ groovy -e "println System.getProperty('a')"
   abc
 
-* -l(listen)オプションは使用できません。
+* 環境変数について、groovyclientコマンドを実行したときのシェルの状態で
+  はなく､groovyserverが実行されたときの環境変数の値が使用されます。環境
+  変数の変更をgroovyコマンドに影響を及ぼすようにするためには、
+  groovyserverを再起動する必要があります。ただし環境変数CLASSPATHの指定
+  はクライアントサイドのものが動的に設定されます。
 
-* groovyの動作に影響を与える環境変数について、groovyclientコマンドを実
-  行したときのシェルの状態ではなく､groovyserverが実行されたときの環境変
-  数の値が使用されます。環境変数の変更をgroovyコマンドに影響を及ぼすよ
-  うにするためには、groovyserverを再起動する必要があります。特に、
-  CLASSPATHの指定はgroovyserverを起動するときに指定する必要があります。
 
-================
-バグ
-================
-
-* groovyclientコマンドをControl-Cなどで強制終了した場合でも、Server上で
-  実行されるGroovyコードは終了しません。特に、標準入力から入力待ちになっ
-  ているようなGroovyプログラムを強制終了したとき、無限の入力待ちとなり
-  ます。groovyserverを終了させる必要があります。
 
 ================
 オプション
 ================
 
-tcpのポート番号はデフォルトでは1961を使用します。変更するには[TBD]
+TCPのポート番号はデフォルトでは1961を使用します。変更するには[TBD]
 GroovyServerの起動オプションは以下のとおり。
 
    -v  冗長表示。デバッグ情報などを表示します。

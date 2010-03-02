@@ -321,11 +321,11 @@ class GroovyServer implements Runnable {
   /*
    * main()
    */
-  static void main(String[] args) {
+  static void processArgs(String[] args) {
     def port = DEFAULT_PORT;
 
-    if (System.getProperty('groovy.server.port') != null) {
-      port = Integer.parseInt(System.getProperty('groovy.server.port'))
+    if (System.getProperty('groovyserver.port') != null) {
+      port = Integer.parseInt(System.getProperty('groovyserver.port'))
     }
 
     System.setProperty('groovy.runningmode', "server")
@@ -357,9 +357,23 @@ class GroovyServer implements Runnable {
         worker.start()
       }
       else {
-        System.err.println("allow connection from loopback address only")
+        originalErr.println("allow connection from loopback address only")
       }
     }
+  }
+
+  /*
+   * main()
+   */
+  static void main(String[] args) {
+    try {
+      processArgs(args);
+    }
+    catch (GroovyServerException e) {
+      originalErr.println(e.getMessage());
+      System.exit(1);
+    }
+    System.exit(0);
   }
 }
 

@@ -374,13 +374,15 @@ void mk_dir(const char* path) {
   }
 }
 
-void start_server(int argn, char** argv) {
+void start_server(int argn, char** argv, int port) {
+  // create directries for logging.
   char path[MAXPATHLEN];
   sprintf(path, "%s/%s", getenv("HOME"), ".groovy");
   mk_dir(path);
   sprintf(path, "%s/%s", getenv("HOME"), ".groovy/groovyserver");
   mk_dir(path);
 
+  // make command line to invoke groovyserver
   char groovyserver_path[MAXPATHLEN];
   strcpy(groovyserver_path, argv[0]);
   char* p = groovyserver_path + strlen(groovyserver_path);
@@ -390,8 +392,10 @@ void start_server(int argn, char** argv) {
   if (*p == '/') {
     p++;
   }
-  strcpy(p, "groovyserver");
+  sprintf(p, "groovyserver -p %d", port);
   strcat(p, " >> ~/.groovy/groovyserver/groovyserver.log 2>&1");
+
+  // start groovyserver.
   system(groovyserver_path);
   sleep(3);
 }
@@ -424,9 +428,18 @@ int main(int argn, char** argv) {
   signal(SIGINT, signal_handler);
   char cookie[BUFFER_SIZE];
 
-  while ((fd_soc = open_socket(DESTSERV, DESTPORT)) == -1) {
+  int port = DESTPORT;
+  char* port_str = getenv("GROOVYSERVER_PORT");
+  if (port_str != NULL) {
+	if (sscanf(port_str, "%d", &port) != 1) {
+	  fprintf(stderr, "port format error\n");
+	  exit(1);
+	}
+  }
+
+  while ((fd_soc = open_socket(DESTSERV, port)) == -1) {
     fprintf(stderr, "starting server..\n");
-    start_server(argn, argv);
+    start_server(argn, argv, port);
   }
   read_cookie(cookie, sizeof(cookie));
 
