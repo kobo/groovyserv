@@ -43,6 +43,8 @@ import org.codehaus.groovy.tools.GroovyStarter;
  *     <cwd> is current working directory.
  *     <arg1><arg2>.. are commandline arguments(optional).
  *     <classpath>.. is the value of environment variable CLASSPATH(optional).
+ *     <cookie> is authentication value which certify client is the user who
+ *              invoked the server.
  *     CRLF is carridge return (0x0d ^M) and line feed (0x0a, '\n').
  *
  * StreamRequest ::=
@@ -234,6 +236,11 @@ class GroovyServer implements Runnable {
               originalErr.println " $k = $v"
             }
           }
+          ThreadGroup tg = Thread.currentThread().threadGroup
+          mxStdIn.bind(ins, tg)
+          mxStdOut.bind(outs, tg)
+          mxStdErr.bind(outs, tg)
+
           checkHeaders(headers)
 
           def cwd = headers[HEADER_CURRENT_WORKING_DIR][0]
@@ -242,11 +249,6 @@ class GroovyServer implements Runnable {
             throw new GroovyServerException("Can't change current directory because of another session running on different dir: "+headers[HEADER_CURRENT_WORKING_DIR][0]);
           }
           setCurrentDir(cwd);
-
-          ThreadGroup tg = Thread.currentThread().threadGroup
-          mxStdIn.bind(ins, tg)
-          mxStdOut.bind(outs, tg)
-          mxStdErr.bind(outs, tg)
 
           process(headers);
           ensureAllThreadToStop()
