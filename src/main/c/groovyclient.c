@@ -403,12 +403,17 @@ void read_cookie(char* cookie, int size) {
   char path[MAXPATHLEN];
   sprintf(path, "%s/%s", getenv("HOME"), ".groovy/groovyserver/key");
   FILE* fp = fopen(path, "r");
-  if (fgets(cookie, size, fp) == NULL) {
-	perror("fgets");
+  if (fp != NULL) {
+	if (fgets(cookie, size, fp) == NULL) {
+	  perror("fgets");
+	  exit(1);
+	}
+	fclose(fp);
+  }
+  else {
+	fprintf(stderr, "cannot open key file\n");
 	exit(1);
   }
-  fclose(fp);
-  fflush(stdout);
 }
 
 /*
@@ -417,14 +422,13 @@ void read_cookie(char* cookie, int size) {
  */
 int main(int argn, char** argv) {
   signal(SIGINT, signal_handler);
-
   char cookie[BUFFER_SIZE];
-  read_cookie(cookie, sizeof(cookie));
 
   while ((fd_soc = open_socket(DESTSERV, DESTPORT)) == -1) {
     fprintf(stderr, "starting server..\n");
     start_server(argn, argv);
   }
+  read_cookie(cookie, sizeof(cookie));
 
   send_header(fd_soc, argn, argv, cookie);
   int status = session(fd_soc);
