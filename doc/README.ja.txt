@@ -1,90 +1,90 @@
 GroovyServer 0.1 README
-2010�N03��02��
+2010年03月02日
 
 ==========
-�͂��߂�
+はじめに
 ==========
 
-GroovyServer�́AGroovy�����n���T�[�o�[�Ƃ��ē��삳���邱�Ƃ�groovy�R�}
-���h�̋N���������ڍ�����������̂ł��Bgroovy�R�}���h��TCP/IP �ʐM���g��
-�Ă��łɋN�����Ă���Groovy�����^�C���ƒʐM���A���ʂ��o�͂��܂��B
+GroovyServerは、Groovy処理系をサーバーとして動作させることでgroovyコマ
+ンドの起動を見た目高速化するものです。groovyコマンドはTCP/IP 通信を使っ
+てすでに起動しているGroovyランタイムと通信し、結果を出力します。
 
-�����AEmacs��emacsserver/Emacsclient(��������gnuserver/gnuclient)������
-�m�Ȃ�Η����������ł��傤�B
+もし、Emacsのemacsserver/Emacsclient(もしくはgnuserver/gnuclient)をご存
+知ならば理解が早いでしょう。
 
-Groovy�X�N���v�g���J������ꍇ�A�N�����x���ƂĂ��d�v�ł��BGroovy�͓��I
-����ł��邽�߁A�R���p�C�����ɂ��炩���߃`�F�b�N�ł��Ȃ��G���[�ɂ��āA
-���s���ď��߂Ĕ�������ꍇ����������ł��B���̂��߁A���s���J��Ԃ��Ȃ�
-��J�������Ă������ƂɂȂ�܂��B���Ƃ����̋N����1..2�b����������Ȃ���
-���A�̊��Ƃ��Ă͂ƂĂ��傫����������̂ł͂Ȃ��ł��傤���B
+Groovyスクリプトを開発する場合、起動速度がとても重要です。Groovyは動的
+言語であるため、コンパイル時にあらかじめチェックできないエラーについて、
+実行して初めて判明する場合が多いからです。そのため、実行を繰り返しなが
+ら開発をしていくことになります。たとえその起動が1..2秒しかかからなくて
+も、体感としてはとても大きく感じられるのではないでしょうか。
 
-GroovyServer���g�����ƂŁA�N�����Ԃ�Z�k���A���������ƊJ����i�߂Ă���
-���Ƃ��ł��܂��B�ȉ��́AWindows XP Core(TM) 2 Duo 2GHz�̃}�V���ł̋N��
-���Ԃ̗�ł�(�O�񑪒肵�����ϒl�j�B
+GroovyServerを使うことで、起動時間を短縮し、さくさくと開発を進めていく
+ことができます。以下は、Windows XP Core(TM) 2 Duo 2GHzのマシンでの起動
+時間の例です(三回測定した平均値）。
 
-Groovy�R�}���h(��native��) 2.32 (sec)
-Groovy�R�}���h(native��)   0.90 (sec)
+Groovyコマンド(非native版) 2.32 (sec)
+Groovyコマンド(native版)   0.90 (sec)
 GroovyClient               0.10 (sec)
 
-��nateve�łƔ�ׂ�Ɩ�20�{���x�̋N�������������Ă��܂��B
+非nateve版と比べると約20倍程度の起動が高速化しています。
 
 ==========
-�����
+動作環境
 ==========
 
-����m�F���s���Ă�����͈ȉ��̂Ƃ���B
+動作確認を行っている環境は以下のとおり。
 
 - Windows XP+cygwin
 - MacOS X 10.5/6
 - Linux
 
-���̊��œ��삵���ꍇ���|�[�g�����������܂��ƍK���ł��B
+他の環境で動作した場合レポートをいただけますと幸いです。
 
 ==========
-����
+言語
 ==========
 
-�T�[�o�T�C�h��Java�A�N���C�A���g��C����N���C�A���g�����Ruby�̃N���C�A
-���g�����ݓ��삵�Ă��܂��B�T�[�o�T�C�h�ł�JNA(Java Native Access)���g�p
-���Ă��܂��B
+サーバサイドはJava、クライアントはC言語クライアントおよびRubyのクライア
+ントが現在動作しています。サーバサイドではJNA(Java Native Access)を使用
+しています。
 
 ================
-�Z�L�����e�B
+セキュリティ
 ================
 
-GroovyServer�ւ̐ڑ��́Alocalhost����݂̂ɐ�������Ă���A���̃}�V����
-���groovyclient�R�}���h���g���Đڑ����邱�Ƃ͂ł��܂���B�܂��A���}�V
-����ł�groovyserver���N���������[�U�[�Ɠ������[�U���s����groovyclient
-�̐ڑ������󂯕t���Ȃ��悤�ɐ���������Ă��܂��B�Ȃ��A������́A�T�[�o
-�����s��Ƃɐ�������閧�̃N�b�L�[���~/.groovy/groovyserv/key �t�@�C��
-�̓��e�𓯂����[�U�݂̂��ǂݏo���邱�ƂɈˑ����Ă��܂��B���̃t�@�C����
-�A�N�Z�X�������AUNIX���ł�owner�ȊO����͓ǂ߂Ȃ��悤�ɐݒ�(chmod
-400)���Ă��܂����AWindows���ł͂��̐ݒ肪�@�\���Ȃ����߁A�K�v�ɉ�����
-���̃��[�U����ǂݏo���Ȃ��悤�ɐݒ肵�Ă��������B
+GroovyServerへの接続は、localhostからのみに制限されており、他のマシンか
+らはgroovyclientコマンドを使って接続することはできません。また、同マシ
+ン上でもgroovyserverを起動したユーザーと同じユーザ実行したgroovyclient
+の接続しか受け付けないように制約をかけています。なお、こ制約は、サーバ
+が実行後とに生成する秘密のクッキー情報~/.groovy/groovyserv/key ファイル
+の内容を同じユーザのみが読み出せることに依存しています。このファイルの
+アクセス制限を、UNIX環境ではowner以外からは読めないように設定(chmod
+400)していますが、Windows環境ではこの設定が機能しないため、必要に応じて
+他のユーザから読み出せないように設定してください。
 
 ================
-Groovy�̃o�[�W����
+Groovyのバージョン
 ================
 
- Groovy 1.6�ȍ~�œ����܂��B
+ Groovy 1.6以降で動きます。
 
 ============================================
-�o�C�i���p�b�P�[�W����̃C���X�g�[��
+バイナリパッケージからのインストール
 ============================================
 
-�o�C�i���p�b�P�[�Wgroovyserv-0.1-SNAPSHOT-win32-bin.zip��K���ȃt�H���_
-�ɓW�J���܂��B�Ⴆ�΁A~/opt�ɓW�J����Ƃ��܂��B
+バイナリパッケージgroovyserv-0.1-SNAPSHOT-win32-bin.zipを適当なフォルダ
+に展開します。例えば、~/optに展開するとします。
 
  > mkdir ~/opt
  > cd ~/opt
  > unzip -l groovyserv-0.1-SNAPSHOT-win32-bin.zip
 
-���Ɋ��ϐ�PATH�ɏ�L�t�H���_�z����bin��ǉ����܂��B���ɁA
-/opt/groovyserv�ɓW�J�����ꍇ�A�ȉ��̂悤�ɐݒ肵�܂�(bash�Ȃǂ̐ݒ�)�B
+次に環境変数PATHに上記フォルダ配下のbinを追加します。仮に、
+/opt/groovyservに展開した場合、以下のように設定します(bashなどの設定)。
 
  export PATH=~/opt/groovyserv-0.1-SNAPSHOT/bin:$PATH
 
-�ݒ�͈ȏ�ł��Bgroovyclient�����s�����groovyserver���N�����܂��B
+設定は以上です。groovyclientを実行するとgroovyserverが起動します。
 
  > groovyclient -v
  starting server..
@@ -92,44 +92,44 @@ Groovy�̃o�[�W����
 
 
 ============================================
-�\�[�X�R�[�h����̃r���h
+ソースコードからのビルド
 ============================================
 
-�܂��AGroovyServer�̃\�[�X�R�[�h�z�z�p�b�P�[�W
-groovyserv-0.1-SNAPSHOT-src.zip*��W�J���܂��B
+まず、GroovyServerのソースコード配布パッケージ
+groovyserv-0.1-SNAPSHOT-src.zip*を展開します。
 
  > mkdir -p ~/opt/src
  > cd ~/opt/src
  > unzip -l groovyserv-0.1-SNAPSHOT-src.zip
 
-Maven2���g���ăR���p�C�����܂��B
+Maven2を使ってコンパイルします。
 
  > cd ~/opt/src/groovyserv-0.1-SNAPSHOT/
  > mvn clean compile
 
-�R���p�C���������ʁALinux,Mac OS X���ł�
+コンパイルした結果、Linux,Mac OS X環境では
 
   ~/opt/src/groovyserv-0.1-SNAPSHOT/bin/groovyclient
 
-���Acygwin/Windows���ł�
+が、cygwin/Windows環境では
 
   ~/opt/src/groovyserv-0.1-SNAPSHOT/bin/groovyclient.exe
 
-���ł���Ă���΃R���p�C���ɐ������Ă��܂��B�e�X�g�Ŏ��s����ꍇ�ȉ���
-�悤�ɂ��Ă��������B
+ができれていればコンパイルに成功しています。テストで失敗する場合以下の
+ようにしてください。
 
  > mvn -Dmaven.test.skip=true clean compile
 
-�o�C�i���p�b�P�[�W����̃C���X�g�[���̏ꍇ�Ɠ����悤�Ɋ��ϐ�PATH���
-�肵�Ă��������B
+バイナリパッケージからのインストールの場合と同じように環境変数PATHを設
+定してください。
 
 ===============
-���̑��̐ݒ�
+その他の設定
 ===============
 
-groovy�R�}���h�����s�����groovyclient�R�}���h���Ăяo�����悤�ɁA��
-���̂悤�ɃG�C���A�X(�ʖ�)�w����s���Ă����ƕ֗��ł��B�ȉ���bash�p�̃G
-�C���A�X�̐ݒ�ł��B
+groovyコマンドを実行するとgroovyclientコマンドが呼び出されるように、以
+下のようにエイリアス(別名)指定を行っておくと便利です。以下はbash用のエ
+イリアスの設定です。
 
   alias groovy=groovyclient
   alias groovyc="groovyclient -e 'org.codehaus.groovy.tools.FileSystemCompiler.main(args)'"
@@ -137,108 +137,108 @@ groovy�R�}���h�����s�����groovyclient�R�}���h���Ăяo�����悤�ɁA��
   alias groovyConsole="groovyclient -e 'groovy.ui.Console.main(args)'"
 
 ================
-�g����
+使い方
 ================
 
-groovy�R�}���h�̑����groovyclient�R�}���h�����s���܂��Bgroovyclient
-�����s�����Ƃ��Agroovyserver���N������Ă��Ȃ���΁A�o�b�N�O���E���h��
-groovyserver���N������܂��B�N������Ă��Ȃ��ꍇ�A�N���̂��߂ɐ��b�̑�
-�����Ԃ̌�A�T�[�o���N�����A���s���s���܂��B
+groovyコマンドの代わりにgroovyclientコマンドを実行します。groovyclient
+を実行したとき、groovyserverが起動されていなければ、バックグラウンドで
+groovyserverが起動されます。起動されていない場合、起動のために数秒の待
+ち時間の後、サーバが起動し、実行が行われます。
 
-�����I��groovyserver���N�����Ă������Ƃ��ł��܂��B
+明示的にgroovyserverを起動しておくこともできます。
 
  > groovyserver
 
-�N���I�v�V������-v���w�肷��Əڍ׃��b�Z�[�W���\������܂��B
+起動オプションに-vを指定すると詳細メッセージが表示されます。
 
  > groovyserver
 
-�N���I�v�V�����ɂ��Ă͌�q���܂��B
+起動オプションについては後述します。
 
 ================
-�����E�@�\�̈Ⴂ
+制限・機能の違い
 ================
 
-* �قȂ�J�����g�f�B���N�g���𓯎��Ɏg�����Ƃ͂ł��܂���B���Ƃ��΁A�p
-  �C�v�łȂ��łQ��Groovy�R�}���h�����s���A���ꂼ�ꂪ�قȂ�J�����g
-  �f�B���N�g���ł���悤�Ɏ��s���邱�Ƃ͂ł��܂���B
+* 異なるカレントディレクトリを同時に使うことはできません。たとえば、パ
+  イプでつないで２つのGroovyコマンドを実行し、それぞれが異なるカレント
+  ディレクトリであるように実行することはできません。
 
    >  groovy -e "..."   | (cd /tmp; groovy -e "......") 
 
-  ���̏ꍇ��O���������܂��B
+  この場合例外が発生します。
 
   org.jggug.kobo.groovyserv.GroovyServerException: Can't change
   current directory because of another session running on different
   dir: ....
 
-  �����̃R���\�[��������s�����ꍇ�ŁA���ꂼ��̃R���\�[���ňقȂ�J��
-  ���g�f�B���N�g���Ŏ��s�����ꍇ�������ł��B�����Ɏ��s���ɂȂ邱�Ƃ���
-  ����΁A�قȂ�J�����g�f�B���N�g���ł����Ă��A�����̃R���\�[�����痘
-  �p���Ă���肠��܂���B
+  複数のコンソールから実行した場合で、それぞれのコンソールで異なるカレ
+  ントディレクトリで実行した場合も同じです。同時に実行中になることがな
+  ければ、異なるカレントディレクトリであっても、複数のコンソールから利
+  用しても問題ありません。
 
-  �K�v�ł���Εʃ|�[�g�ŕ�����GroovyServer���N�����邱�Ƃ��ł��܂��B
+  必要であれば別ポートで複数のGroovyServerを起動することもできます。
 
-* �ÓI�ϐ���groovy�v���O�����Ԃ̎��s�ŋ��L����܂��B���Ƃ��΁A�V�X�e��
-  �v���p�e�B�����L����܂��B
+* 静的変数はgroovyプログラム間の実行で共有されます。たとえば、システム
+  プロパティが共有されます。
 
   > groovyclient -e "System.setProperty('a','abc')"
   > groovyclient -e "println System.getProperty('a')"
   abc
 
-* ���ϐ��ɂ��āAgroovyclient�R�}���h�����s�����Ƃ��̃V�F���̏�Ԃ�
-  �͂Ȃ��groovyserver�����s���ꂽ�Ƃ��̊��ϐ��̒l���g�p����܂��B��
-  �ϐ��̕ύX��groovy�R�}���h�ɉe�����y�ڂ��悤�ɂ��邽�߂ɂ́A
-  groovyserver���ċN������K�v������܂��B���������ϐ�CLASSPATH�̎w��
-  �̓N���C�A���g�T�C�h�̂��̂����I�ɐݒ肳��܂��B
+* 環境変数について、groovyclientコマンドを実行したときのシェルの状態で
+  はなく､groovyserverが実行されたときの環境変数の値が使用されます。環境
+  変数の変更をgroovyコマンドに影響を及ぼすようにするためには、
+  groovyserverを再起動する必要があります。ただし環境変数CLASSPATHの指定
+  はクライアントサイドのものが動的に設定されます。
 
-* groovyclient���s���̊��ϐ�CLASSPATH�l�A�����-cp�I�v�V�����Őݒ肵
-  ���N���X�o�X���͓��I�ɃT�[�o���̃N���X�p�X�ɒǉ�����܂��B�������A
-  ���̂悤�ȓ��I�ȃN���X�p�X���͒ǉ��݂̂��Ȃ���A�폜����邱�Ƃ͂�
-  ��܂���B
+* groovyclient実行時の環境変数CLASSPATH値、および-cpオプションで設定し
+  たクラスバス情報は動的にサーバ側のクラスパスに追加されます。ただし、
+  このような動的なクラスパス情報は追加のみがなされ、削除されることはあ
+  りません。
 
 
 ================================
-groovyserver�̃I�v�V����
+groovyserverのオプション
 ================================
 
-GroovyServer�̋N���I�v�V�����͈ȉ��̂Ƃ���B
+GroovyServerの起動オプションは以下のとおり。
 
-   -v �璷�\���B�f�o�b�O���Ȃǂ�\�����܂��B
-   -q ���b�Z�[�W��\�����Ȃ��B�f�t�H���g�B
-   -k �N�����Ă���GroovyServer���I�������܂��B
-   -r �N�����Ă���GroovyServer���ċN�����܂�(��~+�N��)�B
-   -p <port> GroovyServer���N���C�A���g�Ƃ̒ʐM�Ɏg�p����
-             �|�[�g�ԍ����w�肵�܂��B
+   -v 冗長表示。デバッグ情報などを表示します。
+   -q メッセージを表示しない。デフォルト。
+   -k 起動しているGroovyServerを終了させます。
+   -r 起動しているGroovyServerを再起動します(停止+起動)。
+   -p <port> GroovyServerがクライアントとの通信に使用する
+             ポート番号を指定します。
 
 ================
-�|�[�g�ԍ�
+ポート番号
 ================
 
-�ʐM�Ɏg�p����|�[�g�ԍ���ύX����ɂ́A���ϐ�GROOVYSERVER_PORT��ݒ�
-���Ă��������B
+通信に使用するポート番号を変更するには、環境変数GROOVYSERVER_PORTを設定
+してください。
 
  > export GROOVYSERVER_PORT=1963
 
-�N���C�A���g�ł�-p�I�v�V�����Őݒ肷�邱�Ƃ��ł��܂��B-p �I�v�V�����̐�
-��͊��ϐ��̐ݒ�ɗD�悳��܂��B
+クライアントでは-pオプションで設定することもできます。-p オプションの設
+定は環境変数の設定に優先されます。
 
 
 ================
-���O�t�@�C��
+ログファイル
 ================
 
-~/.groovy/groovyserver/<�v���Z�XID>-<�|�[�g�ԍ�>.log
+~/.groovy/groovyserver/<プロセスID>-<ポート番号>.log
 
-��groovyserver�̃��O�t�@�C�����o�͂���܂��B
-
-================
-�A����
-================
-
-- github��URL
+にgroovyserverのログファイルが出力されます。
 
 ================
-�N���W�b�g
+連絡先
+================
+
+- githubのURL
+
+================
+クレジット
 ================
 
 - Kobo Project.
