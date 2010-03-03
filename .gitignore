@@ -1,0 +1,11 @@
+target
+*.log
+*.class
+*.exe
+work
+*.dSYM
+#*
+.#*
+*.bak
+*~
+bin/groovyclient
