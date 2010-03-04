@@ -55,14 +55,19 @@ GroovyServ (aka GroovyServer) make startup time quicker, by pre-invoking groovy 
 TCP/IP server.(If you know gnuserv/gnuclient, this is like that.)
 </p>
 <p>
-For writing script, for example by using groovy, quick response is
-very important. Because it has less static type checking, try-and-run
-loop is repeated frequently. Sometimes 2 seconds or even 1 second
-might be intolerable.
+
+In the case of scripting in dynamic languages, quick response about
+invocation is very important. Because it has less static type checking
+so you have to repeat try-and-run loop frequently. Sometimes 2 seconds
+or even just 1 second felt be intolerable?
+
 </p>
 <p>
-GroovyServ reduces the stetup time of JVM and groovy runtime
-10 to 20 times faster.
+
+GroovyServ reduces the startup time of JVM and groovy runtime
+significantly. At least 10 to 20 times faster then normal groovy
+invocation.
+
 </p>
 <a href="http://github.com/kobo/groovyserv/raw/master/doc/README.en.txt">read more..</a> ( <a href="http://github.com/kobo/groovyserv/raw/master/doc/README.ja.txt">in japanese</a>  )
 
