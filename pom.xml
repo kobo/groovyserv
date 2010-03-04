@@ -22,7 +22,6 @@
   <groupId>org.jggug.kobo.groovyserv</groupId>
   <artifactId>groovyserv</artifactId>
   <name>GroovyServ Project</name>
-<!--  <version>0.1-SNAPSHOT</version>-->
   <version>0.1</version>
 
   <properties>
@@ -93,7 +92,7 @@
             </goals>
             <configuration>
               <source>
-				Process p = "jar -uf target/groovyserv-0.1-SNAPSHOT.jar -C target/groovy-classes .".execute()
+				Process p = "jar -uf target/groovyserv-0.1.jar -C target/groovy-classes .".execute()
 				p.waitFor()
 				println p.inputStream.text
 			  </source>
@@ -114,14 +113,6 @@
 
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
-		<!--
-			mvn clean; mvn compile; mvn assembly:assembly
-			mv target/groovyserv-0.1-SNAPSHOT-Windows\ XP-x86-bin.zip \
-			 target/groovyserv-0.1-SNAPSHOT-win32-bin.zip
-			mv target/groovyserv-0.1-SNAPSHOT-Mac\ OS\ X_64.zip \
- 			  target/groovyserv-0.1-SNAPSHOT-macosx-bin.zip
-			-->
-
         <configuration>
           <descriptors>
             <descriptor>src/main/assembly/bin.xml</descriptor>
