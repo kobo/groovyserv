@@ -67,22 +67,22 @@ Install from binary package
 
 Download and expand GroovyServer distribution package
 
-  groovyserv-0.1-SNAPSHOT-win32-bin.zip
+  groovyserv-0.1-win32-bin.zip
 
 or 
 
-  groovyserv-0.1-SNAPSHOT-macosx-bin.zip
+  groovyserv-0.1-macosx-bin.zip
 
 to any directory. For example:
 
  > mkdir ~/opt
  > cd ~/opt
- > unzip -l groovyserv-0.1-SNAPSHOT-win32-bin.zip
+ > unzip -l groovyserv-0.1-win32-bin.zip
 
 and add bin directory to PATH environment variables.
 bash/bourne shell example is:
 
- export PATH=~/opt/groovyserv-0.1-SNAPSHOT/bin:$PATH
+ export PATH=~/opt/groovyserv-0.1/bin:$PATH
 
 Setting is all. And then invoke groovyclient then groovyserver starts
 in background. First time, you might have to wait for a few seconds to
@@ -98,25 +98,25 @@ Build from source
 ========================
 
 Download and expand GroovyServer source package
-groovyserv-0.1-SNAPSHOT-src.zip to any directory.
+groovyserv-0.1-src.zip to any directory.
 For example:
 
  > mkdir -p ~/opt/src
  > cd ~/opt/src
- > unzip -l groovyserv-0.1-SNAPSHOT-src.zip
+ > unzip -l groovyserv-0.1-src.zip
 
 compile with Maven2.
 
- > cd ~/opt/src/groovyserv-0.1-SNAPSHOT/
+ > cd ~/opt/src/groovyserv-0.1/
  > mvn clean compile
 
 In Mac OS or Linux environment,
 
-  ~/opt/src/groovyserv-0.1-SNAPSHOT/bin/groovyclient
+  ~/opt/src/groovyserv-0.1/bin/groovyclient
 
 will generated. In Windows environment
 
-  ~/opt/src/groovyserv-0.1-SNAPSHOT/bin/groovyclient.exe
+  ~/opt/src/groovyserv-0.1/bin/groovyclient.exe
 
 will generated. If some tests fail,
 
