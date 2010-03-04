@@ -15,19 +15,20 @@
 # limitations under the License.
 #
 
-function setup() {
+setup() {
   if [ ! -d ~/.groovy/groovyserver ]; then
     mkdir -p ~/.groovy/groovyserver
   fi
 }
 
-function usage() {
+usage() {
   echo Usage: `basename $0` "[options]"
   echo options:
   echo "   -v       verbose"
   echo "   -k       kill server"
   echo "   -r       restart"
   echo "   -p port  listen port"
+  echo 
 }
 
 if [ "x$GROOVY_HOME" = "x" ]; then
@@ -44,35 +45,35 @@ fi
 
 while [ $# -gt 0 ]; do
   case $1 in
-	-q)
+      -q)
 	  export OPT="$OPT -Dgroovyserver.verbose=false"
 	  shift
 	  ;;
-	-v)
+      -v)
 	  export OPT="$OPT -Dgroovyserver.verbose=true"
 	  shift
 	  ;;
-	-p)
-      shift
+      -p)
+	  shift
 	  export PORT=$1
-      shift
-      ;;
-	-[kr])
+	  shift
+	  ;;
+      -[kr])
 	  if [ -f ~/.groovy/groovyserver/pid-$PORT ]; then
-		pid=`cat ~/.groovy/groovyserver/pid-$PORT`
-		kill $pid
-		echo "kill groovy server $pid($PORT)"
-		rm  ~/.groovy/groovyserver/pid-$PORT
+	      pid=`cat ~/.groovy/groovyserver/pid-$PORT`
+	      kill $pid
+	      echo "kill groovy server $pid($PORT)"
+	      rm  ~/.groovy/groovyserver/pid-$PORT
 	  else
-		echo "pid file ~/.groovy/groovyserver/pid-$PORT not found"
+	      echo "pid file ~/.groovy/groovyserver/pid-$PORT not found"
 	  fi
 	  if [ "$1" = "-k" ]; then
-		exit
+	      exit
 	  fi
 	  echo "restart groovy server"
 	  shift
 	  ;;
-    *)
+      *)
 	  usage
       exit
       ;;
@@ -124,7 +125,7 @@ MAIN="org.jggug.kobo.groovyserv.GroovyServer.main(args)"
 CPPROD=$GROOVYSERV_HOME/lib/groovyserv-0.1-SNAPSHOT.jar:$CP2
 CPDEV=$GROOVYSERV_HOME/src/main/groovy:$GROOVYSERV_HOME/target/classes:$CP2
 
-if [ "$DEVELOP" == "" ]; then
+if [ "$DEVELOP" = "" ]; then
   $GROOVY -cp $CPPROD $OPT -Dgroovyserver.port=$PORT -e $MAIN &
 else
   $GROOVY -cp $CPDEV $OPT -Dgroovyserver.port=$PORT -e $MAIN &
@@ -133,6 +134,7 @@ fi
 pid=$!
 
 setup
+
 if ps -p $pid | grep $pid > /dev/null; then
   echo $pid > ~/.groovy/groovyserver/pid-$PORT
 else
