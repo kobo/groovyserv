@@ -5,7 +5,7 @@ March 3th, 2010
 Introduction
 ==========
 
-GroovyServer make startup time quicker, by pre-invoking groovy as a
+GroovyServ make startup time quicker, by pre-invoking groovy as a
 TCP/IP server.
 
 (If you know gnuserv/gnuclient, this is like that.)
@@ -14,6 +14,15 @@ For writing script, for example by using groovy, quick response is
 very important. Because it has less static type checking, try-and-run
 loop is repeated frequently. Sometimes 2 seconds or even 1 second
 might be intolerable.
+
+By using GroovyServ, you can make shorten the invocation time of
+groovy significantly.  followings are time of invocation.  (in Mac
+Windows XP Core(TM) 2 Duo 2GHz, average of 3 times)
+
+  Groovy command(non native)   2.32 (sec)
+  Groovy command(native exe)   0.90 (sec)
+  groovyclient                 0.10 (sec)
+
 
 ==========
 System requirements

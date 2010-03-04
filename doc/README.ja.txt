@@ -18,15 +18,20 @@ Groovyスクリプトを開発する場合、起動速度がとても重要で�
 ら開発をしていくことになります。たとえその起動が1..2秒しかかからなくて
 も、体感としてはとても大きく感じられるのではないでしょうか。
 
-GroovyServerを使うことで、起動時間を短縮し、さくさくと開発を進めていく
-ことができます。以下は、Windows XP Core(TM) 2 Duo 2GHzのマシンでの起動
-時間の例です(三回測定した平均値）。
+GroovyServerを使うことで、Groovyコマンドの起動時間を短縮し、さくさくと
+開発を進めていくことができます。以下は、Windows XP Core(TM) 2 Duo 2GHz
+のマシンでの起動時間の例です(三回測定した平均値）。
 
-Groovyコマンド(非native版) 2.32 (sec)
-Groovyコマンド(native版)   0.90 (sec)
-GroovyClient               0.10 (sec)
+  Groovyコマンド(非native版) 2.32 (sec)
+  Groovyコマンド(native版)   0.90 (sec)
+  groovyclient               0.10 (sec)
 
-非nateve版と比べると約20倍程度の起動が高速化しています。
+非nateve版と比べると約20倍程度、起動が高速化しています。
+
+向上の度合いは実際にはケースバイケースですが、native版があるということ
+と、JQS(Java Quick Start)の存在により、Windows環境は比較的Groovyの実行
+は迅速で差が少なく（といっても10倍はありますが）、UNIX環境の方が差が大
+きくなる傾向はあるようです。
 
 ==========
 動作環境
@@ -36,7 +41,7 @@ GroovyClient               0.10 (sec)
 
 - Windows XP+cygwin
 - MacOS X 10.5/6
-- Linux
+- Ubuntu Linux 9.10
 
 他の環境で動作した場合レポートをいただけますと幸いです。
 
