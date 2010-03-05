@@ -37,7 +37,7 @@ if [ "x$GROOVY_HOME" = "x" ]; then
 fi
 
 export PORT=1961
-export OPT=""
+export JAVA_OPTS
 
 if [ "$GROOVYSERVER_PORT" != "" ]; then
   export PORT=$GROOVYSERVER_PORT
@@ -45,36 +45,37 @@ fi
 
 while [ $# -gt 0 ]; do
   case $1 in
-      -q)
-	  export OPT="$OPT -Dgroovyserver.verbose=false"
-	  shift
-	  ;;
-      -v)
-	  export OPT="$OPT -Dgroovyserver.verbose=true"
-	  shift
-	  ;;
-      -p)
-	  shift
-	  export PORT=$1
-	  shift
-	  ;;
-      -[kr])
-	  if [ -f ~/.groovy/groovyserver/pid-$PORT ]; then
-	      pid=`cat ~/.groovy/groovyserver/pid-$PORT`
-	      kill $pid
-	      echo "kill groovy server $pid($PORT)"
-	      rm  ~/.groovy/groovyserver/pid-$PORT
-	  else
-	      echo "pid file ~/.groovy/groovyserver/pid-$PORT not found"
-	  fi
-	  if [ "$1" = "-k" ]; then
-	      exit
-	  fi
-	  echo "restart groovy server"
-	  shift
-	  ;;
-      *)
-	  usage
+    -q)
+      JAVA_OPTS="$JAVA_OPTS -Dgroovyserver.verbose=false"
+      shift
+      ;;
+    -v)
+      JAVA_OPTS="$JAVA_OPTS -Dgroovyserver.verbose=true"
+      shift
+      ;;
+    -p)
+      shift
+      PORT=$1
+      JAVA_OPTS="$JAVA_OPTS -Dgroovyserver.port=$PORT"
+      shift
+      ;;
+    -[kr])
+      if [ -f ~/.groovy/groovyserver/pid-$PORT ]; then
+        pid=`cat ~/.groovy/groovyserver/pid-$PORT`
+        kill $pid
+        echo "kill groovy server $pid($PORT)"
+        rm  ~/.groovy/groovyserver/pid-$PORT
+      else
+        echo "pid file ~/.groovy/groovyserver/pid-$PORT not found"
+      fi
+      if [ "$1" = "-k" ]; then
+        exit
+      fi
+      echo "restart groovy server"
+      shift
+      ;;
+    *)
+      usage
       exit
       ;;
   esac
@@ -94,42 +95,14 @@ if [ -f ~/.groovy/groovyserver/pid-$PORT ]; then
 fi
 
 GROOVYSERV_HOME=`dirname $0`/..
-
-# OS specific support (must be 'true' or 'false').
-cygwin=false
-msys=false
-darwin=false
-linux=false
-case "`uname`" in
-  CYGWIN* )
-    cygwin=true
-    ;; 
-  Darwin* )
-    darwin=true
-    ;;
-  MINGW* )
-    msys=true
-    ;;
-  Linux* )
-    linux=true
-    ;;
-esac
-
-if $cygwin ; then
-  CP=`cygpath --path --mixed "$CP"`
-fi
-
-GROOVY="$GROOVY_HOME/bin/groovy"
-CP2=$GROOVYSERV_HOME/lib/jna-3.2.2.jar
-MAIN="org.jggug.kobo.groovyserv.GroovyServer.main(args)"
-CPPROD=$GROOVYSERV_HOME/lib/groovyserv-0.1.jar:$CP2
-CPDEV=$GROOVYSERV_HOME/src/main/groovy:$GROOVYSERV_HOME/target/classes:$CP2
+export CLASS_PATH=$GROOVYSERV_HOME/lib/jna-3.2.2.jar
 
 if [ "$DEVELOP" = "" ]; then
-  $GROOVY -cp $CPPROD $OPT -Dgroovyserver.port=$PORT -e $MAIN &
+  CLASS_PATH="$GROOVYSERV_HOME/lib/groovyserv*.jar:$CLASS_PATH"
 else
-  $GROOVY -cp $CPDEV $OPT -Dgroovyserver.port=$PORT -e $MAIN &
+  CLASS_PATH="$GROOVYSERV_HOME/src/main/groovy:$GROOVYSERV_HOME/target/classes:$CLASS_PATH"
 fi
+$GROOVY_HOME/bin/groovy -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)" &
 
 pid=$!
 
