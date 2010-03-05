@@ -122,7 +122,7 @@ fi
 GROOVY="$GROOVY_HOME/bin/groovy"
 CP2=$GROOVYSERV_HOME/lib/jna-3.2.2.jar
 MAIN="org.jggug.kobo.groovyserv.GroovyServer.main(args)"
-CPPROD=$GROOVYSERV_HOME/lib/groovyserv-0.1-SNAPSHOT.jar:$CP2
+CPPROD=$GROOVYSERV_HOME/lib/groovyserv-0.1.jar:$CP2
 CPDEV=$GROOVYSERV_HOME/src/main/groovy:$GROOVYSERV_HOME/target/classes:$CP2
 
 if [ "$DEVELOP" = "" ]; then

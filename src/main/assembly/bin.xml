@@ -38,7 +38,7 @@
 	  <directory>target</directory>
 	  <outputDirectory>/lib</outputDirectory>
       <includes>
-		<include>groovyserv-*-SNAPSHOT.jar</include>
+		<include>groovyserv-*.jar</include>
       </includes>
     </fileSet>
   </fileSets>
