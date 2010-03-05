@@ -15,7 +15,9 @@
   limitations under the License.
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jggug.kobo.groovyserv</groupId>
   <artifactId>groovyserv</artifactId>
@@ -26,15 +28,9 @@
   </properties>
   <dependencies>
     <dependency>
-      <groupId>org.codehaus.groovy.maven.runtime</groupId>
-      <artifactId>gmaven-runtime-default</artifactId>
-      <version>1.0-rc-3</version>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
+      <groupId>org.codehaus.gmaven</groupId>
+      <artifactId>gmaven-plugin</artifactId>
+      <version>1.2</version>
     </dependency>
     <dependency>
       <groupId>commons-cli</groupId>
@@ -46,38 +42,37 @@
       <artifactId>jna</artifactId>
       <version>3.2.2</version>
     </dependency>
+    <dependency>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy</artifactId>
+      <version>1.6.8</version>
+    </dependency>
   </dependencies>
+  <repositories>
+    <repository>
+      <id>codehaus.org</id>
+      <url>http://repository.codehaus.org</url>
+    </repository>
+    <repository>
+      <id>snapshots.codehaus.org</id>
+      <url>http://snapshots.repository.codehaus.org</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </repository>
+  </repositories>
   <build>
     <plugins>
       <plugin>
-        <groupId>org.codehaus.groovy.maven</groupId>
+        <groupId>org.codehaus.gmaven</groupId>
         <artifactId>gmaven-plugin</artifactId>
         <configuration>
-          <outputDirectory>
-            ${project.build.outputDirectory}/../groovy-classes
-          </outputDirectory>
-		  <sourceEncoding>UTF-8</sourceEncoding>
+          <sourceEncoding>UTF-8</sourceEncoding>
         </configuration>
-        <version>1.0-rc-3</version>
         <executions>
           <execution>
-            <id>package</id>
-            <phase>package</phase>
             <goals>
               <goal>execute</goal>
-            </goals>
-            <configuration>
-              <source>
-				Process p = "jar -uf target/groovyserv-0.1.jar -C target/groovy-classes .".execute()
-				p.waitFor()
-				println p.inputStream.text
-			  </source>
-            </configuration>
-          </execution>
-          <execution>
-            <id>compile</id>
-            <phase>compile</phase>
-            <goals>
               <goal>compile</goal>
               <goal>testCompile</goal>
             </goals>
@@ -108,7 +103,7 @@
               <arguments>
                 <argument>-g</argument>
                 <argument>-o</argument>
-                <argument>bin/groovyclient</argument>
+                <argument>${project.build.directory}/groovyclient</argument>
                 <argument>src/main/c/groovyclient.c</argument>
               </arguments>
             </configuration>
@@ -119,30 +114,28 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
+          <source>1.6</source>
+          <target>1.6</target>
           <encoding>UTF-8</encoding>
           <proc>none</proc>
-          <nowarn />
           <compilerArgument>-Xlint:none</compilerArgument>
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.5</version>
         <configuration>
-          <classesDirectory>
-            ${project.build.outputDirectory}/../groovy-classes
-          </classesDirectory>
+          <source>1.6</source>
+          <target>1.6</target>
+          <encoding>UTF-8</encoding>
+          <proc>none</proc>
+          <compilerArgument>-Xlint:none</compilerArgument>
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
+        <artifactId>maven-resources-plugin</artifactId>
         <configuration>
-          <classesDirectory>
-            ${project.build.outputDirectory}/../classes
-          </classesDirectory>
+          <encoding>UTF-8</encoding>
         </configuration>
       </plugin>
     </plugins>

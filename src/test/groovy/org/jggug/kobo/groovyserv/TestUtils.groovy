@@ -17,18 +17,23 @@ package org.jggug.kobo.groovyserv
 
 import groovy.util.GroovyTestCase
 
-/**
- * Tests for the {@code groovyclient}.
- * Before running this, you must start groovyserver.
- */
-class ExitTest extends GroovyTestCase {
+class TestUtils {
 
-    void testExit1() {
-        assertEquals 1,  TestUtils.executeFail(['groovyclient', '-e', '"System.exit(1)"']).exitValue()
+    static execute(command, closure = null) {
+        Process p = command.execute()
+        if (closure) closure.call(p)
+        p.waitFor()
+        //println "$command => ${p.exitValue()}"
+        if (p.exitValue() != 0) {
+            fail "ERROR: in:[${p.in.text}], err:[${p.err.text}]"
+        }
+        return p
     }
 
-    void testExit33() {
-        assertEquals 33, TestUtils.executeFail(['groovyclient', '-e', '"System.exit(33)"']).exitValue()
+    static executeFail(command) {
+        Process p = command.execute()
+        p.waitFor()
+        return p
     }
 
 }

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *         http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,26 +15,28 @@
  */
 package org.jggug.kobo.groovyserv
 
-
 import groovy.util.GroovyTestCase
 
 /**
- * Tests for the {@link org.jggug.kobo.groovyserv.Dump} class.
+ * Tests for the {@code groovyclient}.
  * Before running this, you must start groovyserver.
  */
 class ThreadTest extends GroovyTestCase {
-  static final String NL = System.getProperty("line.separator");
-  static final String FS = System.getProperty("file.separator");
 
-  static executeOnServer(String script) {
-	def cmd = """bin${FS}groovyclient -e "$script" """
-	Process p = cmd.execute()
-	p.waitFor()
-	return p.getInputStream().text
-  }
+    static final String NL = System.getProperty("line.separator")
 
-  void testExec() {
-	assert executeOnServer("new Thread({->println 'output from thread'}as Runnable).start() ") == 'output from thread' + NL
-  }
+    void testExecOneliner() {
+        assertEquals(
+            'output from thread' + NL,
+            TestUtils.execute(["groovyclient", "-e", '"(new Thread({-> println(\'output from thread\') } as Runnable)).start()"']).text
+        )
+    }
+
+    void testExecFile() {
+        assertEquals(
+            'output from thread' + NL,
+            TestUtils.execute(["groovyclient", "src/test/resources/forThreadTest.groovy"]).text
+        )
+    }
 
 }

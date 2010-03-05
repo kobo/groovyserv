@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// if this test fails, please try
-// export _JAVA_OPTIONS=-Dfile.encoding=UTF-8
 
-package org.jggug.kobo.groovyserv
+new Thread(
+    {-> println('output from thread') } as Runnable
+).start()
 
-println "あいうえお"
