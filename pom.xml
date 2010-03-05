@@ -16,49 +16,39 @@
 -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
   <modelVersion>4.0.0</modelVersion>
-
   <groupId>org.jggug.kobo.groovyserv</groupId>
   <artifactId>groovyserv</artifactId>
   <name>GroovyServ Project</name>
   <version>0.1</version>
-
   <properties>
 	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.codehaus.groovy.maven.runtime</groupId>
       <artifactId>gmaven-runtime-default</artifactId>
       <version>1.0-rc-3</version>
     </dependency>
-    
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>commons-cli</groupId>
       <artifactId>commons-cli</artifactId>
       <version>1.2</version>
     </dependency> 
-
     <dependency>
       <groupId>net.java.dev.jna</groupId>
       <artifactId>jna</artifactId>
       <version>3.2.2</version>
     </dependency>
-
   </dependencies>
-
   <build>
     <plugins>
-
       <plugin>
         <groupId>org.codehaus.groovy.maven</groupId>
         <artifactId>gmaven-plugin</artifactId>
@@ -68,22 +58,8 @@
           </outputDirectory>
 		  <sourceEncoding>UTF-8</sourceEncoding>
         </configuration>
-
         <version>1.0-rc-3</version>
         <executions>
-
-<!--
-          <execution>
-            <id>test</id>
-            <phase>test</phase>
-            <goals>
-              <goal>execute</goal>
-            </goals>
-            <configuration>
-              <source>${pom.basedir}/src/test/groovy/org/jggug/kobo/groovyserv/runtest.groovy</source>
-            </configuration>
-          </execution>
--->
           <execution>
             <id>package</id>
             <phase>package</phase>
@@ -98,8 +74,6 @@
 			  </source>
             </configuration>
           </execution>
-
-
           <execution>
             <id>compile</id>
             <phase>compile</phase>
@@ -110,7 +84,6 @@
           </execution>
         </executions>
       </plugin>
-
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
@@ -120,7 +93,6 @@
           </descriptors>
         </configuration>
       </plugin>
-
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
@@ -141,29 +113,8 @@
               </arguments>
             </configuration>
           </execution>
-
-<!--
-          <execution>
-            <id>test</id>
-            <phase>test</phase>
-            <goals>
-              <goal>exec</goal>
-            </goals>
-            <configuration>
-              <executable>groovy</executable>
-              <arguments>
-                <argument>-cp</argument>
-                <argument>target/classes;src/main/groovy;src/test/groovy</argument>
-                <argument>src/test/groovy/org/jggug/kobo/groovyserv/runtest.groovy</argument>
-              </arguments>
-            </configuration>
-          </execution>
--->
-
         </executions>
-
       </plugin>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -176,7 +127,6 @@
           <compilerArgument>-Xlint:none</compilerArgument>
         </configuration>
       </plugin>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
@@ -186,7 +136,6 @@
           </classesDirectory>
         </configuration>
       </plugin>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
@@ -196,8 +145,6 @@
           </classesDirectory>
         </configuration>
       </plugin>
-
     </plugins>
   </build>
-
 </project>
