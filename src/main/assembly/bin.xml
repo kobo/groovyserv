@@ -15,7 +15,7 @@
   limitations under the License.
 -->
 <assembly>
-  <id>${os.name}-${os.arch}-bin</id>
+  <id>${trimmed.os.name}-${os.arch}-bin</id>
   <formats>
     <format>zip</format>
   </formats>

@@ -76,6 +76,18 @@
               <goal>testCompile</goal>
             </goals>
           </execution>
+          <execution>
+            <id>package</id>
+            <phase>package</phase>
+            <goals>
+              <goal>execute</goal>
+            </goals>
+            <configuration>
+              <source>
+                System.properties."trimmed.os.name" = System.properties."os.name".replaceAll(/ /, '')
+              </source>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
       <plugin>
