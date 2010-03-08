@@ -16,7 +16,7 @@
 package org.jggug.kobo.groovyserv
 
 class GroovyServerException extends RuntimeException {
-  GroovyServerException(String s) {
-    super(s);
-  }
+    GroovyServerException(String s) {
+        super(s)
+    }
 }

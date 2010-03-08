@@ -1,7 +1,7 @@
 /*
  * Copyright 2009-2010 the original author or authors.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ * Licensed under the Apache License, Version 2.0 (the "License")
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -17,61 +17,63 @@ package org.jggug.kobo.groovyserv
 
 class ChunkedOutputStream extends OutputStream {
 
-  final static String HEADER_STREAM_ID = "Channel";
-  final static String HEADER_SIZE = "Size";
+    final static String HEADER_STREAM_ID = "Channel"
+    final static String HEADER_SIZE = "Size"
 
-  char streamIdentifier;
+    char streamIdentifier
 
-  static WeakHashMap<ThreadGroup, OutputStream>map = [:]
+    static WeakHashMap<ThreadGroup, OutputStream>map = [:]
 
-  private OutputStream check(OutputStream outs) {
-    if (outs == null) {
-      throw new IllegalStateException("System.out/err can't access from this thread: "+Thread.currentThread()+":"+Thread.currentThread().id+":"+Thread.currentThread().getThreadGroup())
+    public ChunkedOutputStream(char id) {
+        streamIdentifier = id
     }
-    return outs
-  }
 
-  @Override
-  public void flush() throws IOException {
-    OutputStream outs = check(map[Thread.currentThread().getThreadGroup()])
-    outs.flush();
-  }
-
-  @Override
-  public void close() throws IOException {
-    OutputStream outs = check(map[Thread.currentThread().getThreadGroup()])
-    outs.close();
-  }
-
-  @Override
-  public void write(int b) {
-    byte[] buf = new byte[1]
-    buf[0] = (b>>8*0) & 0x0000ff;
-    write(buf, 0, 1);
-  }
-
-  @Override
-  public void write(byte[] b, int off, int len) {
-    OutputStream outs = check(map[Thread.currentThread().getThreadGroup()])
-    if (System.getProperty("groovyserver.verbose") == "true") {
-      GroovyServer.originalErr.println("Server==>Client");
-      GroovyServer.originalErr.println(" id="+streamIdentifier);
-      GroovyServer.originalErr.println(" size="+len);
-      Dump.dump(GroovyServer.originalErr, b, off, len);
+    @Override
+    public void flush() throws IOException {
+        getCurrentOutputStream().flush()
     }
-    //GroovyServer.originalErr.println("TID="+Thread.currentThread().id);
-    outs.write((HEADER_STREAM_ID+": "+streamIdentifier+ "\n").bytes);
-    outs.write((HEADER_SIZE+": " + len+"\n").bytes);
-    outs.write("\n".bytes);
-    outs.write(b, off, len);
-  }
 
-  public void bind(OutputStream outs, ThreadGroup tg) {
-    map[tg] = outs
-  }
+    @Override
+    public void close() throws IOException {
+        getCurrentOutputStream().close()
+    }
 
-  public ChunkedOutputStream(char id) {
-    streamIdentifier = id;
-  }
+    @Override
+    public void write(int b) {
+        byte[] buf = new byte[1]
+        buf[0] = (b>>8*0) & 0x0000ff
+        write(buf, 0, 1)
+    }
 
+    @Override
+    public void write(byte[] b, int off, int len) {
+        OutputStream out = getCurrentOutputStream()
+        if (System.getProperty("groovyserver.verbose") == "true") {
+            GroovyServer.originalErr.println("Server==>Client")
+            GroovyServer.originalErr.println(" id="+streamIdentifier)
+            GroovyServer.originalErr.println(" size="+len)
+            Dump.dump(GroovyServer.originalErr, b, off, len)
+        }
+        //GroovyServer.originalErr.println("TID="+Thread.currentThread().id)
+        out.write((HEADER_STREAM_ID + ": " + streamIdentifier + "\n").bytes)
+        out.write((HEADER_SIZE + ": " + len + "\n").bytes)
+        out.write("\n".bytes)
+        out.write(b, off, len)
+    }
+
+    public void bind(OutputStream out, ThreadGroup tg) {
+        map[tg] = out
+    }
+
+    private OutputStream getCurrentOutputStream() {
+        return check(map[Thread.currentThread().getThreadGroup()])
+    }
+
+    private OutputStream check(OutputStream out) {
+        if (out == null) {
+            throw new IllegalStateException("System.out/err can't access from this thread: " + 
+                Thread.currentThread() + ":" + Thread.currentThread().id + ":" + Thread.currentThread().getThreadGroup())
+        }
+        return out
+    }
 }
