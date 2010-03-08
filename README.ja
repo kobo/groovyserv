@@ -5,12 +5,12 @@ GroovyServ 0.1 README
 はじめに
 ==========
 
-GroovyServは、Groovy処理系をサーバーとして動作させることでgroovyコマン
-ドの起動を見た目上高速化するものです。groovyclientコマンドはTCP/IP 通信
+GroovyServは、Groovy処理系をサーバとして動作させることでgroovyコマンド
+の起動を見た目上高速化するものです。groovyclientコマンドはTCP/IP 通信
 を使ってすでに起動しているGroovyランタイムと通信し、結果を出力します。
 
 もし、Emacsのemacsserver/emacsclient(もしくはgnuserver/gnuclient)をご存
-知ならば理解が早いでしょう。
+知であれば理解が早いでしょう。
 
 Groovyスクリプトを開発する場合、起動速度がとても重要です。Groovyは動的
 言語であるため、コンパイル時にあらかじめチェックできないエラーについて、
@@ -20,7 +20,7 @@ Groovyスクリプトを開発する場合、起動速度がとても重要で�
 
 GroovyServを使うことで、Groovyコマンドの起動時間を短縮し、さくさくと開
 発を進めていくことができます。以下は、Windows XP Core(TM) 2 Duo 2GHz の
-マシンでの起動時間の例です(3回測定した平均値）。
+マシンでの起動時間の参考値です(3回測定した平均値)。
 
   Groovyコマンド(非native版) 2.32 (sec)
   Groovyコマンド(native版)   0.90 (sec)
@@ -30,20 +30,23 @@ GroovyServを使うことで、Groovyコマンドの起動時間を短縮し、�
 
 向上の度合いは実際にはケースバイケースですが、native版があるということ
 と、JQS(Java Quick Start)の存在により、Windows環境は比較的Groovyの実行
-は迅速で差が少なく（といっても10倍はありますが）、UNIX環境の方が差が大
+は迅速で差が少なく(といっても10倍はありますが)、UNIX環境の方が差が大
 きくなる傾向はあるようです。
 
 ==========
 動作環境
 ==========
 
-動作確認を行っている環境は以下のとおり。
+動作確認を行っているOSは以下のとおりです。他の環境で動作した場合レポート
+をいただけますと幸いです。
 
-  - Windows XP+cygwin
-  - MacOS X 10.5/6
+  - Windows XP + cygwin
+  - Mac OS X 10.5/6 (Intel Mac)
   - Ubuntu Linux 9.10
 
-他の環境で動作した場合レポートをいただけますと幸いです。
+また、Groovyのバージョンは以下のとおりです。
+
+  - Groovy 1.6以降
 
 ============
 言語と構成
@@ -72,12 +75,6 @@ groovyclient の接続しか受け付けないように制約をかけていま�
 が機能しないため、必要に応じて他のユーザから読み出せないように設定して
 ください。
 
-====================
-Groovyのバージョン
-====================
-
-  - Groovy 1.6以降
-
 ======================================
 バイナリパッケージからのインストール
 ======================================
@@ -101,7 +98,6 @@ Groovyのバージョン
   starting server..
   Groovy Version: 1.7.0 JVM: 1.6.0_13
 
-
 ==========================
 ソースコードからのビルド
 ==========================
@@ -111,7 +107,7 @@ groovyserv-0.1-src.zipを展開します。
 
   > mkdir -p ~/opt/src
   > cd ~/opt/src
-  > unzip -l groovyserv-0.1-src.zip
+  > unzip groovyserv-0.1-src.zip
 
 Maven2を使ってコンパイルします。
 
@@ -127,19 +123,6 @@ Maven2を使ってコンパイルします。
 のようにテストをスキップすることもできます。
 
   > mvn -Dmaven.test.skip=true clean assembly:assembly
-
-==============
-その他の設定
-==============
-
-groovyコマンドを実行するとgroovyclientコマンドが呼び出されるように、以
-下のようにエイリアス(別名)指定を行っておくと便利です。以下はbash用のエ
-イリアスの設定です。
-
-  alias groovy=groovyclient
-  alias groovyc="groovyclient -e 'org.codehaus.groovy.tools.FileSystemCompiler.main(args)'"
-  alias groovysh="groovyclient -e 'groovy.ui.InteractiveShell.main(args)'"
-  alias groovyConsole="groovyclient -e 'groovy.ui.Console.main(args)'"
 
 ========
 使い方
@@ -170,11 +153,10 @@ groovyserverが起動されます。起動されていない場合、起動の�
 
    >  groovyclient -e "..."   | (cd /tmp; groovyclient -e "......") 
 
-  この場合例外が発生します。
+  この場合、以下の例外が発生します。
 
-  org.jggug.kobo.groovyserv.GroovyServerException: Can't change
-  current directory because of another session running on different
-  dir: ....
+    org.jggug.kobo.groovyserv.GroovyServerException: Can't change current
+    directory because of another session running on different dir: ....
 
   複数のコンソールから実行した場合で、それぞれのコンソールで異なるカレ
   ントディレクトリで実行した場合も同じです。同時に実行中になることがな
@@ -197,7 +179,7 @@ groovyserverが起動されます。起動されていない場合、起動の�
   groovyserverが実行されたときの値が使用されます。環境変数の変更を
   groovyコマンドに影響を及ぼすようにするためには、groovyserverを再起動
   する必要があります。ただし環境変数CLASSPATHの指定はクライアントサイド
-  のものが動的に設定されます（後述）。
+  のものが動的に設定されます(後述)。
 
 * 前述のように、groovyclient実行時の環境変数CLASSPATH値、および-cpオプ
   ションで設定したクラスパス情報は動的にサーバ側のクラスパスに追加され
@@ -237,6 +219,19 @@ GROOVYSERVER_PORTを設定してください。
 groovyserverのログファイルは以下のファイルに出力されます。
 
   ~/.groovy/groovyserver/<プロセスID>-<ポート番号>.log
+
+======
+Tips
+======
+
+groovyコマンドを実行するとgroovyclientコマンドが呼び出されるように、以
+下のようにエイリアス(別名)指定を行っておくと便利です。以下はbash用のエ
+イリアスの設定です。
+
+  alias groovy=groovyclient
+  alias groovyc="groovyclient -e 'org.codehaus.groovy.tools.FileSystemCompiler.main(args)'"
+  alias groovysh="groovyclient -e 'groovy.ui.InteractiveShell.main(args)'"
+  alias groovyConsole="groovyclient -e 'groovy.ui.Console.main(args)'"
 
 ========
 連絡先
