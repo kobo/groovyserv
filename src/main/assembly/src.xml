@@ -23,11 +23,16 @@
     <fileSet>
 	  <directory></directory>
       <includes>
+		<include>.classpath</include>
+		<include>.project</include>
 		<include>pom.xml</include>
 		<include>LICENSE</include>
 		<include>README</include>
 		<include>README.ja</include>
       </includes>
+    </fileSet>
+    <fileSet>
+	  <directory>.settings</directory>
     </fileSet>
     <fileSet>
 	  <directory>src</directory>
