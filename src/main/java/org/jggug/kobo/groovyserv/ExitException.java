@@ -17,10 +17,11 @@
 package org.jggug.kobo.groovyserv;
 
 public class ExitException extends RuntimeException {
-  int exitStatus;
 
-  public ExitException(int stat, String msg) {
-    super(msg);
-    exitStatus = stat;
-  }
+    int exitStatus;
+
+    public ExitException(int stat, String msg) {
+        super(msg);
+        exitStatus = stat;
+    }
 }

@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-//package groovy.ui;
 package org.jggug.kobo.groovyserv;
+
 import groovy.ui.*;
 
 import groovy.lang.GroovyShell;
@@ -39,10 +39,11 @@ import org.codehaus.groovy.runtime.InvokerInvocationException;
 
 /**
  * A Command line to execute groovy.
+ * Based on groovy.ui.GroovyMain at Revision: 12135
  *
  * @author Jeremy Rayner
  * @author Yuri Schimke
- * @version $Revision: 12135 $
+ * @version
  */
 public class GroovyMain2 {
 

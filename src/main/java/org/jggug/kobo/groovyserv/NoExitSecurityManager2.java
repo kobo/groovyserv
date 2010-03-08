@@ -13,25 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-//package org.codehaus.groovy.tools.shell.util;
 package org.jggug.kobo.groovyserv;
 
 import java.security.Permission;
 
 /**
  * Custom security manager to {@link System#exit} (and related) from being used.
+ * Based on org.codehaus.groovy.tools.shell.util.NoExitSecurityManager at Rev: 13768
  *
  * @version $Rev: 13768 $ $Date: 2008-10-17 14:41:08 +0200 (Fr, 17. Okt 2008) $
  */
-public class NoExitSecurityManager2
-    extends SecurityManager
-{
+public class NoExitSecurityManager2 extends SecurityManager {
+
     private final SecurityManager parent;
 
     public NoExitSecurityManager2(final SecurityManager parent) {
-//        assert parent != null;
-
         this.parent = parent;
     }
 
