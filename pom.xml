@@ -23,7 +23,7 @@
   <name>GroovyServ Project</name>
   <version>0.1</version>
   <properties>
-	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <dependencies>
     <dependency>
@@ -63,19 +63,13 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.codehaus.gmaven</groupId>
+        <groupId>org.codehaus.groovy.maven</groupId>
         <artifactId>gmaven-plugin</artifactId>
         <configuration>
           <sourceEncoding>UTF-8</sourceEncoding>
         </configuration>
+        <version>1.0-rc-3</version>
         <executions>
-          <execution>
-            <goals>
-              <goal>execute</goal>
-              <goal>compile</goal>
-              <goal>testCompile</goal>
-            </goals>
-          </execution>
           <execution>
             <id>package</id>
             <phase>package</phase>
@@ -87,6 +81,14 @@
                 System.properties."trimmed.os.name" = System.properties."os.name".replaceAll(/ /, '')
               </source>
             </configuration>
+          </execution>
+          <execution>
+            <id>compile</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>compile</goal>
+              <goal>testCompile</goal>
+            </goals>
           </execution>
         </executions>
       </plugin>
