@@ -15,103 +15,115 @@
 # limitations under the License.
 #
 
-setup() {
-  if [ ! -d ~/.groovy/groovyserver ]; then
-    mkdir -p ~/.groovy/groovyserver
-  fi
-}
-
-usage() {
-  echo Usage: `basename $0` "[options]"
-  echo options:
-  echo "   -v       verbose"
-  echo "   -k       kill server"
-  echo "   -r       restart"
-  echo "   -p port  listen port"
-  echo 
-}
+#-------------------------------------------
+# Setup and Initialize
+#-------------------------------------------
 
 if [ "x$GROOVY_HOME" = "x" ]; then
-  echo "environment variable GROOVY_HOME must be set."
-  exit 1;
+    echo "environment variable GROOVY_HOME must be set."
+    exit 1
 fi
 
-export PORT=1961
-export JAVA_OPTS
+GROOVYSERVER_WORK_DIR=~/.groovy/groovyserver
+if [ ! -d $GROOVYSERVER_WORK_DIR ]; then
+    mkdir -p $GROOVYSERVER_WORK_DIR
+fi
 
+PORT=1961
 if [ "$GROOVYSERVER_PORT" != "" ]; then
-  export PORT=$GROOVYSERVER_PORT
+    export PORT=$GROOVYSERVER_PORT
 fi
+
+#-------------------------------------------
+# Handle arguments
+#-------------------------------------------
 
 while [ $# -gt 0 ]; do
-  case $1 in
-    -q)
-      JAVA_OPTS="$JAVA_OPTS -Dgroovyserver.verbose=false"
-      shift
-      ;;
-    -v)
-      JAVA_OPTS="$JAVA_OPTS -Dgroovyserver.verbose=true"
-      shift
-      ;;
-    -p)
-      shift
-      PORT=$1
-      JAVA_OPTS="$JAVA_OPTS -Dgroovyserver.port=$PORT"
-      shift
-      ;;
-    -[kr])
-      if [ -f ~/.groovy/groovyserver/pid-$PORT ]; then
-        pid=`cat ~/.groovy/groovyserver/pid-$PORT`
-        kill $pid
-        echo "kill groovy server $pid($PORT)"
-        rm  ~/.groovy/groovyserver/pid-$PORT
-      else
-        echo "pid file ~/.groovy/groovyserver/pid-$PORT not found"
-      fi
-      if [ "$1" = "-k" ]; then
-        exit
-      fi
-      echo "restart groovy server"
-      shift
-      ;;
-    *)
-      usage
-      exit
-      ;;
-  esac
+    case $1 in
+        -q)
+            export GROOVYSERV_OPTS="$GROOVYSERV_OPTS -Dgroovyserver.verbose=false"
+            shift
+            ;;
+        -v)
+            export GROOVYSERV_OPTS="$GROOVYSERV_OPTS -Dgroovyserver.verbose=true"
+            shift
+            ;;
+        -p)
+            shift
+            PORT=$1
+            export GROOVYSERV_OPTS="$GROOVYSERV_OPTS -Dgroovyserver.port=$PORT"
+            shift
+            ;;
+        -[kr])
+            GROOVYSERVER_PID_FILE=$GROOVYSERVER_WORK_DIR/pid-$PORT
+            if [ -f $GROOVYSERVER_PID_FILE ]; then
+                PID=`cat $GROOVYSERVER_PID_FILE`
+                kill $PID
+                echo "kill groovy server $PID($PORT)"
+                rm $GROOVYSERVER_PID_FILE
+            else
+                echo "pid file $GROOVYSERVER_PID_FILE not found"
+            fi
+            if [ "$1" = "-k" ]; then
+                exit 0
+            fi
+            echo "restart groovy server"
+            shift
+            ;;
+        *)
+            echo "Usage: `basename $0` [options]"
+            echo "options:"
+            echo "  -v       verbose output. print debugging information etc."
+            echo "  -q       quiet (default)"
+            echo "  -k       kill the running groovyserver"
+            echo "  -r       restart groovyserver"
+            echo "  -p port  specify the port for groovyserver"
+            exit 1
+            ;;
+    esac
 done
 
-if [ -f ~/.groovy/groovyserver/pid-$PORT ]; then
-  pid=`cat ~/.groovy/groovyserver/pid-$PORT`
-  if ! ps -p $pid | grep $pid > /dev/null; then
-    rm ~/.groovy/groovyserver/pid-$PORT
-  else
-    echo Groovy server already running, pid is `cat ~/.groovy/groovyserver/pid-$PORT`.
-    echo To kill the server, run "groovyserver -k".
-    echo If groovy server does not ruuning actually,
-    echo retry after removing file ~/.groovy/groovyserver/pid-$PORT.
-    exit
-  fi
+#-------------------------------------------
+# Check multi invoking
+#-------------------------------------------
+
+GROOVYSERVER_PID_FILE=$GROOVYSERVER_WORK_DIR/pid-$PORT
+if [ -f $GROOVYSERVER_PID_FILE ]; then
+    PID=`cat $GROOVYSERVER_PID_FILE`
+    if ! ps -p $PID | grep $PID > /dev/null; then
+        rm $GROOVYSERVER_PID_FILE
+    else
+        echo "ERROR: Groovy server already running, pid is $PID."
+        echo "To kill the server, run \"groovyserver -k\"."
+        echo "If groovy server does not ruuning actually,"
+        echo "retry after removing file $GROOVYSERVER_PID_FILE."
+        exit 1
+    fi
 fi
+
+#-------------------------------------------
+# Invoke server
+#-------------------------------------------
 
 GROOVYSERV_HOME=`dirname $0`/..
-export CLASS_PATH=$GROOVYSERV_HOME/lib/jna-3.2.2.jar
-
-if [ "$DEVELOP" = "" ]; then
-  CLASS_PATH="$GROOVYSERV_HOME/lib/groovyserv*.jar:$CLASS_PATH"
-else
-  CLASS_PATH="$GROOVYSERV_HOME/src/main/groovy:$GROOVYSERV_HOME/target/classes:$CLASS_PATH"
+CP="$GROOVYSERV_HOME/lib/jna-3.2.2.jar:$CP"
+CP="$GROOVYSERV_HOME/lib/groovyserv-0.1.jar:$CP"
+if [ "$DEVELOP" != "" ]; then
+    CP="$GROOVYSERV_HOME/src/main/groovy:$GROOVYSERV_HOME/target/classes:$GROOVYSERV_HOME/target/lib/*:$CP"
 fi
-$GROOVY_HOME/bin/groovy -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)" &
+$GROOVY_HOME/bin/groovy -cp $CP $GROOVYSERV_OPTS -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)" &
 
-pid=$!
+#-------------------------------------------
+# Store PID
+#-------------------------------------------
 
-setup
-
-if ps -p $pid | grep $pid > /dev/null; then
-  echo $pid > ~/.groovy/groovyserver/pid-$PORT
+PID=$!
+if ps -p $PID | grep $PID > /dev/null; then
+    echo $PID > $GROOVYSERVER_PID_FILE
 else
-  exit
+    echo "ERROR: cannot store PID to file $GROOVYSERVER_PID_FILE"
+    exit 1
 fi
 
-echo "groovy server $pid($PORT) is successfully started."
+echo "groovy server $PID($PORT) is successfully started."
+
