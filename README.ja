@@ -20,7 +20,7 @@ Groovyスクリプトを開発する場合、起動速度がとても重要で�
 
 GroovyServを使うことで、Groovyコマンドの起動時間を短縮し、さくさくと開
 発を進めていくことができます。以下は、Windows XP Core(TM) 2 Duo 2GHz の
-マシンでの起動時間の参考値です(3回測定した平均値)。
+マシンでの起動時間Groovy 1.7.0での参考値です(3回測定した平均値)。
 
   Groovyコマンド(非native版) 2.32 (sec)
   Groovyコマンド(native版)   0.90 (sec)
