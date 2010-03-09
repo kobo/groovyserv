@@ -1,78 +1,71 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-
-	<title>kobo/GroovyServer_test @ GitHub</title>
-	
-	<style type="text/css">
-		body {
-  		margin-top: 1.0em;
-  		background-color: #930f1a;
-		  font-family: "Helvetica,Arial,FreeSans";
-  		color: #ffffff;
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <title>GroovyServ @ GitHub</title>
+  <style type="text/css">
+    body {
+      margin-top: 1.0em;
+      background-color: #eeeeee;
+      font-family: "Helvetica,Arial,FreeSans";
+      color: #222222;
     }
     #container {
-      margin: 0 auto;
-      width: 700px;
+        margin: 0 auto;
+        width: 700px;
     }
-		h1 { font-size: 3.8em; color: #6cf0e5; margin-bottom: 3px; }
-		h1 .small { font-size: 0.4em; }
-		h1 a { text-decoration: none }
-		h2 { font-size: 1.5em; color: #6cf0e5; }
-    h3 { text-align: center; color: #6cf0e5; }
-    a { color: #6cf0e5; }
+    h1 { font-size: 3.8em; color: #333333; margin-bottom: 3px; }
+    h1 .small { font-size: 0.4em; }
+    h1 a { text-decoration: none }
+    h2 { font-size: 1.5em; color: #333333; }
+    h3 { text-align: center; color: #333333; }
+    a { color: #333333; }
     .description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic;}
     .download { float: right; }
-		pre { background: #000; color: #fff; padding: 15px;}
+    pre { background: #000; color: #fff; padding: 15px;}
     hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
     .footer { text-align:center; padding-top:30px; font-style: italic; }
-	</style>
-	
+  </style>
 </head>
-
 <body>
-  <a href="http://github.com/kobo/GroovyServer_test"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
+  <a href="http://github.com/kobo/groovyserv"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
 
   <div id="container">
 
-    <div class="download">
-      <a href="http://github.com/kobo/GroovyServer_test/zipball/master">
-        <img border="0" width="90" src="http://github.com/images/modules/download/zip.png"></a>
-      <a href="http://github.com/kobo/GroovyServer_test/tarball/master">
-        <img border="0" width="90" src="http://github.com/images/modules/download/tar.png"></a>
-    </div>
-
-    <h1><a href="http://github.com/kobo/GroovyServer_test">GroovyServer_test</a>
-      <span class="small">by <a href="http://github.com/kobo">kobo</a></span></h1>
-
+    <h1><a href="http://github.com/kobo/groovyserv">GroovyServ</a><span class="small">by <a href="http://github.com/kobo">kobo</a> project</span></h1>
     <div class="description">
-      GroovyServer is a 
+      <p>GroovyServ makes startup time quicker, by pre-invoking groovy as a TCP/IP
+         server. (If you know gnuserv/gnuclient, this is like that.)</p>
+      <p>In the case of scripting in dynamic-type languages, quick response about
+         invocation is very important. Try-and-run cycles is repeated frequently
+         than static-type languages, so sometimes 2 seconds or even 1 second might
+         be intolerable.</p>
+      <p>GroovyServ reduces the startup time of JVM and Groovy runtime significantly.
+         It's at least 10 to 20 times faster than regular Groovy.</p>
+      <p><a href="http://github.com/kobo/groovyserv/raw/master/README">read more...</a>
+        ( <a href="http://github.com/kobo/groovyserv/raw/master/README.ja">in Japanese</a>  )</p>
     </div>
 
     <h2>Contact</h2>
-<p>Kobo project (kobo.operator@gmail.com)<br/>      </p>
-
+    <p><a href="http://groups.google.co.jp/group/groovyserv">GroovyServ Google Group</a> (<a href="mail:groovyserv@googlegroups.com">groovyserv@googlegroups.com</a>)</p>
 
     <h2>Download</h2>
     <p>
-      You can download this project in either
-      <a href="http://github.com/kobo/GroovyServer_test/zipball/master">zip</a> or
-      <a href="http://github.com/kobo/GroovyServer_test/tarball/master">tar</a> formats.
+      <ul>
+        <li><a href="http://github.com/downloads/kobo/groovyserv/groovyserv-0.1-win32-bin.zip">for win32(cygwin)</a></li>
+        <li><a href="http://github.com/downloads/kobo/groovyserv/groovyserv-0.1-MacOSX-x86_64-bin.zip">for MacOSX(x86_64)</a></li>
+        <li><a href="http://github.com/downloads/kobo/groovyserv/groovyserv-0.1-Linux-i386-bin.zip">for Linux x86</a></li>
+        <li><a href="http://github.com/downloads/kobo/groovyserv/groovyserv-0.1-src.zip">source package for other environment</a></li>
+      </ul>
     </p>
-    <p>You can also clone the project with <a href="http://git-scm.com">Git</a>
-      by running:
-      <pre>$ git clone git://github.com/kobo/GroovyServer_test</pre>
+    <p>You can also clone the project with <a href="http://git-scm.com/">Git</a> by running:
+      <pre>$ git clone git://github.com/kobo/groovyserv</pre>
     </p>
 
     <div class="footer">
-      get the source code on GitHub : <a href="http://github.com/kobo/GroovyServer_test">kobo/GroovyServer_test</a>
+      get the source code on GitHub : <a href="http://github.com/kobo/groovyserv">kobo/groovyserv</a>
     </div>
 
   </div>
-
-  
 </body>
 </html>
