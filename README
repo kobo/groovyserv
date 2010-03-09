@@ -13,9 +13,10 @@ important. Because it has less static type checking, try-and-run loop
 is repeated frequently. Sometimes 2 seconds or even a second might be
 intolerable.
 
-By using GroovyServ, you can make shorten the invocation time of groovy
-significantly. Followings are time of invocation (Windows XP on Intel
-Mac (Core(TM) 2 Duo 2GHz), average of 3 times).
+By using GroovyServ, you can make shorten the invocation time of
+groovy significantly. Followings are time of invocation of Groovy
+1.7.0(Windows XP on Intel Mac (Core(TM) 2 Duo 2GHz), average of 3
+times).
 
   groovy command(non native)   2.32 (sec)
   groovy command(native exe)   0.90 (sec)
@@ -115,9 +116,9 @@ If some tests fail, you can skip tests following.
 How to use
 ============
 
-You can use 'groovyclient' command as a replacement of 'groovy' command.
-If the server is not running, it starts automatically. You can invoke it
-explicitly.
+You can use 'groovyclient' command as a replacement of 'groovy'
+command.  If the server is not running, it starts automatically. You
+can also invoke the serverexplicitly.
 
   > groovyserver
 
@@ -132,31 +133,33 @@ Restriction/Differences
 
   > groovyclient ... | (cd /tmp; groovyclient ... ) 
 
-  the following exception is occurred:
+  the following exception will be occurred:
 
     org.jggug.kobo.groovyserv.GroovyServException: Can't change current
     directory because of another session running on different dir: ...
 
   It also meets conditions if you invoke groovyclient simultaneously
   from two or more consoles. But if the running periods of each
-  groovyclient are not overlapping, it is no problem.
+  groovyclient are not overlapping, it can run without exception.
 
-  If needed, you can run multiple groovy server for separated port.
+  If needed, you can run multiple groovy servers for separated ports.
 
-* A static variable is shared among groovy program executing.
-  For instance, the system property is shared.
+* A static variable is shared among groovy program executions.
+  For instance, the system properties are shared.
 
  > groovy -e "System.setProperty('a','abc')"
  > groovy -e "println System.getProperty('a')"
  abc
 
-* Environment variables of when not groovyclient but groovyserver is
-  invoked are used. If you want to apply new environment variables to
-  running groovyserver process, you must restart the server.  
+* Environment variables at which the groovyclient started is not used
+  and those of groovyserver is invoked are used. If you want to apply
+  new environment variables to running groovyserver process, you must
+  restart the server.
 
   > groovyserver -r
 
-  But only about CLASSPATH variable, a value in groovyclient is effective.
+  But as an exception, the value of CLASSPATH variable of which the
+  groovyclient started is effective.
 
 * Values of Groovy's -cp option and CLASSPATH variable are passed to the
   server and added/overwrote to environment variables of the server
@@ -172,7 +175,7 @@ Options are as follows:
   -q quiet.(default)
   -k kill the running groovyserver.
   -r restart groovyserver.
-  -p <port> specify the port for groovyserver.
+  -p <port> specify the port that connected from groovyclient.
 
 =============
 Port number
