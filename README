@@ -14,19 +14,18 @@ is repeated frequently. Sometimes 2 seconds or even a second might be
 intolerable.
 
 By using GroovyServ, you can make shorten the invocation time of groovy
-significantly. Followings are time of invocation (in Mac Windows XP
-Core(TM) 2 Duo 2GHz, average of 3 times).
+significantly. Followings are time of invocation (Windows XP on Intel
+Mac (Core(TM) 2 Duo 2GHz), average of 3 times).
 
   groovy command(non native)   2.32 (sec)
   groovy command(native exe)   0.90 (sec)
   groovyclient                 0.10 (sec)
 
-
 ==============
 Requirements
 ==============
 
-GroovyServ is developed for follwing environment/OS. Please report if it
+GroovyServ is developed for following environment/OS. Please report if it
 runs on the others.
 
   - Windows XP + cygwin
@@ -133,7 +132,7 @@ Restriction/Differences
 
   > groovyclient ... | (cd /tmp; groovyclient ... ) 
 
-  the following exception is occured:
+  the following exception is occurred:
 
     org.jggug.kobo.groovyserv.GroovyServException: Can't change current
     directory because of another session running on different dir: ...
@@ -186,7 +185,7 @@ GROOVYSERVER_PORT environment variable instead of -p option.
 
 groovyclient uses GROOVYSERVER_PORT variable in default. But you can
 specify port number by -p option of groovyclient. In groovyclient, -p
-option is treated priorer than GROOVYSERVER_PORT environment variable.
+option is treated more prior than GROOVYSERVER_PORT environment variable.
 
 ==========
 Log file
