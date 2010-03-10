@@ -21,14 +21,22 @@ import groovy.util.GroovyTestCase
  * Tests for the {@code groovyclient}.
  * Before running this, you must start groovyserver.
  */
-class ExitTest extends GroovyTestCase {
+class ThreadIT extends GroovyTestCase {
 
-    void testExit1() {
-        assertEquals 1,  TestUtils.executeFail(['groovyclient', '-e', '"System.exit(1)"']).exitValue()
+    static final String NL = System.getProperty("line.separator")
+
+    void testExecOneliner() {
+        assertEquals(
+            'output from thread' + NL,
+            TestUtils.execute(["groovyclient", "-e", '"(new Thread({-> println(\'output from thread\') } as Runnable)).start()"']).text
+        )
     }
 
-    void testExit33() {
-        assertEquals 33, TestUtils.executeFail(['groovyclient', '-e', '"System.exit(33)"']).exitValue()
+    void testExecFile() {
+        assertEquals(
+            'output from thread' + NL,
+            TestUtils.execute(["groovyclient", "src/test/resources/forThreadTest.groovy"]).text
+        )
     }
 
 }
