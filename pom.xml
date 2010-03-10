@@ -71,7 +71,13 @@
         <version>1.0-rc-3</version>
         <executions>
           <execution>
-            <id>package</id>
+            <goals>
+              <goal>compile</goal>
+              <goal>testCompile</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>define-trimed-os-name</id>
             <phase>package</phase>
             <goals>
               <goal>execute</goal>
@@ -82,22 +88,38 @@
               </source>
             </configuration>
           </execution>
-          <execution>
-            <goals>
-              <goal>compile</goal>
-              <goal>testCompile</goal>
-            </goals>
-          </execution>
         </executions>
       </plugin>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
-        <configuration>
-          <descriptors>
-            <descriptor>src/main/assembly/bin.xml</descriptor>
-            <descriptor>src/main/assembly/src.xml</descriptor>
-          </descriptors>
-        </configuration>
+        <executions>
+          <execution>
+            <id>assembly-bin-dir-for-integration-test</id>
+            <phase>package</phase>
+            <goals>
+              <goal>directory-single</goal>
+            </goals>
+            <configuration>
+              <appendAssemblyId>false</appendAssemblyId>
+              <descriptors>
+                <descriptor>src/main/assembly/bin.xml</descriptor>
+              </descriptors>
+            </configuration>
+          </execution>
+          <execution>
+            <id>assembly-zip</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <descriptors>
+                <descriptor>src/main/assembly/bin.xml</descriptor>
+                <descriptor>src/main/assembly/src.xml</descriptor>
+              </descriptors>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
