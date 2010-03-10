@@ -83,8 +83,6 @@
             </configuration>
           </execution>
           <execution>
-            <id>compile</id>
-            <phase>compile</phase>
             <goals>
               <goal>compile</goal>
               <goal>testCompile</goal>
