@@ -91,6 +91,7 @@ begin
   $soc = TCPSocket.open("localhost", DESTPORT)
 rescue Errno::ECONNREFUSED
   start_server
+  sleep 3
   retry
 end
 begin
