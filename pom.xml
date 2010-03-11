@@ -178,7 +178,7 @@
                 <exec executable="${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}/bin/groovyserver" spawn="true">
                   <arg value="-r"/>
                 </exec>
-                <sleep seconds="1"/>
+                <sleep seconds="3"/>
               </tasks>
             </configuration>
           </execution>
@@ -211,17 +211,28 @@
             <phase>integration-test</phase>
             <goals>
               <goal>integration-test</goal>
+              <goal>verify</goal>
             </goals>
             <configuration>
               <systemPropertyVariables>
                 <groovyservClientExecutable>${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}/bin/groovyclient</groovyservClientExecutable>
               </systemPropertyVariables>
+              <reportsDirectory>${project.build.directory}/failsafe-reports/c</reportsDirectory>
             </configuration>
           </execution>
           <execution>
+            <id>integration-test-rb</id>
+            <phase>integration-test</phase>
             <goals>
+              <goal>integration-test</goal>
               <goal>verify</goal>
             </goals>
+            <configuration>
+              <systemPropertyVariables>
+                <groovyservClientExecutable>${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}/bin/groovyclient.rb</groovyservClientExecutable>
+              </systemPropertyVariables>
+              <reportsDirectory>${project.build.directory}/failsafe-reports/ruby</reportsDirectory>
+            </configuration>
           </execution>
         </executions>
       </plugin>
