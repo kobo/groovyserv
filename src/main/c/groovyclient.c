@@ -353,7 +353,7 @@ static int fd_soc;
 static void signal_handler(int sig) {
   write(fd_soc, "Size: 0\n\n", 9);
   close(fd_soc);
-  exit(0);
+  exit(1);
 }
 
 void mk_dir(const char* path) {
