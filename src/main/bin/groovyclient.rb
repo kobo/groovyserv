@@ -16,91 +16,107 @@
 #
 require 'socket'
 
-DESTPORT=1961
+#-------------------------------------------
+# Constants
+#-------------------------------------------
 
-def mk_dir(path)
-  begin
-    if File.ftype(path) == "directory" then
-      return true
-    end
-  rescue Errno::ENOENT
-  end
-  Dir.mkdir(path);
-end
+DESTHOST = "localhost" # for security
+DESTPORT = 1961
+DOT_DIR = ENV['HOME'] + "/.groovy/groovyserver"
+LOG_FILE = DOT_DIR + "/groovyserver.log"
+COOKIE_FILE = DOT_DIR + "/key"
+GROOVYSERVER_CMD = File.dirname($0) + "/groovyserver"
 
-def start_server
+#-------------------------------------------
+# Functions
+#-------------------------------------------
+
+def start_server()
   puts "starting server..."
-  mk_dir(ENV['HOME']+"/.groovy")
-  mk_dir(ENV['HOME']+"/.groovy/groovyserver")
-  system (File.dirname($0) + '/groovyserver >> ~/.groovy/groovyserver/groovyserver.log 2>&1')
+  same_dir = File.dirname($0)
+  system "#{GROOVYSERVER_CMD} >> #{LOG_FILE} 2>&1"
 end
 
-def read_headers(soc)
-  headers={}
-  while (line = soc.gets) != nil && line != "\n" do
+def session(socket)
+  send_command(socket)
+  while true do
+    IO.select([socket, $stdin]).each do |ins|
+      if ins[0] == socket
+        handle_socket(socket)
+      elsif ins[0] == $stdin
+        handle_stdin(socket)
+      end
+    end
+  end
+end
+
+def send_command(socket)
+  socket.puts "Cwd: #{Dir::getwd}"
+  ARGV.each do |it|
+    socket.puts "Arg: #{it}"
+  end
+  File.open(COOKIE_FILE) { |f|
+    socket.puts "Cookie: #{f.read}"
+  }
+  socket.puts ""
+end
+
+def handle_socket(socket)
+  headers = read_headers(socket)
+  if headers['Status']
+    exit headers['Status'].to_i
+  end
+  data = socket.read(headers['Size'].to_i)
+  return unless data
+
+  if headers['Channel'] == 'o'
+    $stdout.print data
+  elsif headers['Channel'] == 'e'
+    $stderr.print data
+  end
+end
+
+def handle_stdin(socket)
+  begin
+    data = $stdin.read_nonblock(512)
+  rescue EOFError
+    socket.write "Size: 0\n\n"
+  else
+    socket.write "Size: #{data.length}\n\n"
+    socket.write data
+  end
+end
+
+def read_headers(socket)
+  headers = {}
+  while (line = socket.gets) != nil && line != "\n" do
     chomp line
-    /([A-Za-z]*): (.*)/ =~ line
-    headers[$1]=$2;
+    /([a-zA-Z]+): (.+)/ =~ line
+    headers[$1] = $2
   end
   headers
 end
 
-def session(s)
-  s.puts("Cwd: "+Dir::getwd)
-  ARGV.each {|it|
-    s.puts("Arg: "+it)
-  }
-  f = open(ENV['HOME']+"/.groovy/groovyserver/key")
-  s.puts("Cookie: "+f.read)
-  f.close()
-  s.puts("")
-
-  while true do
-    IO.select([s,$stdin]).each {|ins|
-      if ins[0] == s then
-        headers = read_headers(s)
-        if (headers['Status'] != nil) then
-          exit(headers['Status'].to_i)
-        end
-        data = s.read(headers['Size'].to_i)
-        if data == nil then
-          break
-        end
-        if headers['Channel'] == 'o' then
-          $stdout.print data
-        elsif headers['Channel'] == 'e' then
-          $stderr.print data
-        end
-      elsif ins[0] == $stdin then
-        begin
-          data = $stdin.read_nonblock(512)
-        rescue EOFError
-          s.write("Size: 0\n\n")
-        else
-          s.write("Size: #{data.length}\n\n")
-          s.write(data)
-        end
-      end
-    }
-  end
-end
-
-Signal.trap(:INT) { $soc.close }
+#-------------------------------------------
+# Main
+#-------------------------------------------
 
 begin
-  $soc = TCPSocket.open("localhost", DESTPORT)
+  TCPSocket.open(DESTHOST, DESTPORT) { |socket|
+    Signal.trap(:INT) {
+      socket.close() unless socket.closed?
+      $stdout.flush()
+      $stderr.flush()
+      exit 1
+    }
+    session(socket)
+  }
 rescue Errno::ECONNREFUSED
   start_server
   sleep 3
   retry
-end
-begin
-  session($soc)
-rescue
-  exit(1)
-ensure
-  if ! $soc.closed? then
-    $soc.close
-  end
+rescue => e
+  puts e.message
+  exit 1
 end
 
