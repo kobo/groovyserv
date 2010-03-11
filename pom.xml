@@ -177,6 +177,40 @@
         </executions>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>start-groovyserver</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <tasks>
+                <exec executable="${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}/bin/groovyserver" spawn="true">
+                  <arg value="-r"/>
+                </exec>
+              </tasks>
+            </configuration>
+          </execution>
+          <execution>
+            <id>stop-groovyserver</id>
+            <phase>post-integration-test</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <tasks>
+                <exec executable="${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}/bin/groovyserver" spawn="true">
+                  <arg value="-k"/>
+                </exec>
+              </tasks>
+            </configuration>
+          </execution>
+        </executions> 
+      </plugin>
+      <plugin>
         <artifactId>maven-resources-plugin</artifactId>
         <configuration>
           <encoding>UTF-8</encoding>
