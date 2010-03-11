@@ -22,7 +22,7 @@ class TestUtils {
     static executeClientOk(args, closure = null) {
         def p = executeClient(args, closure)
         if (p.exitValue() != 0) {
-            fail "ERROR: in:[${p.in.text}], err:[${p.err.text}]"
+            fail "ERROR: exitValue:${p.exitValue()}, in:[${p.in.text}], err:[${p.err.text}]"
         }
         return p
     }

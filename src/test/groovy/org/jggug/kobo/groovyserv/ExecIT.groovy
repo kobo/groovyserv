@@ -32,14 +32,15 @@ class ExecIT extends GroovyTestCase {
     }
 
     void testMultiLineWrite() {
-        def p = TestUtils.executeClientOk(["-e", '"[0,1,2].each{println(it)}"'])
+        def p = TestUtils.executeClientOk(["-e", '"[0, 1, 2].each{ println(it) }"'])
         assertEquals "0" + NL + "1" + NL + "2" + NL, p.text
         assertEquals "", p.err.text
     }
 
     void testMultiLineReadAndWrite() {
-        def p = TestUtils.executeClientOk(["-e", '"System.in.eachLine{println(it+it)}"']) { p ->
-            p.out << "A${NL}B${NL}"
+        def p = TestUtils.executeClient(["-e", '"System.in.eachLine{ println(it + it) }"']) { p ->
+            p.out << "A" + NL
+            p.out << "B" + NL
             p.out.close()
         }
         assertEquals "AA" + NL + "BB" + NL, p.text
