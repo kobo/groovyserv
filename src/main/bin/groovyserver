@@ -107,7 +107,7 @@ fi
 
 GROOVYSERV_HOME=`dirname $0`/..
 CP="$GROOVYSERV_HOME/lib/jna-3.2.2.jar:$CP"
-CP="$GROOVYSERV_HOME/lib/groovyserv-0.1.jar:$CP"
+CP="$GROOVYSERV_HOME/lib/groovyserv-0.2-SNAPSHOT.jar:$CP"
 $GROOVY_HOME/bin/groovy -cp $CP $GROOVYSERV_OPTS -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)" &
 
 #-------------------------------------------
