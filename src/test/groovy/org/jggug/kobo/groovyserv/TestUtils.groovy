@@ -19,21 +19,26 @@ import groovy.util.GroovyTestCase
 
 class TestUtils {
 
-    static execute(command, closure = null) {
-        Process p = command.execute()
-        if (closure) closure.call(p)
-        p.waitFor()
-        //println "$command => ${p.exitValue()}"
+    static executeClientOk(args, closure = null) {
+        def p = executeClient(args, closure)
         if (p.exitValue() != 0) {
             fail "ERROR: in:[${p.in.text}], err:[${p.err.text}]"
         }
         return p
     }
 
-    static executeFail(command) {
-        Process p = command.execute()
+    static executeClient(args, closure = null) {
+        def command = getCommand(args)
+        def p = command.execute()
+        if (closure) closure.call(p)
         p.waitFor()
+        //println "${command.join(' ')} => ${p.exitValue()}"
         return p
+    }
+
+    static getCommand(args) {
+        def client = System.properties.'groovyservClientExecutable'
+        return [client] + args
     }
 
 }

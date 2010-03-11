@@ -26,27 +26,23 @@ class ExecIT extends GroovyTestCase {
     static final String NL = System.getProperty("line.separator")
 
     void testExec() {
-        def p = TestUtils.execute(["groovyclient", "-e", '"println(\'hello\')"'])
+        def p = TestUtils.executeClientOk(["-e", '"println(\'hello\')"'])
         assertEquals "hello" + NL, p.text
         assertEquals "", p.err.text
     }
 
     void testMultiLineWrite() {
-        def p = TestUtils.execute(["groovyclient", "-e", '"[0,1,2].each{println(it)}"'])
-        assertEquals "0"+NL+"1"+NL+"2"+NL, p.text
+        def p = TestUtils.executeClientOk(["-e", '"[0,1,2].each{println(it)}"'])
+        assertEquals "0" + NL + "1" + NL + "2" + NL, p.text
         assertEquals "", p.err.text
     }
 
     void testMultiLineReadAndWrite() {
-        def p = TestUtils.execute(["groovyclient", "-e", '"System.in.eachLine{println(it+it)}"']) { p ->
+        def p = TestUtils.executeClientOk(["-e", '"System.in.eachLine{println(it+it)}"']) { p ->
             p.out << "A${NL}B${NL}"
             p.out.close()
         }
-        p.waitFor()
-        if (p.exitValue() != 0) {
-            fail "ERROR: in:[${p.in.text}], err:[${p.err.text}]"
-        }
-        assertEquals "AA"+NL+"BB"+NL, p.text
+        assertEquals "AA" + NL + "BB" + NL, p.text
         assertEquals "", p.err.text
     }
 

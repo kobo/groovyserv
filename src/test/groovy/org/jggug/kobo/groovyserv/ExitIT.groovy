@@ -24,11 +24,11 @@ import groovy.util.GroovyTestCase
 class ExitIT extends GroovyTestCase {
 
     void testExit1() {
-        assertEquals 1,  TestUtils.executeFail(['groovyclient', '-e', '"System.exit(1)"']).exitValue()
+        assertEquals 1,  TestUtils.executeClient(['-e', '"System.exit(1)"']).exitValue()
     }
 
     void testExit33() {
-        assertEquals 33, TestUtils.executeFail(['groovyclient', '-e', '"System.exit(33)"']).exitValue()
+        assertEquals 33, TestUtils.executeClient(['-e', '"System.exit(33)"']).exitValue()
     }
 
 }

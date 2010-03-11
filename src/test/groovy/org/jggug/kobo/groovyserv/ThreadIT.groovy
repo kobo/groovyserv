@@ -28,14 +28,14 @@ class ThreadIT extends GroovyTestCase {
     void testExecOneliner() {
         assertEquals(
             'output from thread' + NL,
-            TestUtils.execute(["groovyclient", "-e", '"(new Thread({-> println(\'output from thread\') } as Runnable)).start()"']).text
+            TestUtils.executeClientOk(["-e", '"(new Thread({-> println(\'output from thread\') } as Runnable)).start()"']).text
         )
     }
 
     void testExecFile() {
         assertEquals(
             'output from thread' + NL,
-            TestUtils.execute(["groovyclient", "src/test/resources/forThreadTest.groovy"]).text
+            TestUtils.executeClientOk(["src/test/resources/forThreadTest.groovy"]).text
         )
     }
 

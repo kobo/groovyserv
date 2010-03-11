@@ -29,11 +29,11 @@ class EncodingIT extends GroovyTestCase {
     static final String NL = System.getProperty("line.separator")
 
     void testExecOneliner() {
-        assertEquals "あいうえお" + NL, TestUtils.execute(["groovyclient", "-e", '"println(\'あいうえお\')"']).text
+        assertEquals "あいうえお" + NL, TestUtils.executeClientOk(["-e", '"println(\'あいうえお\')"']).text
     }
 
     void testExecFile() {
-        assertEquals "あいうえお" + NL, TestUtils.execute(["groovyclient", "src/test/resources/forEncodingTest.groovy"]).text
+        assertEquals "あいうえお" + NL, TestUtils.executeClientOk(["src/test/resources/forEncodingTest.groovy"]).text
     }
 
 }
