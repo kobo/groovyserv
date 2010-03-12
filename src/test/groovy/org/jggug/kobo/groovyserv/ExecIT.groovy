@@ -38,10 +38,9 @@ class ExecIT extends GroovyTestCase {
     }
 
     void testMultiLineReadAndWrite() {
-        def p = TestUtils.executeClient(["-e", '"System.in.eachLine{ println(it + it) }"']) { p ->
+        def p = TestUtils.executeClient(["-e", '"System.in.eachLine { line, index -> println(line * 2); if (index >= 2) { System.exit 0 } }"']) { p ->
             p.out << "A" + NL
             p.out << "B" + NL
-            p.out.close()
         }
         assertEquals "AA" + NL + "BB" + NL, p.text
         assertEquals "", p.err.text
