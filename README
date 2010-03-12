@@ -63,7 +63,7 @@ Download and expand GroovyServ distribution package
 
   groovyserv-${project.version}-win32-bin.zip
 
-or 
+or
 
   groovyserv-${project.version}-MacOSX-x86_64-bin.zip
 
@@ -100,16 +100,27 @@ to any directory. For example:
 Build with Maven2 as follows:
 
   > cd ~/opt/src/groovyserv-${project.version}/
-  > mvn clean assembly:assembly
+  > mvn clean verify
 
-then some zip files will be generated. According to "Install from
+Then some zip files will be generated. According to "Install from
 binary package", install the bin package.
 
   ~/opt/src/groovyserv-${project.version}/target/groovyserv-${project.version}-<OS>-<arch>-bin.zip
 
-If some tests fail, you can skip tests following.
+If some tests fail, you can try as follows:
 
-  > mvn -Dmaven.test.skip=true clean assembly:assembly
+  with UTF-8 encoding:
+
+    > export _JAVA_OPTIONS=-Dfile.encoding=UTF-8
+    > mvn clean verify
+
+  skip integration tests:
+
+    > mvn clean package
+
+  skip all tests:
+
+    > mvn -Dmaven.test.skip=true clean package
 
 ============
 How to use
@@ -130,7 +141,7 @@ Restriction/Differences
 * You can't concurrently use different current directory on a server.
   If you execute the following,
 
-  > groovyclient ... | (cd /tmp; groovyclient ... ) 
+  > groovyclient ... | (cd /tmp; groovyclient ... )
 
   the following exception will be occurred:
 
