@@ -1,5 +1,4 @@
-GroovyServ 0.1 README
-March 9th, 2010
+GroovyServ ${project.version}
 
 ==============
 Introduction
@@ -62,22 +61,22 @@ Install from binary package
 
 Download and expand GroovyServ distribution package
 
-  groovyserv-0.1-win32-bin.zip
+  groovyserv-${project.version}-win32-bin.zip
 
 or 
 
-  groovyserv-0.1-MacOSX-x86_64-bin.zip
+  groovyserv-${project.version}-MacOSX-x86_64-bin.zip
 
 to any directory. For example:
 
   > mkdir ~/opt
   > cd ~/opt
-  > unzip groovyserv-0.1-win32-bin.zip
+  > unzip groovyserv-${project.version}-win32-bin.zip
 
 and add bin directory to PATH environment variable.
 For example in bash/bourne shell:
 
-  export PATH=~/opt/groovyserv-0.1/bin:$PATH
+  export PATH=~/opt/groovyserv-${project.version}/bin:$PATH
 
 That's all for preparing. When you invoke groovyclient, groovyserver
 automatically starts in background. At first, you might have to wait
@@ -91,22 +90,22 @@ for a few seconds to startup.
 Build from source code
 ========================
 
-Download and expand GroovyServ source package groovyserv-0.1-src.zip
+Download and expand GroovyServ source package groovyserv-${project.version}-src.zip
 to any directory. For example:
 
   > mkdir -p ~/opt/src
   > cd ~/opt/src
-  > unzip groovyserv-0.1-src.zip
+  > unzip groovyserv-${project.version}-src.zip
 
 Build with Maven2 as follows:
 
-  > cd ~/opt/src/groovyserv-0.1/
+  > cd ~/opt/src/groovyserv-${project.version}/
   > mvn clean assembly:assembly
 
 then some zip files will be generated. According to "Install from
 binary package", install the bin package.
 
-  ~/opt/src/groovyserv-0.1/target/groovyserv-0.1-<OS>-<arch>-bin.zip
+  ~/opt/src/groovyserv-${project.version}/target/groovyserv-${project.version}-<OS>-<arch>-bin.zip
 
 If some tests fail, you can skip tests following.
 
@@ -213,18 +212,17 @@ Following aliases might be useful.
 Support
 =========
 
-http://kobo.github.com/groovyserv/
+${project.url}
 
 =========
 License
 =========
 
-Apache License Version 2.0
+The Apache Software License, Version 2.0
 
 ==============
 Presented by
 ==============
 
-Kobo Project.
-NTT Software Corp.
+${project.organization.name}
 

@@ -1,5 +1,4 @@
-GroovyServ 0.1 README
-2010年03月09日
+GroovyServ ${project.version}
 
 ==========
 はじめに
@@ -79,18 +78,18 @@ groovyclient の接続しか受け付けないように制約をかけていま�
 バイナリパッケージからのインストール
 ======================================
 
-バイナリパッケージgroovyserv-0.1-<OS>-<arch>-bin.zipを適当なフォルダ
+バイナリパッケージgroovyserv-${project.version}-<OS>-<arch>-bin.zipを適当なフォルダ
 に展開します。例えば、~/optに展開するとします。
 
   > mkdir ~/opt
   > cd ~/opt
-  > unzip groovyserv-0.1-win32-bin.zip
+  > unzip groovyserv-${project.version}-win32-bin.zip
 
-上記により~/opt/groovyserv-0.1が展開されます。次に環境変数PATHに上記フォ
+上記により~/opt/groovyserv-${project.version}が展開されます。次に環境変数PATHに上記フォ
 ルダ配下のbinを追加します。仮に、~/opt/groovyservに展開した場合、以下の
 ように設定します(bashなどの環境変数設定)。
 
-  export PATH=~/opt/groovyserv-0.1/bin:$PATH
+  export PATH=~/opt/groovyserv-${project.version}/bin:$PATH
 
 設定は以上です。groovyclientを実行するとgroovyserverが起動します。
 
@@ -103,20 +102,20 @@ groovyclient の接続しか受け付けないように制約をかけていま�
 ==========================
 
 まず、GroovyServのソースコード配布パッケージ
-groovyserv-0.1-src.zipを展開します。
+groovyserv-${project.version}-src.zipを展開します。
 
   > mkdir -p ~/opt/src
   > cd ~/opt/src
-  > unzip groovyserv-0.1-src.zip
+  > unzip groovyserv-${project.version}-src.zip
 
 Maven2を使ってコンパイルします。
 
-  > cd ~/opt/src/groovyserv-0.1/
+  > cd ~/opt/src/groovyserv-${project.version}/
   > mvn clean assembly:assembly
 
 コンパイルした結果、バイナリパッケージが
 
-  ~/opt/src/groovyserv-0.1/target/groovyserv-0.1-<OS>-<arch>-bin.zip
+  ~/opt/src/groovyserv-${project.version}/target/groovyserv-${project.version}-<OS>-<arch>-bin.zip
 
 という形式で作成されますので、これをバイナリパッケージからのインストー
 ルの場合と同じようにインストールしてください。テストで失敗する場合以下
@@ -237,18 +236,17 @@ groovyコマンドを実行するとgroovyclientコマンドが呼び出され�
 連絡先
 ========
 
-http://kobo.github.com/groovyserv/
+${project.url}
 
 ============
 ライセンス
 ============
 
-Apache License Version 2.0
+The Apache Software License, Version 2.0
 
 ============
 クレジット
 ============
 
-Kobo Project.
-NTT Software Corp.
+${project.organization.name}
 

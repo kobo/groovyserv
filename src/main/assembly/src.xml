@@ -21,21 +21,20 @@
   </formats>
   <fileSets>
     <fileSet>
-	  <directory></directory>
+      <outputDirectory>/</outputDirectory>
       <includes>
-		<include>.classpath</include>
-		<include>.project</include>
-		<include>pom.xml</include>
-		<include>LICENSE</include>
-		<include>README</include>
-		<include>README.ja</include>
+        <include>.classpath</include>
+        <include>.project</include>
+        <include>pom.xml</include>
+        <include>LICENSE</include>
+        <include>LICENSE*</include>
       </includes>
     </fileSet>
     <fileSet>
-	  <directory>.settings</directory>
+      <directory>.settings</directory>
     </fileSet>
     <fileSet>
-	  <directory>src</directory>
+      <directory>src</directory>
     </fileSet>
   </fileSets>
 </assembly>
