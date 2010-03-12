@@ -22,6 +22,18 @@
   <artifactId>groovyserv</artifactId>
   <name>GroovyServ Project</name>
   <version>0.2-SNAPSHOT</version>
+  <description>Groovy's startup acceralator.</description>
+  <url>http://kobo.github.com/groovyserv/</url>
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+  <organization>
+    <name>Project Kobo. NTT Software Corp.</name>
+    <url>http://github.com/kobo</url>
+  </organization>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
