@@ -101,14 +101,9 @@ end
 # Main
 #-------------------------------------------
 
+Signal.trap(:INT) { exit 1 }
 begin
   TCPSocket.open(DESTHOST, DESTPORT) { |socket|
-    Signal.trap(:INT) {
-      socket.close() unless socket.closed?
-      $stdout.flush()
-      $stderr.flush()
-      exit 1
-    }
     session(socket)
   }
 rescue Errno::ECONNREFUSED
@@ -116,7 +111,8 @@ rescue Errno::ECONNREFUSED
   sleep 3
   retry
 rescue => e
-  puts e.message
+  puts "ERROR: #{e.message}"
+  puts e.backtrace
   exit 1
 end
 
