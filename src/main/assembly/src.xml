@@ -27,7 +27,7 @@
         <include>.project</include>
         <include>pom.xml</include>
         <include>LICENSE</include>
-        <include>LICENSE*</include>
+        <include>README*</include>
       </includes>
     </fileSet>
     <fileSet>
