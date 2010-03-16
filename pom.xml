@@ -188,6 +188,7 @@
             <configuration>
               <tasks>
                 <exec executable="${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}/bin/groovyserver" spawn="true">
+                  <env key="GROOVYSERV_HOME" value="${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}" />
                   <arg value="-r"/>
                 </exec>
                 <sleep seconds="3"/>
@@ -203,6 +204,7 @@
             <configuration>
               <tasks>
                 <exec executable="${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}/bin/groovyserver" spawn="true">
+                  <env key="GROOVYSERV_HOME" value="${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}" />
                   <arg value="-k"/>
                 </exec>
               </tasks>
@@ -226,6 +228,9 @@
               <goal>verify</goal>
             </goals>
             <configuration>
+              <environmentVariables>
+                <GROOVYSERV_HOME>${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}</GROOVYSERV_HOME>
+              </environmentVariables>
               <systemPropertyVariables>
                 <groovyservClientExecutable>${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}/bin/groovyclient</groovyservClientExecutable>
               </systemPropertyVariables>
@@ -240,6 +245,9 @@
               <goal>verify</goal>
             </goals>
             <configuration>
+              <environmentVariables>
+                <GROOVYSERV_HOME>${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}</GROOVYSERV_HOME>
+              </environmentVariables>
               <systemPropertyVariables>
                 <groovyservClientExecutable>${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}/bin/groovyclient.rb</groovyservClientExecutable>
               </systemPropertyVariables>
