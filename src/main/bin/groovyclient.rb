@@ -25,7 +25,7 @@ DESTPORT = 1961
 DOT_DIR = ENV['HOME'] + "/.groovy/groovyserver"
 LOG_FILE = DOT_DIR + "/groovyserver.log"
 COOKIE_FILE = DOT_DIR + "/key"
-GROOVYSERVER_CMD = File.dirname($0) + "/groovyserver"
+GROOVYSERVER_CMD = ENV.fetch("GROOVYSERV_HOME", File.dirname($0)) + "/hoge"
 
 #-------------------------------------------
 # Functions
@@ -33,7 +33,10 @@ GROOVYSERVER_CMD = File.dirname($0) + "/groovyserver"
 
 def start_server()
   puts "starting server..."
-  same_dir = File.dirname($0)
+  unless FileTest.executable? GROOVYSERVER_CMD
+    puts "ERROR: Command not found: #{GROOVYSERVER_CMD}"
+    exit 1
+  end
   system "#{GROOVYSERVER_CMD} >> #{LOG_FILE} 2>&1"
 end
 
