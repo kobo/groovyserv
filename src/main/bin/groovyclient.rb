@@ -25,7 +25,7 @@ DESTPORT = 1961
 DOT_DIR = ENV['HOME'] + "/.groovy/groovyserver"
 LOG_FILE = DOT_DIR + "/groovyserver.log"
 COOKIE_FILE = DOT_DIR + "/key"
-GROOVYSERVER_CMD = ENV.fetch("GROOVYSERV_HOME", File.dirname($0)) + "/hoge"
+GROOVYSERVER_CMD = ENV.fetch("GROOVYSERV_HOME", File.dirname($0)) + "/bin/groovyserver"
 
 #-------------------------------------------
 # Functions
@@ -105,13 +105,20 @@ end
 #-------------------------------------------
 
 Signal.trap(:INT) { exit 1 }
+
+failCount = 0
 begin
   TCPSocket.open(DESTHOST, DESTPORT) { |socket|
     session(socket)
   }
 rescue Errno::ECONNREFUSED
+  if failCount >= 3
+    puts "ERROR: Failed to start up groovyserver: #{GROOVYSERVER_CMD}"
+    exit 1
+  end
   start_server
   sleep 3
+  failCount += 1
   retry
 rescue => e
   puts "ERROR: #{e.message}"
