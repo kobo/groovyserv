@@ -105,7 +105,7 @@ fi
 # Invoke server
 #-------------------------------------------
 
-GROOVYSERV_HOME=`dirname $0`/..
+GROOVYSERV_HOME=${GROOVYSERV_HOME:-"`dirname $0`/.."}
 CP="$GROOVYSERV_HOME/lib/jna-3.2.2.jar:$CP"
 CP="$GROOVYSERV_HOME/lib/groovyserv-${project.version}.jar:$CP"
 $GROOVY_HOME/bin/groovy -cp $CP $GROOVYSERV_OPTS -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)" &
