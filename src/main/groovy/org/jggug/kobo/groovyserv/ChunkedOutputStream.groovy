@@ -20,12 +20,19 @@ class ChunkedOutputStream extends OutputStream {
     final static String HEADER_STREAM_ID = "Channel"
     final static String HEADER_SIZE = "Size"
 
-    char streamIdentifier
+    WeakHashMap<ThreadGroup, OutputStream> map = [:]
+    char streamId
 
-    static WeakHashMap<ThreadGroup, OutputStream>map = [:]
+    private ChunkedOutputStream(char streamId) {
+        this.streamId = streamId
+    }
 
-    public ChunkedOutputStream(char id) {
-        streamIdentifier = id
+    static ChunkedOutputStream newOut() {
+        new ChunkedOutputStream('o' as char)
+    }
+
+    static ChunkedOutputStream newErr() {
+        new ChunkedOutputStream('e' as char)
     }
 
     @Override
@@ -49,13 +56,13 @@ class ChunkedOutputStream extends OutputStream {
     public void write(byte[] b, int off, int len) {
         OutputStream out = getCurrentOutputStream()
         if (System.getProperty("groovyserver.verbose") == "true") {
-            GroovyServer.originalErr.println("Server==>Client")
-            GroovyServer.originalErr.println(" id="+streamIdentifier)
-            GroovyServer.originalErr.println(" size="+len)
-            Dump.dump(GroovyServer.originalErr, b, off, len)
+            StreamManager.errLog("Server==>Client")
+            StreamManager.errLog(" id=" + streamId)
+            StreamManager.errLog(" size=" + len)
+            Dump.dump(StreamManager.ORIGINAL.err, b, off, len)
         }
-        //GroovyServer.originalErr.println("TID="+Thread.currentThread().id)
-        out.write((HEADER_STREAM_ID + ": " + streamIdentifier + "\n").bytes)
+        //StreamManager.errLog("TID="+Thread.currentThread().id)
+        out.write((HEADER_STREAM_ID + ": " + streamId + "\n").bytes)
         out.write((HEADER_SIZE + ": " + len + "\n").bytes)
         out.write("\n".bytes)
         out.write(b, off, len)
@@ -76,4 +83,6 @@ class ChunkedOutputStream extends OutputStream {
         }
         return out
     }
+
 }
+

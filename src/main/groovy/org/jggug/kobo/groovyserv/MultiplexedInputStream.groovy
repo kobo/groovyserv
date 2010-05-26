@@ -15,8 +15,6 @@
  */
 package org.jggug.kobo.groovyserv
 
-import static org.jggug.kobo.groovyserv.GroovyServer.originalErr
-
 class MultiplexedInputStream extends InputStream {
 
     static WeakHashMap<ThreadGroup, InputStream>map = [:]
@@ -27,9 +25,9 @@ class MultiplexedInputStream extends InputStream {
         if (result != -1 && System.getProperty("groovyserver.verbose") == "true") {
             byte[] b = [result]
             if (System.getProperty("groovyserver.verbose") == "true") {
-                GroovyServer.originalErr.println("Client==>Server")
+                StreamManager.errLog("Client==>Server")
             }
-            Dump.dump(GroovyServer.originalErr, b, 0, 1)
+            Dump.dump(originalStreams.err, b, 0, 1)
         }
         return result
     }
@@ -38,10 +36,10 @@ class MultiplexedInputStream extends InputStream {
     public int read(byte[] b, int off, int len) throws IOException {
         int result = getCurrentInputStream().read(b, off, len)
         if (result != 0 && System.getProperty("groovyserver.verbose") == "true") {
-            GroovyServer.originalErr.println("Client==>Server")
-            GroovyServer.originalErr.println(" id=in")
-            GroovyServer.originalErr.println(" size="+result)
-            Dump.dump(GroovyServer.originalErr, b, off, result)
+            StreamManager.errLog("Client==>Server")
+            StreamManager.errLog(" id=in")
+            StreamManager.errLog(" size="+result)
+            Dump.dump(originalStreams.err, b, off, result)
         }
         return result
     }
@@ -102,12 +100,12 @@ class MultiplexedInputStream extends InputStream {
             }
             catch (java.net.SocketException e) {
                 if (System.getProperty("groovyserver.verbose") == "true") {
-                    GroovyServer.originalErr.println("ins closed.")
+                    StreamManager.errLog("ins closed.")
                 }
             }
             catch (Throwable t) {
                 if (System.getProperty("groovyserver.verbose") == "true") {
-                    GroovyServer.originalErr.println("t="+t)
+                    StreamManager.errLog("t="+t)
                 }
             }
         } as Runnable, "streamWorker")
