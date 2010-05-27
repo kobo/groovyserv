@@ -28,45 +28,60 @@ class RequestWorker implements Runnable {
 
     private static currentDir
 
-    Socket socket
-    String cookie
+    private Socket socket
+    private String cookie
 
-    synchronized setCurrentDir(dir) {
-        if (dir != currentDir) {
-            currentDir = dir
-            System.setProperty('user.dir', currentDir)
-            PlatformMethods.chdir(currentDir)
-            addClasspath(currentDir)
-        }
-    }
+    @Override
+    void run() {
+        try {
+            socket.withStreams { ins, out ->
+                try {
+                    Map<String, List<String>> headers = Protocol.readHeaders(ins, cookie)
 
-    def addClasspath(classpath) {
-        def cp = System.getProperty("groovy.classpath")
-        if (cp == null || cp == "") {
-            System.setProperty("groovy.classpath", classpath)
-        }
-        else {
-            def pathes = cp.split(File.pathSeparator) as List
-            def pathToAdd = ""
-            classpath.split(File.pathSeparator).reverseEach {
-                if (!(pathes as List).contains(it)) {
-                    pathToAdd = (it + File.pathSeparator + pathToAdd)
+                    def cwd = headers[HEADER_CURRENT_WORKING_DIR][0]
+                    if (currentDir != null && currentDir != cwd) {
+                        throw new GroovyServerException(
+                            "Can't change current directory because of another session running on different dir: " +
+                            headers[HEADER_CURRENT_WORKING_DIR][0])
+                    }
+                    setCurrentDir(cwd)
+
+                    process(headers)
+                    ensureAllThreadToStop()
+                    Protocol.sendExit(out, 0)
+                }
+                catch (ExitException e) {
+                    // GroovyMain2 throws ExitException when it catches ExitException.
+                    Protocol.sendExit(out, e.exitStatus)
+                }
+                catch (Throwable e) {
+                    DebugUtils.errLog("unexpected error", e)
+                    Protocol.sendExit(out, 0)
                 }
             }
-            System.setProperty("groovy.classpath", pathToAdd + cp)
+        }
+        finally {
+            setCurrentDir(null)
+
+            if (socket) socket.close()
+            DebugUtils.verboseLog "socket is closed: $socket"
+            socket = null
         }
     }
 
-    def process(headers) {
+    private process(headers) {
         if (headers[HEADER_CP] != null) {
             addClasspath(headers[HEADER_CP][0])
         }
 
         List args = headers[HEADER_ARG]
-        for (Iterator<String> it = headers[HEADER_ARG].iterator(); it.hasNext(); ) {
+        for (Iterator<String> it = args.iterator(); it.hasNext(); ) {
             String s = it.next()
             if (s == "-cp") {
                 it.remove()
+                if (!it.hasNext()) {
+                    throw new GroovyServerException("classpath option is invalid.")
+                }
                 String classpath = it.next()
                 addClasspath(classpath)
                 it.remove()
@@ -75,22 +90,7 @@ class RequestWorker implements Runnable {
         GroovyMain2.main(args as String[])
     }
 
-    def checkHeaders(headers) {
-        if (headers[HEADER_CURRENT_WORKING_DIR] == null || headers[HEADER_CURRENT_WORKING_DIR][0] == null) {
-            throw new GroovyServerException("required header cwd unspecified.")
-        }
-        if (cookie == null || headers[HEADER_COOKIE] == null || headers[HEADER_COOKIE][0] != cookie) {
-            Thread.sleep(5000)
-            throw new GroovyServerException("authentication failed.")
-        }
-    }
-
-    def sendExit(outs, status) {
-        outs.write((HEADER_STATUS+": "+status+"\n").bytes)
-        outs.write("\n".bytes)
-    }
-
-    def ensureAllThreadToStop() {
+    private ensureAllThreadToStop() {
         ThreadGroup tg = Thread.currentThread().threadGroup
         Thread[] threads = new Thread[tg.activeCount()]
         int tcount = tg.enumerate(threads)
@@ -111,48 +111,23 @@ class RequestWorker implements Runnable {
         }
     }
 
-    @Override
-    void run() {
-        try {
-            socket.withStreams { ins, outs ->
-                try {
-                    Map<String, List<String>> headers = Protocol.readHeaders(ins)
-                    if (DebugUtils.isVerboseMode()) {
-                        headers.each {k,v ->
-                            DebugUtils.errLog " $k = $v"
-                        }
-                    }
-                    checkHeaders(headers)
-
-                    def cwd = headers[HEADER_CURRENT_WORKING_DIR][0]
-                    if (currentDir != null && currentDir != cwd) {
-                        throw new GroovyServerException(
-                            "Can't change current directory because of another session running on different dir: " +
-                            headers[HEADER_CURRENT_WORKING_DIR][0])
-                    }
-                    setCurrentDir(cwd)
-
-                    process(headers)
-                    ensureAllThreadToStop()
-                    sendExit(outs, 0)
-                }
-                catch (ExitException e) {
-                    // GroovyMain2 throws ExitException when it catches ExitException.
-                    sendExit(outs, e.exitStatus)
-                }
-                catch (Throwable e) {
-                    DebugUtils.errLog("unexpected error", e)
-                    sendExit(outs, 0)
-                }
-            }
+    private synchronized static setCurrentDir(dir) {
+        if (dir != currentDir) {
+            currentDir = dir
+            System.setProperty('user.dir', currentDir)
+            PlatformMethods.chdir(currentDir)
+            addClasspath(currentDir)
         }
-        finally {
-            setCurrentDir(null)
+    }
 
-            if (socket) socket.close()
-            DebugUtils.verboseLog "socket is closed: $socket"
-            socket = null
+    private static addClasspath(newPath) { // FIXME this method is awful...
+        if (newPath == null || newPath == "") {
+            System.properties.remove("groovy.classpath")
+            return
         }
+        def pathes = newPath.split(File.pathSeparator) as LinkedHashSet
+        pathes << newPath
+        System.setProperty("groovy.classpath", pathes.join(File.pathSeparator))
     }
 
 }

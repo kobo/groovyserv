@@ -79,7 +79,58 @@ class Protocol {
     final static String HEADER_STREAM_ID = "Channel"
     final static String HEADER_SIZE = "Size"
 
-    static readLine(InputStream is) {
+    static Map<String, List<String>> readHeaders(InputStream ins, cookie) {
+        def headers = [:]
+        def line
+        while ((line = readLine(ins)) != "") {
+            def kv = line.split(':', 2)
+            def key = kv[0]
+            def value = kv[1]
+            if (!headers.containsKey(key)) {
+                headers[key] = []
+            }
+            if (value.charAt(0) == ' ') {
+                value = value.substring(1)
+            }
+            headers[key] += value
+        }
+        if (DebugUtils.isVerboseMode()) {
+            headers.each { k,v ->
+                DebugUtils.errLog " $k = $v"
+            }
+        }
+        checkHeaders(headers, cookie)
+        headers
+    }
+
+    static byte[] formatAsResponseHeader(streamId, size) {
+        def header = [:]
+        header[HEADER_STREAM_ID] = streamId
+        header[HEADER_SIZE] = size
+        formatAsHeader(header)
+    }
+
+    static byte[] formatAsExitHeader(status) {
+        def header = [:]
+        header[HEADER_STATUS] = status
+        formatAsHeader(header)
+    }
+
+    static sendExit(OutputStream out, int status) {
+        out.write(Protocol.formatAsExitHeader(status))
+    }
+
+    private static checkHeaders(headers, cookie) {
+        if (headers[HEADER_CURRENT_WORKING_DIR] == null || headers[HEADER_CURRENT_WORKING_DIR][0] == null) {
+            throw new GroovyServerException("required header cwd unspecified.")
+        }
+        if (cookie == null || headers[HEADER_COOKIE] == null || headers[HEADER_COOKIE][0] != cookie) {
+            Thread.sleep(5000)
+            throw new GroovyServerException("authentication failed.")
+        }
+    }
+
+    private static readLine(InputStream is) {
         def baos = new ByteArrayOutputStream()
         int ch
         while ((ch = is.read()) != '\n') {
@@ -89,31 +140,6 @@ class Protocol {
             baos.write((byte) ch)
         }
         return baos.toString()
-    }
-
-    static Map<String, List<String>> readHeaders(ins) {
-        def result = [:]
-        def line
-        while ((line = readLine(ins)) != "") {
-            def kv = line.split(':', 2)
-            def key = kv[0]
-            def value = kv[1]
-            if (!result.containsKey(key)) {
-                result[key] = []
-            }
-            if (value.charAt(0) == ' ') {
-                value = value.substring(1)
-            }
-            result[key] += value
-        }
-        result
-    }
-
-    static byte[] formatAsResponseHeader(streamId, size) {
-        def header = [:]
-        header[HEADER_STREAM_ID] = streamId
-        header[HEADER_SIZE] = size
-        formatAsHeader(header)
     }
 
     private static byte[] formatAsHeader(map) {
