@@ -69,7 +69,7 @@ package org.jggug.kobo.groovyserv
  * @author UEHARA Junji
  * @author NAKANO Yasuharu
  */
-class ProtocolHeader {
+class Protocol {
 
     final static String HEADER_CURRENT_WORKING_DIR = "Cwd"
     final static String HEADER_ARG = "Arg"
@@ -108,5 +108,24 @@ class ProtocolHeader {
         }
         result
     }
+
+    static byte[] formatAsResponseHeader(streamId, size) {
+        def header = [:]
+        header[HEADER_STREAM_ID] = streamId
+        header[HEADER_SIZE] = size
+        formatAsHeader(header)
+    }
+
+    private static byte[] formatAsHeader(map) {
+        def buff = new StringBuilder()
+        map.each { key, value ->
+            if (key) {
+                buff << "$key: $value\n"
+            }
+        }
+        buff << "\n"
+        buff.toString().bytes
+    }
+
 }
 

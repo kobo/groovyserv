@@ -16,7 +16,6 @@
 package org.jggug.kobo.groovyserv
 
 import static java.lang.Thread.currentThread as currentThread
-import static org.jggug.kobo.groovyserv.ProtocolHeader.*
 
 
 class ChunkedOutputStream extends OutputStream {
@@ -54,18 +53,17 @@ class ChunkedOutputStream extends OutputStream {
     }
 
     @Override
-    public void write(byte[] b, int off, int len) {
+    public void write(byte[] b, int offset, int length) {
         if (DebugUtils.isVerboseMode()) {
             DebugUtils.errLog("Server==>Client")
             DebugUtils.errLog(" id=" + streamId)
-            DebugUtils.errLog(" size=" + len)
-            DebugUtils.errLog(DebugUtils.dump(b, off, len))
+            DebugUtils.errLog(" size=" + length)
+            DebugUtils.errLog(DebugUtils.dump(b, offset, length))
         }
-        OutputStream out = currentOutputStream
-        out.write((HEADER_STREAM_ID + ": " + streamId + "\n").bytes)
-        out.write((HEADER_SIZE + ": " + len + "\n").bytes)
-        out.write("\n".bytes)
-        out.write(b, off, len)
+        currentOutputStream.with {
+            write(Protocol.formatAsResponseHeader(streamId, length))
+            write(b, offset, length)
+        }
     }
 
     public void bind(OutputStream out, ThreadGroup threadGroup) {

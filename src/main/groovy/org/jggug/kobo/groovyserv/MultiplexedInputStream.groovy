@@ -16,7 +16,7 @@
 package org.jggug.kobo.groovyserv
 
 import static java.lang.Thread.currentThread as currentThread
-import static org.jggug.kobo.groovyserv.ProtocolHeader.HEADER_SIZE
+import static org.jggug.kobo.groovyserv.Protocol.HEADER_SIZE
 
 
 class MultiplexedInputStream extends InputStream {
@@ -83,7 +83,7 @@ class MultiplexedInputStream extends InputStream {
         Thread.startDaemon("inputStreamWorker") {
             try{
                 while (true) {
-                    //def headers = ProtocolHeader.readHeaders(ins) // FIXME dead lock??
+                    //def headers = Protocol.readHeaders(ins) // FIXME dead lock??
                     def headers = null
                     def sizeHeader = headers[HEADER_SIZE]
                     if (sizeHeader == null) {

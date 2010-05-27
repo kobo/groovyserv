@@ -17,7 +17,7 @@ package org.jggug.kobo.groovyserv
 
 import java.util.concurrent.atomic.AtomicReference
 
-import static org.jggug.kobo.groovyserv.ProtocolHeader.*
+import static org.jggug.kobo.groovyserv.Protocol.*
 
 
 /**
@@ -116,7 +116,7 @@ class RequestWorker implements Runnable {
         try {
             socket.withStreams { ins, outs ->
                 try {
-                    Map<String, List<String>> headers = ProtocolHeader.readHeaders(ins)
+                    Map<String, List<String>> headers = Protocol.readHeaders(ins)
                     if (DebugUtils.isVerboseMode()) {
                         headers.each {k,v ->
                             DebugUtils.errLog " $k = $v"
