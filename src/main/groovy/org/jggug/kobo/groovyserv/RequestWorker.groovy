@@ -24,7 +24,7 @@ import static org.jggug.kobo.groovyserv.ProtocolHeader.*
  * @author UEHARA Junji
  * @author NAKANO Yasuharu
  */
-class RequestHandler implements Runnable {
+class RequestWorker implements Runnable {
 
     private final static CURRENT_DIR = new AtomicReference()
 

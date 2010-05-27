@@ -81,7 +81,7 @@ class GroovyServer {
             ThreadGroup tg = new ThreadGroup("groovyserver:$socket")
             StreamManager.bind(tg, socket) // TODO: it should be unbound when thread is dead.
 
-            new Thread(tg, new RequestHandler(socket:socket, cookie:sharedCookie), "requestWorker").start()
+            new Thread(tg, new RequestWorker(socket:socket, cookie:sharedCookie), "requestWorker").start()
         }
     }
 
