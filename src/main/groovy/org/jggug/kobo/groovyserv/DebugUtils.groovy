@@ -21,8 +21,11 @@ package org.jggug.kobo.groovyserv
  */
 class DebugUtils {
 
-    synchronized static errLog(message) {
+    synchronized static errLog(message, e = null) {
         StreamManager.ORIGINAL.err.println message
+        if (e) {
+            StreamManager.ORIGINAL.err.println stackTrace(e)
+        }
     }
 
     synchronized static verboseLog(message) {
@@ -33,6 +36,12 @@ class DebugUtils {
 
     static isVerboseMode() {
         System.getProperty("groovyserver.verbose") == "true" 
+    }
+
+    static String stackTrace(e) {
+        StringWriter sw = new StringWriter()
+        e.printStacktrace(sw)
+        sw.toString()
     }
 
     static String dump(byte[] buf, int offset, int length) { // TODO refactoring

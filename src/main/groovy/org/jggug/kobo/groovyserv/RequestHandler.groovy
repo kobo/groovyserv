@@ -223,9 +223,8 @@ class RequestHandler implements Runnable {
                     // GroovyMain2 throws ExitException when it catches ExitException.
                     sendExit(outs, e.exitStatus)
                 }
-                catch (Throwable t) {
-                    t.printStackTrace(StreamManager.ORIGINAL.err)
-                    t.printStackTrace(System.err)
+                catch (Throwable e) {
+                    DebugUtils.errLog("unexpected error", e)
                     sendExit(outs, 0)
                 }
             }

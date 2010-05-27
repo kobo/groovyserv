@@ -21,7 +21,7 @@ package org.jggug.kobo.groovyserv
  */
 class StreamManager {
 
-    private static final ORIGINAL = [
+    static final ORIGINAL = [
         ins: System.in,
         out: System.out,
         err: System.err
@@ -39,18 +39,11 @@ class StreamManager {
         System.err = new PrintStream(ALTERNATES.err)
     }
 
-    synchronized static bind(ThreadGroup tg, Socket socket) {
+    static bind(ThreadGroup tg, Socket socket) {
         ALTERNATES.ins.bind(socket.inputStream, tg)
         ALTERNATES.out.bind(socket.outputStream, tg)
         ALTERNATES.err.bind(socket.outputStream, tg)
     }
 
-    synchronized static errLog(message) {
-        ORIGINAL.err.println message
-    }
-
-    synchronized static void debugLog(message) {
-        new File("/tmp/gs-log.txt").withWriterAppend { w -> w << message << '\n' }
-    }
 }
 
