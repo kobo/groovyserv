@@ -22,12 +22,10 @@ class MultiplexedInputStream extends InputStream {
     @Override
     public int read() throws IOException {
         int result = getCurrentInputStream().read()
-        if (result != -1 && System.getProperty("groovyserver.verbose") == "true") {
+        if (DebugUtils.isVerboseMode() && result != -1) {
             byte[] b = [result]
-            if (System.getProperty("groovyserver.verbose") == "true") {
-                StreamManager.errLog("Client==>Server")
-            }
-            Dump.dump(originalStreams.err, b, 0, 1)
+            DebugUtils.errLog("Client==>Server")
+            DebugUtils.errLog(DebugUtils.dump(b, 0, 1))
         }
         return result
     }
@@ -35,11 +33,11 @@ class MultiplexedInputStream extends InputStream {
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
         int result = getCurrentInputStream().read(b, off, len)
-        if (result != 0 && System.getProperty("groovyserver.verbose") == "true") {
-            StreamManager.errLog("Client==>Server")
-            StreamManager.errLog(" id=in")
-            StreamManager.errLog(" size="+result)
-            Dump.dump(originalStreams.err, b, off, result)
+        if (DebugUtils.isVerboseMode() && result != 0) {
+            DebugUtils.errLog("Client==>Server")
+            DebugUtils.errLog(" id=in")
+            DebugUtils.errLog(" size="+result)
+            DebugUtils.errLog(DebugUtils.dump(b, off, result))
         }
         return result
     }
@@ -99,14 +97,10 @@ class MultiplexedInputStream extends InputStream {
                 }
             }
             catch (java.net.SocketException e) {
-                if (System.getProperty("groovyserver.verbose") == "true") {
-                    StreamManager.errLog("ins closed.")
-                }
+                DebugUtils.verboseLog("input stream is closed.")
             }
             catch (Throwable t) {
-                if (System.getProperty("groovyserver.verbose") == "true") {
-                    StreamManager.errLog("t="+t)
-                }
+                DebugUtils.verboseLog("t=" + t)
             }
         } as Runnable, "streamWorker")
         map[Thread.currentThread().getThreadGroup()] = pis

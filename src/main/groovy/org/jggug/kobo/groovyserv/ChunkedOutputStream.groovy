@@ -54,14 +54,14 @@ class ChunkedOutputStream extends OutputStream {
 
     @Override
     public void write(byte[] b, int off, int len) {
-        OutputStream out = getCurrentOutputStream()
-        if (System.getProperty("groovyserver.verbose") == "true") {
-            StreamManager.errLog("Server==>Client")
-            StreamManager.errLog(" id=" + streamId)
-            StreamManager.errLog(" size=" + len)
-            Dump.dump(StreamManager.ORIGINAL.err, b, off, len)
+        if (DebugUtils.isVerboseMode()) {
+            DebugUtils.errLog("Server==>Client")
+            DebugUtils.errLog(" id=" + streamId)
+            DebugUtils.errLog(" size=" + len)
+            DebugUtils.errLog(DebugUtils.dump(b, off, len))
         }
-        //StreamManager.errLog("TID="+Thread.currentThread().id)
+        //DebugUtils.errLog("TID="+Thread.currentThread().id)
+        OutputStream out = getCurrentOutputStream()
         out.write((HEADER_STREAM_ID + ": " + streamId + "\n").bytes)
         out.write((HEADER_SIZE + ": " + len + "\n").bytes)
         out.write("\n".bytes)

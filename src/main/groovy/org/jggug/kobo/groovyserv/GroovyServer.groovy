@@ -30,8 +30,6 @@ class GroovyServer {
 
     private static final int DEFAULT_PORT = 1961
     private static final String PROPS_KEY_PORT = "groovyserver.port"
-    private static final String PROPS_KEY_VERBOSE = "groovyserver.verbose"
-    private static final String PROPS_KEY_RUNNING_MODE = "groovy.runningmode"
 
     static void main(String[] args) {
         try {
@@ -41,7 +39,7 @@ class GroovyServer {
             startServer()
         }
         catch (GroovyServerException e) {
-            StreamManager.errLog e.message
+            DebugUtils.errLog e.message
             System.exit(1)
         }
     }
@@ -55,7 +53,7 @@ class GroovyServer {
     }
 
     static setupRunningMode() {
-        System.setProperty(PROPS_KEY_RUNNING_MODE, "server")
+        System.setProperty("groovy.runningmode", "server")
     }
 
     static void startServer() {
@@ -68,16 +66,11 @@ class GroovyServer {
         def serverSocket = new ServerSocket(port)
         while (true) {
             def socket = serverSocket.accept()
-
-            // for security
-            if (!socket.localSocketAddress.address.isLoopbackAddress()) {
-                StreamManager.errLog "allow connection from loopback address only"
+            if (!socket.localSocketAddress.address.isLoopbackAddress()) { // for security
+                DebugUtils.errLog "allow connection from loopback address only"
                 continue
             }
-
-            if (System.getProperty(PROPS_KEY_VERBOSE) == "true") {
-                StreamManager.errLog "accept socket=$socket"
-            }
+            DebugUtils.verboseLog "accepted socket=$socket"
 
             // Create new thraed for each connections.
             // Here, don't use ExecutorService or any thread pool system.

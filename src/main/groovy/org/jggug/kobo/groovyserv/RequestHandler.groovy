@@ -77,8 +77,6 @@ class RequestHandler implements Runnable {
     private final static String HEADER_STATUS = "Status"
     private final static String HEADER_COOKIE = "Cookie"
 
-    private final static String PROPS_KEY_VERBOSE = "groovyserver.verbose"
-
     static currentDir
 
     Socket socket
@@ -202,9 +200,9 @@ class RequestHandler implements Runnable {
             socket.withStreams { ins, outs ->
                 try {
                     Map<String, List<String>> headers = readHeaders(ins)
-                    if (System.getProperty(PROPS_KEY_VERBOSE) == "true") {
+                    if (DebugUtils.isVerboseMode()) {
                         headers.each {k,v ->
-                            StreamManager.errLog " $k = $v"
+                            DebugUtils.errLog " $k = $v"
                         }
                     }
                     checkHeaders(headers)
@@ -236,9 +234,7 @@ class RequestHandler implements Runnable {
             setCurrentDir(null)
 
             // TODO is socket already closed?
-            if (System.getProperty(PROPS_KEY_VERBOSE) == "true") {
-                StreamManager.errLog "socket close"
-            }
+            DebugUtils.verboseLog "socket is closed"
             socket.close()
         }
     }

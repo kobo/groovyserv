@@ -15,37 +15,57 @@
  */
 package org.jggug.kobo.groovyserv
 
-class Dump {
 
-    static void dump(OutputStream os, byte[] buf, int ofs, int len) {
-        PrintWriter pw = new PrintWriter(os)
+/**
+ * @author NAKANO Yasuharu
+ */
+class DebugUtils {
+
+    synchronized static errLog(message) {
+        StreamManager.ORIGINAL.err.println message
+    }
+
+    synchronized static verboseLog(message) {
+        if (isVerboseMode()) {
+            StreamManager.ORIGINAL.err.println message
+        }
+    }
+
+    static isVerboseMode() {
+        System.getProperty("groovyserver.verbose") == "true" 
+    }
+
+    static String dump(byte[] buf, int offset, int length) { // TODO refactoring
+        StringWriter sw = new StringWriter()
+        PrintWriter pw = new PrintWriter(sw)
         pw.println("+-----------+-----------+-----------+-----------+")
 
         StringBuilder buff = new StringBuilder()
 
         int i
-        for (i = ofs; i < ofs + len; i++) {
-            if (!Character.isISOControl((char)buf[i])) {
-                buff.append((char)buf[i])
+        for (i = offset; i < offset + length; i++) {
+            if (!Character.isISOControl((char) buf[i])) {
+                buff.append((char) buf[i])
             }
             else {
                 buff.append("?")
             }
             pw.print(String.format("%02x ", buf[i]))
-            if ((i-ofs) % 16 == 15) {
-                pw.print("| "+buff)
+            if ((i - offset) % 16 == 15) {
+                pw.print("| " + buff)
                 pw.println()
                 buff.length = 0
             }
         }
-        if ((len % 16) != 0) {
-            while (i < (len+16).intdiv(16)*16 + ofs ) {
+        if ((length % 16) != 0) {
+            while (i < (length+16).intdiv(16)*16 + offset) {
                 i++
                 pw.print("   ")
             }
             pw.println("| " + buff)
         }
-        pw.flush()
+        sw.toString()
     }
 
 }
+
