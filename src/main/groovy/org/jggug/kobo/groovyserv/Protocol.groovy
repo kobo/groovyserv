@@ -24,13 +24,13 @@ package org.jggug.kobo.groovyserv
  * Response ::= ( StreamResponse ) *
  *
  * InvocationRequest ::=
- *    'Cwd:' <cwd> CRLF
- *    'Arg:' <argn> CRLF
- *    'Arg:' <arg1> CRLF
- *    'Arg:' <arg2> CRLF
- *    'Cp:' <classpath> CRLF
- *    'Cookie:' <cookie> CRLF
- *    CRLF
+ *    'Cwd:' <cwd> LF
+ *    'Arg:' <argn> LF
+ *    'Arg:' <arg1> LF
+ *    'Arg:' <arg2> LF
+ *    'Cp:' <classpath> LF
+ *    'Cookie:' <cookie> LF
+ *    LF
  *
  *   where:
  *     <cwd> is current working directory.
@@ -38,11 +38,11 @@ package org.jggug.kobo.groovyserv
  *     <classpath>.. is the value of environment variable CLASSPATH(optional).
  *     <cookie> is authentication value which certify client is the user who
  *              invoked the server.
- *     CRLF is carridge return (0x0d ^M) and line feed (0x0a, '\n').
+ *     LF is carridge return (0x0d ^M) and line feed (0x0a, '\n').
  *
  * StreamRequest ::=
- *    'Size:' <size> CRLF
- *    CRLF
+ *    'Size:' <size> LF
+ *    LF
  *    <data from STDIN>
  *
  *   where:
@@ -51,10 +51,10 @@ package org.jggug.kobo.groovyserv
  *     <data from STDIN> is byte sequence from standard input.
  *
  * StreamResponse ::=
- *    'Status:' <status> CRLF
- *    'Channel:' <id> CRLF
- *    'Size:' <size> CRLF
- *    CRLF
+ *    'Status:' <status> LF
+ *    'Channel:' <id> LF
+ *    'Size:' <size> LF
+ *    LF
  *    <data for STDERR/STDOUT>
  *
  *   where:
