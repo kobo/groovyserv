@@ -15,12 +15,13 @@
  */
 package org.jggug.kobo.groovyserv
 
+import static java.lang.Thread.currentThread as currentThread
+import static org.jggug.kobo.groovyserv.ProtocolHeader.*
+
+
 class ChunkedOutputStream extends OutputStream {
 
-    final static String HEADER_STREAM_ID = "Channel"
-    final static String HEADER_SIZE = "Size"
-
-    WeakHashMap<ThreadGroup, OutputStream> map = [:]
+    WeakHashMap<ThreadGroup, OutputStream> outPerThreadGroup = [:]
     char streamId
 
     private ChunkedOutputStream(char streamId) {
@@ -37,12 +38,12 @@ class ChunkedOutputStream extends OutputStream {
 
     @Override
     public void flush() throws IOException {
-        getCurrentOutputStream().flush()
+        currentOutputStream.flush()
     }
 
     @Override
     public void close() throws IOException {
-        getCurrentOutputStream().close()
+        currentOutputStream.close()
     }
 
     @Override
@@ -60,26 +61,25 @@ class ChunkedOutputStream extends OutputStream {
             DebugUtils.errLog(" size=" + len)
             DebugUtils.errLog(DebugUtils.dump(b, off, len))
         }
-        //DebugUtils.errLog("TID="+Thread.currentThread().id)
-        OutputStream out = getCurrentOutputStream()
+        OutputStream out = currentOutputStream
         out.write((HEADER_STREAM_ID + ": " + streamId + "\n").bytes)
         out.write((HEADER_SIZE + ": " + len + "\n").bytes)
         out.write("\n".bytes)
         out.write(b, off, len)
     }
 
-    public void bind(OutputStream out, ThreadGroup tg) {
-        map[tg] = out
+    public void bind(OutputStream out, ThreadGroup threadGroup) {
+        outPerThreadGroup[threadGroup] = out
     }
 
     private OutputStream getCurrentOutputStream() {
-        return check(map[Thread.currentThread().getThreadGroup()])
+        return check(outPerThreadGroup[currentThread().threadGroup])
     }
 
-    private OutputStream check(OutputStream out) {
+    private static OutputStream check(OutputStream out) {
         if (out == null) {
-            throw new IllegalStateException("System.out/err can't access from this thread: " + 
-                Thread.currentThread() + ":" + Thread.currentThread().id + ":" + Thread.currentThread().getThreadGroup())
+            def thread = currentThread()
+            throw new IllegalStateException("System.out/err can't access from this thread: ${thread}:${thread.id}:${thread.threadGroup}")
         }
         return out
     }

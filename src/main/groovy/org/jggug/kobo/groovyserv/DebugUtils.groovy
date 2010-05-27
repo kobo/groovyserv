@@ -21,14 +21,18 @@ package org.jggug.kobo.groovyserv
  */
 class DebugUtils {
 
-    synchronized static errLog(message, e = null) {
+    static errLog(message, Throwable e = null) {
         StreamManager.ORIGINAL.err.println message
         if (e) {
             StreamManager.ORIGINAL.err.println stackTrace(e)
         }
     }
 
-    synchronized static verboseLog(message) {
+    static debugLog(message) { // for DEBUG
+        new File("/tmp/gs-log.txt").withWriterAppend { w -> w << message << '\n' }
+    }
+
+    static verboseLog(message) {
         if (isVerboseMode()) {
             StreamManager.ORIGINAL.err.println message
         }

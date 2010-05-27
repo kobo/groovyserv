@@ -15,16 +15,22 @@
  */
 package org.jggug.kobo.groovyserv
 
+import static java.lang.Thread.currentThread as currentThread
+import static org.jggug.kobo.groovyserv.ProtocolHeader.HEADER_SIZE
+
+
 class MultiplexedInputStream extends InputStream {
 
-    static WeakHashMap<ThreadGroup, InputStream>map = [:]
+    WeakHashMap<ThreadGroup, InputStream> inPerThreadGroup = [:]
 
     @Override
     public int read() throws IOException {
-        int result = getCurrentInputStream().read()
+        int result = currentInputStream.read()
         if (DebugUtils.isVerboseMode() && result != -1) {
             byte[] b = [result]
             DebugUtils.errLog("Client==>Server")
+            DebugUtils.errLog(" id=in")
+            DebugUtils.errLog(" size=" + result)
             DebugUtils.errLog(DebugUtils.dump(b, 0, 1))
         }
         return result
@@ -32,11 +38,11 @@ class MultiplexedInputStream extends InputStream {
 
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
-        int result = getCurrentInputStream().read(b, off, len)
+        int result = currentInputStream.read(b, off, len)
         if (DebugUtils.isVerboseMode() && result != 0) {
             DebugUtils.errLog("Client==>Server")
             DebugUtils.errLog(" id=in")
-            DebugUtils.errLog(" size="+result)
+            DebugUtils.errLog(" size=" + result)
             DebugUtils.errLog(DebugUtils.dump(b, off, result))
         }
         return result
@@ -44,77 +50,79 @@ class MultiplexedInputStream extends InputStream {
 
     @Override
     public int available() throws IOException {
-        return getCurrentInputStream().available()
+        return currentInputStream.available()
     }
 
     @Override
     public void close() throws IOException {
-        getCurrentInputStream().close()
+        currentInputStream.close()
     }
 
     @Override
     public void mark(int readlimit) {
-        getCurrentInputStream().mark()
+        currentInputStream.mark()
     }
 
     @Override
     public void reset() throws IOException {
-        getCurrentInputStream().reset()
+        currentInputStream.reset()
     }
 
     @Override
     public boolean markSupported() {
-        getCurrentInputStream().markSupported()
+        currentInputStream.markSupported()
     }
 
     public void bind(InputStream ins, ThreadGroup tg) {
         def pos = new PipedOutputStream()
         def pis = new PipedInputStream(pos)
-        Thread streamCopyWorker = new Thread({
+        inPerThreadGroup[currentThread().threadGroup] = pis
+        // TODO pis which is as System.in for client process each request should be closed when socket is closed.
+
+        // Start a thread for delegating from input stream of socket to System.in
+        Thread.startDaemon("inputStreamWorker") {
             try{
                 while (true) {
-                    def headers = GroovyServer.readHeaders(ins)
-                    def sizeHeader = headers[ChunkedOutputStream.HEADER_SIZE]
-                    if (sizeHeader != null) {
-                        def size = Integer.parseInt(sizeHeader[0])
-                        if (size == 0) {
-                            pos.close()
-                            return
-                        }
-                        for (int i = 0; i < size; i++) {
-                            int ch = ins.read()
-                            if (ch == -1) {
-                                break
-                            }
-                            pos.write(ch)
-                        }
-                        pos.flush()
-                    }
-                    else {
-                        pos.close()
+                    //def headers = ProtocolHeader.readHeaders(ins) // FIXME dead lock??
+                    def headers = null
+                    def sizeHeader = headers[HEADER_SIZE]
+                    if (sizeHeader == null) {
                         return
                     }
+
+                    int size = Integer.parseInt(sizeHeader[0])
+                    if (size == 0) {
+                        return
+                    }
+
+                    for (int i = 0; i < size; i++) {
+                        int ch = ins.read()
+                        if (ch == -1) {
+                            break
+                        }
+                        pos.write(ch)
+                    }
+                    pos.flush()
                 }
-            }
-            catch (java.net.SocketException e) {
+            } catch (SocketException e) {
+                // Because of here, this daemon thread will be killed when the input stream is closed.
                 DebugUtils.verboseLog("input stream is closed.")
+            } catch (Throwable t) {
+                DebugUtils.verboseLog("unexpected error: throwable=" + t)
+            } finally {
+                if (pos) pos.close()
             }
-            catch (Throwable t) {
-                DebugUtils.verboseLog("t=" + t)
-            }
-        } as Runnable, "streamWorker")
-        map[Thread.currentThread().getThreadGroup()] = pis
-        streamCopyWorker.setDaemon(true)
-        streamCopyWorker.start()
+        }
     }
 
     private InputStream getCurrentInputStream() {
-        return check(map[Thread.currentThread().getThreadGroup()])
+        return check(inPerThreadGroup[currentThread().threadGroup])
     }
 
-    private InputStream check(InputStream ins) {
+    private static InputStream check(InputStream ins) {
         if (ins == null) {
-            throw new IllegalStateException("System.in can't access from this thread: "+Thread.currentThread()+":"+Thread.currentThread().id)
+            def thread = currentThread()
+            throw new IllegalStateException("System.in can't access from this thread: ${thread}:${thread.id}")
         }
         return ins
     }

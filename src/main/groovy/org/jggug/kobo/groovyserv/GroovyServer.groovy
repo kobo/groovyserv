@@ -79,10 +79,9 @@ class GroovyServer {
             // So this 'new Thread()' is nesessary.
 
             ThreadGroup tg = new ThreadGroup("groovyserver:$socket")
-            StreamManager.bind(tg, socket)
+            StreamManager.bind(tg, socket) // TODO: it should be unbound when thread is dead.
 
-            Thread worker = new Thread(tg, new RequestHandler(socket:socket, cookie:sharedCookie), "worker")
-            worker.start()
+            new Thread(tg, new RequestHandler(socket:socket, cookie:sharedCookie), "requestWorker").start()
         }
     }
 
