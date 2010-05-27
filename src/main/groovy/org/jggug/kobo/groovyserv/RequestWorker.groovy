@@ -26,17 +26,17 @@ import static org.jggug.kobo.groovyserv.Protocol.*
  */
 class RequestWorker implements Runnable {
 
-    private final static CURRENT_DIR = new AtomicReference()
+    private static currentDir
 
     Socket socket
     String cookie
 
     synchronized setCurrentDir(dir) {
-        if (dir != CURRENT_DIR.get()) {
-            CURRENT_DIR.set(dir)
-            System.setProperty('user.dir', CURRENT_DIR.get())
-            PlatformMethods.chdir(CURRENT_DIR.get())
-            addClasspath(CURRENT_DIR.get())
+        if (dir != currentDir) {
+            currentDir = dir
+            System.setProperty('user.dir', currentDir)
+            PlatformMethods.chdir(currentDir)
+            addClasspath(currentDir)
         }
     }
 
@@ -125,7 +125,7 @@ class RequestWorker implements Runnable {
                     checkHeaders(headers)
 
                     def cwd = headers[HEADER_CURRENT_WORKING_DIR][0]
-                    if (CURRENT_DIR.get() != null && CURRENT_DIR.get() != cwd) {
+                    if (currentDir != null && currentDir != cwd) {
                         throw new GroovyServerException(
                             "Can't change current directory because of another session running on different dir: " +
                             headers[HEADER_CURRENT_WORKING_DIR][0])
