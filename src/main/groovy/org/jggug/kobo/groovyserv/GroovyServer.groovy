@@ -32,11 +32,15 @@ class GroovyServer {
     private static final String PROPS_KEY_PORT = "groovyserver.port"
 
     static void main(String[] args) {
+        new GroovyServer().start()
+    }
+
+    void start() {
         try {
             setupStandardStreams()
             setupSecurityManager()
             setupRunningMode()
-            startServer()
+            runServer()
         }
         catch (GroovyServerException e) {
             DebugUtils.errLog e.message
@@ -44,19 +48,19 @@ class GroovyServer {
         }
     }
 
-    static setupStandardStreams() {
+    private void setupStandardStreams() {
         StreamManager.init()
     }
 
-    static setupSecurityManager() {
+    private void setupSecurityManager() {
         System.setSecurityManager(new NoExitSecurityManager2()) // TODO partially override
     }
 
-    static setupRunningMode() {
+    private void setupRunningMode() {
         System.setProperty("groovy.runningmode", "server")
     }
 
-    static void startServer() {
+    private void runServer() {
         def cookie = CookieUtils.createCookie()
 
         def serverSocket = new ServerSocket(getPort())
@@ -68,18 +72,18 @@ class GroovyServer {
             }
             DebugUtils.verboseLog "accepted socket=$socket"
 
-            // Create new thraed for each connections.
+            // Create new thread for each connections.
             // Here, don't use ExecutorService or any thread pool system.
             // Because the System.(in/out/err) streams are used distinctly
             // by thread instance. In the other words, threads can't be pooled.
-            // So this 'new Thread()' is nesessary.
+            // So this 'new Thread()' is necessary.
             def tgroup = new ThreadGroup("groovyserver:$socket")
             def connection = new ClientConnection(cookie, socket, tgroup)
             new Thread(tgroup, new RequestWorker(connection), "requestWorker").start()
         }
     }
 
-    static int getPort() {
+    private static int getPort() {
         if (System.getProperty(PROPS_KEY_PORT) != null) {
             return System.getProperty(PROPS_KEY_PORT) as int
         }
