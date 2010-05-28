@@ -26,7 +26,7 @@ import static org.jggug.kobo.groovyserv.Protocol.*
  */
 class RequestWorker implements Runnable {
 
-    private static currentDir
+    private static currentDir // TODO extract into CurrentDirHolder
 
     private ClientConnection conn
 
@@ -37,34 +37,25 @@ class RequestWorker implements Runnable {
     @Override
     void run() {
         try {
-DebugUtils.debugLog "run:1"
             Map<String, List<String>> headers = conn.readHeaders()
 
-DebugUtils.debugLog "run:2"
             def cwd = headers[HEADER_CURRENT_WORKING_DIR][0]
-DebugUtils.debugLog "run:3"
             if (currentDir != null && currentDir != cwd) {
                 throw new GroovyServerException(
                     "Can't change current directory because of another session running on different dir: " +
                     headers[HEADER_CURRENT_WORKING_DIR][0])
             }
             setCurrentDir(cwd)
-DebugUtils.debugLog "run:4"
 
             process(headers)
-DebugUtils.debugLog "run:5"
             ensureAllThreadToStop()
-DebugUtils.debugLog "run:6"
             conn.sendExit(0)
-DebugUtils.debugLog "run:7"
         }
         catch (ExitException e) {
             // GroovyMain2 throws ExitException when it catches ExitException.
-DebugUtils.debugLog "run:ex1" + e
             conn.sendExit(e.exitStatus)
         }
         catch (Throwable e) {
-DebugUtils.debugLog "run:ex2" + e
             DebugUtils.errLog("unexpected error", e)
             conn.sendExit(0)
         }
@@ -72,7 +63,6 @@ DebugUtils.debugLog "run:ex2" + e
             setCurrentDir(null)
 
             conn.close()
-            DebugUtils.verboseLog "client connection is closed: $connection"
         }
     }
 

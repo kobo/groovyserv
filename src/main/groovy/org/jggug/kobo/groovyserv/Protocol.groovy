@@ -79,12 +79,6 @@ class Protocol {
     final static String HEADER_STREAM_ID = "Channel"
     final static String HEADER_SIZE = "Size"
 
-    private String cookie
-
-    Protocol() {
-        cookie = CookieUtils.createCookie()
-    }
-
     static Map<String, List<String>> readHeaders(InputStream ins, cookie) {
         def headers = [:]
         def line
