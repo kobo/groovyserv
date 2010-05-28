@@ -98,7 +98,7 @@ class ClientConnection {
 
     void sendExit(int status) {
         socket.outputStream.with { // not to close yet
-            write(Protocol.formatAsExitHeader(status))
+            write(ClientConnection.formatAsExitHeader(status))
             flush()
         }
     }

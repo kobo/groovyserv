@@ -17,7 +17,7 @@ package org.jggug.kobo.groovyserv
 
 import java.util.concurrent.atomic.AtomicReference
 
-import static org.jggug.kobo.groovyserv.Protocol.*
+import static org.jggug.kobo.groovyserv.ClientConnection.*
 
 
 /**

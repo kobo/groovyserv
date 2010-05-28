@@ -61,7 +61,7 @@ class ChunkedOutputStream extends OutputStream {
             DebugUtils.errLog(DebugUtils.dump(b, offset, length))
         }
         currentOutputStream.with {
-            write(Protocol.formatAsResponseHeader(streamId, length))
+            write(ClientConnection.formatAsResponseHeader(streamId, length))
             write(b, offset, length)
         }
     }
