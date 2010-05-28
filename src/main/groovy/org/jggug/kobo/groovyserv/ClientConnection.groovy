@@ -17,59 +17,10 @@ package org.jggug.kobo.groovyserv
 
 
 /**
- * Protocol summary:
- * <pre>
- * Request ::= InvocationRequest
- *             ( StreamRequest ) *
- * Response ::= ( StreamResponse ) *
- *
- * InvocationRequest ::=
- *    'Cwd:' <cwd> LF
- *    'Arg:' <argn> LF
- *    'Arg:' <arg1> LF
- *    'Arg:' <arg2> LF
- *    'Cp:' <classpath> LF
- *    'Cookie:' <cookie> LF
- *    LF
- *
- *   where:
- *     <cwd> is current working directory.
- *     <arg1><arg2>.. are commandline arguments(optional).
- *     <classpath>.. is the value of environment variable CLASSPATH(optional).
- *     <cookie> is authentication value which certify client is the user who
- *              invoked the server.
- *     LF is carridge return (0x0d ^M) and line feed (0x0a, '\n').
- *
- * StreamRequest ::=
- *    'Size:' <size> LF
- *    LF
- *    <data from STDIN>
- *
- *   where:
- *     <size> is the size of data to send to server.
- *            <size>==0 means client exited.
- *     <data from STDIN> is byte sequence from standard input.
- *
- * StreamResponse ::=
- *    'Status:' <status> LF
- *    'Channel:' <id> LF
- *    'Size:' <size> LF
- *    LF
- *    <data for STDERR/STDOUT>
- *
- *   where:
- *     <status> is exit status of invoked groovy script.
- *     <id> is 'o' or 'e', where 'o' means standard output of the program.
- *          'e' means standard error of the program.
- *     <size> is the size of chunk.
- *     <data from STDERR/STDOUT> is byte sequence from standard output/error.
- *
- * </pre>
- *
  * @author UEHARA Junji
  * @author NAKANO Yasuharu
  */
-class Protocol {
+class ClientConnection {
 
     final static String HEADER_CURRENT_WORKING_DIR = "Cwd"
     final static String HEADER_ARG = "Arg"
@@ -79,13 +30,65 @@ class Protocol {
     final static String HEADER_STREAM_ID = "Channel"
     final static String HEADER_SIZE = "Size"
 
-    private String cookie
+    private cookie
+    private socket
+    private ownerThreadGroup
 
-    Protocol() {
-        cookie = CookieUtils.createCookie()
+    ClientConnection(cookie, socket, ownerThreadGroup) {
+        this.cookie = cookie
+        this.socket = socket
+        this.ownerThreadGroup = ownerThreadGroup
+        StreamManager.bind(ownerThreadGroup, socket)
     }
 
-    static Map<String, List<String>> readHeaders(InputStream ins, cookie) {
+    Map<String, List<String>> readHeaders() {
+        def headers = readHeaders(socket.inputStream)
+        checkHeaders(headers, cookie)
+        headers
+    }
+
+    void sendExit(int status) {
+        socket.outputStream.with { // not to close yet
+            write(Protocol.formatAsExitHeader(status))
+            flush()
+        }
+    }
+
+    void close() {
+        if (!socket) return
+        socket.close()
+        socket = null
+//        StreamManager.unbind(thread)
+    }
+
+    String toString() {
+        "ClientConnection: ${socket.port}"
+    }
+
+    static byte[] formatAsResponseHeader(streamId, size) {
+        def header = [:]
+        header[HEADER_STREAM_ID] = streamId
+        header[HEADER_SIZE] = size
+        formatAsHeader(header)
+    }
+
+    private static byte[] formatAsExitHeader(status) {
+        def header = [:]
+        header[HEADER_STATUS] = status
+        formatAsHeader(header)
+    }
+
+    private static checkHeaders(headers, cookie) {
+        if (headers[HEADER_CURRENT_WORKING_DIR] == null || headers[HEADER_CURRENT_WORKING_DIR][0] == null) {
+            throw new GroovyServerException("required header cwd unspecified.")
+        }
+        if (cookie == null || headers[HEADER_COOKIE] == null || headers[HEADER_COOKIE][0] != cookie) {
+            Thread.sleep(5000)
+            throw new GroovyServerException("authentication failed.")
+        }
+    }
+
+    private static Map<String, List<String>> readHeaders(InputStream ins) {
         def headers = [:]
         def line
         while ((line = readLine(ins)) != "") {
@@ -105,35 +108,7 @@ class Protocol {
                 DebugUtils.errLog " $k = $v"
             }
         }
-        checkHeaders(headers, cookie)
         headers
-    }
-
-    static byte[] formatAsResponseHeader(streamId, size) {
-        def header = [:]
-        header[HEADER_STREAM_ID] = streamId
-        header[HEADER_SIZE] = size
-        formatAsHeader(header)
-    }
-
-    static sendExit(OutputStream out, int status) {
-        out.write(Protocol.formatAsExitHeader(status))
-    }
-
-    private static byte[] formatAsExitHeader(status) {
-        def header = [:]
-        header[HEADER_STATUS] = status
-        formatAsHeader(header)
-    }
-
-    private static checkHeaders(headers, cookie) {
-        if (headers[HEADER_CURRENT_WORKING_DIR] == null || headers[HEADER_CURRENT_WORKING_DIR][0] == null) {
-            throw new GroovyServerException("required header cwd unspecified.")
-        }
-        if (cookie == null || headers[HEADER_COOKIE] == null || headers[HEADER_COOKIE][0] != cookie) {
-            Thread.sleep(5000)
-            throw new GroovyServerException("authentication failed.")
-        }
     }
 
     private static readLine(InputStream is) {

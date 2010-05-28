@@ -57,13 +57,9 @@ class GroovyServer {
     }
 
     static void startServer() {
-        def port = DEFAULT_PORT
-        if (System.getProperty(PROPS_KEY_PORT) != null) {
-            port = Integer.parseInt(System.getProperty(PROPS_KEY_PORT))
-        }
-        def sharedCookie = CookieUtils.createCookie()
+        def cookie = CookieUtils.createCookie()
 
-        def serverSocket = new ServerSocket(port)
+        def serverSocket = new ServerSocket(getPort())
         while (true) {
             def socket = serverSocket.accept()
             if (!socket.localSocketAddress.address.isLoopbackAddress()) { // for security
@@ -77,13 +73,17 @@ class GroovyServer {
             // Because the System.(in/out/err) streams are used distinctly
             // by thread instance. In the other words, threads can't be pooled.
             // So this 'new Thread()' is nesessary.
-
-            ThreadGroup tg = new ThreadGroup("groovyserver:$socket")
-            StreamManager.bind(tg, socket) // TODO: it should be unbound when thread is dead.
-
-            new Thread(tg, new RequestWorker(socket:socket, cookie:sharedCookie), "requestWorker").start()
+            def tgroup = new ThreadGroup("groovyserver:$socket")
+            def connection = new ClientConnection(cookie, socket, tgroup)
+            new Thread(tgroup, new RequestWorker(connection), "requestWorker").start()
         }
     }
 
+    static int getPort() {
+        if (System.getProperty(PROPS_KEY_PORT) != null) {
+            return System.getProperty(PROPS_KEY_PORT) as int
+        }
+        return DEFAULT_PORT
+    }
 }
 

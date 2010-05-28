@@ -28,44 +28,51 @@ class RequestWorker implements Runnable {
 
     private static currentDir
 
-    private Socket socket
-    private String cookie
+    private ClientConnection conn
+
+    RequestWorker(clientConnection) {
+        this.conn = clientConnection
+    }
 
     @Override
     void run() {
         try {
-            socket.withStreams { ins, out ->
-                try {
-                    Map<String, List<String>> headers = Protocol.readHeaders(ins, cookie)
+DebugUtils.debugLog "run:1"
+            Map<String, List<String>> headers = conn.readHeaders()
 
-                    def cwd = headers[HEADER_CURRENT_WORKING_DIR][0]
-                    if (currentDir != null && currentDir != cwd) {
-                        throw new GroovyServerException(
-                            "Can't change current directory because of another session running on different dir: " +
-                            headers[HEADER_CURRENT_WORKING_DIR][0])
-                    }
-                    setCurrentDir(cwd)
-
-                    process(headers)
-                    ensureAllThreadToStop()
-                    Protocol.sendExit(out, 0)
-                }
-                catch (ExitException e) {
-                    // GroovyMain2 throws ExitException when it catches ExitException.
-                    Protocol.sendExit(out, e.exitStatus)
-                }
-                catch (Throwable e) {
-                    DebugUtils.errLog("unexpected error", e)
-                    Protocol.sendExit(out, 0)
-                }
+DebugUtils.debugLog "run:2"
+            def cwd = headers[HEADER_CURRENT_WORKING_DIR][0]
+DebugUtils.debugLog "run:3"
+            if (currentDir != null && currentDir != cwd) {
+                throw new GroovyServerException(
+                    "Can't change current directory because of another session running on different dir: " +
+                    headers[HEADER_CURRENT_WORKING_DIR][0])
             }
+            setCurrentDir(cwd)
+DebugUtils.debugLog "run:4"
+
+            process(headers)
+DebugUtils.debugLog "run:5"
+            ensureAllThreadToStop()
+DebugUtils.debugLog "run:6"
+            conn.sendExit(0)
+DebugUtils.debugLog "run:7"
+        }
+        catch (ExitException e) {
+            // GroovyMain2 throws ExitException when it catches ExitException.
+DebugUtils.debugLog "run:ex1" + e
+            conn.sendExit(e.exitStatus)
+        }
+        catch (Throwable e) {
+DebugUtils.debugLog "run:ex2" + e
+            DebugUtils.errLog("unexpected error", e)
+            conn.sendExit(0)
         }
         finally {
             setCurrentDir(null)
 
-            if (socket) socket.close()
-            DebugUtils.verboseLog "socket is closed: $socket"
-            socket = null
+            conn.close()
+            DebugUtils.verboseLog "client connection is closed: $connection"
         }
     }
 
