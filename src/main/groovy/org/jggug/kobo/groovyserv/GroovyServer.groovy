@@ -29,7 +29,6 @@ import org.codehaus.groovy.tools.shell.util.NoExitSecurityManager
 class GroovyServer {
 
     private static final int DEFAULT_PORT = 1961
-    private static final String PROPS_KEY_PORT = "groovyserver.port"
 
     static void main(String[] args) {
         new GroovyServer().start()
@@ -84,10 +83,7 @@ class GroovyServer {
     }
 
     private static int getPort() {
-        if (System.getProperty(PROPS_KEY_PORT) != null) {
-            return System.getProperty(PROPS_KEY_PORT) as int
-        }
-        return DEFAULT_PORT
+        return System.getProperty("groovyserver.port") as int ?: DEFAULT_PORT
     }
 }
 
