@@ -1,6 +1,6 @@
 <projectDescription>
   <name>groovyserv</name>
-  <comment/>
+  <comment>Groovy&apos;s startup acceralator.</comment>
   <projects/>
   <buildSpec>
     <buildCommand>
