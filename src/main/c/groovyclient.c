@@ -397,7 +397,7 @@ void start_server(int argn, char** argv, int port) {
  */
 void read_cookie(char* cookie, int size) {
   char path[MAXPATHLEN];
-  sprintf(path, "%s/%s", getenv("HOME"), ".groovy/groovyserv/key");
+  sprintf(path, "%s/%s", getenv("HOME"), ".groovy/groovyserv/cookie");
   FILE* fp = fopen(path, "r");
   if (fp != NULL) {
 	if (fgets(cookie, size, fp) == NULL) {
@@ -407,7 +407,7 @@ void read_cookie(char* cookie, int size) {
 	fclose(fp);
   }
   else {
-	fprintf(stderr, "cannot open key file\n");
+	fprintf(stderr, "cannot open cookie file\n");
 	exit(1);
   }
 }

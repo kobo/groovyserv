@@ -26,7 +26,7 @@ class CookieUtils {
         try {
             FileUtils.COOKIE_FILE.text = cookie
         } catch (IOException e) {
-            throw new GroovyServerException("can't write to key file: " + FileUtils.COOKIE_FILE)
+            throw new GroovyServerException("can't write to cookie file: " + FileUtils.COOKIE_FILE)
         }
         return cookie
     }

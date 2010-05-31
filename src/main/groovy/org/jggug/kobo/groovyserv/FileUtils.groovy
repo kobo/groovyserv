@@ -23,7 +23,7 @@ class FileUtils {
 
     static final DATA_DIR = new File("${System.env.HOME}/.groovy/groovyserv")
     static final LOG_FILE = new File(DATA_DIR, "groovyserver.log")
-    static final COOKIE_FILE = new File(DATA_DIR, "key") // TODO key -> cookie
+    static final COOKIE_FILE = new File(DATA_DIR, "cookie")
 
     static initWorkDir() {
         if (!DATA_DIR.isDirectory()) {
