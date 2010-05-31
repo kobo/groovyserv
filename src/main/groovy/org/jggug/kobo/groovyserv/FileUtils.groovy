@@ -1,4 +1,3 @@
-#!/usr/bin/env groovy
 /*
  * Copyright 2009-2010 the original author or authors.
  *
@@ -16,19 +15,20 @@
  */
 package org.jggug.kobo.groovyserv
 
-// TODO refactoring
-class CookieUtils {
 
-    private CookieUtils() { /* forbidden instantiation */ }
+/**
+ * @author NAKANO Yasuharu
+ */
+class FileUtils {
 
-    static String createAndSave() {
-        String cookie = Long.toHexString(new Random().nextLong()) // FIXME
-        try {
-            FileUtils.COOKIE_FILE.text = cookie
-        } catch (IOException e) {
-            throw new GroovyServerException("can't write to key file: " + FileUtils.COOKIE_FILE)
+    static final DATA_DIR = new File("${System.env.HOME}/.groovy/groovyserv")
+    static final LOG_FILE = new File(DATA_DIR, "groovyserver.log")
+    static final COOKIE_FILE = new File(DATA_DIR, "key") // TODO key -> cookie
+
+    static initWorkDir() {
+        if (!DATA_DIR.isDirectory()) {
+            DATA_DIR.mkdirs()
         }
-        return cookie
     }
 
 }

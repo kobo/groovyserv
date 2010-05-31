@@ -206,7 +206,7 @@ Log file
 
 The output from groovyserver are logged to:
 
-  ~/.groovy/groovyserver/<Process ID>-<Port Number>.log
+  ~/.groovy/groovyserv/<Process ID>-<Port Number>.log
 
 ======
 Tips

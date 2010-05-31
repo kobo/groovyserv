@@ -68,7 +68,7 @@ GroovyServサーバへの接続は、localhostからのみに制限されてお�
 マシン上でもgroovyserverを起動したユーザーと同じユーザが実行した
 groovyclient の接続しか受け付けないように制約をかけています。なお、この
 制約は、サーバが実行後とに生成する秘密のクッキー情報
-~/.groovy/groovyserver/key ファイルの内容を自ユーザのみが読み出せること
+~/.groovy/groovyserv/key ファイルの内容を自ユーザのみが読み出せること
 に依存しています。このファイルのアクセス制限を、UNIX環境ではowner以外か
 らは読めないように設定(chmod 0400)していますが、Windows環境ではこの設定
 が機能しないため、必要に応じて他のユーザから読み出せないように設定して
@@ -227,7 +227,7 @@ GROOVYSERVER_PORTを設定してください。
 
 groovyserverのログファイルは以下のファイルに出力されます。
 
-  ~/.groovy/groovyserver/<プロセスID>-<ポート番号>.log
+  ~/.groovy/groovyserv/<プロセスID>-<ポート番号>.log
 
 ======
 Tips

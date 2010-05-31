@@ -22,8 +22,7 @@ require 'socket'
 
 DESTHOST = "localhost" # for security
 DESTPORT = 1961
-DOT_DIR = ENV['HOME'] + "/.groovy/groovyserver"
-LOG_FILE = DOT_DIR + "/groovyserver.log"
+DOT_DIR = ENV['HOME'] + "/.groovy/groovyserv"
 COOKIE_FILE = DOT_DIR + "/key"
 GROOVYSERVER_CMD = ENV.fetch("GROOVYSERV_HOME", File.dirname($0)) + "/bin/groovyserver"
 
@@ -37,7 +36,7 @@ def start_server()
     puts "ERROR: Command not found: #{GROOVYSERVER_CMD}"
     exit 1
   end
-  system "#{GROOVYSERVER_CMD} >> #{LOG_FILE} 2>&1"
+  system GROOVYSERVER_CMD
 end
 
 def session(socket)

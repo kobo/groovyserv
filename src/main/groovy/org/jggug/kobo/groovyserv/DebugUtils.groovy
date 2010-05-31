@@ -21,10 +21,8 @@ package org.jggug.kobo.groovyserv
  */
 class DebugUtils {
 
-    private static final LOG_FILE = new File("${System.env["HOME"]}/.groovy/groovyserver/groovyserver.log") // FIXME groovyserver -> groovyserv
-
     static errLog(message, Throwable e = null) {
-        LOG_FILE.withWriterAppend { out ->
+        FileUtils.LOG_FILE.withWriterAppend { out ->
             out.println message
             if (e) {
                 out << stackTrace(e)

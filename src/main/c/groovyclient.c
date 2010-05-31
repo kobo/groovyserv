@@ -375,13 +375,6 @@ void mk_dir(const char* path) {
 }
 
 void start_server(int argn, char** argv, int port) {
-  // create directries for logging.
-  char path[MAXPATHLEN];
-  sprintf(path, "%s/%s", getenv("HOME"), ".groovy");
-  mk_dir(path);
-  sprintf(path, "%s/%s", getenv("HOME"), ".groovy/groovyserver");
-  mk_dir(path);
-
   // make command line to invoke groovyserver
   char groovyserver_path[MAXPATHLEN];
   strcpy(groovyserver_path, argv[0]);
@@ -393,7 +386,6 @@ void start_server(int argn, char** argv, int port) {
     p++;
   }
   sprintf(p, "groovyserver -p %d", port);
-  strcat(p, " >> ~/.groovy/groovyserver/groovyserver.log 2>&1");
 
   // start groovyserver.
   system(groovyserver_path);
@@ -405,7 +397,7 @@ void start_server(int argn, char** argv, int port) {
  */
 void read_cookie(char* cookie, int size) {
   char path[MAXPATHLEN];
-  sprintf(path, "%s/%s", getenv("HOME"), ".groovy/groovyserver/key");
+  sprintf(path, "%s/%s", getenv("HOME"), ".groovy/groovyserv/key");
   FILE* fp = fopen(path, "r");
   if (fp != NULL) {
 	if (fgets(cookie, size, fp) == NULL) {

@@ -92,7 +92,8 @@ class ClientConnection {
 
     Map<String, List<String>> readHeaders() {
         def headers = parseHeaders(socket.inputStream)
-        checkHeaders(headers, cookie)
+DebugUtils.errLog headers.toString()
+//        checkHeaders(headers, cookie)
         headers
     }
 

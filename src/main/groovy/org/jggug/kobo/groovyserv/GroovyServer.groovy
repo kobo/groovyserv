@@ -36,6 +36,7 @@ class GroovyServer {
 
     void start() {
         try {
+            FileUtils.initWorkDir()
             setupStandardStreams()
             setupSecurityManager()
             setupRunningMode()
@@ -60,7 +61,7 @@ class GroovyServer {
     }
 
     private void runServer() {
-        def cookie = CookieUtils.createCookie()
+        def cookie = CookieUtils.createAndSave()
 
         def serverSocket = new ServerSocket(getPort())
         while (true) {
