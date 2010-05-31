@@ -187,8 +187,6 @@
             </goals>
             <configuration>
               <tasks>
-                <delete dir="${env.HOME}/.groovy/groovyserver" verbose="true" /><!-- old working dir of Ver 0.1 -->
-                <delete dir="${env.HOME}/.groovy/groovyserv" verbose="true" />
                 <exec executable="${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}/bin/groovyserver" spawn="true">
                   <env key="GROOVYSERV_HOME" value="${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}" />
                   <arg value="-r"/>
