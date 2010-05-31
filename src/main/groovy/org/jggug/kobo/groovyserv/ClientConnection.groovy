@@ -79,9 +79,9 @@ class ClientConnection {
     final static String HEADER_STREAM_ID = "Channel"
     final static String HEADER_SIZE = "Size"
 
-    private cookie
-    private socket
-    private ownerThreadGroup
+    private Cookie cookie
+    private Socket socket
+    private ThreadGroup ownerThreadGroup
 
     ClientConnection(cookie, socket, ownerThreadGroup) {
         this.cookie = cookie
@@ -92,8 +92,7 @@ class ClientConnection {
 
     Map<String, List<String>> readHeaders() {
         def headers = parseHeaders(socket.inputStream)
-DebugUtils.errLog headers.toString()
-//        checkHeaders(headers, cookie)
+        checkHeaders(headers)
         headers
     }
 
@@ -125,13 +124,14 @@ DebugUtils.errLog headers.toString()
         formatAsHeader(header)
     }
 
-    private static checkHeaders(headers, cookie) {
+    private checkHeaders(headers) {
         if (headers[HEADER_CURRENT_WORKING_DIR] == null || headers[HEADER_CURRENT_WORKING_DIR][0] == null) {
             throw new GroovyServerException("required header cwd unspecified.")
         }
-        if (cookie == null || headers[HEADER_COOKIE] == null || headers[HEADER_COOKIE][0] != cookie) {
+        def givenCookie = headers[HEADER_COOKIE]?.getAt(0)
+        if (!cookie.isValid(givenCookie)) {
             Thread.sleep(5000)
-            throw new GroovyServerException("authentication failed.")
+            throw new GroovyServerException("authentication failed. cookie is unmatched: " + givenCookie)
         }
     }
 

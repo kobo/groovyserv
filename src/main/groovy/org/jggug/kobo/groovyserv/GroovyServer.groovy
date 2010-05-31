@@ -30,6 +30,8 @@ class GroovyServer {
 
     private static final int DEFAULT_PORT = 1961
 
+    private Cookie cookie
+
     static void main(String[] args) {
         new GroovyServer().start()
     }
@@ -40,6 +42,7 @@ class GroovyServer {
             setupStandardStreams()
             setupSecurityManager()
             setupRunningMode()
+            setupCookie()
             runServer()
         }
         catch (GroovyServerException e) {
@@ -60,9 +63,12 @@ class GroovyServer {
         System.setProperty("groovy.runningmode", "server")
     }
 
-    private void runServer() {
-        def cookie = CookieUtils.createAndSave()
+    private void setupCookie() {
+        cookie = new Cookie()
+        cookie.save()
+    }
 
+    private void runServer() {
         def serverSocket = new ServerSocket(getPort())
         while (true) {
             def socket = serverSocket.accept()

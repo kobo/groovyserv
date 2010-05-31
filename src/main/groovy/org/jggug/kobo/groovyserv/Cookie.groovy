@@ -16,19 +16,34 @@
  */
 package org.jggug.kobo.groovyserv
 
-// TODO refactoring
-class CookieUtils {
+/**
+ * A connection between client process and server process in localhost
+ * is authenticated by simple cookie mechanism.
+ *
+ * @author NAKANO Yasuharu
+ */
+class Cookie {
 
-    private CookieUtils() { /* forbidden instantiation */ }
+    final String token
 
-    static String createAndSave() {
-        String cookie = Long.toHexString(new Random().nextLong()) // FIXME
+    Cookie() {
+        token = createNewCookieToken()
+    }
+
+    private static createNewCookieToken() {
+        Long.toHexString(new Random().nextLong())
+    }
+
+    void save() {
         try {
-            FileUtils.COOKIE_FILE.text = cookie
+            FileUtils.COOKIE_FILE.text = token
         } catch (IOException e) {
-            throw new GroovyServerException("can't write to cookie file: " + FileUtils.COOKIE_FILE)
+            throw new GroovyServerException("cookie file cannot be written: " + FileUtils.COOKIE_FILE)
         }
-        return cookie
+    }
+
+    boolean isValid(given) {
+        token == given
     }
 
 }
