@@ -91,7 +91,7 @@ class ClientConnection {
     }
 
     Map<String, List<String>> readHeaders() {
-        def headers = readHeaders(socket.inputStream)
+        def headers = parseHeaders(socket.inputStream)
         checkHeaders(headers, cookie)
         headers
     }
@@ -134,7 +134,7 @@ class ClientConnection {
         }
     }
 
-    private static Map<String, List<String>> readHeaders(InputStream ins) {
+    private static Map<String, List<String>> parseHeaders(InputStream ins) {
         def headers = [:]
         def line
         while ((line = readLine(ins)) != "") {

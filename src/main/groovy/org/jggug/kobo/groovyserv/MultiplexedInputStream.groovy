@@ -107,8 +107,8 @@ class MultiplexedInputStream extends InputStream {
             } catch (SocketException e) {
                 // Because of here, this daemon thread will be killed when the input stream is closed.
                 DebugUtils.verboseLog("input stream is closed.")
-            } catch (Throwable t) {
-                DebugUtils.verboseLog("unexpected error: throwable=" + t)
+            } catch (Throwable e) {
+                DebugUtils.errLog("unexpected error", e)
             } finally {
                 if (pos) pos.close()
             }

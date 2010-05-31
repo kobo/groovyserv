@@ -21,20 +21,20 @@ package org.jggug.kobo.groovyserv
  */
 class DebugUtils {
 
+    private static final LOG_FILE = new File("${System.env["HOME"]}/.groovy/groovyserver/groovyserver.log") // FIXME groovyserver -> groovyserv
+
     static errLog(message, Throwable e = null) {
-        StreamManager.ORIGINAL.err.println message
-        if (e) {
-            StreamManager.ORIGINAL.err.println stackTrace(e)
+        LOG_FILE.withWriterAppend { out ->
+            out.println message
+            if (e) {
+                out << stackTrace(e)
+            }
         }
     }
 
-    static debugLog(message) { // for DEBUG
-        new File("/tmp/gs-log.txt").withWriterAppend { w -> w << message << '\n' }
-    }
-
-    static verboseLog(message) {
+    static verboseLog(message, Throwable e = null) {
         if (isVerboseMode()) {
-            StreamManager.ORIGINAL.err.println message
+            errLog(message, e)
         }
     }
 
@@ -42,15 +42,15 @@ class DebugUtils {
         System.getProperty("groovyserver.verbose") == "true" 
     }
 
-    static String stackTrace(e) {
-        StringWriter sw = new StringWriter()
-        e.printStacktrace(sw)
+    private static String stackTrace(e) {
+        def sw = new StringWriter()
+        e.printStackTrace(new PrintWriter(sw))
         sw.toString()
     }
 
     static String dump(byte[] buf, int offset, int length) { // TODO refactoring
-        StringWriter sw = new StringWriter()
-        PrintWriter pw = new PrintWriter(sw)
+        def sw = new StringWriter()
+        def pw = new PrintWriter(sw)
         pw.println("+-----------+-----------+-----------+-----------+")
 
         StringBuilder buff = new StringBuilder()
