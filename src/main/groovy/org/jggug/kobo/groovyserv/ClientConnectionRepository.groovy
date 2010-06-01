@@ -32,6 +32,10 @@ class ClientConnectionRepository {
         connectionPerThreadGroup[tg] = connection
     }
 
+    void unbind(ThreadGroup tg) {
+        connectionPerThreadGroup.remove(tg)
+    }
+
     InputStream getCurrentIn() {
         currentConnection.socket.inputStream
     }
