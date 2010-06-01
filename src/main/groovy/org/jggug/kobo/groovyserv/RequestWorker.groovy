@@ -120,12 +120,18 @@ class RequestWorker implements Runnable {
         }
     }
 
-    private synchronized static setCurrentDir(dir) {
-        if (dir != currentDir) {
-            currentDir = dir
-            System.setProperty('user.dir', currentDir)
-            PlatformMethods.chdir(currentDir)
-            addClasspath(currentDir)
+    private synchronized static setCurrentDir(newDir) {
+        if (newDir == currentDir) return
+
+        currentDir = newDir
+        if (newDir) {
+            System.setProperty('user.newDir', newDir)
+            PlatformMethods.chdir(newDir)
+            addClasspath(newDir)
+        } else {
+            //System.properties.remove('user.newDir')
+            //PlatformMethods.chdir(currentDir)
+            //removeClasspath(currentDir)
         }
     }
 
