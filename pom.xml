@@ -39,9 +39,15 @@
   </properties>
   <dependencies>
     <dependency>
-      <groupId>org.codehaus.gmaven</groupId>
-      <artifactId>gmaven-plugin</artifactId>
+      <groupId>org.codehaus.gmaven.runtime</groupId>
+      <artifactId>gmaven-runtime-1.7</artifactId>
       <version>1.2</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.codehaus.groovy</groupId>
+          <artifactId>groovy-all</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>commons-cli</groupId>
@@ -55,8 +61,8 @@
     </dependency>
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy</artifactId>
-      <version>1.6.8</version>
+      <artifactId>groovy-all</artifactId>
+      <version>1.7.2</version>
     </dependency>
   </dependencies>
   <repositories>
@@ -75,12 +81,13 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.codehaus.groovy.maven</groupId>
+        <groupId>org.codehaus.gmaven</groupId>
         <artifactId>gmaven-plugin</artifactId>
+        <version>1.2</version>
         <configuration>
           <sourceEncoding>UTF-8</sourceEncoding>
+          <providerSelection>1.7</providerSelection>
         </configuration>
-        <version>1.0-rc-3</version>
         <executions>
           <execution>
             <goals>
@@ -210,7 +217,7 @@
               </tasks>
             </configuration>
           </execution>
-        </executions> 
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
