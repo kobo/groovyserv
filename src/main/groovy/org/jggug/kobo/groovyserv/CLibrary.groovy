@@ -15,17 +15,15 @@
  */
 package org.jggug.kobo.groovyserv
 
+import com.sun.jna.Library
+import com.sun.jna.Native
 import com.sun.jna.Platform
 
 
-class PlatformMethods {
-    static chdir(String dir) {
-        if (Platform.isWindows()) {
-            CLibrary.INSTANCE._chdir(dir)
-        }
-        else {
-            CLibrary.INSTANCE.chdir(dir)
-        }
-    }
+interface CLibrary extends Library {
+    String libname = (Platform.isWindows() ? "msvcrt" : "c")
+    CLibrary INSTANCE = Native.loadLibrary(libname, CLibrary.class)
+    int chdir(String dir)
+    int _chdir(String dir)
 }
 
