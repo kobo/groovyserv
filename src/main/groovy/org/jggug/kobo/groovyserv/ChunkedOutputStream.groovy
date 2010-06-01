@@ -19,26 +19,15 @@ package org.jggug.kobo.groovyserv
 class ChunkedOutputStream extends OutputStream {
 
     String streamId
-    Closure getCurrentOutputStreamClosure
 
     private ChunkedOutputStream() { /* preventing from instantiation */ }
 
     static ChunkedOutputStream newOut() {
-        def out = new ChunkedOutputStream()
-        out.streamId = 'o'
-        out.getCurrentOutputStreamClosure = {
-            return ClientConnectionRepository.instance.currentOut
-        }
-        return out
+        new ChunkedOutputStream(streamId:'o')
     }
 
     static ChunkedOutputStream newErr() {
-        def out = new ChunkedOutputStream()
-        out.streamId = 'e'
-        out.getCurrentOutputStreamClosure = {
-            return ClientConnectionRepository.instance.currentErr
-        }
-        return out
+        new ChunkedOutputStream(streamId:'e')
     }
 
     @Override
@@ -73,8 +62,7 @@ class ChunkedOutputStream extends OutputStream {
     }
 
     private OutputStream getCurrentOutputStream() {
-        //ClientConnectionRepository.instance.currentOut
-        getCurrentOutputStreamClosure()
+        ClientConnectionRepository.instance.currentOut
     }
 
 }

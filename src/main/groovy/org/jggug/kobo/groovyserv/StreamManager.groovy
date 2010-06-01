@@ -43,7 +43,6 @@ class StreamManager {
         ClientConnectionRepository.instance.with {
             bindIn(socket.inputStream, tg)
             bindOut(socket.outputStream, tg)
-            bindErr(socket.outputStream, tg)
         }
     }
 

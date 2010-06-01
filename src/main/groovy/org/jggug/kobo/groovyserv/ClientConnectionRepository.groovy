@@ -29,7 +29,6 @@ class ClientConnectionRepository {
 
     private WeakHashMap<ThreadGroup, InputStream> inPerThreadGroup = [:]
     private WeakHashMap<ThreadGroup, OutputStream> outPerThreadGroup = [:]
-    private WeakHashMap<ThreadGroup, OutputStream> errPerThreadGroup = [:]
 
     void bindIn(InputStream ins, ThreadGroup tg) { // for TOMORROW!!! bind ThreadGroup to not InputStream but ClientConnection. and relationship manager class is needed. I think so.
         def pos = new PipedOutputStream()
@@ -78,20 +77,12 @@ class ClientConnectionRepository {
         outPerThreadGroup[threadGroup] = out
     }
 
-    void bindErr(OutputStream err, ThreadGroup threadGroup) {
-        errPerThreadGroup[threadGroup] = err
-    }
-
     InputStream getCurrentIn() {
         check(inPerThreadGroup[currentThread().threadGroup])
     }
 
     OutputStream getCurrentOut() {
         check(outPerThreadGroup[currentThread().threadGroup])
-    }
-
-    OutputStream getCurrentErr() {
-        check(errPerThreadGroup[currentThread().threadGroup])
     }
 
     private static check(stream) {
