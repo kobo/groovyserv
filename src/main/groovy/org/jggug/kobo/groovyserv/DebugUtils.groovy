@@ -49,10 +49,8 @@ class DebugUtils {
     static String dump(byte[] buf, int offset, int length) { // TODO refactoring
         def sw = new StringWriter()
         def pw = new PrintWriter(sw)
-        pw.println("+-----------+-----------+-----------+-----------+")
-
+        pw.println("+-----------+-----------+-----------+-----------+----------------+")
         StringBuilder buff = new StringBuilder()
-
         int i
         for (i = offset; i < offset + length; i++) {
             if (!Character.isISOControl((char) buf[i])) {
@@ -75,6 +73,7 @@ class DebugUtils {
             }
             pw.println("| " + buff)
         }
+        pw.println("+-----------+-----------+-----------+-----------+----------------+")
         sw.toString()
     }
 
