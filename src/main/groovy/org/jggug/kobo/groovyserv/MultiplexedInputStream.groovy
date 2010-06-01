@@ -15,16 +15,11 @@
  */
 package org.jggug.kobo.groovyserv
 
-import static java.lang.Thread.currentThread as currentThread
-import static org.jggug.kobo.groovyserv.ClientConnection.HEADER_SIZE
-
 
 class MultiplexedInputStream extends InputStream {
 
-    WeakHashMap<ThreadGroup, InputStream> inPerThreadGroup = [:]
-
     @Override
-    public int read() throws IOException {
+    public int read() {
         int result = currentInputStream.read()
         if (DebugUtils.isVerboseMode() && result != -1) {
             byte[] b = [result]
@@ -37,7 +32,7 @@ class MultiplexedInputStream extends InputStream {
     }
 
     @Override
-    public int read(byte[] b, int off, int len) throws IOException {
+    public int read(byte[] b, int off, int len) {
         int result = currentInputStream.read(b, off, len)
         if (DebugUtils.isVerboseMode() && result != 0) {
             DebugUtils.errLog("Client==>Server")
@@ -49,12 +44,12 @@ class MultiplexedInputStream extends InputStream {
     }
 
     @Override
-    public int available() throws IOException {
-        return currentInputStream.available()
+    public int available() {
+        currentInputStream.available()
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         currentInputStream.close()
     }
 
@@ -64,7 +59,7 @@ class MultiplexedInputStream extends InputStream {
     }
 
     @Override
-    public void reset() throws IOException {
+    public void reset() {
         currentInputStream.reset()
     }
 
@@ -73,58 +68,8 @@ class MultiplexedInputStream extends InputStream {
         currentInputStream.markSupported()
     }
 
-    public void bind(InputStream ins, ThreadGroup tg) {
-        def pos = new PipedOutputStream()
-        def pis = new PipedInputStream(pos)
-        inPerThreadGroup[currentThread().threadGroup] = pis
-        // TODO pis which is as System.in for client process each request should be closed when socket is closed.
-
-        // Start a thread for delegating from input stream of socket to System.in
-        Thread.startDaemon("inputStreamWorker") {
-            try{
-                while (true) {
-                    //def headers = ClientConnection.readHeaders(ins) // FIXME dead lock??
-                    def headers = null
-                    def sizeHeader = headers[HEADER_SIZE]
-                    if (sizeHeader == null) {
-                        return
-                    }
-
-                    int size = Integer.parseInt(sizeHeader[0])
-                    if (size == 0) {
-                        return
-                    }
-
-                    for (int i = 0; i < size; i++) {
-                        int ch = ins.read()
-                        if (ch == -1) {
-                            break
-                        }
-                        pos.write(ch)
-                    }
-                    pos.flush()
-                }
-            } catch (SocketException e) {
-                // Because of here, this daemon thread will be killed when the input stream is closed.
-                DebugUtils.verboseLog("input stream is closed.")
-            } catch (Throwable e) {
-                DebugUtils.errLog("unexpected error", e)
-            } finally {
-                if (pos) pos.close()
-            }
-        }
-    }
-
     private InputStream getCurrentInputStream() {
-        return check(inPerThreadGroup[currentThread().threadGroup])
-    }
-
-    private static InputStream check(InputStream ins) {
-        if (ins == null) {
-            def thread = currentThread()
-            throw new IllegalStateException("System.in can't access from this thread: ${thread}:${thread.id}")
-        }
-        return ins
+        ClientConnectionRepository.instance.currentIn
     }
 
 }

@@ -104,16 +104,17 @@ class ClientConnection implements Closeable {
     }
 
     void close() {
-        if (!socket) return
-        socket.close()
-        DebugUtils.verboseLog "client connection is closed: ${socket.port}"
-//        StreamManager.unbind(thread)
-        socket = null
+        if (socket) {
+            socket.close()
+            DebugUtils.verboseLog "client connection is closed: ${socket.port}"
+//            StreamManager.unbind(thread)
+            socket = null
+        }
     }
 
     static byte[] formatAsResponseHeader(streamId, size) {
         def header = [:]
-        header[HEADER_STREAM_ID] = streamId
+        header[HEADER_STREAM_ID] = streamId as char
         header[HEADER_SIZE] = size
         formatAsHeader(header)
     }

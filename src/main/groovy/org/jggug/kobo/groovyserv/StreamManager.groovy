@@ -40,9 +40,11 @@ class StreamManager {
     }
 
     static bind(ThreadGroup tg, Socket socket) {
-        ALTERNATES.ins.bind(socket.inputStream, tg)
-        ALTERNATES.out.bind(socket.outputStream, tg)
-        ALTERNATES.err.bind(socket.outputStream, tg)
+        ClientConnectionRepository.instance.with {
+            bindIn(socket.inputStream, tg)
+            bindOut(socket.outputStream, tg)
+            bindErr(socket.outputStream, tg)
+        }
     }
 
 }

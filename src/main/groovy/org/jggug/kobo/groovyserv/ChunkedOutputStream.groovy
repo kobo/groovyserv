@@ -15,24 +15,30 @@
  */
 package org.jggug.kobo.groovyserv
 
-import static java.lang.Thread.currentThread as currentThread
-
 
 class ChunkedOutputStream extends OutputStream {
 
-    WeakHashMap<ThreadGroup, OutputStream> outPerThreadGroup = [:]
-    char streamId
+    String streamId
+    Closure getCurrentOutputStreamClosure
 
-    private ChunkedOutputStream(char streamId) {
-        this.streamId = streamId
-    }
+    private ChunkedOutputStream() { /* preventing from instantiation */ }
 
     static ChunkedOutputStream newOut() {
-        new ChunkedOutputStream('o' as char)
+        def out = new ChunkedOutputStream()
+        out.streamId = 'o'
+        out.getCurrentOutputStreamClosure = {
+            return ClientConnectionRepository.instance.currentOut
+        }
+        return out
     }
 
     static ChunkedOutputStream newErr() {
-        new ChunkedOutputStream('e' as char)
+        def out = new ChunkedOutputStream()
+        out.streamId = 'e'
+        out.getCurrentOutputStreamClosure = {
+            return ClientConnectionRepository.instance.currentErr
+        }
+        return out
     }
 
     @Override
@@ -66,20 +72,9 @@ class ChunkedOutputStream extends OutputStream {
         }
     }
 
-    public void bind(OutputStream out, ThreadGroup threadGroup) {
-        outPerThreadGroup[threadGroup] = out
-    }
-
     private OutputStream getCurrentOutputStream() {
-        return check(outPerThreadGroup[currentThread().threadGroup])
-    }
-
-    private static OutputStream check(OutputStream out) {
-        if (out == null) {
-            def thread = currentThread()
-            throw new IllegalStateException("System.out/err can't access from this thread: ${thread}:${thread.id}:${thread.threadGroup}")
-        }
-        return out
+        //ClientConnectionRepository.instance.currentOut
+        getCurrentOutputStreamClosure()
     }
 
 }
