@@ -37,33 +37,33 @@ class RequestWorker implements Runnable {
     @Override
     void run() {
         try {
-            Map<String, List<String>> headers = conn.readHeaders()
-            checkHeaders(headers)
+            try {
+                Map<String, List<String>> headers = conn.readHeaders()
+                checkHeaders(headers)
 
-            def cwd = headers[HEADER_CURRENT_WORKING_DIR][0]
-            if (currentDir != null && currentDir != cwd) {
-                throw new GroovyServerException(
-                    "Can't change current directory because of another session running on different dir: " +
-                    headers[HEADER_CURRENT_WORKING_DIR][0])
+                def cwd = headers[HEADER_CURRENT_WORKING_DIR][0]
+                if (currentDir != null && currentDir != cwd) {
+                    throw new GroovyServerException(
+                        "Can't change current directory because of another session running on different dir: " +
+                        headers[HEADER_CURRENT_WORKING_DIR][0])
+                }
+                setCurrentDir(cwd)
+
+                process(headers)
+                ensureAllThreadToStop()
+                conn.sendExit(0)
             }
-            setCurrentDir(cwd)
-
-            process(headers)
-            ensureAllThreadToStop()
-            conn.sendExit(0)
-        }
-        catch (ExitException e) {
-            // GroovyMain2 throws ExitException when it catches ExitException.
-            conn.sendExit(e.exitStatus)
-        }
-        catch (Throwable e) {
+            catch (ExitException e) {
+                // GroovyMain2 throws ExitException when it catches ExitException.
+                conn.sendExit(e.exitStatus)
+            }
+            finally {
+                setCurrentDir(null)
+                conn.close()
+            }
+        } catch (Throwable e) {
             DebugUtils.errLog("unexpected error", e)
             conn.sendExit(0)
-        }
-        finally {
-            setCurrentDir(null)
-
-            conn.close()
         }
     }
 

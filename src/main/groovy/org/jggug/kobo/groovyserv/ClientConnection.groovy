@@ -107,7 +107,7 @@ class ClientConnection implements Closeable {
             DebugUtils.verboseLog "client connection is closed: ${socket.port}"
             socket = null
         }
-        StreamManager.unbind(ownerThreadGroup)
+        ClientConnectionRepository.instance.unbind(ownerThreadGroup)
     }
 
     static byte[] formatAsResponseHeader(streamId, size) {
