@@ -49,6 +49,10 @@ class GroovyServer {
             DebugUtils.errLog e.message
             System.exit(1)
         }
+        catch (Throwable e) {
+            DebugUtils.errLog("unexpected error", e)
+            System.exit(2)
+        }
     }
 
     private void setupStandardStreams() {
