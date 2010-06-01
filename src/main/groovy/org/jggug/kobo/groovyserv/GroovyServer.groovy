@@ -46,7 +46,7 @@ class GroovyServer {
             runServer()
         }
         catch (GroovyServerException e) {
-            DebugUtils.errLog e.message
+            DebugUtils.errLog("error", e)
             System.exit(1)
         }
         catch (Throwable e) {
