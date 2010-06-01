@@ -61,7 +61,7 @@ class MultiplexedInputStream extends InputStream {
 
     private static readLog(byte[] buff, int offset, int readSize, int sizeHeader, int revisedLength) {
         DebugUtils.verboseLog """\
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Client->Server {
   id: in
   size(header): ${sizeHeader}
@@ -71,7 +71,7 @@ Client->Server {
   body:
 ${DebugUtils.dump(buff, offset, readSize)}
 }
-<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 """
     }
 

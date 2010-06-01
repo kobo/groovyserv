@@ -33,12 +33,12 @@ class ChunkedOutputStream extends OutputStream {
     }
 
     @Override
-    public void flush() throws IOException {
+    public void flush() {
         currentOutputStream.flush()
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         // do nothing here because the OutputStream is connected to socket
     }
 
@@ -51,8 +51,16 @@ class ChunkedOutputStream extends OutputStream {
 
     @Override
     public void write(byte[] b, int offset, int length) {
+        writeLog(b, offset, length)
+        currentOutputStream.with {
+            write(ClientConnection.formatAsResponseHeader(streamId, length))
+            write(b, offset, length)
+        }
+    }
+
+    private writeLog(byte[] b, int offset, int length) {
         DebugUtils.verboseLog """\
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Server->Client {
   id: ${streamId}
   size(actual): ${length}
@@ -60,12 +68,8 @@ Server->Client {
   body:
 ${DebugUtils.dump(b, offset, length)}
 }
-<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 """
-        currentOutputStream.with {
-            write(ClientConnection.formatAsResponseHeader(streamId, length))
-            write(b, offset, length)
-        }
     }
 
     private OutputStream getCurrentOutputStream() {
