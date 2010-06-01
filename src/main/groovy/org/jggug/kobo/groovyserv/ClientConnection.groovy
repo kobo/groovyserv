@@ -69,7 +69,7 @@ package org.jggug.kobo.groovyserv
  * @author UEHARA Junji
  * @author NAKANO Yasuharu
  */
-class ClientConnection {
+class ClientConnection implements Closeable {
 
     final static String HEADER_CURRENT_WORKING_DIR = "Cwd"
     final static String HEADER_ARG = "Arg"
