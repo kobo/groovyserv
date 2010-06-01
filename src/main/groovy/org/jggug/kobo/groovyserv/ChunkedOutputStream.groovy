@@ -15,6 +15,8 @@
  */
 package org.jggug.kobo.groovyserv
 
+import static java.lang.Thread.currentThread as currentThread
+
 
 class ChunkedOutputStream extends OutputStream {
 
@@ -37,7 +39,7 @@ class ChunkedOutputStream extends OutputStream {
 
     @Override
     public void close() throws IOException {
-        currentOutputStream.close()
+        // do nothing here because the OutputStream is connected to socket
     }
 
     @Override
@@ -49,12 +51,17 @@ class ChunkedOutputStream extends OutputStream {
 
     @Override
     public void write(byte[] b, int offset, int length) {
-        if (DebugUtils.isVerboseMode()) {
-            DebugUtils.errLog("Server==>Client")
-            DebugUtils.errLog(" id=" + streamId)
-            DebugUtils.errLog(" size=" + length)
-            DebugUtils.errLog(DebugUtils.dump(b, offset, length))
-        }
+        DebugUtils.verboseLog """\
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Server->Client {
+  id: ${streamId}
+  size(actual): ${length}
+  thread group: ${currentThread().threadGroup.name}
+  body:
+${DebugUtils.dump(b, offset, length)}
+}
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+"""
         currentOutputStream.with {
             write(ClientConnection.formatAsResponseHeader(streamId, length))
             write(b, offset, length)

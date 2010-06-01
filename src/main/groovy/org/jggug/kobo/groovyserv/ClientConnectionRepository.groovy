@@ -16,7 +16,6 @@
 package org.jggug.kobo.groovyserv
 
 import static java.lang.Thread.currentThread as currentThread
-import static org.jggug.kobo.groovyserv.ClientConnection.HEADER_SIZE
 
 
 /**
@@ -27,70 +26,30 @@ import static org.jggug.kobo.groovyserv.ClientConnection.HEADER_SIZE
 @Singleton
 class ClientConnectionRepository {
 
-    private WeakHashMap<ThreadGroup, InputStream> inPerThreadGroup = [:]
-    private WeakHashMap<ThreadGroup, OutputStream> outPerThreadGroup = [:]
+    private WeakHashMap<ThreadGroup, ClientConnection> connectionPerThreadGroup = [:]
 
-    void bindIn(InputStream ins, ThreadGroup tg) { // for TOMORROW!!! bind ThreadGroup to not InputStream but ClientConnection. and relationship manager class is needed. I think so.
-        def pos = new PipedOutputStream()
-        def pis = new PipedInputStream(pos)
-        inPerThreadGroup[currentThread().threadGroup] = pis
-        // TODO pis which is as System.in for client process each request should be closed when socket is closed.
-
-        // Start a thread for delegating from input stream of socket to System.in
-        Thread.startDaemon("inputStreamWorker:${currentThread().threadGroup}") {
-            try{
-                while (true) {
-                    //def headers = connection.readHeaders() // FIXME
-                    def headers = null
-                    def sizeHeader = headers[HEADER_SIZE]
-                    if (sizeHeader == null) {
-                        return
-                    }
-
-                    int size = Integer.parseInt(sizeHeader[0])
-                    if (size == 0) {
-                        return
-                    }
-
-                    // read body
-                    for (int i = 0; i < size; i++) {
-                        int ch = ins.read()
-                        if (ch == -1) {
-                            break
-                        }
-                        pos.write(ch)
-                    }
-                    pos.flush()
-                }
-            } catch (SocketException e) {
-                // Because of here, this daemon thread will be killed when the input stream is closed.
-                DebugUtils.verboseLog("input stream is closed.")
-            } catch (Throwable e) {
-                DebugUtils.errLog("unexpected error", e)
-            } finally {
-                if (pos) pos.close()
-            }
-        }
-    }
-
-    void bindOut(OutputStream out, ThreadGroup threadGroup) {
-        outPerThreadGroup[threadGroup] = out
+    void bind(ThreadGroup tg, ClientConnection connection) {
+        connectionPerThreadGroup[tg] = connection
     }
 
     InputStream getCurrentIn() {
-        check(inPerThreadGroup[currentThread().threadGroup])
+        currentConnection.socket.inputStream
     }
 
     OutputStream getCurrentOut() {
-        check(outPerThreadGroup[currentThread().threadGroup])
+        currentConnection.socket.outputStream
     }
 
-    private static check(stream) {
-        if (stream == null) {
+    ClientConnection getCurrentConnection() {
+        check(connectionPerThreadGroup[currentThread().threadGroup])
+    }
+
+    private static check(connection) {
+        if (connection == null) {
             def thread = currentThread()
-            throw new IllegalStateException("This thread cannot access to standard streams: ${thread}:${thread.id}")
+            throw new IllegalStateException("This thread cannot access to standard streams: ${thread}")
         }
-        return stream
+        return connection
     }
 
 }

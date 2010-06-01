@@ -39,12 +39,5 @@ class StreamManager {
         System.err = new PrintStream(ALTERNATES.err)
     }
 
-    static bind(ThreadGroup tg, Socket socket) {
-        ClientConnectionRepository.instance.with {
-            bindIn(socket.inputStream, tg)
-            bindOut(socket.outputStream, tg)
-        }
-    }
-
 }
 

@@ -87,13 +87,11 @@ class ClientConnection implements Closeable {
         this.cookie = cookie
         this.socket = socket
         this.ownerThreadGroup = ownerThreadGroup
-        StreamManager.bind(ownerThreadGroup, socket)
+        ClientConnectionRepository.instance.bind(ownerThreadGroup, this)
     }
 
     Map<String, List<String>> readHeaders() {
-        def headers = parseHeaders(socket.inputStream)
-        checkHeaders(headers)
-        headers
+        parseHeaders(socket.inputStream)
     }
 
     void sendExit(int status) {
@@ -125,15 +123,15 @@ class ClientConnection implements Closeable {
         formatAsHeader(header)
     }
 
-    private checkHeaders(headers) {
-        if (headers[HEADER_CURRENT_WORKING_DIR] == null || headers[HEADER_CURRENT_WORKING_DIR][0] == null) {
-            throw new GroovyServerException("required header cwd unspecified.")
+    private static byte[] formatAsHeader(map) {
+        def buff = new StringBuilder()
+        map.each { key, value ->
+            if (key) {
+                buff << "$key: $value\n"
+            }
         }
-        def givenCookie = headers[HEADER_COOKIE]?.getAt(0)
-        if (!cookie.isValid(givenCookie)) {
-            Thread.sleep(5000)
-            throw new GroovyServerException("authentication failed. cookie is unmatched: " + givenCookie)
-        }
+        buff << "\n"
+        buff.toString().bytes
     }
 
     private static Map<String, List<String>> parseHeaders(InputStream ins) {
@@ -152,14 +150,12 @@ class ClientConnection implements Closeable {
             headers[key] += value
         }
         if (DebugUtils.isVerboseMode()) {
-            headers.each { k,v ->
-                DebugUtils.errLog " $k = $v"
-            }
+            DebugUtils.errLog "parsed headers: " + headers.collect { k, v -> "$k = $v" }.join(", ")
         }
         headers
     }
 
-    private static readLine(InputStream is) {
+    private static readLine(InputStream is) { // FIXME maybe this is able to be replaced by default API
         def baos = new ByteArrayOutputStream()
         int ch
         while ((ch = is.read()) != '\n') {
@@ -169,17 +165,6 @@ class ClientConnection implements Closeable {
             baos.write((byte) ch)
         }
         return baos.toString()
-    }
-
-    private static byte[] formatAsHeader(map) {
-        def buff = new StringBuilder()
-        map.each { key, value ->
-            if (key) {
-                buff << "$key: $value\n"
-            }
-        }
-        buff << "\n"
-        buff.toString().bytes
     }
 
 }

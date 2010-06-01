@@ -87,7 +87,7 @@ class GroovyServer {
             // Because the System.(in/out/err) streams are used distinctly
             // by thread instance. In the other words, threads can't be pooled.
             // So this 'new Thread()' is necessary.
-            def tgroup = new ThreadGroup("groovyserver:$socket")
+            def tgroup = new ThreadGroup("groovyserver:${socket.port}")
             def connection = new ClientConnection(cookie, socket, tgroup)
             new Thread(tgroup, new RequestWorker(connection), "requestWorker").start()
         }

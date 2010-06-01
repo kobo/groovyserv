@@ -38,6 +38,7 @@ class RequestWorker implements Runnable {
     void run() {
         try {
             Map<String, List<String>> headers = conn.readHeaders()
+            checkHeaders(headers)
 
             def cwd = headers[HEADER_CURRENT_WORKING_DIR][0]
             if (currentDir != null && currentDir != cwd) {
@@ -63,6 +64,17 @@ class RequestWorker implements Runnable {
             setCurrentDir(null)
 
             conn.close()
+        }
+    }
+
+    private checkHeaders(headers) {
+        if (headers[HEADER_CURRENT_WORKING_DIR] == null || headers[HEADER_CURRENT_WORKING_DIR][0] == null) {
+            throw new GroovyServerException("required header 'Cwd' is not specified.")
+        }
+        def givenCookie = headers[HEADER_COOKIE]?.getAt(0)
+        if (!conn.cookie.isValid(givenCookie)) {
+            Thread.sleep(5000)
+            throw new GroovyServerException("authentication failed. cookie is unmatched: " + givenCookie)
         }
     }
 

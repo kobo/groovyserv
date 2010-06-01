@@ -15,42 +15,69 @@
  */
 package org.jggug.kobo.groovyserv
 
+import static org.jggug.kobo.groovyserv.ClientConnection.HEADER_SIZE
+import static java.lang.Thread.currentThread as currentThread
+
 
 class MultiplexedInputStream extends InputStream {
 
     @Override
     public int read() {
+        int sizeHeader = getSizeOfHeader()
+        if (sizeHeader == 0) {
+            DebugUtils.verboseLog "a value of header 'Size' is 0."
+            return 0
+        }
         int result = currentInputStream.read()
-        if (DebugUtils.isVerboseMode() && result != -1) {
-            byte[] b = [result]
-            DebugUtils.errLog("Client==>Server")
-            DebugUtils.errLog(" id=in")
-            DebugUtils.errLog(" size=" + result)
-            DebugUtils.errLog(DebugUtils.dump(b, 0, 1))
+        if (result != -1) {
+            readLog([result], 0, 1, sizeHeader)
         }
         return result
     }
 
     @Override
-    public int read(byte[] b, int off, int len) {
-        int result = currentInputStream.read(b, off, len)
-        if (DebugUtils.isVerboseMode() && result != 0) {
-            DebugUtils.errLog("Client==>Server")
-            DebugUtils.errLog(" id=in")
-            DebugUtils.errLog(" size=" + result)
-            DebugUtils.errLog(DebugUtils.dump(b, off, result))
+    public int read(byte[] buf, int offset, int length) {
+        int sizeHeader = getSizeOfHeader()
+        if (sizeHeader == 0) {
+            DebugUtils.verboseLog "a value of header 'Size' is 0."
+            return 0
+        }
+        int revisedLength = Math.min(length, sizeHeader)
+        int result = currentInputStream.read(buf, offset, revisedLength)
+        if (result != -1) {
+            readLog(buf, offset, result, sizeHeader, revisedLength)
         }
         return result
     }
 
-    @Override
-    public int available() {
-        currentInputStream.available()
+    private int getSizeOfHeader() {
+        Map<String, List<String>> headers = currentConnection.readHeaders()
+        def sizeHeader = headers[HEADER_SIZE]?.getAt(0)
+        if (sizeHeader == null) {
+            throw new GroovyServerException("required header 'Size' is not specified.")
+        }
+        return sizeHeader as int
+    }
+
+    private static readLog(byte[] buff, int offset, int readSize, int sizeHeader, int revisedLength) {
+        DebugUtils.verboseLog """\
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Client->Server {
+  id: in
+  size(header): ${sizeHeader}
+  size(revised): ${revisedLength}
+  size(actual): ${readSize}
+  thread group: ${currentThread().threadGroup.name}
+  body:
+${DebugUtils.dump(buff, offset, readSize)}
+}
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+"""
     }
 
     @Override
     public void close() {
-        currentInputStream.close()
+        // do nothing here because the InputStream is connected to socket
     }
 
     @Override
@@ -70,6 +97,10 @@ class MultiplexedInputStream extends InputStream {
 
     private InputStream getCurrentInputStream() {
         ClientConnectionRepository.instance.currentIn
+    }
+
+    private ClientConnection getCurrentConnection() {
+        ClientConnectionRepository.instance.currentConnection
     }
 
 }
