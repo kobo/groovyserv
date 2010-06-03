@@ -56,7 +56,7 @@ class GroovyServer {
     }
 
     private void setupStandardStreams() {
-        StreamManager.init()
+        StandardStreams.init()
     }
 
     private void setupSecurityManager() {

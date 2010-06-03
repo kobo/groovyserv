@@ -19,7 +19,7 @@ package org.jggug.kobo.groovyserv
 /**
  * @author NAKANO Yasuharu
  */
-class StreamManager {
+class StandardStreams {
 
     static final ORIGINAL = [
         ins: System.in,
