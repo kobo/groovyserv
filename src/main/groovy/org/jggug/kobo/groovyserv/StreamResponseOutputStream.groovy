@@ -18,18 +18,24 @@ package org.jggug.kobo.groovyserv
 import static java.lang.Thread.currentThread as currentThread
 
 
-class ChunkedOutputStream extends OutputStream {
+/**
+ * Handling StreamResponse in protocol between client and server.
+ *
+ * @author UEHARA Junji
+ * @author NAKANO Yasuharu
+ */
+class StreamResponseOutputStream extends OutputStream {
 
     String streamId
 
-    private ChunkedOutputStream() { /* preventing from instantiation */ }
+    private StreamResponseOutputStream() { /* preventing from instantiation */ }
 
-    static ChunkedOutputStream newOut() {
-        new ChunkedOutputStream(streamId:'o')
+    static StreamResponseOutputStream newOut() {
+        new StreamResponseOutputStream(streamId:'o')
     }
 
-    static ChunkedOutputStream newErr() {
-        new ChunkedOutputStream(streamId:'e')
+    static StreamResponseOutputStream newErr() {
+        new StreamResponseOutputStream(streamId:'e')
     }
 
     @Override
@@ -52,9 +58,11 @@ class ChunkedOutputStream extends OutputStream {
     @Override
     public void write(byte[] b, int offset, int length) {
         writeLog(b, offset, length)
-        currentOutputStream.with {
-            write(ClientConnection.formatAsResponseHeader(streamId, length))
-            write(b, offset, length)
+        synchronized(currentOutputStream) { // to keep independency of 'out' and 'err' on socket stream
+            currentOutputStream.with {
+                write(ClientConnection.formatAsResponseHeader(streamId, length))
+                write(b, offset, length)
+            }
         }
     }
 

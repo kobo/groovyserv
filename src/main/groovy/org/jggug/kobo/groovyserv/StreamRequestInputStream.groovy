@@ -19,7 +19,13 @@ import static org.jggug.kobo.groovyserv.ClientConnection.HEADER_SIZE
 import static java.lang.Thread.currentThread as currentThread
 
 
-class MultiplexedInputStream extends InputStream {
+/**
+ * Handling StreamRequest in protocol between client and server.
+ *
+ * @author UEHARA Junji
+ * @author NAKANO Yasuharu
+ */
+class StreamRequestInputStream extends InputStream {
 
     @Override
     public int read() {

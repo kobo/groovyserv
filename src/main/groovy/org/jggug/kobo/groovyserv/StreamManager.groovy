@@ -28,9 +28,9 @@ class StreamManager {
     ]
 
     private static final ALTERNATES = [
-        ins: new MultiplexedInputStream(),
-        out: ChunkedOutputStream.newOut(),
-        err: ChunkedOutputStream.newErr()
+        ins: new StreamRequestInputStream(),
+        out: StreamResponseOutputStream.newOut(),
+        err: StreamResponseOutputStream.newErr()
     ]
 
     static void init() {
