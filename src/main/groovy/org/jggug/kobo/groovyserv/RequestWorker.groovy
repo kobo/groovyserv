@@ -58,7 +58,7 @@ class RequestWorker implements Runnable {
         }
         catch (Throwable e) {
             DebugUtils.errLog("unexpected error", e)
-            conn.sendExit(0)
+            conn.sendExit(1)
         }
         finally {
             setCurrentDir(null)

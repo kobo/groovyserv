@@ -82,11 +82,15 @@ def handle_stdin(socket)
   begin
     data = $stdin.read_nonblock(512)
   rescue EOFError
-    socket.write "Size: 0\n\n"
+    send_interrupt(socket)
   else
     socket.write "Size: #{data.length}\n\n"
     socket.write data
   end
+end
+
+def send_interrupt(socket)
+    socket.write "Size: -1\n\n"
 end
 
 def read_headers(socket)
@@ -102,12 +106,14 @@ end
 #-------------------------------------------
 # Main
 #-------------------------------------------
-
-Signal.trap(:INT) { exit 1 }
-
 failCount = 0
 begin
   TCPSocket.open(DESTHOST, DESTPORT) { |socket|
+    Signal.trap(:INT) {
+      send_interrupt(socket)
+      socket.close()
+      exit 1
+    }
     session(socket)
   }
 rescue Errno::ECONNREFUSED

@@ -30,8 +30,12 @@ class StreamRequestInputStream extends InputStream {
     @Override
     public int read() {
         int sizeHeader = getSizeOfHeader()
+        if (sizeHeader == -1) {
+            DebugUtils.verboseLog "recieved request [Size: -1] to interrupt"
+            throw new ExitException(-1, "interrupted by client request: [Size: -1]")
+        }
         if (sizeHeader == 0) {
-            DebugUtils.verboseLog "a value of header 'Size' is 0."
+            DebugUtils.verboseLog "recieved request [Size: 0]"
             return 0
         }
         int result = currentInputStream.read()
@@ -44,8 +48,12 @@ class StreamRequestInputStream extends InputStream {
     @Override
     public int read(byte[] buf, int offset, int length) {
         int sizeHeader = getSizeOfHeader()
+        if (sizeHeader == -1) {
+            DebugUtils.verboseLog "recieved request [Size: -1] to interrupt"
+            throw new ExitException(-1, "interrupted by client request: [Size: -1]")
+        }
         if (sizeHeader == 0) {
-            DebugUtils.verboseLog "a value of header 'Size' is 0."
+            DebugUtils.verboseLog "recieved request [Size: 0]"
             return 0
         }
         int revisedLength = Math.min(length, sizeHeader)

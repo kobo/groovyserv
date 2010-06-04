@@ -351,7 +351,7 @@ int session(int fd)
 static int fd_soc;
 
 static void signal_handler(int sig) {
-  write(fd_soc, "Size: 0\n\n", 9);
+  write(fd_soc, "Size: -1\n\n", 9);
   close(fd_soc);
   exit(1);
 }
