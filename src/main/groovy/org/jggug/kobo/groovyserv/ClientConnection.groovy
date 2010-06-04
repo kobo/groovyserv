@@ -103,7 +103,9 @@ class ClientConnection implements Closeable {
 
     void close() {
         if (socket) {
-            socket.close()
+            // because output stream need flush.
+            // socket is also closed by closing output stream which is gotten from socket.
+            socket.outputStream.close()
             DebugUtils.verboseLog "client connection is closed: ${socket.port}"
             socket = null
         }
