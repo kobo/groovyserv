@@ -17,6 +17,9 @@ package org.jggug.kobo.groovyserv
 
 import groovy.util.GroovyTestCase
 
+/**
+ * Utilities only for tests.
+ */
 class TestUtils {
 
     static executeClientOk(args, closure = null) {
@@ -39,6 +42,26 @@ class TestUtils {
     static getCommand(args) {
         def client = System.properties.'groovyservClientExecutable'
         return [client] + args
+    }
+
+    /**
+     * Reading and return available bytes.
+     * This method is not blocking.
+     */
+    static getAvailableText(ins) {
+        def byteList = new ArrayList<Byte>()
+        int length
+        while ((length = ins.available()) > 0) {
+            byte[] bytes = new byte[length]
+            int ret = ins.read(bytes, 0, length)
+            if (ret == -1) {
+                break
+            }
+            for (int i = 0; i < ret; i++) {
+                byteList.add(bytes[i])
+            }
+        }
+        return new String(byteList as byte[])
     }
 
 }
