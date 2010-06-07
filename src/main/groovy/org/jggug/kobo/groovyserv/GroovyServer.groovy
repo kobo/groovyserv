@@ -45,7 +45,7 @@ class GroovyServer {
             setupSecurityManager()
             setupRunningMode()
             setupCookie()
-            runServer()
+            startServer()
         }
         catch (GroovyServerException e) {
             DebugUtils.errLog("error", e)
@@ -74,7 +74,7 @@ class GroovyServer {
         cookie.save()
     }
 
-    private void runServer() {
+    private void startServer() {
         def serverSocket = new ServerSocket(getPort())
         while (true) {
             def socket = serverSocket.accept()
