@@ -21,20 +21,16 @@ package org.jggug.kobo.groovyserv
  */
 class ClasspathUtils {
 
-    static addClasspath(classpath) {
-        def cp = System.getProperty("groovy.classpath")
-        if (cp == null || cp == "") {
-            System.setProperty("groovy.classpath", classpath)
-        }
-        else {
-            def pathes = cp.split(File.pathSeparator) as List
-            def pathToAdd = ""
-            classpath.split(File.pathSeparator).reverseEach {
-                if (!(pathes as List).contains(it)) {
-                    pathToAdd = (it + File.pathSeparator + pathToAdd)
-                }
-            }
-            System.setProperty("groovy.classpath", pathToAdd + cp)
+    static addClasspath(String classpath) {
+        def cp = System.properties["groovy.classpath"]
+        if (!cp) {
+            System.properties["groovy.classpath"] = classpath
+        } else {
+            def pathes = cp.split(File.pathSeparator) as LinkedHashSet
+            def specifiedPathes = classpath.split(File.pathSeparator) as LinkedHashSet
+            pathes.addAll(specifiedPathes)
+            pathes.remove("")
+            System.properties["groovy.classpath"] = pathes.join(File.pathSeparator)
         }
     }
 
