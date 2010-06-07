@@ -54,7 +54,8 @@ class RequestWorker implements Runnable {
         try {
             def request = new InvocationRequest(conn)
             CurrentDirHolder.instance.set(request.cwd)
-            process(request)
+            setupClasspath(request)
+            process(request.args)
             ensureAllThreadToStop()
             conn.sendExit(0)
         }
@@ -72,13 +73,12 @@ class RequestWorker implements Runnable {
         }
     }
 
-    private process(request) {
+    private setupClasspath(request) {
         if (request.classpath) {
             ClasspathUtils.addClasspath(request.classpath)
         }
 
-        List args = request.args
-        for (Iterator<String> it = args.iterator(); it.hasNext(); ) {
+        for (def it = request.args.iterator(); it.hasNext(); ) {
             String s = it.next()
             if (s == "-cp") {
                 it.remove()
@@ -90,6 +90,9 @@ class RequestWorker implements Runnable {
                 it.remove()
             }
         }
+    }
+
+    private process(args) {
         GroovyMain2.main(args as String[])
     }
 

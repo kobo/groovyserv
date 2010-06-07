@@ -21,18 +21,22 @@ package org.jggug.kobo.groovyserv
  */
 class ClasspathUtils {
 
-    static addClasspath(String path) { // FIXME this method is awful...
-        if (path == null || path == "") {
-            System.properties.remove("groovy.path")
-            return
+    static addClasspath(classpath) {
+        def cp = System.getProperty("groovy.classpath")
+        if (cp == null || cp == "") {
+            System.setProperty("groovy.classpath", classpath)
         }
-        def pathes = path.split(File.classpathSeparator) as LinkedHashSet
-        pathes << path
-        System.setProperty("groovy.path", pathes.join(File.pathSeparator))
-    }
-
-    static removeClasspath(String path) {
-        // TODO implement
+        else {
+            def pathes = cp.split(File.pathSeparator) as List
+            def pathToAdd = ""
+            classpath.split(File.pathSeparator).reverseEach {
+                if (!(pathes as List).contains(it)) {
+                    pathToAdd = (it + File.pathSeparator + pathToAdd)
+                }
+            }
+            System.setProperty("groovy.classpath", pathToAdd + cp)
+        }
     }
 
 }
+
