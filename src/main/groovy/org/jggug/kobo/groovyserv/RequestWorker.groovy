@@ -21,8 +21,6 @@ import java.util.concurrent.Executor
 import java.util.concurrent.Future
 import java.util.concurrent.atomic.AtomicReference
 
-import static org.jggug.kobo.groovyserv.ClientConnection.*
-
 
 /**
  * @author UEHARA Junji
@@ -57,18 +55,16 @@ class RequestWorker implements Runnable {
     @Override
     void run() {
         try {
-            Map<String, List<String>> headers = conn.readHeaders()
-            checkHeaders(headers)
+            def request = new InvocationRequest(conn)
 
-            def cwd = headers[HEADER_CURRENT_WORKING_DIR][0]
-            if (currentDir != null && currentDir != cwd) {
+            if (currentDir != null && currentDir != request.cwd) {
                 throw new GroovyServerException(
                     "Can't change current directory because of another session running on different dir: " +
                     headers[HEADER_CURRENT_WORKING_DIR][0])
             }
-            setCurrentDir(cwd)
+            setCurrentDir(request.cwd)
 
-            process(headers)
+            process(request)
             ensureAllThreadToStop()
             conn.sendExit(0)
         }
@@ -86,23 +82,12 @@ class RequestWorker implements Runnable {
         }
     }
 
-    private checkHeaders(headers) {
-        if (headers[HEADER_CURRENT_WORKING_DIR] == null || headers[HEADER_CURRENT_WORKING_DIR][0] == null) {
-            throw new GroovyServerException("required header 'Cwd' is not specified.")
-        }
-        def givenCookie = headers[HEADER_COOKIE]?.getAt(0)
-        if (!conn.cookie.isValid(givenCookie)) {
-            Thread.sleep(5000)
-            throw new GroovyServerException("authentication failed. cookie is unmatched: " + givenCookie)
-        }
-    }
-
-    private process(headers) {
-        if (headers[HEADER_CP] != null) {
-            addClasspath(headers[HEADER_CP][0])
+    private process(request) {
+        if (request.classpath) {
+            addClasspath(request.classpath)
         }
 
-        List args = headers[HEADER_ARG]
+        List args = request.args
         for (Iterator<String> it = args.iterator(); it.hasNext(); ) {
             String s = it.next()
             if (s == "-cp") {
