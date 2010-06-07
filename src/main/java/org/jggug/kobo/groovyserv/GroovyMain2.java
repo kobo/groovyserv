@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+//package groovy.ui;
 package org.jggug.kobo.groovyserv;
 
 import groovy.ui.*;
 
 import groovy.lang.GroovyShell;
+import groovy.lang.GroovySystem;
 import groovy.lang.Script;
 
 import java.io.*;
@@ -34,16 +36,15 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.control.CompilerConfiguration;
-import org.codehaus.groovy.runtime.InvokerHelper;
 import org.codehaus.groovy.runtime.InvokerInvocationException;
+import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 
 /**
  * A Command line to execute groovy.
- * Based on groovy.ui.GroovyMain at Revision: 12135
  *
  * @author Jeremy Rayner
  * @author Yuri Schimke
- * @version
+ * @version $Revision: 19977 $
  */
 public class GroovyMain2 {
 
@@ -106,7 +107,7 @@ public class GroovyMain2 {
             if (cmd.hasOption('h')) {
                 printHelp(out, options);
             } else if (cmd.hasOption('v')) {
-                String version = InvokerHelper.getVersion();
+                String version = GroovySystem.getVersion();
                 out.println("Groovy Version: " + version + " JVM: " + System.getProperty("java.version"));
             } else {
                 // If we fail, then exit with an error so scripting frameworks can catch it
@@ -159,6 +160,8 @@ public class GroovyMain2 {
      */
     private static synchronized Options buildOptions() {
         Options options = new Options();
+        options.addOption(OptionBuilder.hasArg().withArgName("path").withDescription("Specify where to find the class files - must be first argument").create("classpath"));
+        options.addOption(OptionBuilder.withLongOpt("classpath").hasArg().withArgName("path").withDescription("Aliases for '-classpath'").create("cp"));
 
         options.addOption(
             OptionBuilder.withLongOpt("define").
@@ -209,7 +212,7 @@ public class GroovyMain2 {
         options.addOption(
             OptionBuilder.withArgName("port")
             .hasOptionalArg()
-            .withDescription("listen on a port and process inbound lines")
+            .withDescription("listen on a port and process inbound lines (default: 1960)")
             .create('l'));
         options.addOption(
             OptionBuilder.withArgName("splitPattern")
@@ -314,8 +317,8 @@ public class GroovyMain2 {
         } catch (CompilationFailedException e) {
             System.err.println(e);
             return false;
-        } catch (ExitException e) {
-            throw e; // for GroovyServer.
+        } catch (ExitException e) {  // for GroovyServ
+            throw e;                 // for GroovyServ
         } catch (Throwable e) {
             if (e instanceof InvokerInvocationException) {
                 InvokerInvocationException iie = (InvokerInvocationException) e;
@@ -345,7 +348,7 @@ public class GroovyMain2 {
         GroovyShell groovy = new GroovyShell(conf);
         //check the script is currently valid before starting a server against the script
         if (isScriptFile) {
-            groovy.parse(new FileInputStream(huntForTheScriptFile(script)));
+            groovy.parse(DefaultGroovyMethods.getText(huntForTheScriptFile(script)));
         } else {
             groovy.parse(script);
         }
