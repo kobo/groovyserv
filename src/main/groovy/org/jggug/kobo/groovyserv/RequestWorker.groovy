@@ -29,7 +29,6 @@ import java.util.concurrent.atomic.AtomicReference
 class RequestWorker implements Runnable {
 
     private static final int THREAD_COUNT = 2
-    private static currentDir // TODO extract into CurrentDirHolder
 
     private ClientConnection conn
     private ThreadGroup threadGroup
@@ -39,13 +38,11 @@ class RequestWorker implements Runnable {
     RequestWorker(clientConnection, threadGroup) {
         this.conn = clientConnection
         this.threadGroup = threadGroup
-
-        def factory = new ThreadFactory() {
+        this.executor = Executors.newFixedThreadPool(THREAD_COUNT, new ThreadFactory() {
             Thread newThread(Runnable worker) {
                 new Thread(threadGroup, worker, "requestWorker:${conn.socket.port}")
             }
-        }
-        executor = Executors.newFixedThreadPool(THREAD_COUNT, factory)
+        })
     }
 
     void start() {
@@ -56,14 +53,7 @@ class RequestWorker implements Runnable {
     void run() {
         try {
             def request = new InvocationRequest(conn)
-
-            if (currentDir != null && currentDir != request.cwd) {
-                throw new GroovyServerException(
-                    "Can't change current directory because of another session running on different dir: " +
-                    headers[HEADER_CURRENT_WORKING_DIR][0])
-            }
-            setCurrentDir(request.cwd)
-
+            CurrentDirHolder.instance.set(request.cwd)
             process(request)
             ensureAllThreadToStop()
             conn.sendExit(0)
@@ -77,14 +67,14 @@ class RequestWorker implements Runnable {
             conn.sendExit(1)
         }
         finally {
-            setCurrentDir(null)
+            CurrentDirHolder.instance.unset()
             conn.close()
         }
     }
 
     private process(request) {
         if (request.classpath) {
-            addClasspath(request.classpath)
+            ClasspathUtils.addClasspath(request.classpath)
         }
 
         List args = request.args
@@ -96,7 +86,7 @@ class RequestWorker implements Runnable {
                     throw new GroovyServerException("classpath option is invalid.")
                 }
                 String classpath = it.next()
-                addClasspath(classpath)
+                ClasspathUtils.addClasspath(classpath)
                 it.remove()
             }
         }
@@ -122,31 +112,6 @@ class RequestWorker implements Runnable {
                 }
             }
         }
-    }
-
-    private synchronized static setCurrentDir(newDir) {
-        if (newDir == currentDir) return
-
-        currentDir = newDir
-        if (newDir) {
-            System.setProperty('user.newDir', newDir)
-            PlatformMethods.chdir(newDir)
-            addClasspath(newDir)
-        } else {
-            //System.properties.remove('user.newDir')
-            //PlatformMethods.chdir(currentDir)
-            //removeClasspath(currentDir)
-        }
-    }
-
-    private static addClasspath(newPath) { // FIXME this method is awful...
-        if (newPath == null || newPath == "") {
-            System.properties.remove("groovy.classpath")
-            return
-        }
-        def pathes = newPath.split(File.pathSeparator) as LinkedHashSet
-        pathes << newPath
-        System.setProperty("groovy.classpath", pathes.join(File.pathSeparator))
     }
 
 }
