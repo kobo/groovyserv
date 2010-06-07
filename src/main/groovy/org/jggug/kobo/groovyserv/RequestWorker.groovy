@@ -15,6 +15,10 @@
  */
 package org.jggug.kobo.groovyserv
 
+import java.util.concurrent.ThreadFactory
+import java.util.concurrent.Executors
+import java.util.concurrent.Executor
+import java.util.concurrent.Future
 import java.util.concurrent.atomic.AtomicReference
 
 import static org.jggug.kobo.groovyserv.ClientConnection.*
@@ -26,12 +30,28 @@ import static org.jggug.kobo.groovyserv.ClientConnection.*
  */
 class RequestWorker implements Runnable {
 
+    private static final int THREAD_COUNT = 2
     private static currentDir // TODO extract into CurrentDirHolder
 
     private ClientConnection conn
+    private ThreadGroup threadGroup
+    private Executor executor
+    private Future future
 
-    RequestWorker(clientConnection) {
+    RequestWorker(clientConnection, threadGroup) {
         this.conn = clientConnection
+        this.threadGroup = threadGroup
+
+        def factory = new ThreadFactory() {
+            Thread newThread(Runnable worker) {
+                new Thread(threadGroup, worker, "requestWorker:${conn.socket.port}")
+            }
+        }
+        executor = Executors.newFixedThreadPool(THREAD_COUNT, factory)
+    }
+
+    void start() {
+        future = executor.submit(this)
     }
 
     @Override

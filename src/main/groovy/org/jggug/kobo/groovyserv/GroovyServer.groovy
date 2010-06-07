@@ -17,8 +17,6 @@
 package org.jggug.kobo.groovyserv
 
 import org.codehaus.groovy.tools.shell.util.NoExitSecurityManager
-import java.util.concurrent.ThreadFactory
-import java.util.concurrent.Executors
 
 
 /**
@@ -84,18 +82,9 @@ class GroovyServer {
             }
             DebugUtils.verboseLog "accepted socket=$socket"
 
-
-            def tgroup = new ThreadGroup("groovyserver:${socket.port}")
-            def connection = new ClientConnection(cookie, socket, tgroup)
-            def requestWorker = new RequestWorker(connection)
-
-            def factory = new ThreadFactory() {
-                Thread newThread(Runnable worker) {
-                    new Thread(tgroup, worker, "requestWorker:${socket.port}")
-                }
-            }
-            def executor = Executors.newFixedThreadPool(2, factory)
-            executor.submit(requestWorker)
+            def threadGroup = new ThreadGroup("groovyserver:${socket.port}")
+            def connection = new ClientConnection(cookie, socket, threadGroup)
+            new RequestWorker(connection, threadGroup).start()
         }
     }
 
