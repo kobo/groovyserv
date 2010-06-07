@@ -26,26 +26,28 @@ class CurrentDirHolder {
 
     private currentDir
 
-    synchronized void set(newDir) {
+    synchronized void setDir(newDir) {
         if (!isChanged(newDir)) {
             return
         }
         if (isSetCurrentDir()) {
             throw new GroovyServerException("cannot change current directory because another session is running on different directory: ${newDir}")
         }
-        System.setProperty('user.dir', newDir)
+        System.properties['user.dir'] = newDir
         PlatformMethods.chdir(newDir)
         ClasspathUtils.addClasspath(newDir)
         currentDir = newDir
     }
 
-    synchronized void unset() {
+    synchronized void reset() {
         if (!isSetCurrentDir()) {
             return
         }
-        System.setProperty('user.dir', ORIGINAL_USER_DIR)
+        System.properties['user.dir'] = ORIGINAL_USER_DIR
         PlatformMethods.chdir(ORIGINAL_USER_DIR)
-        ClasspathUtils.removeClasspath(currentDir)
+        // TODO removing from classpath. it's difficult because system property "groovy.classpath"
+        // is shared some threads and we cannot see which thread added a entry to "groovy.classpath".
+        //ClasspathUtils.removeClasspath(newDir)
         currentDir = null
     }
 
@@ -54,7 +56,7 @@ class CurrentDirHolder {
     }
 
     private boolean isChanged(newDir) {
-        currentDir == newDir
+        currentDir != newDir
     }
 
 }

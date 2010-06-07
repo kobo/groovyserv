@@ -19,7 +19,6 @@ import java.util.concurrent.ThreadFactory
 import java.util.concurrent.Executors
 import java.util.concurrent.Executor
 import java.util.concurrent.Future
-import java.util.concurrent.atomic.AtomicReference
 
 
 /**
@@ -53,7 +52,7 @@ class RequestWorker implements Runnable {
     void run() {
         try {
             def request = new InvocationRequest(conn)
-            CurrentDirHolder.instance.set(request.cwd)
+            CurrentDirHolder.instance.setDir(request.cwd)
             setupClasspath(request)
             process(request.args)
             ensureAllThreadToStop()
@@ -68,7 +67,7 @@ class RequestWorker implements Runnable {
             conn.sendExit(1)
         }
         finally {
-            CurrentDirHolder.instance.unset()
+            CurrentDirHolder.instance.reset()
             conn.close()
         }
     }
@@ -77,7 +76,6 @@ class RequestWorker implements Runnable {
         if (request.classpath) {
             ClasspathUtils.addClasspath(request.classpath)
         }
-
         for (def it = request.args.iterator(); it.hasNext(); ) {
             String s = it.next()
             if (s == "-cp") {
