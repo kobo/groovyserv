@@ -17,6 +17,8 @@
 package org.jggug.kobo.groovyserv
 
 import org.codehaus.groovy.tools.shell.util.NoExitSecurityManager
+import java.util.concurrent.ThreadFactory
+import java.util.concurrent.Executors
 
 
 /**
@@ -82,14 +84,18 @@ class GroovyServer {
             }
             DebugUtils.verboseLog "accepted socket=$socket"
 
-            // Create new thread for each connections.
-            // Here, don't use ExecutorService or any thread pool system.
-            // Because the System.(in/out/err) streams are used distinctly
-            // by thread instance. In the other words, threads can't be pooled.
-            // So this 'new Thread()' is necessary.
+
             def tgroup = new ThreadGroup("groovyserver:${socket.port}")
             def connection = new ClientConnection(cookie, socket, tgroup)
-            new Thread(tgroup, new RequestWorker(connection), "requestWorker").start()
+            def requestWorker = new RequestWorker(connection)
+
+            def factory = new ThreadFactory() {
+                Thread newThread(Runnable worker) {
+                    new Thread(tgroup, worker, "requestWorker:${socket.port}")
+                }
+            }
+            def executor = Executors.newFixedThreadPool(2, factory)
+            executor.submit(requestWorker)
         }
     }
 
