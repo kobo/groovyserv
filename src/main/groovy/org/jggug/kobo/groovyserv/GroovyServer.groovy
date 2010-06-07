@@ -77,19 +77,24 @@ class GroovyServer {
         while (true) {
             def socket = serverSocket.accept()
             if (!socket.localSocketAddress.address.isLoopbackAddress()) { // for security
-                DebugUtils.errLog "allow connection from loopback address only"
+                DebugUtils.errLog "cannot accept except loopback address: ${socket}"
                 continue
             }
             DebugUtils.verboseLog "accepted socket=$socket"
 
-            def threadGroup = new ThreadGroup("groovyserver:${socket.port}")
-            def connection = new ClientConnection(cookie, socket, threadGroup)
-            new RequestWorker(connection, threadGroup).start()
+            startWorkerThread(cookie, socket)
         }
+    }
+
+    private void startWorkerThread(cookie, socket) {
+        def threadGroup = new ThreadGroup("groovyserver:${socket.port}")
+        def connection = new ClientConnection(cookie, socket, threadGroup)
+        new RequestWorker(connection, threadGroup).start()
     }
 
     private static int getPort() {
         return System.getProperty("groovyserver.port") as int ?: DEFAULT_PORT
     }
+
 }
 
