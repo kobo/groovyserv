@@ -87,4 +87,19 @@ class ClasspathUtilsTest extends GroovyTestCase {
         assert System.properties["groovy.classpath"] == "path0:path1:path2"
     }
 
+    void testAddClasspath_null_to_null() {
+        assert System.properties["groovy.classpath"] == null
+        ClasspathUtils.addClasspath(null)
+        assert System.properties["groovy.classpath"] == null
+    }
+
+    void testAddClasspath_one_to_null() {
+        System.properties["groovy.classpath"] = "path0"
+
+        assert System.properties["groovy.classpath"] == "path0"
+        ClasspathUtils.addClasspath(null)
+        assert System.properties["groovy.classpath"] == "path0"
+    }
+
 }
+

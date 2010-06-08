@@ -22,6 +22,7 @@ package org.jggug.kobo.groovyserv
 class ClasspathUtils {
 
     static addClasspath(String classpath) {
+        if (!classpath) return
         def cp = System.properties["groovy.classpath"]
         if (!cp) {
             System.properties["groovy.classpath"] = classpath

@@ -72,25 +72,21 @@ class RequestWorker implements Runnable {
         }
     }
 
-    private setupClasspath(request) {
-        if (request.classpath) {
-            ClasspathUtils.addClasspath(request.classpath)
-        }
+    private static setupClasspath(request) {
+        ClasspathUtils.addClasspath(request.classpath)
         for (def it = request.args.iterator(); it.hasNext(); ) {
-            String s = it.next()
-            if (s == "-cp") {
-                it.remove()
+            String opt = it.next()
+            if (opt == "-cp") {
                 if (!it.hasNext()) {
                     throw new GroovyServerException("classpath option is invalid.")
                 }
                 String classpath = it.next()
                 ClasspathUtils.addClasspath(classpath)
-                it.remove()
             }
         }
     }
 
-    private process(args) {
+    private static process(args) {
         GroovyMain2.main(args as String[])
     }
 
