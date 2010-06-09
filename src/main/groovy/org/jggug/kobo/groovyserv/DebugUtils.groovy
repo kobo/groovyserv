@@ -21,6 +21,8 @@ package org.jggug.kobo.groovyserv
  */
 class DebugUtils {
 
+    private static final String PREFIX_DEBUG_LOG = "DEBUG: "
+
     static errLog(message, Throwable e = null) {
         FileUtils.LOG_FILE.withWriterAppend { out ->
             out.println message
@@ -32,7 +34,12 @@ class DebugUtils {
 
     static verboseLog(message, Throwable e = null) {
         if (isVerboseMode()) {
-            errLog(message, e)
+            def sw = new StringWriter()
+            def pw = new PrintWriter(sw)
+            message.eachLine { line ->
+                pw.println(PREFIX_DEBUG_LOG + line)
+            }
+            errLog(sw.toString().trim(), e)
         }
     }
 
