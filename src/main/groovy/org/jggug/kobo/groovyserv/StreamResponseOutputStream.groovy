@@ -81,7 +81,7 @@ ${DebugUtils.dump(b, offset, length)}
     }
 
     private OutputStream getCurrentOutputStream() {
-        ClientConnectionRepository.instance.currentOut
+        ClientConnectionRepository.instance.currentConnection.outputStream
     }
 
 }

@@ -23,34 +23,32 @@ import static org.jggug.kobo.groovyserv.ClientConnection.*
  */
 class InvocationRequest {
 
-    private ClientConnection conn
-
+    int port
     String cwd           // required: current working directory
     String classpath     // optional
     String cookie        // required
     List<String> args    // required
 
-    InvocationRequest(ClientConnection conn) {
-        this.conn = conn
-        readAndSetUp()
-    }
-
-    private void readAndSetUp() {
+    static read(ClientConnection conn) {
         Map<String, List<String>> headers = conn.readHeaders()
-        this.cwd = headers[HEADER_CURRENT_WORKING_DIR][0]
-        this.cookie = headers[HEADER_COOKIE]?.getAt(0)
-        this.classpath = headers[HEADER_CP]?.getAt(0)
-        this.args = headers[HEADER_ARG]
-        checkHeaders(headers)
+        def request = new InvocationRequest(
+            port: conn.socket.port,
+            cwd: headers[HEADER_CURRENT_WORKING_DIR][0],
+            cookie: headers[HEADER_COOKIE]?.getAt(0),
+            classpath: headers[HEADER_CP]?.getAt(0),
+            args: headers[HEADER_ARG],
+        )
+        request.checkHeaders(headers, conn)
+        return request
     }
 
-    private checkHeaders(headers) {
+    private checkHeaders(headers, conn) {
         if (!cwd) {
             throw new GroovyServerException("required header 'Cwd' is not specified.")
         }
         if (!cookie || !conn.cookie.isValid(cookie)) {
             Thread.sleep(5000) // to prevent from brute force atack
-            throw new GroovyServerException("authentication failed. cookie is unmatched: " + cookie)
+            throw new GroovyServerException("authentication failed. cookie is unmatched: ${cookie} <=> ${conn.cookie.token}")
         }
         if (!args) {
             throw new GroovyServerException("required header 'Args' is not specified.")

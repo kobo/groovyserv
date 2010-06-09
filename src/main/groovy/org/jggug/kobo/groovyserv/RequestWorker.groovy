@@ -19,94 +19,92 @@ import java.util.concurrent.ThreadFactory
 import java.util.concurrent.Executors
 import java.util.concurrent.Executor
 import java.util.concurrent.Future
+import java.util.concurrent.TimeoutException
+import java.util.concurrent.ExecutionException
+import java.util.concurrent.CancellationException
+
+import static java.util.concurrent.TimeUnit.*
 
 
 /**
  * @author UEHARA Junji
  * @author NAKANO Yasuharu
  */
-class RequestWorker implements Runnable {
+class RequestWorker {
 
-    private static final int THREAD_COUNT = 2
+    private static final int THREAD_COUNT = 3
 
     private ClientConnection conn
-    private ThreadGroup threadGroup
     private Executor executor
-    private Future future
+    private Future processFuture
+    private Future streamFuture
+    private Future monitorFuture
 
-    RequestWorker(clientConnection, threadGroup) {
-        this.conn = clientConnection
-        this.threadGroup = threadGroup
+    RequestWorker(cookie, socket) {
+        def threadGroup = new ThreadGroup("GroovyServ:${socket.port}") // for stream management
+        this.conn = new ClientConnection(cookie, socket, threadGroup)
         this.executor = Executors.newFixedThreadPool(THREAD_COUNT, new ThreadFactory() {
             Thread newThread(Runnable worker) {
-                new Thread(threadGroup, worker, "requestWorker:${conn.socket.port}")
+                new Thread(threadGroup, worker) // TODO it needs cancellable sub-class of Thread class
             }
         })
     }
 
+    /**
+     * @throws GroovyServerException when request headers are invalid
+     * @throws IOException when failed to read from socket
+     */
     void start() {
-        future = executor.submit(this)
-    }
-
-    @Override
-    void run() {
         try {
-            def request = new InvocationRequest(conn)
-            CurrentDirHolder.instance.setDir(request.cwd)
-            setupClasspath(request)
-            process(request.args)
-            ensureAllThreadToStop()
-            conn.sendExit(0)
-        }
-        catch (ExitException e) {
-            // GroovyMain2 throws ExitException when it catches ExitException.
-            conn.sendExit(e.exitStatus)
-        }
-        catch (Throwable e) {
-            DebugUtils.errLog("unexpected error", e)
-            conn.sendExit(1)
-        }
-        finally {
-            CurrentDirHolder.instance.reset()
-            conn.close()
+            def request = conn.openSession()
+            processFuture = executor.submit(new GroovyProcessHandler(request))
+            streamFuture  = executor.submit(new StreamRequestHandler(conn))
+            monitorFuture = executor.submit(new ExitMonitorHandler())
+        } finally {
+            // this method call makes a reservation of shutdown a thread pool without directly interrupt.
+            // when all tasks will finish, executor will be shut down.
+            executor.shutdown()
         }
     }
 
-    private static setupClasspath(request) {
-        ClasspathUtils.addClasspath(request.classpath)
-        for (def it = request.args.iterator(); it.hasNext(); ) {
-            String opt = it.next()
-            if (opt == "-cp") {
-                if (!it.hasNext()) {
-                    throw new GroovyServerException("classpath option is invalid.")
-                }
-                String classpath = it.next()
-                ClasspathUtils.addClasspath(classpath)
+    void stop() {
+        monitorFuture.cancel(true)
+    }
+
+    class ExitMonitorHandler implements Runnable {
+        private String id
+
+        ExitMonitorHandler() {
+            this.id = "GroovyServ:ExitMonitorHandler:${conn.socket.port}"
+        }
+
+        private void setupThreadName() {
+            Thread.currentThread().name = id
+        }
+
+        @Override
+        void run() {
+            setupThreadName()
+            try {
+                IOUtils.awaitFutures([processFuture, streamFuture])
+                conn.sendExit(0)
             }
-        }
-    }
-
-    private static process(args) {
-        GroovyMain2.main(args as String[])
-    }
-
-    private ensureAllThreadToStop() {
-        ThreadGroup tg = Thread.currentThread().threadGroup
-        Thread[] threads = new Thread[tg.activeCount()]
-        int tcount = tg.enumerate(threads)
-        while (tcount != threads.size()) {
-            threads = new Thread[tg.activeCount()]
-            tcount = tg.enumerate(threads)
-        }
-        for (int i=0; i<threads.size(); i++) {
-            if (threads[i] != Thread.currentThread() && threads[i].isAlive()) {
-                if (threads[i].isDaemon()) {
-                    threads[i].interrupt()
-                }
-                else {
-                    threads[i].interrupt()
-                    threads[i].join()
-                }
+            catch (InterruptedException e) {
+                DebugUtils.verboseLog("thread is interrupted: ${id}: ${e.message}") // unused details of exception
+                conn.sendExit(1)
+            }
+            catch (ExitException e) {
+                DebugUtils.verboseLog("worker thread exited: ${e.exitStatus}: ${id}: ${e.message}") // unused details of exception
+                conn.sendExit(e.exitStatus)
+            }
+            catch (Throwable e) {
+                DebugUtils.errLog("unexpected error: ${id}", e)
+                conn.sendExit(2)
+            }
+            finally {
+                processFuture.cancel(true)
+                streamFuture.cancel(true)
+                IOUtils.close(conn)
             }
         }
     }

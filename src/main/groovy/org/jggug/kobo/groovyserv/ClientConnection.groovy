@@ -47,7 +47,7 @@ package org.jggug.kobo.groovyserv
  *
  *   where:
  *     <size> is the size of data to send to server.
- *            <size>==0 means client exited.
+ *            <size>==-1 means client exited.
  *     <data from STDIN> is byte sequence from standard input.
  *
  * StreamResponse ::=
@@ -71,6 +71,64 @@ package org.jggug.kobo.groovyserv
  */
 class ClientConnection implements Closeable {
 
+    private Cookie cookie
+    private Socket socket
+    private ThreadGroup ownerThreadGroup
+    private PipedOutputStream pipedOutputStream // to transfer from socket.inputStream
+    private PipedInputStream pipedInputStream   // connected to socket.inputStream indirectly via pipedInputStream
+
+    ClientConnection(cookie, socket, ownerThreadGroup) {
+        this.cookie = cookie
+        this.socket = socket
+        this.ownerThreadGroup = ownerThreadGroup
+        this.pipedOutputStream = new PipedOutputStream()
+        this.pipedInputStream = new PipedInputStream(pipedOutputStream)
+        ClientConnectionRepository.instance.bind(ownerThreadGroup, this)
+    }
+
+    InvocationRequest openSession() {
+        InvocationRequest.read(this)
+    }
+
+    void writeFromStreamRequest(byte[] buff, int offset, int result) {
+        pipedOutputStream.write(buff, offset, result)
+        pipedOutputStream.flush()
+    }
+
+    InputStream getInputStream() {
+        pipedInputStream
+    }
+
+    OutputStream getOutputStream() {
+        socket.outputStream
+    }
+
+    void sendExit(int status) {
+        socket.outputStream.with { // not to close yet
+            write(formatAsExitHeader(status))
+            flush()
+        }
+    }
+
+    void close() {
+        ClientConnectionRepository.instance.unbind(ownerThreadGroup)
+        if (pipedInputStream) {
+            IOUtils.close(pipedInputStream)
+            DebugUtils.verboseLog "piped stream to transfer is closed: ${socket.port}"
+            pipedInputStream = null
+        }
+        if (socket) {
+            // closing output stream because it needs to flush.
+            // socket and socket.inputStream are also closed by closing output stream which is gotten from socket.
+            IOUtils.close(socket.outputStream)
+            DebugUtils.verboseLog "socket is closed: ${socket.port}"
+            socket = null
+        }
+    }
+
+    // ----------------------------------------------------------
+    // TODO extracted codes about request header into new class
+
     final static String HEADER_CURRENT_WORKING_DIR = "Cwd"
     final static String HEADER_ARG = "Arg"
     final static String HEADER_CP = "Cp"
@@ -78,39 +136,6 @@ class ClientConnection implements Closeable {
     final static String HEADER_COOKIE = "Cookie"
     final static String HEADER_STREAM_ID = "Channel"
     final static String HEADER_SIZE = "Size"
-
-    private Cookie cookie
-    private Socket socket
-    private ThreadGroup ownerThreadGroup
-
-    ClientConnection(cookie, socket, ownerThreadGroup) {
-        this.cookie = cookie
-        this.socket = socket
-        this.ownerThreadGroup = ownerThreadGroup
-        ClientConnectionRepository.instance.bind(ownerThreadGroup, this)
-    }
-
-    Map<String, List<String>> readHeaders() {
-        parseHeaders(socket.inputStream)
-    }
-
-    void sendExit(int status) {
-        socket.outputStream.with { // not to close yet
-            write(ClientConnection.formatAsExitHeader(status))
-            flush()
-        }
-    }
-
-    void close() {
-        if (socket) {
-            // because output stream need flush.
-            // socket is also closed by closing output stream which is gotten from socket.
-            socket.outputStream.close()
-            DebugUtils.verboseLog "client connection is closed: ${socket.port}"
-            socket = null
-        }
-        ClientConnectionRepository.instance.unbind(ownerThreadGroup)
-    }
 
     static byte[] formatAsResponseHeader(streamId, size) {
         def header = [:]
@@ -136,13 +161,23 @@ class ClientConnection implements Closeable {
         buff.toString().bytes
     }
 
-    private static Map<String, List<String>> parseHeaders(InputStream ins) {
+    /**
+     * @throws IOException  reading error
+     * @throws GroovyServerException  invalid headers
+     */
+    Map<String, List<String>> readHeaders() {
+        parseHeaders(socket.inputStream) // read from socket directly
+    }
+
+    private static Map<String, List<String>> parseHeaders(InputStream ins) { // FIXME
         def headers = [:]
         def line
-        while ((line = readLine(ins)) != "") {
-            def kv = line.split(':', 2)
-            def key = kv[0]
-            def value = kv[1]
+        while ((line = readLine(ins)) != "") { // until a first empty line
+            def tokens = line.split(':', 2)
+            if (tokens.size() != 2) {
+                throw new GroovyServerException("found an invalid header line: ${line}")
+            }
+            def (key, value) = tokens
             if (!headers.containsKey(key)) {
                 headers[key] = []
             }
@@ -151,9 +186,7 @@ class ClientConnection implements Closeable {
             }
             headers[key] += value
         }
-        if (DebugUtils.isVerboseMode()) {
-            DebugUtils.errLog "parsed headers: " + headers.collect { k, v -> "$k = $v" }.join(", ")
-        }
+        DebugUtils.verboseLog "parsed headers: ${headers}"
         headers
     }
 
