@@ -24,27 +24,44 @@ class DebugUtils {
     private static final String PREFIX_DEBUG_LOG = "DEBUG: "
 
     static errLog(message, Throwable e = null) {
-        FileUtils.LOG_FILE.withWriterAppend { out ->
-            out.println message
-            if (e) {
-                out << stackTrace(e)
-            }
-        }
+        def formatted = formatLog(message, e)
+        writeLog(formatted)
     }
 
     static verboseLog(message, Throwable e = null) {
-        if (isVerboseMode()) {
+        if (!isVerboseMode()) return
+
+        // added prefix for each line
+        def formatted = {
             def sw = new StringWriter()
             def pw = new PrintWriter(sw)
-            message.eachLine { line ->
+            formatLog(message, e).eachLine { line ->
                 pw.println(PREFIX_DEBUG_LOG + line)
             }
-            errLog(sw.toString().trim(), e)
+            sw.toString().trim()
+        }.call()
+
+        writeLog(formatted)
+    }
+
+    private static formatLog(message, Throwable e) {
+        def sw = new StringWriter()
+        def pw = new PrintWriter(sw)
+        pw.println message
+        if (e) {
+            pw << "---> " << stackTrace(e)
+        }
+        sw.toString().trim()
+    }
+
+    private static writeLog(formatted) {
+        FileUtils.LOG_FILE.withWriterAppend { out ->
+            out.println formatted
         }
     }
 
     static isVerboseMode() {
-        System.getProperty("groovyserver.verbose") == "true" 
+        System.getProperty("groovyserver.verbose") == "true"  // TODO Boolean.valueOf
     }
 
     private static String stackTrace(e) {
