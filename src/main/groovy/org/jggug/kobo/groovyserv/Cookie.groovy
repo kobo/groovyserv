@@ -1,4 +1,3 @@
-#!/usr/bin/env groovy
 /*
  * Copyright 2009-2010 the original author or authors.
  *
