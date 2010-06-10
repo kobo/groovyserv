@@ -36,8 +36,12 @@ class GroovyProcessHandler implements Runnable {
     }
 
     /**
-     * @throws ExitException When user code exits.
-     *                       Acutally this exception is wrapped by ExecutionException.
+     * @throws GroovyServerExitException
+     *              When user code called System.exit().
+     *              Acutally this exception is wrapped by ExecutionException.
+     * @throws InvalidRequestHeaderException
+     *              When classpath option is invalid.
+     *              Acutally this exception is wrapped by ExecutionException.
      */
     @Override
     void run() {
@@ -65,7 +69,7 @@ class GroovyProcessHandler implements Runnable {
             String opt = it.next()
             if (opt == "-cp") {
                 if (!it.hasNext()) {
-                    throw new ExitException(1, "classpath option is invalid.")
+                    throw new InvalidRequestHeaderException("classpath option is invalid.")
                 }
                 String classpath = it.next()
                 ClasspathUtils.addClasspath(classpath)
@@ -74,7 +78,11 @@ class GroovyProcessHandler implements Runnable {
     }
 
     private static process(args) {
-        GroovyMain2.main(args as String[])
+        try {
+            GroovyMain2.main(args as String[])
+        } catch (SystemExitException e) {
+            throw new GroovyServerExitException(e.exitStatus, e.message, e)
+        }
     }
 
     private awaitAllSubThreads() { // FIXME

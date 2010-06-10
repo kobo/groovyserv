@@ -19,17 +19,10 @@ package org.jggug.kobo.groovyserv
 /**
  * @author NAKANO Yasuharu
  */
-class GroovyServerException extends RuntimeException {
+class GroovyServerIOException extends GroovyServerException {
 
-    int exitStatus
-
-    GroovyServerException(String message, Throwable e = null) {
-        this(ExitStatus.UNEXPECTED_ERROR.code, message, e)
-    }
-
-    GroovyServerException(int exitStatus, String message, Throwable e = null) {
-        super(message, e)
-        this.exitStatus = exitStatus
+    GroovyServerIOException(String message, Throwable e = null) {
+        super(ExitStatus.IO_ERROR.code, message, e)
     }
 
 }

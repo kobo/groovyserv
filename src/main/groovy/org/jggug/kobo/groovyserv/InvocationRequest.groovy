@@ -29,6 +29,10 @@ class InvocationRequest {
     String cookie        // required
     List<String> args    // required
 
+    /**
+     * @throws InvalidRequestHeaderException
+     * @throws GroovyServerIOException
+     */
     static read(ClientConnection conn) {
         Map<String, List<String>> headers = conn.readHeaders()
         def request = new InvocationRequest(
@@ -44,14 +48,14 @@ class InvocationRequest {
 
     private checkHeaders(headers, conn) {
         if (!cwd) {
-            throw new GroovyServerException("required header 'Cwd' is not specified.")
+            throw new InvalidRequestHeaderException("required header 'Cwd' is not specified.")
         }
         if (!cookie || !conn.cookie.isValid(cookie)) {
             Thread.sleep(5000) // to prevent from brute force atack
-            throw new GroovyServerException("authentication failed. cookie is unmatched: ${cookie} <=> ${conn.cookie.token}")
+            throw new InvalidRequestHeaderException("authentication failed. cookie is unmatched: ${cookie} <=> ${conn.cookie.token}")
         }
         if (!args) {
-            throw new GroovyServerException("required header 'Args' is not specified.")
+            throw new InvalidRequestHeaderException("required header 'Args' is not specified.")
         }
     }
 

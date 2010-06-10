@@ -47,7 +47,7 @@ class ClientConnectionRepository {
     private static check(connection) {
         if (connection == null) {
             def thread = currentThread()
-            throw new IllegalStateException("This thread cannot access to standard streams: ${thread}")
+            throw new GroovyServerIllegalStateException("This thread cannot access to standard streams: ${thread}")
         }
         return connection
     }

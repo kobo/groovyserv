@@ -57,7 +57,7 @@ class CurrentDirHolderTest extends GroovyTestCase {
 
     void testSet_alreadySet_differentDir() {
         holder.setDir(workDir)
-        shouldFail(GroovyServerException) {
+        shouldFail(GroovyServerIllegalStateException) {
             holder.setDir(workDir + "DIFFERENT")
         }
         assertCurrentDir(workDir)

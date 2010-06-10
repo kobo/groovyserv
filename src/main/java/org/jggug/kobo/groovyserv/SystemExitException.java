@@ -20,11 +20,11 @@ package org.jggug.kobo.groovyserv;
  * @author UEHARA Junji
  * @author NAKANO Yasuharu
  */
-public class ExitException extends RuntimeException {
+public class SystemExitException extends RuntimeException {
 
     private int exitStatus;
 
-    public ExitException(int status, String message) {
+    public SystemExitException(int status, String message) {
         super(message);
         this.exitStatus = status;
     }

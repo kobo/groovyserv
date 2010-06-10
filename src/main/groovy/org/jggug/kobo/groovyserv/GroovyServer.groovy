@@ -45,12 +45,12 @@ class GroovyServer {
             startServer()
         }
         catch (GroovyServerException e) {
-            DebugUtils.errLog("error", e)
-            System.exit(1)
+            DebugUtils.errLog("error: GroovyServer", e)
+            System.exit(e.exitStatus)
         }
         catch (Throwable e) {
-            DebugUtils.errLog("unexpected error in GroovyServer", e)
-            System.exit(2)
+            DebugUtils.errLog("unexpected error: GroovyServer", e)
+            System.exit(ExitStatus.UNEXPECTED_ERROR.code)
         }
     }
 

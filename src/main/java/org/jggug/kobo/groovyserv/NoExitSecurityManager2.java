@@ -25,11 +25,11 @@ import org.codehaus.groovy.tools.shell.util.NoExitSecurityManager;
 public class NoExitSecurityManager2 extends NoExitSecurityManager {
 
     /**
-     * Always throws {@link ExitException}.
-     * @throws ExitException when System.exit() is called
+     * Always throws {@link SystemExitException}.
+     * @throws SystemExitException when System.exit() is called
      */
     public void checkExit(final int code) {
-        throw new ExitException(code, "called System.exit(" + code + ")");
+        throw new SystemExitException(code, "called System.exit(" + code + ")");
     }
 
 }

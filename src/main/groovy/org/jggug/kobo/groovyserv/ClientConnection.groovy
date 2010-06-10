@@ -86,30 +86,57 @@ class ClientConnection implements Closeable {
         ClientConnectionRepository.instance.bind(ownerThreadGroup, this)
     }
 
+    /**
+     * @throws InvalidRequestHeaderException
+     * @throws GroovyServerIOException
+     */
     InvocationRequest openSession() {
         InvocationRequest.read(this)
     }
 
+    /**
+     * @throws GroovyServerIOException
+     */
     void writeFromStreamRequest(byte[] buff, int offset, int result) {
-        pipedOutputStream.write(buff, offset, result)
-        pipedOutputStream.flush()
+        try {
+            pipedOutputStream.write(buff, offset, result)
+            pipedOutputStream.flush()
+        } catch (IOException e) {
+            throw new GroovyServerIOException("failed write to piped stream", e)
+        }
     }
 
+    /**
+     * to return InputStream which you can use as System.in.
+     */
     InputStream getInputStream() {
         pipedInputStream
     }
 
+    /**
+     * to return InputStream which you can use as System.out or System.err.
+     */
     OutputStream getOutputStream() {
         socket.outputStream
     }
 
+    /**
+     * @throws GroovyServerIOException
+     */
     void sendExit(int status) {
-        socket.outputStream.with { // not to close yet
-            write(formatAsExitHeader(status))
-            flush()
+        try {
+            socket.outputStream.with { // not to close yet
+                write(formatAsExitHeader(status))
+                flush()
+            }
+        } catch (IOException e) {
+            throw new GroovyServerIOException("failed write to piped stream", e)
         }
     }
 
+    /**
+     * to close socket and tear down some relational environment.
+     */
     void close() {
         ClientConnectionRepository.instance.unbind(ownerThreadGroup)
         if (pipedInputStream) {
@@ -162,8 +189,8 @@ class ClientConnection implements Closeable {
     }
 
     /**
-     * @throws IOException  reading error
-     * @throws GroovyServerException  invalid headers
+     * @throws InvalidRequestHeaderException  when headers are invalid
+     * @throws GroovyServerIOException        when reading error
      */
     Map<String, List<String>> readHeaders() {
         parseHeaders(socket.inputStream) // read from socket directly
@@ -175,7 +202,7 @@ class ClientConnection implements Closeable {
         while ((line = readLine(ins)) != "") { // until a first empty line
             def tokens = line.split(':', 2)
             if (tokens.size() != 2) {
-                throw new GroovyServerException("found an invalid header line: ${line}")
+                throw new InvalidRequestHeaderException("found an invalid header line: ${line}")
             }
             def (key, value) = tokens
             if (!headers.containsKey(key)) {
@@ -191,15 +218,19 @@ class ClientConnection implements Closeable {
     }
 
     private static readLine(InputStream is) { // FIXME maybe this is able to be replaced by default API
-        def baos = new ByteArrayOutputStream()
-        int ch
-        while ((ch = is.read()) != '\n') {
-            if (ch == -1) {
-                return baos.toString()
+        try {
+            def baos = new ByteArrayOutputStream()
+            int ch
+            while ((ch = is.read()) != '\n') {
+                if (ch == -1) {
+                    return baos.toString()
+                }
+                baos.write((byte) ch)
             }
-            baos.write((byte) ch)
+            return baos.toString()
+        } catch (IOException e) {
+            throw new GroovyServerIOException("failed to read from input stream of socket", e)
         }
-        return baos.toString()
     }
 
 }

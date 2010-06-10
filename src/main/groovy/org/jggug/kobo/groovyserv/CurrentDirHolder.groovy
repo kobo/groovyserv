@@ -26,12 +26,16 @@ class CurrentDirHolder {
 
     private currentDir
 
+    /**
+     * @throws GroovyServerIllegalStateException
+     *              When changed current directory after set different directory by another session
+     */
     synchronized void setDir(newDir) {
         if (!isChanged(newDir)) {
             return
         }
         if (isSetCurrentDir()) {
-            throw new GroovyServerException("cannot change current directory because another session is running on different directory: ${newDir}")
+            throw new GroovyServerIllegalStateException("cannot change current directory because another session is running on different directory: ${newDir}")
         }
         System.properties['user.dir'] = newDir
         PlatformMethods.chdir(newDir)

@@ -19,17 +19,10 @@ package org.jggug.kobo.groovyserv
 /**
  * @author NAKANO Yasuharu
  */
-class GroovyServerException extends RuntimeException {
+class ClientInterruptionException extends GroovyServerException {
 
-    int exitStatus
-
-    GroovyServerException(String message, Throwable e = null) {
-        this(ExitStatus.UNEXPECTED_ERROR.code, message, e)
-    }
-
-    GroovyServerException(int exitStatus, String message, Throwable e = null) {
-        super(message, e)
-        this.exitStatus = exitStatus
+    ClientInterruptionException(String message, Throwable e = null) {
+        super(ExitStatus.INTERRUPTED.code, message, e)
     }
 
 }

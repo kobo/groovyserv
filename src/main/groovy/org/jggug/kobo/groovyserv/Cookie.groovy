@@ -38,7 +38,7 @@ class Cookie {
             FileUtils.COOKIE_FILE.text = token
             DebugUtils.verboseLog "saved cookie: ${token}"
         } catch (IOException e) {
-            throw new GroovyServerException("cookie file cannot be written: " + FileUtils.COOKIE_FILE)
+            throw new GroovyServerIOException("cookie file cannot be written: " + FileUtils.COOKIE_FILE, e)
         }
     }
 

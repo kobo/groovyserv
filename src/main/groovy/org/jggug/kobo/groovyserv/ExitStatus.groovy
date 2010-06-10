@@ -1,7 +1,8 @@
+#!/usr/bin/env groovy
 /*
  * Copyright 2009-2010 the original author or authors.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ * Licensed under the Apache License, Version 2.0 (the "License")
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,17 +20,20 @@ package org.jggug.kobo.groovyserv
 /**
  * @author NAKANO Yasuharu
  */
-class GroovyServerException extends RuntimeException {
+public enum ExitStatus {
 
-    int exitStatus
+    SUCCESS(0),
+    INTERRUPTED(-1),
+    INVALID_REQUEST(-2),
+    IO_ERROR(-3),
+    ILLEGAL_STATE(-4),
+    UNEXPECTED_ERROR(-9)
 
-    GroovyServerException(String message, Throwable e = null) {
-        this(ExitStatus.UNEXPECTED_ERROR.code, message, e)
-    }
+    int code
 
-    GroovyServerException(int exitStatus, String message, Throwable e = null) {
-        super(message, e)
-        this.exitStatus = exitStatus
+    private ExitStatus(code) {
+        this.code = code
     }
 
 }
+

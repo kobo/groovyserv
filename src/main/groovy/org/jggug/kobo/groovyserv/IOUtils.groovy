@@ -55,7 +55,7 @@ import static java.util.concurrent.TimeUnit.*
                 futures.each { future ->
                     try {
                         future.get(1, SECONDS)
-                        throw new ExitException(0, "found done of handler thread: ${future}")
+                        throw new GroovyServerExitException(ExitStatus.SUCCESS.code, "found done of handler thread: ${future}")
                     } catch (TimeoutException e) {
                         // next future
                     }

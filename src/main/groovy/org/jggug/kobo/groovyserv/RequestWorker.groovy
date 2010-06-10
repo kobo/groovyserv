@@ -34,6 +34,7 @@ class RequestWorker {
 
     private static final int THREAD_COUNT = 3
 
+    private String id
     private ClientConnection conn
     private Executor executor
     private Future processFuture
@@ -41,11 +42,12 @@ class RequestWorker {
     private Future monitorFuture
 
     RequestWorker(cookie, socket) {
-        def threadGroup = new ThreadGroup("GroovyServ:${socket.port}") // for stream management
+        this.id = "GroovyServ:RequestWorker:${socket.port}"
+        def threadGroup = new ThreadGroup(id) // for stream management
         this.conn = new ClientConnection(cookie, socket, threadGroup)
         this.executor = Executors.newFixedThreadPool(THREAD_COUNT, new ThreadFactory() {
             Thread newThread(Runnable worker) {
-                new Thread(threadGroup, worker) // TODO it needs cancellable sub-class of Thread class
+                new Thread(threadGroup, worker)
             }
         })
     }
@@ -64,11 +66,13 @@ class RequestWorker {
             // this method call makes a reservation of shutdown a thread pool without directly interrupt.
             // when all tasks will finish, executor will be shut down.
             executor.shutdown()
+            DebugUtils.verboseLog("request worker is started: ${id}")
         }
     }
 
     void stop() {
         monitorFuture.cancel(true)
+        DebugUtils.verboseLog("request worker is cancelled: ${id}")
     }
 
     class ExitMonitorHandler implements Runnable {
@@ -87,19 +91,23 @@ class RequestWorker {
             setupThreadName()
             try {
                 IOUtils.awaitFutures([processFuture, streamFuture])
-                conn.sendExit(0)
+                conn.sendExit(ExitStatus.SUCCESS.code)
             }
             catch (InterruptedException e) {
                 DebugUtils.verboseLog("thread is interrupted: ${id}: ${e.message}") // unused details of exception
-                conn.sendExit(1)
+                conn.sendExit(ExitStatus.INTERRUPTED.code)
             }
-            catch (ExitException e) {
-                DebugUtils.verboseLog("worker thread exited: ${e.exitStatus}: ${id}: ${e.message}") // unused details of exception
+            catch (GroovyServerExitException e) {
+                DebugUtils.verboseLog("exited: ${id}: ${e}") // depends on e.toString()
+                conn.sendExit(e.exitStatus)
+            }
+            catch (GroovyServerException e) {
+                DebugUtils.errLog("error: ${id}: ${e}") // depends on e.toString()
                 conn.sendExit(e.exitStatus)
             }
             catch (Throwable e) {
                 DebugUtils.errLog("unexpected error: ${id}", e)
-                conn.sendExit(2)
+                conn.sendExit(ExitStatus.UNEXPECTED_ERROR.code)
             }
             finally {
                 processFuture.cancel(true)
