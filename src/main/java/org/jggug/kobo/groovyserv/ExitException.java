@@ -13,15 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jggug.kobo.groovyserv;
 
+
+/**
+ * @author UEHARA Junji
+ * @author NAKANO Yasuharu
+ */
 public class ExitException extends RuntimeException {
 
-    int exitStatus;
+    private int exitStatus;
 
-    public ExitException(int stat, String msg) {
-        super(msg);
-        exitStatus = stat;
+    public ExitException(int status, String message) {
+        super(message);
+        this.exitStatus = status;
     }
+
+    public int getExitStatus() {
+        return exitStatus;
+    }
+
 }
