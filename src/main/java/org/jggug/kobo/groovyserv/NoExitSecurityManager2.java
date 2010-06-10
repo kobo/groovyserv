@@ -15,46 +15,21 @@
  */
 package org.jggug.kobo.groovyserv;
 
-import java.security.Permission;
+import org.codehaus.groovy.tools.shell.util.NoExitSecurityManager;
+
 
 /**
- * Custom security manager to {@link System#exit} (and related) from being used.
- * Based on org.codehaus.groovy.tools.shell.util.NoExitSecurityManager at Rev: 13768
- *
- * @version $Rev: 13768 $ $Date: 2008-10-17 14:41:08 +0200 (Fr, 17. Okt 2008) $
+ * @author UEHARA Junji
+ * @author NAKANO Yasuharu
  */
-public class NoExitSecurityManager2 extends SecurityManager {
-
-    private final SecurityManager parent;
-
-    public NoExitSecurityManager2(final SecurityManager parent) {
-        this.parent = parent;
-    }
-
-    public NoExitSecurityManager2() {
-        this(System.getSecurityManager());
-    }
-
-    public void checkPermission(final Permission perm) {
-        if (parent != null) {
-            parent.checkPermission(perm);
-        }
-    }
+public class NoExitSecurityManager2 extends NoExitSecurityManager {
 
     /**
      * Always throws {@link ExitException}.
+     * @throws ExitException when System.exit() is called
      */
     public void checkExit(final int code) {
-        throw new ExitException(code, "Use of System.exit() is forbidden!("+code+")");
+        throw new ExitException(code, "called System.exit(" + code + ")");
     }
 
-    /*
-    public void checkPermission(final Permission perm) {
-        assert perm != null;
-
-        if (perm.getName().equals("exitVM")) {
-            System.out.println("exitVM");
-        }
-    }
-    */
 }
