@@ -98,11 +98,11 @@ class RequestWorker {
                 conn.sendExit(ExitStatus.INTERRUPTED.code)
             }
             catch (GroovyServerExitException e) {
-                DebugUtils.verboseLog("exited: ${id}: ${e}") // depends on e.toString()
+                DebugUtils.verboseLog("exited: ${id}: ${e.message}")
                 conn.sendExit(e.exitStatus)
             }
             catch (GroovyServerException e) {
-                DebugUtils.errLog("error: ${id}: ${e}") // depends on e.toString()
+                DebugUtils.errLog("error: ${id}: ${e.exitStatus}: ${e.message}", e)
                 conn.sendExit(e.exitStatus)
             }
             catch (Throwable e) {
