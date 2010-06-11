@@ -31,6 +31,7 @@ import static java.util.concurrent.TimeUnit.*
  */
  class IOUtils {
 
+
     /**
      * @throws Throwable when ExecutionException is occured, throw an inner exception wrapped by ExecutionException
      * @throws CancellationException
@@ -44,33 +45,11 @@ import static java.util.concurrent.TimeUnit.*
         }
     }
 
-    /**
-     * @throws Throwable when ExecutionException is occured, throw an inner exception wrapped by ExecutionException
-     * @throws CancellationException
-     * @throws InterruptedException
-     */
-    static awaitFutures(List<Future> futures) { // FIXME なんかちょっと違うなぁ。プロセスがメイン。ストリームは-1だけに強く依存したい。
-        try {
-            while (true) {
-                futures.each { future ->
-                    try {
-                        future.get(1, SECONDS)
-                        throw new GroovyServerExitException(ExitStatus.SUCCESS.code, "found done of handler thread: ${future}")
-                    } catch (TimeoutException e) {
-                        // next future
-                    }
-                }
-            }
-        } catch (ExecutionException e) {
-            throw e.cause
-        }
-    }
-
     static close(closeable) {
         try {
             if (closeable) closeable.close()
         } catch (IOException e) {
-            DebugUtils.errLog("failed to close", e)
+            DebugUtils.errLog("Failed to close", e)
         }
     }
  

@@ -42,9 +42,6 @@ class StreamRequestHandler implements Runnable {
      * @throws ClientInterruptionException
      *             When interrupted by client request which has a "Size: -1" header.
      *             Acutally this exception is wrapped by ExecutionException.
-     * @throws GroovyServerIOException
-     *             When occured an error on I/O.
-     *             Acutally this exception is wrapped by ExecutionException.
      */
     @Override
     void run() {
@@ -53,16 +50,16 @@ class StreamRequestHandler implements Runnable {
             while (true) {
                 int sizeHeader = getSizeOfHeader()
                 if (sizeHeader == null) {
-                    DebugUtils.verboseLog "required header 'Size' is not specified."
+                    DebugUtils.verboseLog "${id}: 'Size' header is not found"
                     return // not to continue because this is unexpected data
                 }
                 if (sizeHeader == 0) {
-                    DebugUtils.verboseLog "recieved request [Size: 0]"
+                    DebugUtils.verboseLog "${id}: Recieved request header [Size: 0]"
                     continue
                 }
                 if (sizeHeader == -1) {
-                    DebugUtils.verboseLog "recieved request [Size: -1] to interrupt"
-                    throw new ClientInterruptionException("interrupted by client request: [Size: -1]")
+                    DebugUtils.verboseLog "${id}: Recieved request header [Size: -1] to interrupt"
+                    throw new ClientInterruptionException("${id}: Interrupted by client request: [Size: -1]")
                 }
                 def buff = new byte[sizeHeader]
                 int offset = 0
@@ -70,6 +67,7 @@ class StreamRequestHandler implements Runnable {
                 if (result == -1) {
                     // terminate this thread without closing stream.
                     // because to be closed input stream by client doesn't mean termination of session.
+                    DebugUtils.verboseLog "${id}: End of stream"
                     return
                 }
                 readLog(buff, offset, result, sizeHeader)
@@ -77,25 +75,24 @@ class StreamRequestHandler implements Runnable {
             }
         }
         catch (InterruptedException e) {
-            DebugUtils.verboseLog("thread is interrupted: ${id}") // unused exception
+            DebugUtils.verboseLog("${id}: Thread interrupted: ${e.message}") // ignored details
         }
-        catch (SocketException e) {
-            // ignored exception details because passing here is quite general.
-            // bevaving as normal return.
-            DebugUtils.verboseLog("socket is maybe already closed: ${id}")
+        catch (GroovyServerIOException e) {
+            DebugUtils.verboseLog("${id}: I/O error: ${e.message}") // ignored details
+        }
+        catch (InterruptedIOException e) {
+            DebugUtils.verboseLog("${id}: I/O interrupted: ${e.message}") // ignored details
         }
         catch (IOException e) {
-            throw new GroovyServerIOException("i/o error: ${id}", e)
+            DebugUtils.verboseLog("${id}: I/O error: ${e.message}") // ignored details
         }
         finally {
-            DebugUtils.verboseLog("thread is done: ${id}")
+            DebugUtils.verboseLog("${id}: Thread is dead")
         }
     }
 
     @Override
-    String toString() {
-        id
-    }
+    String toString() { id }
 
     private getSizeOfHeader() {
         Map<String, List<String>> headers = conn.readHeaders() // with blocking

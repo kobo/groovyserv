@@ -45,11 +45,11 @@ class GroovyServer {
             startServer()
         }
         catch (GroovyServerException e) {
-            DebugUtils.errLog("error: GroovyServer", e)
+            DebugUtils.errLog("Error: GroovyServer", e)
             System.exit(e.exitStatus)
         }
         catch (Throwable e) {
-            DebugUtils.errLog("unexpected error: GroovyServer", e)
+            DebugUtils.errLog("Unexpected error: GroovyServer", e)
             System.exit(ExitStatus.UNEXPECTED_ERROR.code)
         }
     }
@@ -74,23 +74,19 @@ class GroovyServer {
     private void startServer() {
         int port = getPortNumber()
         def serverSocket = new ServerSocket(port)
-        DebugUtils.verboseLog "accepting server socket: ${port}"
+        DebugUtils.verboseLog "Accepting server socket: ${port}"
         while (true) {
             def socket = serverSocket.accept()
-            DebugUtils.verboseLog "recieved socket: ${socket}"
+            DebugUtils.verboseLog "Recieved socket: ${socket}"
             if (!socket.localSocketAddress.address.isLoopbackAddress()) { // only from localhost
-                DebugUtils.errLog "cannot accept except loopback address: ${socket}"
+                DebugUtils.errLog "Cannot accept except loopback address: ${socket}"
                 continue
             }
-            DebugUtils.verboseLog "accepted socket: ${socket}"
+            DebugUtils.verboseLog "Accepted socket: ${socket}"
 
             // this socket will be closed under a responsibility of RequestWorker
-            try {
-                new RequestWorker(cookie, socket).start()
-                DebugUtils.verboseLog "dispatched to request worker: ${socket}" 
-            } catch (GroovyServerException e) {
-                DebugUtils.errLog "failed to invoke request worker: ${socket}", e
-            }
+            new RequestWorker(cookie, socket).start()
+            DebugUtils.verboseLog "Dispatched to request worker: ${socket}" 
         }
     }
 

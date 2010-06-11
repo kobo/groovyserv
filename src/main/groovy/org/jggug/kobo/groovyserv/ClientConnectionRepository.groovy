@@ -30,13 +30,13 @@ class ClientConnectionRepository {
 
     void bind(ThreadGroup tg, ClientConnection connection) {
         connectionPerThreadGroup[tg] = connection
-        DebugUtils.verboseLog "client connection is bound: ${connection.socket.port} to ${tg.name}"
+        DebugUtils.verboseLog "Client connection is bound: ${connection.socket.port} to ${tg.name}"
     }
 
     void unbind(ThreadGroup tg) {
         def connection = connectionPerThreadGroup.remove(tg)
         if (connection) {
-            DebugUtils.verboseLog "client connection is unbound: ${connection.socket.port} from ${tg.name}"
+            DebugUtils.verboseLog "Client connection is unbound: ${connection.socket.port} from ${tg.name}"
         }
     }
 

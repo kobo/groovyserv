@@ -26,12 +26,22 @@ class StreamRequestInputStream extends InputStream {
 
     @Override
     public int read() {
-        return currentInputStream.read()
+        try {
+            return currentInputStream.read()
+        } catch (InterruptedIOException e) {
+            DebugUtils.verboseLog("StreamRequestInputStream:read(): Interrupted I/O")
+            return -1
+        }
     }
 
     @Override
     public int read(byte[] buf, int offset, int length) {
-        return currentInputStream.read(buf, offset, length)
+        try {
+            return currentInputStream.read(buf, offset, length)
+        } catch (InterruptedIOException e) {
+            DebugUtils.verboseLog("StreamRequestInputStream:read(byte[], int, int): Interrupted I/O")
+            return -1
+        }
     }
 
     @Override

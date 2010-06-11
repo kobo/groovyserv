@@ -71,6 +71,7 @@ package org.jggug.kobo.groovyserv
  */
 class ClientConnection implements Closeable {
 
+    private String id
     private Cookie cookie
     private Socket socket
     private ThreadGroup ownerThreadGroup
@@ -78,6 +79,7 @@ class ClientConnection implements Closeable {
     private PipedInputStream pipedInputStream   // connected to socket.inputStream indirectly via pipedInputStream
 
     ClientConnection(cookie, socket, ownerThreadGroup) {
+    this.id = "GroovyServ:ClientConnection:${socket.port}"
         this.cookie = cookie
         this.socket = socket
         this.ownerThreadGroup = ownerThreadGroup
@@ -101,8 +103,10 @@ class ClientConnection implements Closeable {
         try {
             pipedOutputStream.write(buff, offset, result)
             pipedOutputStream.flush()
+        } catch (InterruptedIOException e) {
+            throw new GroovyServerIOException("${id}: I/O interrupted: Failed to write to piped stream", e)
         } catch (IOException e) {
-            throw new GroovyServerIOException("failed write to piped stream", e)
+            throw new GroovyServerIOException("${id}: I/O error: Failed to write to piped stream", e)
         }
     }
 
@@ -130,25 +134,25 @@ class ClientConnection implements Closeable {
                 flush()
             }
         } catch (IOException e) {
-            throw new GroovyServerIOException("failed write to piped stream", e)
+            throw new GroovyServerIOException("${id}: I/O error: failed to send exit status", e)
         }
     }
 
     /**
-     * to close socket and tear down some relational environment.
+     * To close socket and tear down some relational environment.
      */
     void close() {
         ClientConnectionRepository.instance.unbind(ownerThreadGroup)
         if (pipedInputStream) {
             IOUtils.close(pipedInputStream)
-            DebugUtils.verboseLog "piped stream to transfer is closed: ${socket.port}"
+            DebugUtils.verboseLog "${id}: Piped stream closed"
             pipedInputStream = null
         }
         if (socket) {
             // closing output stream because it needs to flush.
             // socket and socket.inputStream are also closed by closing output stream which is gotten from socket.
             IOUtils.close(socket.outputStream)
-            DebugUtils.verboseLog "socket is closed: ${socket.port}"
+            DebugUtils.verboseLog "${id}: Socket closed"
             socket = null
         }
     }
@@ -196,13 +200,13 @@ class ClientConnection implements Closeable {
         parseHeaders(socket.inputStream) // read from socket directly
     }
 
-    private static Map<String, List<String>> parseHeaders(InputStream ins) { // FIXME
+    private Map<String, List<String>> parseHeaders(InputStream ins) { // FIXME
         def headers = [:]
         def line
         while ((line = readLine(ins)) != "") { // until a first empty line
             def tokens = line.split(':', 2)
             if (tokens.size() != 2) {
-                throw new InvalidRequestHeaderException("found an invalid header line: ${line}")
+                throw new InvalidRequestHeaderException("${id}: Found invalid header line: ${line}")
             }
             def (key, value) = tokens
             if (!headers.containsKey(key)) {
@@ -213,11 +217,11 @@ class ClientConnection implements Closeable {
             }
             headers[key] += value
         }
-        DebugUtils.verboseLog "parsed headers: ${headers}"
+        DebugUtils.verboseLog "${id}: Parsed headers: ${headers}"
         headers
     }
 
-    private static readLine(InputStream is) { // FIXME maybe this is able to be replaced by default API
+    private readLine(InputStream is) { // FIXME maybe this is able to be replaced by default API
         try {
             def baos = new ByteArrayOutputStream()
             int ch
@@ -228,8 +232,10 @@ class ClientConnection implements Closeable {
                 baos.write((byte) ch)
             }
             return baos.toString()
+        } catch (InterruptedIOException e) {
+            throw new GroovyServerIOException("${id}: I/O interrupted: interrupted while reading line", e)
         } catch (IOException e) {
-            throw new GroovyServerIOException("failed to read from input stream of socket", e)
+            throw new GroovyServerIOException("${id}: I/O error: failed to read line: ${e.message}", e)
         }
     }
 

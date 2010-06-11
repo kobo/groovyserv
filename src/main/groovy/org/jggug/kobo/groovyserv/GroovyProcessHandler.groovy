@@ -47,22 +47,20 @@ class GroovyProcessHandler implements Runnable {
             setupClasspath(request)
             process(request.args)
             //awaitAllSubThreads()
-            Thread.sleep 1000 // FIXME dirty impl to pass ThreadTest
+            Thread.sleep 100 // FIXME dirty impl to pass ThreadTest
         }
         catch (InterruptedException e) {
-            DebugUtils.verboseLog("thread is interrupted: ${id}") // unused exception
+            DebugUtils.verboseLog("${id}: Thread interrupted") // unused exception
         }
         finally {
             //killAllSubThreads()
             CurrentDirHolder.instance.reset()
-            DebugUtils.verboseLog("thread is done: ${id}")
+            DebugUtils.verboseLog("${id}: Thread is done")
         }
     }
 
     @Override
-    String toString() {
-        id
-    }
+    String toString() { id }
 
     private static setupClasspath(request) {
         ClasspathUtils.addClasspath(request.classpath)
@@ -70,7 +68,7 @@ class GroovyProcessHandler implements Runnable {
             String opt = it.next()
             if (opt == "-cp") {
                 if (!it.hasNext()) {
-                    throw new InvalidRequestHeaderException("classpath option is invalid.")
+                    throw new InvalidRequestHeaderException("Invalid classpath option: ${request.args}")
                 }
                 String classpath = it.next()
                 ClasspathUtils.addClasspath(classpath)
@@ -98,8 +96,7 @@ class GroovyProcessHandler implements Runnable {
             if (threads[i] != Thread.currentThread() && threads[i].isAlive()) {
                 if (threads[i].isDaemon()) {
                     threads[i].interrupt()
-                }
-                else {
+                } else {
                     threads[i].interrupt()
                     threads[i].join()
                 }

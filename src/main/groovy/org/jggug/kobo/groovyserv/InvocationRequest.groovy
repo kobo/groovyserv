@@ -48,14 +48,14 @@ class InvocationRequest {
 
     private checkHeaders(headers, conn) {
         if (!cwd) {
-            throw new InvalidRequestHeaderException("required header 'Cwd' is not specified.")
+            throw new InvalidRequestHeaderException("'Cwd' header is not found: ${port}")
         }
         if (!cookie || !conn.cookie.isValid(cookie)) {
             Thread.sleep(5000) // to prevent from brute force atack
-            throw new InvalidRequestHeaderException("authentication failed. cookie is unmatched: ${cookie} <=> ${conn.cookie.token}")
+            throw new InvalidRequestHeaderException("Authentication failed. Cookie is unmatched: ${cookie} <=> ${conn.cookie.token}")
         }
         if (!args) {
-            throw new InvalidRequestHeaderException("required header 'Args' is not specified.")
+            throw new InvalidRequestHeaderException("'Args' header is not found: ${port}")
         }
     }
 
