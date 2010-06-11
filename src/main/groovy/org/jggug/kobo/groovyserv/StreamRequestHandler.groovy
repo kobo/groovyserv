@@ -38,10 +38,6 @@ class StreamRequestHandler implements Runnable {
         this.conn = clientConnection
     }
 
-    void setupThreadName() {
-        Thread.currentThread().name = id
-    }
-
     /**
      * @throws ClientInterruptionException
      *             When interrupted by client request which has a "Size: -1" header.
@@ -52,7 +48,7 @@ class StreamRequestHandler implements Runnable {
      */
     @Override
     void run() {
-        setupThreadName()
+        Thread.currentThread().name = id
         try {
             while (true) {
                 int sizeHeader = getSizeOfHeader()

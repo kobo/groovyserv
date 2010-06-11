@@ -31,10 +31,6 @@ class GroovyProcessHandler implements Runnable {
         this.request = request
     }
 
-    private void setupThreadName() {
-        Thread.currentThread().name = id
-    }
-
     /**
      * @throws GroovyServerExitException
      *              When user code called System.exit().
@@ -45,7 +41,7 @@ class GroovyProcessHandler implements Runnable {
      */
     @Override
     void run() {
-        setupThreadName()
+        Thread.currentThread().name = id
         try {
             CurrentDirHolder.instance.setDir(request.cwd)
             setupClasspath(request)

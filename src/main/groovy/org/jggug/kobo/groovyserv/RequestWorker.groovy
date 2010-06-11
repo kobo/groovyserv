@@ -82,13 +82,9 @@ class RequestWorker {
             this.id = "GroovyServ:ExitMonitorHandler:${conn.socket.port}"
         }
 
-        private void setupThreadName() {
-            Thread.currentThread().name = id
-        }
-
         @Override
         void run() {
-            setupThreadName()
+            Thread.currentThread().name = id
             try {
                 IOUtils.awaitFutures([processFuture, streamFuture])
                 conn.sendExit(ExitStatus.SUCCESS.code)
