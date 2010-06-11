@@ -59,6 +59,11 @@ class GroovyProcessHandler implements Runnable {
         }
     }
 
+    @Override
+    String toString() {
+        id
+    }
+
     private static setupClasspath(request) {
         ClasspathUtils.addClasspath(request.classpath)
         for (def it = request.args.iterator(); it.hasNext(); ) {

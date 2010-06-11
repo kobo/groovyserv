@@ -92,6 +92,11 @@ class StreamRequestHandler implements Runnable {
         }
     }
 
+    @Override
+    String toString() {
+        id
+    }
+
     private getSizeOfHeader() {
         Map<String, List<String>> headers = conn.readHeaders() // with blocking
         def sizeHeader = headers[HEADER_SIZE]?.getAt(0)
