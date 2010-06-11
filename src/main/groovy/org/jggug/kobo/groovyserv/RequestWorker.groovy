@@ -70,11 +70,6 @@ class RequestWorker {
         }
     }
 
-    void stop() {
-        monitorFuture.cancel(true)
-        DebugUtils.verboseLog("request worker is cancelled: ${id}")
-    }
-
     class ExitMonitorHandler implements Runnable {
         private String id
 
