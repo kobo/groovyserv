@@ -49,7 +49,7 @@ class DebugUtils {
         def pw = new PrintWriter(sw)
         pw.println message
         if (e) {
-            pw << "---> " << stackTrace(e)
+            pw << "---> " << formatStackTrace(e)
         }
         sw.toString().trim()
     }
@@ -64,9 +64,19 @@ class DebugUtils {
         System.getProperty("groovyserver.verbose") == "true"  // TODO Boolean.valueOf
     }
 
-    private static String stackTrace(e) {
+    private static String formatStackTrace(e) {
         def sw = new StringWriter()
         e.printStackTrace(new PrintWriter(sw))
+        sanitizeStackTrace(sw.toString())
+    }
+
+    private static String sanitizeStackTrace(string) {
+       def sw = new StringWriter()
+       string.eachLine { line ->
+            if (line =~ /at (sun\.|org.codehaus.groovy)/) return
+            sw.println line
+        }
+        sw.print("\t(sanitized)")
         sw.toString()
     }
 
