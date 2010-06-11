@@ -88,6 +88,10 @@ class RequestWorker {
                 DebugUtils.verboseLog("thread is interrupted: ${id}: ${e.message}") // unused details of exception
                 conn.sendExit(ExitStatus.INTERRUPTED.code)
             }
+            catch (ClientInterruptionException e) {
+                DebugUtils.verboseLog("interrupted by client: ${id}: ${e.message}")
+                conn.sendExit(e.exitStatus)
+            }
             catch (GroovyServerExitException e) {
                 DebugUtils.verboseLog("exited: ${id}: ${e.message}")
                 conn.sendExit(e.exitStatus)
