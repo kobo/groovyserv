@@ -15,37 +15,39 @@
  */
 package org.jggug.kobo.groovyserv
 
+import java.util.concurrent.ThreadPoolExecutor
+import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.ThreadFactory
 import java.util.concurrent.Executors
 import java.util.concurrent.Executor
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.Future
 import java.util.concurrent.TimeoutException
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.CancellationException
-
-import static java.util.concurrent.TimeUnit.*
 
 
 /**
  * @author UEHARA Junji
  * @author NAKANO Yasuharu
  */
-class RequestWorker {
+class RequestWorker extends ThreadPoolExecutor {
 
     private static final int THREAD_COUNT = 3
 
     private String id
     private ClientConnection conn
-    private Executor executor
     private Future processFuture
     private Future streamFuture
     private Future monitorFuture
 
     RequestWorker(cookie, socket) {
+        // API: ThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue) 
+        super(THREAD_COUNT, THREAD_COUNT, 0, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>())
         this.id = "GroovyServ:RequestWorker:${socket.port}"
         def threadGroup = new ThreadGroup(id) // for stream management
         this.conn = new ClientConnection(cookie, socket, threadGroup)
-        this.executor = Executors.newFixedThreadPool(THREAD_COUNT, new ThreadFactory() {
+        setThreadFactory(new ThreadFactory() {
             Thread newThread(Runnable worker) {
                 new Thread(threadGroup, worker)
             }
@@ -59,15 +61,25 @@ class RequestWorker {
     void start() {
         try {
             def request = conn.openSession()
-            processFuture = executor.submit(new GroovyProcessHandler(request))
-            streamFuture  = executor.submit(new StreamRequestHandler(conn))
-            monitorFuture = executor.submit(new ExitMonitorHandler())
+            processFuture = submit(new GroovyProcessHandler(request))
+            streamFuture  = submit(new StreamRequestHandler(conn))
+            monitorFuture = submit(new ExitMonitorHandler())
         } finally {
             // this method call makes a reservation of shutdown a thread pool without directly interrupt.
             // when all tasks will finish, executor will be shut down.
-            executor.shutdown()
+            shutdown()
             DebugUtils.verboseLog("request worker is started: ${id}")
         }
+    }
+
+    protected void beforeExecute(Thread thread, Runnable runnable) {
+        DebugUtils.verboseLog("beforeExecute: ${thread}: ${runnable['id']}")
+    }
+    protected void afterExecute(Runnable runnable, Throwable t) {
+        DebugUtils.verboseLog("afterExecute: ${runnable['id']}")
+    }
+    protected void terminated() {
+        DebugUtils.verboseLog("terminated: ${id}")
     }
 
     class ExitMonitorHandler implements Runnable {
