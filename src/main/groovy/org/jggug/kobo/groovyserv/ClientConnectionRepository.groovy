@@ -30,24 +30,32 @@ class ClientConnectionRepository {
 
     void bind(ThreadGroup tg, ClientConnection connection) {
         connectionPerThreadGroup[tg] = connection
-        DebugUtils.verboseLog "Client connection is bound: ${connection.socket.port} to ${tg.name}"
+        DebugUtils.verboseLog "ClientConnectionRepository: Client connection is bound: ${connection.socket.port} to ${tg.name}"
     }
 
     void unbind(ThreadGroup tg) {
         def connection = connectionPerThreadGroup.remove(tg)
         if (connection) {
-            DebugUtils.verboseLog "Client connection is unbound: ${connection.socket.port} from ${tg.name}"
+            DebugUtils.verboseLog "ClientConnectionRepository: Client connection is unbound: ${connection.socket.port} from ${tg.name}"
         }
     }
 
     ClientConnection getCurrentConnection() {
-        check(connectionPerThreadGroup[currentThread().threadGroup])
+        def currentThread = currentThread()
+        check(findConnection(currentThread.threadGroup), currentThread)
     }
 
-    private static check(connection) {
+    private ClientConnection findConnection(threadGroup) {
+        def conn = connectionPerThreadGroup[threadGroup]
+        if (conn) {
+            return conn
+        }
+        return findConnection(threadGroup.parent)
+    }
+
+    private static check(connection, currentThread) {
         if (connection == null) {
-            def thread = currentThread()
-            throw new GroovyServerIllegalStateException("This thread cannot access to standard streams: ${thread}")
+            throw new GroovyServerIllegalStateException("ClientConnectionRepository: This thread cannot access to standard streams: ${currentThread}")
         }
         return connection
     }

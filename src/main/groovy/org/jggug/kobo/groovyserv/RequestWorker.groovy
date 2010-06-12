@@ -23,6 +23,7 @@ import java.util.concurrent.Future
 import java.util.concurrent.CancellationException
 import java.util.concurrent.RunnableFuture
 import java.util.concurrent.FutureTask
+import java.util.concurrent.atomic.AtomicInteger
 
 
 /**
@@ -46,9 +47,15 @@ class RequestWorker extends ThreadPoolExecutor {
         def threadGroup = new ThreadGroup("GroovyServ:ThreadGroup:${socket.port}")
         this.conn = new ClientConnection(cookie, socket, threadGroup)
 
-        // for management sub threads in process handler
+        // for management sub threads in process handler.
         setThreadFactory(new ThreadFactory() {
-            Thread newThread(Runnable worker) { new Thread(threadGroup, worker) }
+            def index = new AtomicInteger(0)
+            Thread newThread(Runnable runnable) {
+                // giving individual sub thread group for each thread
+                // in order to kill process handler's sub threads which were started in user scripts.
+                def subThreadGroup = new ThreadGroup(threadGroup, "GroovyServ:ThreadGroup:${socket.port}:${index.getAndIncrement()}")
+                new Thread(subThreadGroup, runnable)
+            }
         })
     }
 

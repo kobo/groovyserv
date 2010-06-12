@@ -79,7 +79,7 @@ class ClientConnection implements Closeable {
     private PipedInputStream pipedInputStream   // connected to socket.inputStream indirectly via pipedInputStream
 
     ClientConnection(cookie, socket, ownerThreadGroup) {
-    this.id = "GroovyServ:ClientConnection:${socket.port}"
+    this.id = "ClientConnection:${socket.port}"
         this.cookie = cookie
         this.socket = socket
         this.ownerThreadGroup = ownerThreadGroup
