@@ -21,7 +21,7 @@ import groovy.util.GroovyTestCase
 /**
  * Test by using socket directly
  */
-class DirectlyAccessIT extends GroovyTestCase {
+class DirectAccessIT extends GroovyTestCase {
 
     void testOnlyInvocationRequest() {
         new Socket("localhost", 1961).withStreams { ins, out ->

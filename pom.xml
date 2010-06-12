@@ -241,6 +241,21 @@
         </configuration>
         <executions>
           <execution>
+            <id>integration-test-direct</id>
+            <phase>integration-test</phase>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+            <configuration>
+              <test>DirectAccessIT</test>
+              <environmentVariables>
+                <GROOVYSERV_HOME>${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}</GROOVYSERV_HOME>
+              </environmentVariables>
+              <reportsDirectory>${project.build.directory}/failsafe-reports/direct</reportsDirectory>
+            </configuration>
+          </execution>
+          <execution>
             <id>integration-test-c</id>
             <phase>integration-test</phase>
             <goals>
@@ -248,6 +263,9 @@
               <goal>verify</goal>
             </goals>
             <configuration>
+              <excludes>
+                <exclude>**/DirectAccessIT*</exclude>
+              </excludes>
               <environmentVariables>
                 <GROOVYSERV_HOME>${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}</GROOVYSERV_HOME>
               </environmentVariables>
@@ -265,6 +283,9 @@
               <goal>verify</goal>
             </goals>
             <configuration>
+              <excludes>
+                <exclude>**/DirectAccessIT*</exclude>
+              </excludes>
               <environmentVariables>
                 <GROOVYSERV_HOME>${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}</GROOVYSERV_HOME>
               </environmentVariables>
