@@ -23,6 +23,8 @@ import java.util.concurrent.Callable
  */
 class GroovyProcessHandler implements Runnable {
 
+    private static final THREAD_JOIN_TIMEOUT = 1000 // msec
+
     private String id
     private InvocationRequest request
 
@@ -46,16 +48,16 @@ class GroovyProcessHandler implements Runnable {
             CurrentDirHolder.instance.setDir(request.cwd)
             setupClasspath(request)
             process(request.args)
-            //awaitAllSubThreads()
-            Thread.sleep 100 // FIXME dirty impl to pass ThreadTest
+            awaitAllSubThreads()
+            interruptAllSubThreads()
         }
         catch (InterruptedException e) {
             DebugUtils.verboseLog("${id}: Thread interrupted") // unused exception
         }
         finally {
-            //killAllSubThreads()
+            killAllSubThreads()
             CurrentDirHolder.instance.reset()
-            DebugUtils.verboseLog("${id}: Thread is done")
+            DebugUtils.verboseLog("${id}: Thread is dead")
         }
     }
 
@@ -84,24 +86,36 @@ class GroovyProcessHandler implements Runnable {
         }
     }
 
-    private awaitAllSubThreads() { // FIXME
+    private awaitAllSubThreads() {
+        getAllAliveSubThreads().each { thread ->
+            if (!thread.isDaemon()) thread.join(THREAD_JOIN_TIMEOUT)
+        }
+    }
+
+    private interruptAllSubThreads() {
+        getAllAliveSubThreads().each { thread ->
+            thread.interrupt()
+            if (!thread.isDaemon()) thread.join(THREAD_JOIN_TIMEOUT)
+        }
+    }
+
+    private killAllSubThreads() {
+        getAllAliveSubThreads().each { thread ->
+            thread.stop() // FORCELY
+        }
+    }
+
+    private getAllAliveSubThreads() {
         def threadGroup = Thread.currentThread().threadGroup
-        Thread[] threads = new Thread[threadGroup.activeCount()]
-        int tcount = threadGroup.enumerate(threads)
-        while (tcount != threads.size()) {
-            threads = new Thread[threadGroup.activeCount()]
-            tcount = threadGroup.enumerate(threads)
+        Thread[] threads = new Thread[threadGroup.activeCount() + 1] // need at lease one extra space (see Javadoc of ThreadGroup)
+        int count = threadGroup.enumerate(threads)
+        if (count < threads.size()) {
+            // convert to list for convenience except own thread
+            def list = (threads as List).findAll{ it && it != Thread.currentThread() }
+            DebugUtils.verboseLog("${id}: Found ${list.size()} sub thread(s): ${list}")
+            return list
         }
-        for (int i = 0; i < threads.size(); i++) {
-            if (threads[i] != Thread.currentThread() && threads[i].isAlive()) {
-                if (threads[i].isDaemon()) {
-                    threads[i].interrupt()
-                } else {
-                    threads[i].interrupt()
-                    threads[i].join()
-                }
-            }
-        }
+        return getAllAliveSubThreads()
     }
 
 }
