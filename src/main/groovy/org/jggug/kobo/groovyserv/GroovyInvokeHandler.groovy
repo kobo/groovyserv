@@ -21,15 +21,15 @@ import java.util.concurrent.Callable
 /**
  * @author NAKANO Yasuharu
  */
-class GroovyProcessHandler implements Runnable {
+class GroovyInvokeHandler implements Runnable {
 
     private static final THREAD_JOIN_TIMEOUT = 1000 // msec
 
     private String id
     private InvocationRequest request
 
-    GroovyProcessHandler(request) {
-        this.id = "GroovyServ:GroovyProcessHandler:${request.port}"
+    GroovyInvokeHandler(request) {
+        this.id = "GroovyServ:GroovyInvokeHandler:${request.port}"
         this.request = request
     }
 
@@ -47,7 +47,7 @@ class GroovyProcessHandler implements Runnable {
         try {
             CurrentDirHolder.instance.setDir(request.cwd)
             setupClasspath(request)
-            process(request.args)
+            invokeGroovy(request.args)
             awaitAllSubThreads()
             interruptAllSubThreads()
         }
@@ -78,7 +78,7 @@ class GroovyProcessHandler implements Runnable {
         }
     }
 
-    private static process(args) {
+    private static invokeGroovy(args) {
         try {
             GroovyMain2.main(args as String[])
         } catch (SystemExitException e) {
