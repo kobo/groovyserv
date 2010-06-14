@@ -239,5 +239,8 @@ class ClientConnection implements Closeable {
         }
     }
 
+    @Override
+    String toString() { id }
+
 }
 
