@@ -41,14 +41,19 @@ class ClientConnectionRepository {
     }
 
     ClientConnection getCurrentConnection() {
-        def currentThread = currentThread()
-        check(findConnection(currentThread.threadGroup), currentThread)
+        def thread = currentThread()
+        check(findConnection(thread.threadGroup), thread)
     }
 
     private ClientConnection findConnection(threadGroup) {
         def conn = connectionPerThreadGroup[threadGroup]
         if (conn) {
+            DebugUtils.verboseLog("ClientConnectionRepository: Found client connection: ${threadGroup}: ${conn}")
             return conn
+        }
+        if (threadGroup.parent == null) {
+            DebugUtils.verboseLog("ClientConnectionRepository: Not found client connection: ${threadGroup}")
+            return null
         }
         return findConnection(threadGroup.parent)
     }
