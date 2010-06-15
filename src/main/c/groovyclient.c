@@ -225,10 +225,10 @@ char* find_header(struct header_t headers[], const char* key, int nhdrs) {
  */
 int split_socket_output(FILE* soc_stream, char* stream_identifier, int size) {
   int output_fd;
-  if (strcmp(stream_identifier, "o") == 0) {
+  if (strcmp(stream_identifier, "out") == 0) {
     output_fd = 1; /* stdout */
   }
-  else if (strcmp(stream_identifier, "e") == 0) {
+  else if (strcmp(stream_identifier, "err") == 0) {
     output_fd = 2; /* stderr */
   }
   else {
@@ -283,7 +283,7 @@ int send_to_server(FILE* soc_stream)
  * to the server. copy input data from stdin to server, and
  * copy received data from the server to stdout/stderr.
  * destination of output is stdout or stderr are distinguished by
- * stream identifier(sid) header is 'o' or 'e'.
+ * stream identifier(sid) header is 'out' or 'err'.
  */
 int session(int fd)
 {

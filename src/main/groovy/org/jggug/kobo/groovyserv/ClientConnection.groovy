@@ -59,8 +59,8 @@ package org.jggug.kobo.groovyserv
  *
  *   where:
  *     <status> is exit status of invoked groovy script.
- *     <id> is 'o' or 'e', where 'o' means standard output of the program.
- *          'e' means standard error of the program.
+ *     <id> is 'out' or 'err', where 'out' means standard output of the program.
+ *          'err' means standard error of the program.
  *     <size> is the size of chunk.
  *     <data from STDERR/STDOUT> is byte sequence from standard output/error.
  *
@@ -170,7 +170,7 @@ class ClientConnection implements Closeable {
 
     static byte[] formatAsResponseHeader(streamId, size) {
         def header = [:]
-        header[HEADER_STREAM_ID] = streamId as char
+        header[HEADER_STREAM_ID] = streamId
         header[HEADER_SIZE] = size
         formatAsHeader(header)
     }

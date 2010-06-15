@@ -71,9 +71,9 @@ def handle_socket(socket)
   data = socket.read(headers['Size'].to_i)
   return unless data
 
-  if headers['Channel'] == 'o'
+  if headers['Channel'] == 'out'
     $stdout.print data
-  elsif headers['Channel'] == 'e'
+  elsif headers['Channel'] == 'err'
     $stderr.print data
   end
 end

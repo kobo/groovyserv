@@ -35,10 +35,10 @@ Cookie: ${FileUtils.COOKIE_FILE.text}
 """
 // ------------------------
 assert ins.text == """\
-Channel: o
+Channel: out
 Size: 5
 
-helloChannel: o
+helloChannel: out
 Size: 1
 
 
@@ -69,10 +69,10 @@ A
 Thread.sleep(500)
 // ------------------------
 assert ins.availableText == """\
-Channel: o
+Channel: out
 Size: 2
 
-AAChannel: o
+AAChannel: out
 Size: 1
 
 
@@ -87,10 +87,10 @@ B
 Thread.sleep(500)
 // ------------------------
 assert ins.availableText == """\
-Channel: o
+Channel: out
 Size: 2
 
-BBChannel: o
+BBChannel: out
 Size: 1
 
 

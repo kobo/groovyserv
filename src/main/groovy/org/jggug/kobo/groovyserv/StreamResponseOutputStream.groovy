@@ -29,11 +29,11 @@ class StreamResponseOutputStream extends OutputStream {
     private StreamResponseOutputStream() { /* preventing from instantiation */ }
 
     static StreamResponseOutputStream newOut() {
-        new StreamResponseOutputStream(streamId:'o')
+        new StreamResponseOutputStream(streamId:'out')
     }
 
     static StreamResponseOutputStream newErr() {
-        new StreamResponseOutputStream(streamId:'e')
+        new StreamResponseOutputStream(streamId:'err')
     }
 
     @Override
