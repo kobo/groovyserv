@@ -46,6 +46,7 @@ class StreamRequestHandler implements Runnable {
     @Override
     void run() {
         Thread.currentThread().name = id
+        DebugUtils.verboseLog("${id}: Thread started")
         try {
             while (true) {
                 int sizeHeader = getSizeOfHeader()

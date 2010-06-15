@@ -42,7 +42,11 @@ class ClientConnectionRepository {
 
     ClientConnection getCurrentConnection() {
         def thread = currentThread()
-        check(findConnection(thread.threadGroup), thread)
+        def connection = findConnection(thread.threadGroup)
+        if (connection == null) {
+            throw new GroovyServerIllegalStateException("ClientConnectionRepository: Not found client connection: ${thread}")
+        }
+        return connection
     }
 
     private ClientConnection findConnection(threadGroup) {
@@ -52,17 +56,9 @@ class ClientConnectionRepository {
             return conn
         }
         if (threadGroup.parent == null) {
-            DebugUtils.verboseLog("ClientConnectionRepository: Not found client connection: ${threadGroup}")
             return null
         }
         return findConnection(threadGroup.parent)
-    }
-
-    private static check(connection, currentThread) {
-        if (connection == null) {
-            throw new GroovyServerIllegalStateException("ClientConnectionRepository: This thread cannot access to standard streams: ${currentThread}")
-        }
-        return connection
     }
 
 }

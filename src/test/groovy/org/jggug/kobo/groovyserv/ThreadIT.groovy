@@ -39,4 +39,40 @@ class ThreadIT extends GroovyTestCase {
         )
     }
 
+    void testInfinteLoopInThread_Interruptable() {
+        def script = """\
+            Thread.start {
+                println("started")
+                while (true) {
+                    Thread.sleep 100
+                }
+                println("end")
+            }
+            Thread.sleep 1000
+            Thread.currentThread().interrupt()
+        """.replaceAll(/\n/, '; ').replaceAll(/ +/, ' ').trim()
+        assertEquals(
+            'started' + NL,
+            TestUtils.executeClientOk(["-e", "$script"]).text
+        )
+    }
+
+    void testInfinteLoopInThread_Uninterruptable() {
+        def script = """\
+            Thread.start {
+                println("started")
+                while (true) {
+                    /* cannot interruptable */
+                }
+                println("end")
+            }
+            Thread.sleep 1000
+            Thread.currentThread().interrupt()
+        """.replaceAll(/\n/, '; ').replaceAll(/ +/, ' ').trim()
+        assertEquals(
+            'started' + NL,
+            TestUtils.executeClientOk(["-e", "$script"]).text
+        )
+    }
+
 }

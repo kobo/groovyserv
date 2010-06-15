@@ -103,10 +103,7 @@ Size: -1
 """
 Thread.sleep(500)
 // ------------------------
-assert ins.availableText == """\
-Status: -1
-
-""".toString()
+assert ins.read() == -1
             }
         }
     }

@@ -38,13 +38,14 @@ class RequestWorker extends ThreadPoolExecutor {
     private ClientConnection conn
     private Future invokeFuture
     private Future streamFuture
+    private boolean cancelledByClient
 
     RequestWorker(cookie, socket) {
         // API: ThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue) 
         super(THREAD_COUNT, THREAD_COUNT, 0, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>())
         this.id = "GroovyServ:RequestWorker:${socket.port}"
 
-        def threadGroup = new ThreadGroup("GroovyServ:ThreadGroup:${socket.port}")
+        def threadGroup = new GroovyServerThreadGroup("GroovyServ:ThreadGroup:${socket.port}")
         this.conn = new ClientConnection(cookie, socket, threadGroup)
 
         // for management sub threads in invoke handler.
@@ -53,7 +54,7 @@ class RequestWorker extends ThreadPoolExecutor {
             Thread newThread(Runnable runnable) {
                 // giving individual sub thread group for each thread
                 // in order to kill invoke handler's sub threads which were started in user scripts.
-                def subThreadGroup = new ThreadGroup(threadGroup, "GroovyServ:ThreadGroup:${socket.port}:${index.getAndIncrement()}")
+                def subThreadGroup = new GroovyServerThreadGroup(threadGroup, "GroovyServ:ThreadGroup:${socket.port}:${index.getAndIncrement()}")
                 new Thread(subThreadGroup, runnable)
             }
         })
@@ -62,8 +63,8 @@ class RequestWorker extends ThreadPoolExecutor {
     void start() {
         try {
             def request = conn.openSession()
-            invokeFuture = submit(new GroovyInvokeHandler(request))
             streamFuture  = submit(new StreamRequestHandler(conn))
+            invokeFuture = submit(new GroovyInvokeHandler(request))
 
             // when all tasks will finish, executor will be shut down.
             shutdown()
@@ -93,13 +94,17 @@ class RequestWorker extends ThreadPoolExecutor {
 
         if (runnable == invokeFuture) {
             DebugUtils.verboseLog("${id}: Invoke handler is dead: ${runnable}", e)
-            conn.sendExit(getExitStatus(runnable))
+            if (!cancelledByClient) {
+                // connection is maybe shuted down by client, so exit status is not sent.
+                conn.sendExit(getExitStatus(runnable))
+            }
             streamFuture.cancel(true)
             closeSafety()
         }
         if (runnable == streamFuture) {
             DebugUtils.verboseLog("${id}: Stream handler is dead: ${runnable}", e)
-            if (isNeedToCancelInvoke(runnable)) {
+            cancelledByClient = isCancelledByClient(runnable)
+            if (cancelledByClient) {
                 invokeFuture.cancel(true)
             }
         }
@@ -144,7 +149,7 @@ class RequestWorker extends ThreadPoolExecutor {
         }
     }
 
-    private isNeedToCancelInvoke(runnable) {
+    private isCancelledByClient(runnable) {
         try {
             IOUtils.awaitFuture(runnable)
         }

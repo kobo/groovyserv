@@ -23,8 +23,6 @@ import java.util.concurrent.Callable
  */
 class GroovyInvokeHandler implements Runnable {
 
-    private static final THREAD_JOIN_TIMEOUT = 1000 // msec
-
     private String id
     private InvocationRequest request
 
@@ -44,18 +42,18 @@ class GroovyInvokeHandler implements Runnable {
     @Override
     void run() {
         Thread.currentThread().name = id
+        DebugUtils.verboseLog("${id}: Thread started")
         try {
             CurrentDirHolder.instance.setDir(request.cwd)
             setupClasspath(request)
             invokeGroovy(request.args)
             awaitAllSubThreads()
-            interruptAllSubThreads()
         }
         catch (InterruptedException e) {
-            DebugUtils.verboseLog("${id}: Thread interrupted") // unused exception
+            DebugUtils.verboseLog("${id}: Thread interrupted")
         }
         finally {
-            killAllSubThreads()
+            killAllSubThreadsIfExist()
             CurrentDirHolder.instance.reset()
             DebugUtils.verboseLog("${id}: Thread is dead")
         }
@@ -64,13 +62,13 @@ class GroovyInvokeHandler implements Runnable {
     @Override
     String toString() { id }
 
-    private static setupClasspath(request) {
+    private setupClasspath(request) {
         ClasspathUtils.addClasspath(request.classpath)
         for (def it = request.args.iterator(); it.hasNext(); ) {
             String opt = it.next()
             if (opt == "-cp") {
                 if (!it.hasNext()) {
-                    throw new InvalidRequestHeaderException("Invalid classpath option: ${request.args}")
+                    throw new InvalidRequestHeaderException("${id}: Invalid classpath option: ${request.args}")
                 }
                 String classpath = it.next()
                 ClasspathUtils.addClasspath(classpath)
@@ -78,7 +76,8 @@ class GroovyInvokeHandler implements Runnable {
         }
     }
 
-    private static invokeGroovy(args) {
+    private invokeGroovy(args) {
+        DebugUtils.verboseLog("${id}: invoking groovy: ${args}")
         try {
             GroovyMain2.main(args as String[])
         } catch (SystemExitException e) {
@@ -87,22 +86,28 @@ class GroovyInvokeHandler implements Runnable {
     }
 
     private awaitAllSubThreads() {
-        getAllAliveSubThreads().each { thread ->
-            if (!thread.isDaemon()) thread.join(THREAD_JOIN_TIMEOUT)
+        def threads = getAllAliveSubThreads()
+        if (!threads) {
+            DebugUtils.verboseLog("${id}: Threre is no sub thread")
+            return
         }
+        DebugUtils.verboseLog("${id}: All sub threads are joining....")
+        threads.each { thread ->
+            if (!thread.isDaemon()) thread.join() // waiting infinitely as original groovy command
+        }
+        DebugUtils.verboseLog("${id}: All sub threads joined")
     }
 
-    private interruptAllSubThreads() {
-        getAllAliveSubThreads().each { thread ->
-            thread.interrupt()
-            if (!thread.isDaemon()) thread.join(THREAD_JOIN_TIMEOUT)
-        }
-    }
 
-    private killAllSubThreads() {
-        getAllAliveSubThreads().each { thread ->
+    private killAllSubThreadsIfExist() {
+        def threads = getAllAliveSubThreads()
+        if (!threads) {
+            return
+        }
+        threads.each { thread ->
             thread.stop() // FORCELY
         }
+        DebugUtils.verboseLog("${id}: All sub thread stopped forcely")
     }
 
     private getAllAliveSubThreads() {

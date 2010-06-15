@@ -58,12 +58,12 @@ class StreamResponseOutputStream extends OutputStream {
     @Override
     public void write(byte[] b, int offset, int length) {
         writeLog(b, offset, length)
-        synchronized(currentOutputStream) { // to keep independency of 'out' and 'err' on socket stream
-            currentOutputStream.with {
-                write(ClientConnection.formatAsResponseHeader(streamId, length))
-                write(b, offset, length)
-            }
-        }
+        // FIXME When System.exit to a sub thread which in infinte loop, following synchronized occures IllegalMonitorStateException.
+        //synchronized(currentOutputStream) { // to keep independency of 'out' and 'err' on socket stream
+            byte[] header = ClientConnection.formatAsResponseHeader(streamId, length)
+            currentOutputStream.write(header)
+            currentOutputStream.write(b, offset, length)
+        //}
     }
 
     private writeLog(byte[] b, int offset, int length) {
@@ -81,7 +81,11 @@ ${DebugUtils.dump(b, offset, length)}
     }
 
     private OutputStream getCurrentOutputStream() {
-        ClientConnectionRepository.instance.currentConnection.outputStream
+        try {
+            ClientConnectionRepository.instance.currentConnection.outputStream
+        } catch (GroovyServerIllegalStateException e) {
+            throw new GroovyServerIOException("Cannot get a current client connection", e)
+        }
     }
 
 }

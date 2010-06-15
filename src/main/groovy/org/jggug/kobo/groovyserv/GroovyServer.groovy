@@ -86,7 +86,6 @@ class GroovyServer {
 
             // this socket will be closed under a responsibility of RequestWorker
             new RequestWorker(cookie, socket).start()
-            DebugUtils.verboseLog "Dispatched to request worker: ${socket}" 
         }
     }
 
