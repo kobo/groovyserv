@@ -15,8 +15,6 @@
  */
 package org.jggug.kobo.groovyserv
 
-import static java.lang.Thread.currentThread as currentThread
-
 
 /**
  * A repository of ClientConnection for each ThreadGroup.
@@ -41,7 +39,7 @@ class ClientConnectionRepository {
     }
 
     ClientConnection getCurrentConnection() {
-        def thread = currentThread()
+        def thread = Thread.currentThread()
         def connection = findConnection(thread.threadGroup)
         if (connection == null) {
             throw new GroovyServerIllegalStateException("ClientConnectionRepository: Not found client connection: ${thread}")

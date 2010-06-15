@@ -15,11 +15,7 @@
  */
 package org.jggug.kobo.groovyserv
 
-import java.util.concurrent.ThreadFactory
-import java.util.concurrent.Executors
-import java.util.concurrent.Executor
 import java.util.concurrent.Future
-import java.util.concurrent.TimeoutException
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.CancellationException
 
@@ -31,13 +27,12 @@ import static java.util.concurrent.TimeUnit.*
  */
  class IOUtils {
 
-
     /**
      * @throws Throwable when ExecutionException is occured, throw an inner exception wrapped by ExecutionException
      * @throws CancellationException
      * @throws InterruptedException
      */
-    static awaitFuture(future) {
+    static awaitFuture(Future future) {
         try {
             future.get()
         } catch (ExecutionException e) {

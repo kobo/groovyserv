@@ -15,8 +15,6 @@
  */
 package org.jggug.kobo.groovyserv
 
-import org.codehaus.groovy.tools.shell.util.NoExitSecurityManager
-
 
 /**
  * GroovyServer runs groovy command background.
@@ -59,7 +57,7 @@ class GroovyServer {
     }
 
     private void setupSecurityManager() {
-        System.setSecurityManager(new NoExitSecurityManager2()) // TODO partially override
+        System.setSecurityManager(new NoExitSecurityManager2())
     }
 
     private void setupRunningMode() {

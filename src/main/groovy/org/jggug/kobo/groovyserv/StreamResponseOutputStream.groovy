@@ -15,8 +15,6 @@
  */
 package org.jggug.kobo.groovyserv
 
-import static java.lang.Thread.currentThread as currentThread
-
 
 /**
  * Handling StreamResponse in protocol between client and server.
@@ -72,7 +70,7 @@ class StreamResponseOutputStream extends OutputStream {
 Server->Client {
   id: ${streamId}
   size(actual): ${length}
-  thread group: ${currentThread().threadGroup.name}
+  thread group: ${Thread.currentThread().threadGroup.name}
   body:
 ${DebugUtils.dump(b, offset, length)}
 }

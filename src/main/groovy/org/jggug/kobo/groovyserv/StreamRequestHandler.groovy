@@ -15,14 +15,7 @@
  */
 package org.jggug.kobo.groovyserv
 
-import java.util.concurrent.ThreadFactory
-import java.util.concurrent.Executors
-import java.util.concurrent.Executor
-import java.util.concurrent.Future
-import java.util.concurrent.CancellationException
-
 import static org.jggug.kobo.groovyserv.ClientConnection.HEADER_SIZE
-import static java.lang.Thread.currentThread as currentThread
 
 
 /**
@@ -111,7 +104,7 @@ Client->Server {
   id: in
   size(header): ${sizeHeader}
   size(actual): ${readSize}
-  thread group: ${currentThread().threadGroup.name}
+  thread group: ${Thread.currentThread().threadGroup.name}
   body:
 ${DebugUtils.dump(buff, offset, readSize)}
 }

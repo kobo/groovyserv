@@ -15,8 +15,6 @@
  */
 package org.jggug.kobo.groovyserv
 
-import java.util.concurrent.Callable
-
 
 /**
  * @author NAKANO Yasuharu
