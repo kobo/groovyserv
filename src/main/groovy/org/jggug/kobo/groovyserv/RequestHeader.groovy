@@ -110,17 +110,16 @@ class RequestHeader {
         return request
     }
 
-    static Map<String, List<String>> readHeaders(ClientConnection conn) { // FIXME
-        def port = conn.socket.port
-        def id = "RequestHeader:${port}"
+    private static Map<String, List<String>> readHeaders(ClientConnection conn) { // FIXME
+        def id = "RequestHeader:${conn.socket.port}"
         def ins = conn.socket.inputStream // raw strem
-        def map = parseHeaders(ins, id)
+        return parseHeaders(id, ins)
     }
 
-    private static Map<String, List<String>> parseHeaders(ins, id) { // FIXME
+    private static Map<String, List<String>> parseHeaders(String id, InputStream ins) { // FIXME
         def headers = [:]
         def line
-        while ((line = readLine(ins, id)) != "") { // until a first empty line
+        while ((line = readLine(id, ins)) != "") { // until a first empty line
             def tokens = line.split(':', 2)
             if (tokens.size() != 2) {
                 throw new InvalidRequestHeaderException("${id}: Found invalid header line: ${line}")
@@ -138,11 +137,11 @@ class RequestHeader {
         headers
     }
 
-    private static readLine(InputStream is, id) { // FIXME maybe this is able to be replaced by default API
+    private static readLine(String id, InputStream ins) { // FIXME maybe this is able to be replaced by default API
         try {
             def baos = new ByteArrayOutputStream()
             int ch
-            while ((ch = is.read()) != '\n') {
+            while ((ch = ins.read()) != '\n') {
                 if (ch == -1) {
                     return baos.toString()
                 }
