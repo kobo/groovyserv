@@ -110,47 +110,30 @@ class RequestHeader {
         return request
     }
 
-    private static Map<String, List<String>> readHeaders(ClientConnection conn) { // FIXME
+    private static Map<String, List<String>> readHeaders(ClientConnection conn) {
         def id = "RequestHeader:${conn.socket.port}"
         def ins = conn.socket.inputStream // raw strem
         return parseHeaders(id, ins)
     }
 
-    private static Map<String, List<String>> parseHeaders(String id, InputStream ins) { // FIXME
-        def headers = [:]
-        def line
-        while ((line = readLine(id, ins)) != "") { // until a first empty line
-            def tokens = line.split(':', 2)
-            if (tokens.size() != 2) {
-                throw new InvalidRequestHeaderException("${id}: Found invalid header line: ${line}")
-            }
-            def (key, value) = tokens
-            if (!headers.containsKey(key)) {
-                headers[key] = []
-            }
-            if (value.charAt(0) == ' ') {
-                value = value.substring(1)
-            }
-            headers[key] += value
-        }
-        DebugUtils.verboseLog "${id}: Parsed headers: ${headers}"
-        headers
-    }
-
-    private static readLine(String id, InputStream ins) { // FIXME maybe this is able to be replaced by default API
+    private static Map<String, List<String>> parseHeaders(String id, InputStream ins) {
         try {
-            def baos = new ByteArrayOutputStream()
-            int ch
-            while ((ch = ins.read()) != '\n') {
-                if (ch == -1) {
-                    return baos.toString()
+            def headers = [:]
+            IOUtils.readLines(ins).each { line ->
+                def tokens = line.split(':', 2)
+                if (tokens.size() != 2) {
+                    throw new InvalidRequestHeaderException("${id}: Found invalid header line: ${line}")
                 }
-                baos.write((byte) ch)
+                def (key, value) = tokens
+                headers.get(key, []) << value.trim()
             }
-            return baos.toString()
-        } catch (InterruptedIOException e) {
+            DebugUtils.verboseLog "${id}: Parsed headers: ${headers}"
+            return headers
+        }
+        catch (InterruptedIOException e) {
             throw new GroovyServerIOException("${id}: I/O interrupted: interrupted while reading line", e)
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             throw new GroovyServerIOException("${id}: I/O error: failed to read line: ${e.message}", e)
         }
     }

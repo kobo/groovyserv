@@ -47,6 +47,37 @@ import static java.util.concurrent.TimeUnit.*
             DebugUtils.errorLog("Failed to close", e)
         }
     }
+
+    /**
+     * @throws InterruptedIOException
+     * @throws IOException
+     */
+    static readLines(InputStream ins) {
+        def lines = []
+        while (true) {
+            def line = readLine(ins)
+            if (line == "") {
+                return lines
+            }
+            lines << line
+        }
+    }
+
+    /**
+     * @throws InterruptedIOException
+     * @throws IOException
+     */
+    private static readLine(InputStream ins) {
+        def baos = new ByteArrayOutputStream()
+        int ch
+        while ((ch = ins.read()) != '\n') { // LF (fixed)
+            if (ch == -1) {
+                return baos.toString()
+            }
+            baos.write((byte) ch)
+        }
+        return baos.toString()
+    }
  
  }
 

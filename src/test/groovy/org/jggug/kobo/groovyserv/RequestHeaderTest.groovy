@@ -80,6 +80,20 @@ Size: -1
         assert headers.size() == 1
     }
 
+    void testParseHeaders_Trimmed() {
+        // setup
+        def ins = new ByteArrayInputStream("""\
+Space:     HAS_SPACE_BEFORE_AFTER      
+Tab: \tHAS_TAB_BEFORE_AFTER\t
+""".bytes)
+        // exercise
+        def headers = RequestHeader.parseHeaders('ID:0', ins)
+        // verify
+        assert headers.Space == ['HAS_SPACE_BEFORE_AFTER']
+        assert headers.Tab == ['HAS_TAB_BEFORE_AFTER']
+        assert headers.size() == 2
+    }
+
     void testFormatAsResponseHeader_out_0() {
         assert RequestHeader.formatAsResponseHeader('out', 0) == 'Channel: out\nSize: 0\n\n'.bytes
     }
