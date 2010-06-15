@@ -15,8 +15,6 @@
  */
 package org.jggug.kobo.groovyserv
 
-import static org.jggug.kobo.groovyserv.ClientConnection.HEADER_SIZE
-
 
 /**
  * @author NAKANO Yasuharu
@@ -42,29 +40,29 @@ class StreamRequestHandler implements Runnable {
         DebugUtils.verboseLog("${id}: Thread started")
         try {
             while (true) {
-                int sizeHeader = getSizeOfHeader()
-                if (sizeHeader == null) {
-                    DebugUtils.verboseLog "${id}: 'Size' header is not found"
+                def request = conn.readStreamRequest()
+                if (!request.isValid()) {
+                    DebugUtils.verboseLog "${id}: 'Size' header is invalid"
                     return // not to continue because this is unexpected data
                 }
-                if (sizeHeader == 0) {
-                    DebugUtils.verboseLog "${id}: Recieved request header [Size: 0]"
+                if (request.isEmpty()) {
+                    DebugUtils.verboseLog "${id}: Recieved empty request from client"
                     continue
                 }
-                if (sizeHeader == -1) {
-                    DebugUtils.verboseLog "${id}: Recieved request header [Size: -1] to interrupt"
-                    throw new ClientInterruptionException("${id}: Interrupted by client request: [Size: -1]")
+                if (request.isInterrupted()) {
+                    DebugUtils.verboseLog "${id}: Recieved interrupted request from client"
+                    throw new ClientInterruptionException("${id}: Interrupted by client request")
                 }
-                def buff = new byte[sizeHeader]
+                def buff = new byte[request.size]
                 int offset = 0
-                int result = conn.socket.inputStream.read(buff, offset, sizeHeader) // read from raw stream
+                int result = conn.socket.inputStream.read(buff, offset, request.size) // read from raw stream
                 if (result == -1) {
                     // terminate this thread without closing stream.
                     // because to be closed input stream by client doesn't mean termination of session.
                     DebugUtils.verboseLog "${id}: End of stream"
                     return
                 }
-                readLog(buff, offset, result, sizeHeader)
+                readLog(buff, offset, result, request.size)
                 conn.writeFromStreamRequest(buff, offset, result)
             }
         }
@@ -87,15 +85,6 @@ class StreamRequestHandler implements Runnable {
 
     @Override
     String toString() { id }
-
-    private getSizeOfHeader() {
-        Map<String, List<String>> headers = conn.readHeaders() // with blocking
-        def sizeHeader = headers[HEADER_SIZE]?.getAt(0)
-        if (sizeHeader == null) {
-            return null
-        }
-        return sizeHeader as int
-    }
 
     private static readLog(byte[] buff, int offset, int readSize, int sizeHeader) {
         DebugUtils.verboseLog """\

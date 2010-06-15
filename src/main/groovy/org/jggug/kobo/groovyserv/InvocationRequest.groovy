@@ -15,8 +15,6 @@
  */
 package org.jggug.kobo.groovyserv
 
-import static org.jggug.kobo.groovyserv.ClientConnection.*
-
 
 /**
  * @author NAKANO Yasuharu
@@ -26,33 +24,29 @@ class InvocationRequest {
     int port
     String cwd           // required: current working directory
     String classpath     // optional
-    String cookie        // required
     List<String> args    // required
+    String clientCookie  // required
+    Cookie serverCookie  // required
+
+    InvocationRequest(map) {
+        this.port = map.port
+        this.cwd = map.cwd
+        this.classpath = map.classpath
+        this.args = map.args
+        this.clientCookie = map.clientCookie
+        this.serverCookie = map.serverCookie
+    }
 
     /**
      * @throws InvalidRequestHeaderException
-     * @throws GroovyServerIOException
      */
-    static read(ClientConnection conn) {
-        Map<String, List<String>> headers = conn.readHeaders()
-        def request = new InvocationRequest(
-            port: conn.socket.port,
-            cwd: headers[HEADER_CURRENT_WORKING_DIR][0],
-            cookie: headers[HEADER_COOKIE]?.getAt(0),
-            classpath: headers[HEADER_CP]?.getAt(0),
-            args: headers[HEADER_ARG],
-        )
-        request.checkHeaders(headers, conn)
-        return request
-    }
-
-    private checkHeaders(headers, conn) {
+    void check() {
         if (!cwd) {
             throw new InvalidRequestHeaderException("'Cwd' header is not found: ${port}")
         }
-        if (!cookie || !conn.cookie.isValid(cookie)) {
+        if (!clientCookie || !serverCookie.isValid(clientCookie)) {
             Thread.sleep(5000) // to prevent from brute force atack
-            throw new InvalidRequestHeaderException("Authentication failed. Cookie is unmatched: ${cookie} <=> ${conn.cookie.token}")
+            throw new InvalidRequestHeaderException("Authentication failed. Cookie is unmatched: ${clientCookie} <=> ${serverCookie.token}")
         }
         if (!args) {
             throw new InvalidRequestHeaderException("'Args' header is not found: ${port}")
