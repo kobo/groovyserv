@@ -66,6 +66,8 @@ class RequestWorker extends ThreadPoolExecutor {
             streamFuture  = submit(new StreamRequestHandler(conn))
             invokeFuture = submit(new GroovyInvokeHandler(request))
 
+            Thread.sleep(1000)
+
             // when all tasks will finish, executor will be shut down.
             shutdown()
 
@@ -92,21 +94,32 @@ class RequestWorker extends ThreadPoolExecutor {
         DebugUtils.verboseLog("${id}: Handler is dead: ${runnable}", e)
         super.afterExecute(runnable, e)
 
-        if (runnable == invokeFuture) {
-            DebugUtils.verboseLog("${id}: Invoke handler is dead: ${runnable}", e)
-            if (!cancelledByClient) {
-                // connection is maybe shuted down by client, so exit status is not sent.
-                conn.sendExit(getExitStatus(runnable))
-            }
-            streamFuture.cancel(true)
-            closeSafety()
+        // to await assign futures to instance variables.
+        // if user script is very very short, a thread which is invoking the script
+        // will be done quickly before assign to instance variables in start() method.
+        while (!streamFuture || !invokeFuture) {
+            Thread.sleep 10
         }
-        if (runnable == streamFuture) {
-            DebugUtils.verboseLog("${id}: Stream handler is dead: ${runnable}", e)
-            cancelledByClient = isCancelledByClient(runnable)
-            if (cancelledByClient) {
-                invokeFuture.cancel(true)
-            }
+
+        switch (runnable) {
+            case invokeFuture:
+                DebugUtils.verboseLog("${id}: Invoke handler is dead: ${runnable}", e)
+                if (!cancelledByClient) {
+                    // connection is maybe shuted down by client, so exit status is not sent.
+                    conn.sendExit(getExitStatus(runnable))
+                }
+                streamFuture.cancel(true)
+                closeSafety()
+                break
+            case streamFuture:
+                DebugUtils.verboseLog("${id}: Stream handler is dead: ${runnable}", e)
+                cancelledByClient = isCancelledByClient(runnable)
+                if (cancelledByClient) {
+                    invokeFuture.cancel(true)
+                }
+                break
+            default:
+                throw new GroovyServerIllegalStateException("${id}: unexpected state: runnable=${runnable}, invokeFuture=${invokeFuture}, streamFuture=${streamFuture}")
         }
     }
 
