@@ -44,7 +44,7 @@ import static java.util.concurrent.TimeUnit.*
         try {
             if (closeable) closeable.close()
         } catch (IOException e) {
-            DebugUtils.errLog("Failed to close", e)
+            DebugUtils.errorLog("Failed to close", e)
         }
     }
  

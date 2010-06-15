@@ -77,7 +77,7 @@ class RequestWorker extends ThreadPoolExecutor {
             // cancelling all tasks
             if (!isShutdown()) shutdownNow()
 
-            DebugUtils.errLog("${id}: Failed to start request worker", e)
+            DebugUtils.errorLog("${id}: Failed to start request worker", e)
         }
     }
 
@@ -153,11 +153,11 @@ class RequestWorker extends ThreadPoolExecutor {
             return e.exitStatus
         }
         catch (GroovyServerException e) {
-            DebugUtils.errLog("${id}: Error: ${e.exitStatus}", e)
+            DebugUtils.errorLog("${id}: Error: ${e.exitStatus}", e)
             return e.exitStatus
         }
         catch (Throwable e) {
-            DebugUtils.errLog("${id}: Unexpected error", e)
+            DebugUtils.errorLog("${id}: Unexpected error", e)
             return ExitStatus.UNEXPECTED_ERROR.code
         }
     }
@@ -177,7 +177,7 @@ class RequestWorker extends ThreadPoolExecutor {
             DebugUtils.verboseLog("${id}: Interrupted: ${e.message}")
         }
         catch (Throwable e) {
-            DebugUtils.errLog("${id}: Unexpected error", e)
+            DebugUtils.errorLog("${id}: Unexpected error", e)
         }
         return false
     }

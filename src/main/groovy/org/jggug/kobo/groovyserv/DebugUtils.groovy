@@ -23,7 +23,7 @@ class DebugUtils {
 
     private static final String PREFIX_DEBUG_LOG = "DEBUG: "
 
-    static errLog(message, Throwable e = null) {
+    static errorLog(message, Throwable e = null) {
         def formatted = formatLog(message, e)
         writeLog(formatted)
     }

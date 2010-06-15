@@ -31,7 +31,7 @@ class GroovyServerThreadGroup extends ThreadGroup {
 
     @Override
     void uncaughtException(Thread thread, Throwable e) {
-        DebugUtils.errLog("${name}: Uncaught exception: ${thread}", e)
+        DebugUtils.errorLog("${name}: Uncaught exception: ${thread}", e)
     }
 
     @Override

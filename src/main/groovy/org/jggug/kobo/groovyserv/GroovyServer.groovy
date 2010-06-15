@@ -43,11 +43,11 @@ class GroovyServer {
             startServer()
         }
         catch (GroovyServerException e) {
-            DebugUtils.errLog("Error: GroovyServer", e)
+            DebugUtils.errorLog("Error: GroovyServer", e)
             System.exit(e.exitStatus)
         }
         catch (Throwable e) {
-            DebugUtils.errLog("Unexpected error: GroovyServer", e)
+            DebugUtils.errorLog("Unexpected error: GroovyServer", e)
             System.exit(ExitStatus.UNEXPECTED_ERROR.code)
         }
     }
@@ -77,7 +77,7 @@ class GroovyServer {
             def socket = serverSocket.accept()
             DebugUtils.verboseLog "Recieved socket: ${socket}"
             if (!socket.localSocketAddress.address.isLoopbackAddress()) { // only from localhost
-                DebugUtils.errLog "Cannot accept except loopback address: ${socket}"
+                DebugUtils.errorLog "Cannot accept except loopback address: ${socket}"
                 continue
             }
             DebugUtils.verboseLog "Accepted socket: ${socket}"
