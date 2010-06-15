@@ -38,7 +38,7 @@ package org.jggug.kobo.groovyserv
  *     <classpath>.. is the value of environment variable CLASSPATH(optional).
  *     <cookie> is authentication value which certify client is the user who
  *              invoked the server.
- *     LF is carridge return (0x0d ^M) and line feed (0x0a, '\n').
+ *     LF is line feed (0x0a, '\n').
  *
  * StreamRequest ::=
  *    'Size:' <size> LF
