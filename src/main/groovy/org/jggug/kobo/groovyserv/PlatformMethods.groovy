@@ -18,6 +18,9 @@ package org.jggug.kobo.groovyserv
 import com.sun.jna.Platform
 
 
+/**
+ * @author UEHARA Junji
+ */
 class PlatformMethods {
     static chdir(String dir) {
         if (Platform.isWindows()) {

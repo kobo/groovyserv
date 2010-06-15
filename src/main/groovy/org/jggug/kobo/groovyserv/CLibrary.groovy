@@ -20,6 +20,9 @@ import com.sun.jna.Native
 import com.sun.jna.Platform
 
 
+/**
+ * @author UEHARA Junji
+ */
 interface CLibrary extends Library {
     String libname = (Platform.isWindows() ? "msvcrt" : "c")
     CLibrary INSTANCE = Native.loadLibrary(libname, CLibrary.class)
