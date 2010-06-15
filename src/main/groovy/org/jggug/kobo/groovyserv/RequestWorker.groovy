@@ -45,8 +45,8 @@ class RequestWorker extends ThreadPoolExecutor {
         super(THREAD_COUNT, THREAD_COUNT, 0, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>())
         this.id = "GroovyServ:RequestWorker:${socket.port}"
 
-        def threadGroup = new GroovyServerThreadGroup("GroovyServ:ThreadGroup:${socket.port}")
-        this.conn = new ClientConnection(cookie, socket, threadGroup)
+        def rootThreadGroup = new GroovyServerThreadGroup("GroovyServ:ThreadGroup:${socket.port}")
+        this.conn = new ClientConnection(cookie, socket, rootThreadGroup)
 
         // for management sub threads in invoke handler.
         setThreadFactory(new ThreadFactory() {
@@ -54,7 +54,7 @@ class RequestWorker extends ThreadPoolExecutor {
             Thread newThread(Runnable runnable) {
                 // giving individual sub thread group for each thread
                 // in order to kill invoke handler's sub threads which were started in user scripts.
-                def subThreadGroup = new GroovyServerThreadGroup(threadGroup, "GroovyServ:ThreadGroup:${socket.port}:${index.getAndIncrement()}")
+                def subThreadGroup = new GroovyServerThreadGroup(rootThreadGroup, "${rootThreadGroup.name}:${index.getAndIncrement()}")
                 new Thread(subThreadGroup, runnable)
             }
         })
