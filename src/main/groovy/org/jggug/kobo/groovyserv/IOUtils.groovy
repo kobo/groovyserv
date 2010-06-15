@@ -54,25 +54,23 @@ import static java.util.concurrent.TimeUnit.*
      */
     static readLines(InputStream ins) {
         def lines = []
-        while (true) {
-            def line = readLine(ins)
-            if (line == "") {
-                return lines
-            }
+        def line
+        while ((line = readLine(ins)) != "") {
             lines << line
         }
+        return lines
     }
 
     /**
      * @throws InterruptedIOException
      * @throws IOException
      */
-    private static readLine(InputStream ins) {
+    static readLine(InputStream ins) {
         def baos = new ByteArrayOutputStream()
         int ch
-        while ((ch = ins.read()) != '\n') { // LF (fixed)
-            if (ch == -1) {
-                return baos.toString()
+        while ((ch = ins.read()) != -1) {
+            if (ch == '\n') { // LF (fixed)
+                break
             }
             baos.write((byte) ch)
         }
