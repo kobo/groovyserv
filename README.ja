@@ -227,7 +227,7 @@ GROOVYSERVER_PORTを設定してください。
 
 groovyserverのログファイルは以下のファイルに出力されます。
 
-  ~/.groovy/groovyserv/<プロセスID>-<ポート番号>.log
+  ~/.groovy/groovyserv/groovyserver.log
 
 ======
 Tips
