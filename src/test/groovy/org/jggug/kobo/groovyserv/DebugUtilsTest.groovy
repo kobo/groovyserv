@@ -22,6 +22,14 @@ class DebugUtilsTest extends GroovyTestCase {
 
     static final String SEP = System.getProperty("line.separator")
 
+    void setUp() {
+        System.properties.remove("groovyserver.verbose")
+    }
+
+    void tearDown() {
+        System.properties.remove("groovyserver.verbose")
+    }
+
     void testDump_size32() {
         byte[] data = "0123456789abcdef0123456789ABCDEF".bytes
 
@@ -71,5 +79,23 @@ class DebugUtilsTest extends GroovyTestCase {
         DebugUtils.dump(data, 8, 16)
     }
 
+    void testIsVerboseMode_true() {
+        System.properties["groovyserver.verbose"] = "true"
+        assert DebugUtils.isVerboseMode()
+    }
+
+    void testIsVerboseMode_TRUE() {
+        System.properties["groovyserver.verbose"] = "TRUE"
+        assert DebugUtils.isVerboseMode()
+    }
+
+    void testIsVerboseMode_Null() {
+        assert DebugUtils.isVerboseMode() == false
+    }
+
+    void testIsVerboseMode_false() {
+        System.properties["groovyserver.verbose"] = "false"
+        assert DebugUtils.isVerboseMode() == false
+    }
 
 }

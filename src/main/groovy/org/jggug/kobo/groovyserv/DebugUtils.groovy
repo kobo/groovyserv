@@ -61,7 +61,7 @@ class DebugUtils {
     }
 
     static isVerboseMode() {
-        System.getProperty("groovyserver.verbose") == "true"  // TODO Boolean.valueOf
+        Boolean.valueOf(System.getProperty("groovyserver.verbose"))
     }
 
     private static String formatStackTrace(e) {
