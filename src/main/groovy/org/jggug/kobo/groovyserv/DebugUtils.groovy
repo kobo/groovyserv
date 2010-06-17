@@ -23,6 +23,10 @@ class DebugUtils {
 
     private static final String PREFIX_DEBUG_LOG = "DEBUG: "
 
+    static isVerboseMode() {
+        Boolean.valueOf(System.getProperty("groovyserver.verbose"))
+    }
+
     static errorLog(message, Throwable e = null) {
         def formatted = formatLog(message, e)
         writeLog(formatted)
@@ -60,10 +64,6 @@ class DebugUtils {
         }
     }
 
-    static isVerboseMode() {
-        Boolean.valueOf(System.getProperty("groovyserver.verbose"))
-    }
-
     private static String formatStackTrace(e) {
         def sw = new StringWriter()
         e.printStackTrace(new PrintWriter(sw))
@@ -80,36 +80,42 @@ class DebugUtils {
         sw.toString()
     }
 
-    static String dump(byte[] buf, int offset, int length) { // TODO refactoring
+    static String dump(byte[] buf, int offset, int length) {
+        if (offset < 0 || length < 0) {
+            throw new IllegalArgumentException("offset and length must be specified a positive value")
+        }
+        final separatorLine = "+-----------+-----------+-----------+-----------+----------------+"
+        final numPerLine = 16
         def sw = new StringWriter()
         def pw = new PrintWriter(sw)
-        pw.println("+-----------+-----------+-----------+-----------+----------------+")
-        StringBuilder buff = new StringBuilder()
-        int i
-        for (i = offset; i < offset + length; i++) {
-            if (!Character.isISOControl((char) buf[i])) {
-                buff.append((char) buf[i])
-            }
-            else {
-                buff.append("?")
-            }
-            pw.print(String.format("%02x ", buf[i]))
-            if ((i - offset) % 16 == 15) {
-                pw.print("| " + buff)
-                pw.println()
-                buff.length = 0
-            }
+        pw.println(separatorLine)
+        int maxIndex = [buf.size(), offset + length].min()
+        for (int startIndex = offset; startIndex < maxIndex; startIndex += numPerLine) { // for each 16 elements
+            int endIndex = [startIndex + numPerLine, maxIndex].min()
+            def elementsAtLine = buf[startIndex..<endIndex]
+            def completed = (0..15).collect{ elementsAtLine[it] ?: null }
+            def digitPart = completed.collect{ toDisplayDigit(it) }.join(" ")
+            def asciiPart = completed.collect{ toDisplayAscii(it) }.join()
+            pw.println(digitPart + " | " + asciiPart)
         }
-        if ((length % 16) != 0) {
-            while (i < (length+16).intdiv(16)*16 + offset) {
-                i++
-                pw.print("   ")
-            }
-            pw.println("| " + buff)
-        }
-        pw.print("+-----------+-----------+-----------+-----------+----------------+")
+        pw.print(separatorLine)
         sw.toString()
     }
 
+    private static toDisplayDigit(b) {
+        if (b) {
+            return String.format("%02x", b)
+        }
+        return "  "
+    }
+
+    private static toDisplayAscii(b) {
+        if (b) {
+            char c = (char) b
+            return (c.isLetterOrDigit() ? c : "?")
+        }
+        return ""
+    }
+ 
 }
 
