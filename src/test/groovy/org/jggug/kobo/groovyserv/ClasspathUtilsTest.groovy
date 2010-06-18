@@ -43,16 +43,19 @@ class ClasspathUtilsTest extends GroovyTestCase {
 
     void testAddClasspath_null_to_multi() {
         assert System.properties["groovy.classpath"] == null
-        ClasspathUtils.addClasspath("path1:path2:path3")
-        assert System.properties["groovy.classpath"] == "path1:path2:path3"
+        def path = ['path1', 'path2', 'path3']
+        ClasspathUtils.addClasspath(path.join(File.pathSeparator))
+        assert System.properties["groovy.classpath"] == path.join(File.pathSeparator)
     }
 
     void testAddClasspath_one_to_multi() {
         System.properties["groovy.classpath"] = "path0"
 
+        def path = ['path1', 'path2', 'path3']
         assert System.properties["groovy.classpath"] == "path0"
-        ClasspathUtils.addClasspath("path1:path2:path3")
-        assert System.properties["groovy.classpath"] == "path0:path1:path2:path3"
+        ClasspathUtils.addClasspath(path.join(File.pathSeparator))
+        def pathExpected = ['path0', 'path1', 'path2', 'path3']
+        assert System.properties["groovy.classpath"] == pathExpected.join(File.pathSeparator)
     }
 
     void testAddClasspath_multi_to_multi() {
