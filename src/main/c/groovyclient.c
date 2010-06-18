@@ -14,19 +14,34 @@
  * limitations under the License.
  */
 
+#if defined(_MSC_VER) || defined(__MINGW32__)
+#define WINDOWS_WITHOUT_CYGWIN
+#else
+#define CYGWIN_OR_UNIX
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h> /* bzero */
+#include <string.h>
+#include <assert.h>
 
 #include <sys/types.h> /* netinet/in.h */
+#ifdef WINDOWS_WITHOUT_CYGWIN
+#include <windows.h>
+#include <winsock2.h>
+#include <process.h>
+#include <sys/fcntl.h>
+#else
 #include <sys/socket.h> /* AF_INET */
 #include <netinet/in.h> /* sockaddr_in */
 #include <netdb.h> /* gethostbyname */
 #include <sys/uio.h>
+#include <sys/errno.h>
+#endif
+
 #include <sys/param.h>
 #include <unistd.h>
 #include <signal.h>
-#include <sys/errno.h>
 #include <sys/stat.h>
 
 #if defined(__CYGWIN__)
@@ -78,17 +93,28 @@ int open_socket(char* server_name, int server_port) {
     exit(1);
   }
 
-  bzero(&server, sizeof(server)); /* zero clear struct */
+  memset(&server, 0, sizeof(server)); /* zero clear struct */
 
   server.sin_family = PF_INET;  /* server.sin_addr = hostent->h_addr */
-  bcopy(hostent->h_addr, &server.sin_addr, hostent->h_length);
+  memcpy(&server.sin_addr, hostent->h_addr, hostent->h_length);
   server.sin_port = htons(server_port);
 
   int fd;
+#ifdef WINDOWS_WITHOUT_CYGWIN
+  if ((fd = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP))  == INVALID_SOCKET) {
+#else
   if ((fd = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
+#endif
     perror("socket");
     exit(1);
   }
+
+#ifdef WINDOWS_WITHOUT_CYGWIN
+  if (connect(fd, (struct sockaddr *)&server, sizeof(server)) == SOCKET_ERROR) {
+    perror("connect");
+    exit(1);
+  }
+#else
   if (connect(fd, (struct sockaddr *)&server, sizeof(server)) < 0) {
     if (errno = ECONNREFUSED) {
       return -1;
@@ -96,6 +122,7 @@ int open_socket(char* server_name, int server_port) {
     perror("connect");
     exit(1);
   }
+#endif
   return fd;
 }
 
@@ -144,7 +171,11 @@ void send_header(int fd, int argn, char** argv, char* cookie) {
     fprintf(stderr, "\nheader size too big\n");
     exit(1);
   }
+#ifdef WINDOWS_WITHOUT_CYGWIN
+  send(fd, read_buf, p-read_buf, 0);
+#else
   write(fd, read_buf, p-read_buf);
+#endif
 }
 
 /*
@@ -174,17 +205,37 @@ void read_header(char* buf, struct header_t* header) {
   strncpy(header->value, p, MAX_HEADER_VALUE_LEN);
 }
 
+char* read_line(int fd, char* buf, int size) {
+   int i;
+   for (i=0; i<size; i++) {
+#ifdef WINDOWS_WITHOUT_CYGWIN
+	 int ret = recv(fd, buf+i, 1, 0);
+	 //	 int ret = recv(fd, buf+i, 100, 0);
+	 if (ret == -1) {
+	   printf("error : %d\n", WSAGetLastError());
+	   exit(1);
+	 }
+	 assert(ret == 1);
+#else
+	 read(fd, buf+i, 1);
+#endif
+	 if (buf[i] == '\n') {
+	   return buf;
+	 }
+   }
+   return buf;
+ }
+
 /*
  * read server response headers.
  */
-int read_headers(FILE* soc_stream, struct header_t headers[], int header_buf_size) {
+int read_headers(int fd, struct header_t headers[], int header_buf_size) {
   char read_buf[BUFFER_SIZE];
   int result = 0;
   char *p;
   int pos = 0;
-
   while (1) {
-    p = fgets(read_buf, BUFFER_SIZE, soc_stream);
+    p = read_line(fd, read_buf, BUFFER_SIZE);
     if (p == NULL) {
       return 0;
     }
@@ -217,13 +268,11 @@ char* find_header(struct header_t headers[], const char* key, int nhdrs) {
   return NULL;
 }
 
-
-
 /*
  * split_socket_output.
  * Receive a chunk, and write it to stdout or stderr.
  */
-int split_socket_output(FILE* soc_stream, char* stream_identifier, int size) {
+int split_socket_output(int soc, char* stream_identifier, int size) {
   int output_fd;
   if (strcmp(stream_identifier, "out") == 0) {
     output_fd = 1; /* stdout */
@@ -248,7 +297,12 @@ int split_socket_output(FILE* soc_stream, char* stream_identifier, int size) {
     }
     read_buf = realloc(read_buf, read_buf_size);
   }
-  fread(read_buf, 1, size, soc_stream);
+#ifdef WINDOWS_WITHOUT_CYGWIN
+  int ret = recv(soc, read_buf, size, 0);
+  assert(ret == size);
+#else
+  read(soc, read_buf, size);
+#endif
   write(output_fd, read_buf, size);
   return 0;
 }
@@ -257,26 +311,85 @@ int split_socket_output(FILE* soc_stream, char* stream_identifier, int size) {
  * send_to_server.
  * Copy data from stdin and send it to the server.
  */
-int send_to_server(FILE* soc_stream)
+int send_to_server(int fd)
 {
   char read_buf[BUFFER_SIZE];
   int ret;
 
-  if ((ret = read(0, read_buf, BUFFER_SIZE)) == -1){
+  if ((ret = read(0, read_buf, BUFFER_SIZE)) == -1){ // TODO buffering
     perror("read failure from stdin");
     exit(1);
   }
+  read_buf[ret] = '\0';
+
   char write_buf[BUFFER_SIZE];
   sprintf(write_buf, "Size: %d\n\n", ret); // TODO: check size
-  write(fileno(soc_stream), write_buf, strlen(write_buf));
-  write(fileno(soc_stream), read_buf, ret);
-  fflush(soc_stream);
+
+#ifdef WINDOWS_WITHOUT_CYGWIN
+  send(fd, write_buf, strlen(write_buf), 0);
+  send(fd, read_buf, ret, 0);
+#else
+  write(fd, write_buf, strlen(write_buf));
+  write(fd, read_buf, ret);
+#endif
+
   if (ret == 0) {
     return 1;
   }
   return 0;
 }
 
+#ifdef WINDOWS_WITHOUT_CYGWIN
+
+void copy_stdin_to_soc(int fd) {
+  int ch;
+  while (1) {
+	send_to_server(fd);
+  }
+}
+
+void invoke_thread(int fd) {
+  DWORD id = 1;
+  HANDLE hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)
+								copy_stdin_to_soc, (LPVOID)fd, 0, &id);
+}
+
+int session(int fd)
+{
+  struct header_t headers[MAX_HEADER];
+
+  invoke_thread(fd);
+
+  while (1) {
+	int size = read_headers(fd, headers, MAX_HEADER);
+	if (size == 0) {
+	  continue;
+	}
+	// Process exit
+	char* status = find_header(headers, HEADER_KEY_STATUS, size);
+	if (status != NULL) {
+	  int stat = atoi(status);
+	  return stat;
+	}
+
+	// Dispatch data from server to stdout/err.
+	char* sid = find_header(headers, HEADER_KEY_CHANNEL, size);
+	if (sid == NULL) {
+	  fprintf(stderr, "\nrequired header %s not found\n", HEADER_KEY_CHANNEL);
+	  return 1;
+	}
+	char* chunk_size = find_header(headers, HEADER_KEY_SIZE, size);
+	if (chunk_size == NULL) {
+	  fprintf(stderr, "\nrequired header %s not found\n", HEADER_KEY_SIZE);
+	  return 1;
+	}
+	if (split_socket_output(fd, sid, atoi(chunk_size)) == EOF) {
+	  return 0;
+	}
+  }
+}
+
+#else
 /*
  * session.
  * asynchronus input (select) with the stdin and the socket connection
@@ -290,8 +403,6 @@ int session(int fd)
   fd_set read_set;
   int ret;
   int stdin_closed = 0;
-
-  FILE* soc_stream = fdopen(fd, "r");
 
   while (1) {
     /* initialize the set of file descriptor */
@@ -309,11 +420,11 @@ int session(int fd)
 
     if (ret != 0) { /* detect changed descriptor */
       if (!stdin_closed && FD_ISSET(0, &read_set)) { /* stdin */
-        stdin_closed = send_to_server(soc_stream);
+        stdin_closed = send_to_server(fd);
       }
       if (FD_ISSET(fd, &read_set)){ /* socket */
         struct header_t headers[MAX_HEADER];
-        int size = read_headers(soc_stream, headers, MAX_HEADER);
+        int size = read_headers(fd, headers, MAX_HEADER);
         if (size == 0) {
           continue;
         }
@@ -337,7 +448,7 @@ int session(int fd)
           fprintf(stderr, "\nrequired header %s not found\n", HEADER_KEY_SIZE);
           return 1;
         }
-        if (split_socket_output(soc_stream, sid, atoi(chunk_size)) == EOF) {
+        if (split_socket_output(fd, sid, atoi(chunk_size)) == EOF) {
           return 0;
         }
       }
@@ -347,24 +458,34 @@ int session(int fd)
     }
   }
 }
+#endif
 
 static int fd_soc;
 
 static void signal_handler(int sig) {
+#ifdef WINDOWS_WITHOUT_CYGWIN
+  send(fd_soc, "Size: -1\n\n", 9, 0);
+  closesocket(fd_soc);
+#else
   write(fd_soc, "Size: -1\n\n", 9);
   close(fd_soc);
+#endif
   exit(1);
 }
 
 void mk_dir(const char* path) {
   struct stat buf;
   if (stat(path, &buf) == -1) {
+#ifndef WINDOWS_WITHOUT_CYGWIN
+	// TODO: create folder for mingw
     if (errno == ENOENT) {
       char cmdbuf[strlen(path) + 7];
       sprintf(cmdbuf, "mkdir %s", path);
       system(cmdbuf);
       return;
     }
+#endif
+
     perror("stat");
     exit(1);
   }
@@ -375,6 +496,15 @@ void mk_dir(const char* path) {
 }
 
 void start_server(int argn, char** argv, int port) {
+  // create directries for logging.
+  /*
+  char path[MAXPATHLEN];
+  sprintf(path, "%s/%s", getenv("HOME"), ".groovy");
+  mk_dir(path);
+  sprintf(path, "%s/%s", getenv("HOME"), ".groovy/groovyserver");
+  mk_dir(path);
+  */
+
   // make command line to invoke groovyserver
   char groovyserver_path[MAXPATHLEN];
   strcpy(groovyserver_path, argv[0]);
@@ -386,10 +516,15 @@ void start_server(int argn, char** argv, int port) {
     p++;
   }
   sprintf(p, "groovyserver -p %d", port);
+  //  strcat(p, " >> ~/.groovy/groovyserver/groovyserver.log 2>&1");
 
   // start groovyserver.
   system(groovyserver_path);
+#ifdef WINDOWS_WITHOUT_CYGWIN
+  Sleep(3000);
+#else
   sleep(3);
+#endif
 }
 
 /*
@@ -429,6 +564,14 @@ int main(int argn, char** argv) {
 	}
   }
 
+#ifdef WINDOWS_WITHOUT_CYGWIN
+  WSADATA wsadata;
+  if (WSAStartup(MAKEWORD(1,1), &wsadata) == SOCKET_ERROR) {
+	printf("Error creating socket.");
+	  exit(1);
+  }
+#endif
+
   while ((fd_soc = open_socket(DESTSERV, port)) == -1) {
     fprintf(stderr, "starting server..\n");
     start_server(argn, argv, port);
@@ -437,5 +580,10 @@ int main(int argn, char** argv) {
 
   send_header(fd_soc, argn, argv, cookie);
   int status = session(fd_soc);
+
+#ifdef WINDOWS_WITHOUT_CYGWIN
+  WSACleanup();
+#endif
+
   exit(status);
 }
