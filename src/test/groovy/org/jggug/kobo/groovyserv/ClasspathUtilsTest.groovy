@@ -59,27 +59,39 @@ class ClasspathUtilsTest extends GroovyTestCase {
     }
 
     void testAddClasspath_multi_to_multi() {
-        System.properties["groovy.classpath"] = "path0:pathA:pathB"
+        def path1 = ['path0', 'pathA', 'pathB']
+        System.properties["groovy.classpath"] = path1.join(File.pathSeparator)
 
-        assert System.properties["groovy.classpath"] == "path0:pathA:pathB"
-        ClasspathUtils.addClasspath("path1:path2:path3")
-        assert System.properties["groovy.classpath"] == "path0:pathA:pathB:path1:path2:path3"
+        assert System.properties["groovy.classpath"] == path1.join(File.pathSeparator)
+
+        def path2 = ['path1', 'path2', 'path3']
+        ClasspathUtils.addClasspath(path2.join(File.pathSeparator))
+        assert System.properties["groovy.classpath"] == (path1+path2).join(File.pathSeparator)
     }
 
     void testAddClasspath_duplicated() {
-        System.properties["groovy.classpath"] = "path0:path1:path2"
+        def path1 = ['path0', 'path1', 'path2']
+        System.properties["groovy.classpath"] = path1.join(File.pathSeparator)
 
-        assert System.properties["groovy.classpath"] == "path0:path1:path2"
-        ClasspathUtils.addClasspath("path3:path2:path1")
-        assert System.properties["groovy.classpath"] == "path0:path1:path2:path3"
+        assert System.properties["groovy.classpath"] == path1.join(File.pathSeparator)
+        def path2 = ['path3', 'path2', 'path1']
+        ClasspathUtils.addClasspath(path2.join(File.pathSeparator))
+
+        def pathExpected = ['path0', 'path1', 'path2', 'path3']
+        assert System.properties["groovy.classpath"] == pathExpected.join(File.pathSeparator)
     }
 
     void testAddClasspath_emptyString_multi() {
-        System.properties["groovy.classpath"] = "path0:path1:path2"
+        def path1 = ['path0', 'path1', 'path2']
+        System.properties["groovy.classpath"] = path1.join(File.pathSeparator)
 
-        assert System.properties["groovy.classpath"] == "path0:path1:path2"
-        ClasspathUtils.addClasspath("::path3::path4:::")
-        assert System.properties["groovy.classpath"] == "path0:path1:path2:path3:path4"
+        assert System.properties["groovy.classpath"] == path1.join(File.pathSeparator)
+        
+        def path2 = ['', '', 'path3', '', 'path4', '', '', '']
+        ClasspathUtils.addClasspath(path2.join(File.pathSeparator))
+
+        def pathExpected = ['path0','path1','path2','path3','path4']
+        assert System.properties["groovy.classpath"] == pathExpected.join(File.pathSeparator)
     }
 
     void testAddClasspath_emptyString_one() {
