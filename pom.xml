@@ -153,30 +153,6 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>exec-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>gcc-compile</id>
-            <phase>compile</phase>
-            <goals>
-              <goal>exec</goal>
-            </goals>
-            <configuration>
-              <executable>gcc</executable>
-              <arguments>
-                <argument>-g</argument>
-                <argument>-mno-cygwin</argument>
-                <argument>src/main/c/groovyclient.c</argument>
-                <argument>-lws2_32</argument>
-                <argument>-o</argument>
-                <argument>${project.build.directory}/groovyclient</argument>
-              </arguments>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
@@ -195,44 +171,6 @@
             <exclude>**/Test*.java</exclude>
           </excludes>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>start-groovyserver</id>
-            <phase>pre-integration-test</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <tasks>
-                <exec executable="${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}/bin/groovyserver.bat" spawn="true">
-                  <env key="GROOVYSERV_HOME" value="${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}" />
-                  <arg value="-r"/>
-                  <arg value="-v"/>
-                </exec>
-                <sleep seconds="3"/>
-              </tasks>
-            </configuration>
-          </execution>
-          <execution>
-            <id>stop-groovyserver</id>
-            <phase>post-integration-test</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <tasks>
-                <exec executable="${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}/bin/groovyserver.bat" spawn="true">
-                  <env key="GROOVYSERV_HOME" value="${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}" />
-                  <arg value="-k"/>
-                </exec>
-              </tasks>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -307,4 +245,156 @@
       </plugin>
     </plugins>
   </build>
+  <profiles>
+    <profile>
+      <id>Mac/Linux</id>
+      <activation>
+        <os>
+          <family>unix</family>
+        </os>
+      </activation>
+      <properties>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>gcc-compile</id>
+                <phase>compile</phase>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <configuration>
+                  <executable>gcc</executable>
+                  <arguments>
+                    <argument>-g</argument>
+                    <argument>-o</argument>
+                    <argument>${project.build.directory}/groovyclient</argument>
+                    <argument>src/main/c/groovyclient.c</argument>
+                  </arguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>start-groovyserver</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <tasks>
+                    <exec executable="${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}/bin/groovyserver" spawn="true">
+                      <env key="GROOVYSERV_HOME" value="${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}" />
+                      <arg value="-r"/>
+                      <arg value="-v"/>
+                    </exec>
+                    <sleep seconds="3"/>
+                  </tasks>
+                </configuration>
+              </execution>
+              <execution>
+                <id>stop-groovyserver</id>
+                <phase>post-integration-test</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <tasks>
+                    <exec executable="${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}/bin/groovyserver" spawn="true">
+                      <env key="GROOVYSERV_HOME" value="${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}" />
+                      <arg value="-k"/>
+                    </exec>
+                  </tasks>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>Win32</id>
+      <activation>
+        <os>
+          <family>windows</family>
+        </os>
+      </activation>
+      <properties>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>gcc-compile</id>
+                <phase>compile</phase>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <configuration>
+                  <executable>gcc</executable>
+                  <arguments>
+                    <argument>-mno-cygwin</argument>
+                    <argument>-lws2_32</argument>
+                    <argument>-g</argument>
+                    <argument>-o</argument>
+                    <argument>${project.build.directory}/groovyclient</argument>
+                    <argument>src/main/c/groovyclient.c</argument>
+                  </arguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>start-groovyserver</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <tasks>
+                    <exec executable="${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}/bin/groovyserver.bat" spawn="true">
+                      <env key="GROOVYSERV_HOME" value="${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}" />
+                      <arg value="-r"/>
+                      <arg value="-v"/>
+                    </exec>
+                    <sleep seconds="3"/>
+                  </tasks>
+                </configuration>
+              </execution>
+              <execution>
+                <id>stop-groovyserver</id>
+                <phase>post-integration-test</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <tasks>
+                    <exec executable="${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}/bin/groovyserver.bat" spawn="true">
+                      <env key="GROOVYSERV_HOME" value="${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}" />
+                      <arg value="-k"/>
+                    </exec>
+                  </tasks>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>
