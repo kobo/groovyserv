@@ -174,6 +174,44 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>start-groovyserver</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <tasks>
+                <exec executable="${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}/bin/${groovyserver.file.name}" spawn="true">
+                  <env key="GROOVYSERV_HOME" value="${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}" />
+                  <arg value="-r"/>
+                  <arg value="-v"/>
+                </exec>
+                <sleep seconds="3"/>
+              </tasks>
+            </configuration>
+          </execution>
+          <execution>
+            <id>stop-groovyserver</id>
+            <phase>post-integration-test</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <tasks>
+                <exec executable="${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}/bin/${groovyserver.file.name}" spawn="true">
+                  <env key="GROOVYSERV_HOME" value="${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}" />
+                  <arg value="-k"/>
+                </exec>
+              </tasks>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
         <version>2.5</version>
         <configuration>
@@ -254,6 +292,7 @@
         </os>
       </activation>
       <properties>
+        <groovyserver.file.name>groovyserver</groovyserver.file.name>
       </properties>
       <build>
         <plugins>
@@ -279,44 +318,6 @@
               </execution>
             </executions>
           </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-antrun-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>start-groovyserver</id>
-                <phase>pre-integration-test</phase>
-                <goals>
-                  <goal>run</goal>
-                </goals>
-                <configuration>
-                  <tasks>
-                    <exec executable="${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}/bin/groovyserver" spawn="true">
-                      <env key="GROOVYSERV_HOME" value="${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}" />
-                      <arg value="-r"/>
-                      <arg value="-v"/>
-                    </exec>
-                    <sleep seconds="3"/>
-                  </tasks>
-                </configuration>
-              </execution>
-              <execution>
-                <id>stop-groovyserver</id>
-                <phase>post-integration-test</phase>
-                <goals>
-                  <goal>run</goal>
-                </goals>
-                <configuration>
-                  <tasks>
-                    <exec executable="${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}/bin/groovyserver" spawn="true">
-                      <env key="GROOVYSERV_HOME" value="${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}" />
-                      <arg value="-k"/>
-                    </exec>
-                  </tasks>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
         </plugins>
       </build>
     </profile>
@@ -328,6 +329,7 @@
         </os>
       </activation>
       <properties>
+        <groovyserver.file.name>groovyserver.bat</groovyserver.file.name>
       </properties>
       <build>
         <plugins>
@@ -351,44 +353,6 @@
                     <argument>${project.build.directory}/groovyclient</argument>
                     <argument>src/main/c/groovyclient.c</argument>
                   </arguments>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-antrun-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>start-groovyserver</id>
-                <phase>pre-integration-test</phase>
-                <goals>
-                  <goal>run</goal>
-                </goals>
-                <configuration>
-                  <tasks>
-                    <exec executable="${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}/bin/groovyserver.bat" spawn="true">
-                      <env key="GROOVYSERV_HOME" value="${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}" />
-                      <arg value="-r"/>
-                      <arg value="-v"/>
-                    </exec>
-                    <sleep seconds="3"/>
-                  </tasks>
-                </configuration>
-              </execution>
-              <execution>
-                <id>stop-groovyserver</id>
-                <phase>post-integration-test</phase>
-                <goals>
-                  <goal>run</goal>
-                </goals>
-                <configuration>
-                  <tasks>
-                    <exec executable="${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}/bin/groovyserver.bat" spawn="true">
-                      <env key="GROOVYSERV_HOME" value="${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}" />
-                      <arg value="-k"/>
-                    </exec>
-                  </tasks>
                 </configuration>
               </execution>
             </executions>
