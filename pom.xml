@@ -166,9 +166,11 @@
               <executable>gcc</executable>
               <arguments>
                 <argument>-g</argument>
+                <argument>-mno-cygwin</argument>
+                <argument>src/main/c/groovyclient.c</argument>
+                <argument>-lws2_32</argument>
                 <argument>-o</argument>
                 <argument>${project.build.directory}/groovyclient</argument>
-                <argument>src/main/c/groovyclient.c</argument>
               </arguments>
             </configuration>
           </execution>
@@ -206,7 +208,7 @@
             </goals>
             <configuration>
               <tasks>
-                <exec executable="${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}/bin/groovyserver" spawn="true">
+                <exec executable="${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}/bin/groovyserver.bat" spawn="true">
                   <env key="GROOVYSERV_HOME" value="${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}" />
                   <arg value="-r"/>
                   <arg value="-v"/>
@@ -223,7 +225,7 @@
             </goals>
             <configuration>
               <tasks>
-                <exec executable="${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}/bin/groovyserver" spawn="true">
+                <exec executable="${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}/bin/groovyserver.bat" spawn="true">
                   <env key="GROOVYSERV_HOME" value="${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}" />
                   <arg value="-k"/>
                 </exec>
