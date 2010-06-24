@@ -568,7 +568,13 @@ int main(int argn, char** argv) {
   WSADATA wsadata;
   if (WSAStartup(MAKEWORD(1,1), &wsadata) == SOCKET_ERROR) {
 	printf("Error creating socket.");
-	  exit(1);
+	exit(1);
+  }
+
+  // make standard output to binary mode.
+  if (_setmode( _fileno(stdout), _O_BINARY) < 0) {
+	printf("setmode failed.");
+	exit(1);
   }
 #endif
 
