@@ -16,6 +16,12 @@
 
 setlocal
 
+@rem Determine what directory it is in.
+set DIRNAME=%~dp0
+if "%DIRNAME%" == "" set DIRNAME=.\
+
+set GROOVYSERV_HOME=%DIRNAME%..
+
 :loop
 if "%1"=="" goto break
 if "%1"=="-q" set GROOVYSERV_OPTS=%GROOVYSERV_OPTS% -Dgroovyserver.verbose=false
@@ -27,12 +33,6 @@ if NOT "%1"=="-p" goto no_p
 shift
 goto loop
 :break
-
-@rem Determine what directory it is in.
-set DIRNAME=%~dp0
-if "%DIRNAME%" == "" set DIRNAME=.\
-
-set GROOVYSERV_HOME=%DIRNAME%..
 
 set CP=%GROOVYSERV_HOME%\lib\jna-3.2.2.jar;%CP%
 set CP=%GROOVYSERV_HOME%\lib\groovyserv-${project.version}.jar;%CP%
