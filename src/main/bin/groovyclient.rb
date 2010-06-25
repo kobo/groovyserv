@@ -24,7 +24,7 @@ DESTHOST = "localhost" # for security
 DESTPORT = 1961
 DOT_DIR = ENV['HOME'] + "/.groovy/groovyserv"
 COOKIE_FILE = DOT_DIR + "/cookie"
-GROOVYSERVER_CMD = ENV.fetch("GROOVYSERV_HOME", File.dirname($0)) + "/bin/groovyserver"
+GROOVYSERVER_CMD = ENV.fetch("GROOVYSERV_HOME", File.dirname($0)+"/..") + "/bin/groovyserver"
 
 #-------------------------------------------
 # Functions
