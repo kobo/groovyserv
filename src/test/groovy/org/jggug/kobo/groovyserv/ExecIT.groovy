@@ -23,26 +23,26 @@ import groovy.util.GroovyTestCase
  */
 class ExecIT extends GroovyTestCase {
 
-    static final String NL = System.getProperty("line.separator")
+    static final String SEP = System.getProperty("line.separator")
 
     void testExec() {
         def p = TestUtils.executeClientOk(["-e", '"println(\'hello\')"'])
-        assertEquals "hello" + NL, p.text
+        assertEquals "hello" + SEP, p.text
         assertEquals "", p.err.text
     }
 
     void testMultiLineWrite() {
         def p = TestUtils.executeClientOk(["-e", '"[0, 1, 2].each{ println(it) }"'])
-        assertEquals "0" + NL + "1" + NL + "2" + NL, p.text
+        assertEquals "0" + SEP + "1" + SEP + "2" + SEP, p.text
         assertEquals "", p.err.text
     }
 
     void testMultiLineReadAndWrite() {
         def p = TestUtils.executeClient(["-e", '"System.in.eachLine { line, index -> println(line * 2); if (index >= 2) { System.exit 0 } }"']) { p ->
-            p.out << "A" + NL
-            p.out << "B" + NL
+            p.out << "A" + SEP
+            p.out << "B" + SEP
         }
-        assertEquals "AA" + NL + "BB" + NL, p.text
+        assertEquals "AA" + SEP + "BB" + SEP, p.text
         assertEquals "", p.err.text
     }
 

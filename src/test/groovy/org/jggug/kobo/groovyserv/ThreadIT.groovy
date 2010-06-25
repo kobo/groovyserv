@@ -23,19 +23,19 @@ import groovy.util.GroovyTestCase
  */
 class ThreadIT extends GroovyTestCase {
 
-    static final String NL = System.getProperty("line.separator")
+    static final String SEP = System.getProperty("line.separator")
 
     void testExecOneliner() {
         assertEquals(
-            'output from thread' + NL,
+            'output from thread' + SEP,
             TestUtils.executeClientOk(["-e", '"(new Thread({-> println(\'output from thread\') } as Runnable)).start()"']).text
         )
     }
 
     void testExecFile() {
         assertEquals(
-            'output from thread' + NL,
-            TestUtils.executeClientOk(["src/test/resources/forThreadTest.groovy"]).text
+            'output from thread' + SEP,
+            TestUtils.executeClientOk(["-c", "UTF-8", "src/test/resources/forThreadTest.groovy"]).text
         )
     }
 
@@ -52,7 +52,7 @@ class ThreadIT extends GroovyTestCase {
             Thread.currentThread().interrupt()
         """.replaceAll(/\n/, '; ').replaceAll(/ +/, ' ').trim()
         assertEquals(
-            'started' + NL,
+            'started' + SEP,
             TestUtils.executeClientOk(["-e", "$script"]).text
         )
     }
@@ -70,7 +70,7 @@ class ThreadIT extends GroovyTestCase {
             Thread.currentThread().interrupt()
         """.replaceAll(/\n/, '; ').replaceAll(/ +/, ' ').trim()
         assertEquals(
-            'started' + NL,
+            'started' + SEP,
             TestUtils.executeClientOk(["-e", "$script"]).text
         )
     }

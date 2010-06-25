@@ -26,14 +26,14 @@ import groovy.util.GroovyTestCase
  */
 class EncodingIT extends GroovyTestCase {
 
-    static final String NL = System.getProperty("line.separator")
+    static final String SEP = System.getProperty("line.separator")
 
     void testExecOneliner() {
-        assertEquals "あいうえお" + NL, TestUtils.executeClientOk(["-e", '"println(\'あいうえお\')"']).text
+        assertEquals "あいうえお" + SEP, TestUtils.executeClientOk(["-e", '"println(\'あいうえお\')"']).text
     }
 
     void testExecFile() {
-        assertEquals "あいうえお" + NL, TestUtils.executeClientOk(["src/test/resources/forEncodingTest.groovy"]).text
+        assertEquals "あいうえお" + SEP, TestUtils.executeClientOk(["-c", "UTF-8", "src/test/resources/forEncodingTest.groovy"]).text
     }
 
 }
