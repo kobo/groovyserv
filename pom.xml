@@ -184,7 +184,7 @@
             </goals>
             <configuration>
               <tasks>
-                <exec executable="gcc" failonerror="true">
+                  <exec executable="${groovyclient.gcc.exe}" failonerror="true">
                   <arg line="${groovyclient.gcc.args}" />
                 </exec>
               </tasks>
@@ -307,6 +307,7 @@
       </activation>
       <properties>
         <groovyserver.file.name>groovyserver</groovyserver.file.name>
+        <groovyclient.gcc.exe>gcc</groovyclient.gcc.exe>
         <groovyclient.gcc.args>-g -o ${project.build.directory}/groovyclient src/main/c/groovyclient.c</groovyclient.gcc.args>
       </properties>
     </profile>
@@ -319,7 +320,8 @@
       </activation>
       <properties>
         <groovyserver.file.name>groovyserver.bat</groovyserver.file.name>
-        <groovyclient.gcc.args>-mno-cygwin -lws2_32 -g -o ${project.build.directory}/groovyclient src/main/c/groovyclient.c</groovyclient.gcc.args>
+        <groovyclient.gcc.exe>gcc-3</groovyclient.gcc.exe>
+        <groovyclient.gcc.args>-mno-cygwin -g -o ${project.build.directory}/groovyclient src/main/c/groovyclient.c -lws2_32</groovyclient.gcc.args>
       </properties>
     </profile>
   </profiles>
