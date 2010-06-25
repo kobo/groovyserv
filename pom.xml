@@ -184,7 +184,7 @@
             </goals>
             <configuration>
               <tasks>
-                <exec executable="gcc" spawn="true">
+                <exec executable="gcc" failonerror="true">
                   <arg line="${groovyclient.gcc.args}" />
                 </exec>
               </tasks>
