@@ -464,10 +464,10 @@ static int fd_soc;
 
 static void signal_handler(int sig) {
 #ifdef WINDOWS_WITHOUT_CYGWIN
-  send(fd_soc, "Size: -1\n\n", 9, 0);
+  send(fd_soc, "Size: -1\n\n", 10, 0);
   closesocket(fd_soc);
 #else
-  write(fd_soc, "Size: -1\n\n", 9);
+  write(fd_soc, "Size: -1\n\n", 10);
   close(fd_soc);
 #endif
   exit(1);
