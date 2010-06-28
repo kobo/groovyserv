@@ -23,6 +23,9 @@ import groovy.util.GroovyTestCase
  */
 class DirectAccessIT extends GroovyTestCase {
 
+    // output of "println" depends on "line.separator" system property
+    private static final String SEP = System.getProperty("line.separator")
+
     void testOnlyInvocationRequest() {
         new Socket("localhost", 1961).withStreams { ins, out ->
 // ------------------------
@@ -39,10 +42,9 @@ Channel: out
 Size: 5
 
 helloChannel: out
-Size: 1
+Size: ${SEP.size()}
 
-
-Status: 0
+${SEP}Status: 0
 
 """.toString()
         }
@@ -64,8 +66,7 @@ Thread.sleep(500)
 out << """\
 Size: 2
 
-A
-"""
+A${SEP}""".toString()
 Thread.sleep(500)
 // ------------------------
 assert ins.availableText == """\
@@ -73,17 +74,15 @@ Channel: out
 Size: 2
 
 AAChannel: out
-Size: 1
+Size: ${SEP.size()}
 
-
-""".toString()
+${SEP}""".toString()
 Thread.sleep(500)
 // ------------------------
 out << """\
 Size: 2
 
-B
-"""
+B${SEP}""".toString()
 Thread.sleep(500)
 // ------------------------
 assert ins.availableText == """\
@@ -91,10 +90,9 @@ Channel: out
 Size: 2
 
 BBChannel: out
-Size: 1
+Size: ${SEP.size()}
 
-
-""".toString()
+${SEP}""".toString()
 Thread.sleep(500)
 // ------------------------
 out << """\
