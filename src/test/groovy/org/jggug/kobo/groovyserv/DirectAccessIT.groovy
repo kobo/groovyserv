@@ -64,7 +64,7 @@ Cookie: ${FileUtils.COOKIE_FILE.text}
 Thread.sleep(500)
 // ------------------------
 out << """\
-Size: 2
+Size: ${SEP.size() + 1}
 
 A${SEP}""".toString()
 Thread.sleep(500)
@@ -80,7 +80,7 @@ ${SEP}""".toString()
 Thread.sleep(500)
 // ------------------------
 out << """\
-Size: 2
+Size: ${SEP.size() + 1}
 
 B${SEP}""".toString()
 Thread.sleep(500)
