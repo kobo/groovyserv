@@ -215,7 +215,10 @@ char* read_line(int fd, char* buf, int size) {
 	   printf("error : %d\n", WSAGetLastError());
 	   exit(1);
 	 }
-	 assert(ret == 1);
+	 if (ret != 1) {
+	   // signal handler output breaks stream.
+       return NULL;
+	 }
 #else
 	 read(fd, buf+i, 1);
 #endif
@@ -363,7 +366,7 @@ int session(int fd)
   while (1) {
 	int size = read_headers(fd, headers, MAX_HEADER);
 	if (size == 0) {
-	  continue;
+	  return 1;
 	}
 	// Process exit
 	char* status = find_header(headers, HEADER_KEY_STATUS, size);
