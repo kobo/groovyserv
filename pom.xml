@@ -231,7 +231,7 @@
                 <GROOVYSERV_HOME>${groovyserv.home}</GROOVYSERV_HOME>
               </environmentVariables>
               <systemPropertyVariables>
-                <groovyservClientExecutable>${groovyserv.home}/bin/groovyclient.rb</groovyservClientExecutable>
+                <groovyservClientExecutable>ruby ${groovyserv.home}/bin/groovyclient.rb</groovyservClientExecutable>
               </systemPropertyVariables>
               <reportsDirectory>target/failsafe-reports/ruby</reportsDirectory>
             </configuration>
