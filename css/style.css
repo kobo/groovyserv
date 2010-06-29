@@ -1,0 +1,81 @@
+body {
+	margin-top: 1.0em;
+	background-color: #aaaaff;
+	font-family: "Helvetica,Arial,FreeSans";
+	color: #222222;
+	font-size: 1.1em;
+}
+#container {
+	margin: 0 auto;
+	width: 700px;
+}
+h1 { font-size: 3.8em; color: #333333; margin-bottom: 3px; }
+h1 a { text-decoration: none; }
+h2 { font-size: 1.5em; color: #333333; }
+h3 { text-align: center; color: #333333; }
+a { color: #333333; }
+.small { font-size: 0.4em; text-align: right; }
+.description { font-size: 1.1em; margin-bottom: 30px; margin-top: 30px; }
+.download { float: right; }
+pre { background: #000; color: #fff; padding: 15px;}
+hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
+.footer { text-align:center; padding-top:30px; font-style: italic; }
+#header {
+	background: white url('images/gray-shade.png') repeat-x bottom;
+	padding: 20px;
+}
+
+#head ul {
+font-size:1.5em;
+font-family:"lucida console", "monaco", "andale mono", "bitstream vera sans mono",
+"consolas", monospace;
+font-weight:normal;
+text-transform:uppercase;
+letter-spacing:2px;
+text-align:center;
+margin:0;
+padding:0 40px 0.25em 40px;
+}
+#head ul li {
+display:inline;
+list-style-type:none;
+padding:0 0.5em 0 0;
+}
+#head ul a, #head ul a:link, #head ul a:visited {
+color:#56534f;
+text-decoration:none;
+}
+#head ul a:hover {
+color:#000;
+text-decoration:underline;
+}
+
+#content {
+color:#111;
+max-width:52em;
+min-width:27em;
+margin:7px auto;
+border-top:4px solid #333355;
+border-bottom:4px solid #333355;
+padding-top:10px;
+}
+
+dt.a {
+    margin-top:1em;
+}
+
+dt {
+	text-decoration: bold;
+	font-size:1.2em;
+	line-height: 0.5em;
+}
+
+.QANDA {
+    margin:7px auto;
+    padding: 10px 10px 10px 10px;
+	border-top:4px solid #555555;
+	background: #eeeeff;
+    border-radius: 10px;	/* CSS3ëêàƒ */
+    -webkit-border-radius: 10px;	/* Safari,Google Chromeóp */
+    -moz-border-radius: 10px;	/* Firefoxóp */
+}
