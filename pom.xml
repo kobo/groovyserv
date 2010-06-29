@@ -179,6 +179,10 @@
         <version>2.5</version>
         <configuration>
           <encoding>UTF-8</encoding>
+          <forkedProcessTimeoutInSeconds>15</forkedProcessTimeoutInSeconds>
+          <environmentVariables>
+            <GROOVYSERV_HOME>${groovyserv.home}</GROOVYSERV_HOME>
+          </environmentVariables>
         </configuration>
         <executions>
           <execution>
@@ -190,9 +194,6 @@
             </goals>
             <configuration>
               <test>DirectAccessIT</test>
-              <environmentVariables>
-                <GROOVYSERV_HOME>${groovyserv.home}</GROOVYSERV_HOME>
-              </environmentVariables>
               <reportsDirectory>target/failsafe-reports/direct</reportsDirectory>
             </configuration>
           </execution>
@@ -207,9 +208,6 @@
               <excludes>
                 <exclude>**/DirectAccessIT*</exclude>
               </excludes>
-              <environmentVariables>
-                <GROOVYSERV_HOME>${groovyserv.home}</GROOVYSERV_HOME>
-              </environmentVariables>
               <systemPropertyVariables>
                 <groovyservClientExecutable>${groovyserv.home}/bin/groovyclient</groovyservClientExecutable>
               </systemPropertyVariables>
@@ -227,9 +225,6 @@
               <excludes>
                 <exclude>**/DirectAccessIT*</exclude>
               </excludes>
-              <environmentVariables>
-                <GROOVYSERV_HOME>${groovyserv.home}</GROOVYSERV_HOME>
-              </environmentVariables>
               <systemPropertyVariables>
                 <groovyservClientExecutable>ruby ${groovyserv.home}/bin/groovyclient.rb</groovyservClientExecutable>
               </systemPropertyVariables>
@@ -351,7 +346,6 @@
                 <configuration>
                   <tasks>
                     <echo message="Startup groovyserver for integration test (with cygwin)" />
-                    <echo message="${groovyserv.home}" />
                     <exec executable="sh" spawn="true">
                       <env key="GROOVYSERV_HOME" value="${groovyserv.home}"/>
                       <arg value="-c"/>
@@ -370,7 +364,6 @@
                 <configuration>
                   <tasks>
                     <echo message="Forcely shutdown groovyserver in the end of integration test (with cygwin)" />
-                    <echo message="${groovyserv.home}" />
                     <exec executable="sh" spawn="true">
                       <env key="GROOVYSERV_HOME" value="${groovyserv.home}"/>
                       <arg value="-c"/>
@@ -389,7 +382,6 @@
                 <configuration>
                   <tasks>
                     <echo message="Try to shutdown groovyserver in order to clean (with cygwin)" />
-                    <echo message="${groovyserv.home}" />
                     <exec executable="sh" spawn="true">
                       <env key="GROOVYSERV_HOME" value="${groovyserv.home}"/>
                       <arg value="-c"/>
