@@ -53,7 +53,7 @@ def session(socket)
 end
 
 def send_command(socket)
-  socket.puts "Cwd: #{Dir::getwd}"
+  socket.puts "Cwd: #{current_dir}"
   ARGV.each do |it|
     socket.puts "Arg: #{it}"
   end
@@ -61,6 +61,15 @@ def send_command(socket)
     socket.puts "Cookie: #{f.read}"
   }
   socket.puts ""
+end
+
+def current_dir()
+  pwd = Dir::pwd
+  if pwd =~ /cygdrive/ # for cygwin
+    pwd.gsub("/cygdrive/", "").gsub(/^([a-zA-Z])/) { "#{$1}:" }
+  else
+    pwd
+  end
 end
 
 def handle_socket(socket)
