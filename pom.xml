@@ -36,6 +36,7 @@
   </organization>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <groovyserv.home>target/groovyserv-${version}.dir/groovyserv-${version}</groovyserv.home>
   </properties>
   <dependencies>
     <dependency>
@@ -174,26 +175,6 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>compile-gcc</id>
-            <phase>compile</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <tasks>
-                  <exec executable="${groovyclient.gcc.exe}" failonerror="true">
-                  <arg line="${groovyclient.gcc.args}" />
-                </exec>
-              </tasks>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
         <version>2.5</version>
         <configuration>
@@ -210,9 +191,9 @@
             <configuration>
               <test>DirectAccessIT</test>
               <environmentVariables>
-                <GROOVYSERV_HOME>${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}</GROOVYSERV_HOME>
+                <GROOVYSERV_HOME>${groovyserv.home}</GROOVYSERV_HOME>
               </environmentVariables>
-              <reportsDirectory>${project.build.directory}/failsafe-reports/direct</reportsDirectory>
+              <reportsDirectory>target/failsafe-reports/direct</reportsDirectory>
             </configuration>
           </execution>
           <execution>
@@ -227,12 +208,12 @@
                 <exclude>**/DirectAccessIT*</exclude>
               </excludes>
               <environmentVariables>
-                <GROOVYSERV_HOME>${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}</GROOVYSERV_HOME>
+                <GROOVYSERV_HOME>${groovyserv.home}</GROOVYSERV_HOME>
               </environmentVariables>
               <systemPropertyVariables>
-                <groovyservClientExecutable>${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}/bin/groovyclient</groovyservClientExecutable>
+                <groovyservClientExecutable>${groovyserv.home}/bin/groovyclient</groovyservClientExecutable>
               </systemPropertyVariables>
-              <reportsDirectory>${project.build.directory}/failsafe-reports/c</reportsDirectory>
+              <reportsDirectory>target/failsafe-reports/c</reportsDirectory>
             </configuration>
           </execution>
           <execution>
@@ -247,12 +228,12 @@
                 <exclude>**/DirectAccessIT*</exclude>
               </excludes>
               <environmentVariables>
-                <GROOVYSERV_HOME>${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}</GROOVYSERV_HOME>
+                <GROOVYSERV_HOME>${groovyserv.home}</GROOVYSERV_HOME>
               </environmentVariables>
               <systemPropertyVariables>
-                <groovyservClientExecutable>${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}/bin/groovyclient.rb</groovyservClientExecutable>
+                <groovyservClientExecutable>${groovyserv.home}/bin/groovyclient.rb</groovyservClientExecutable>
               </systemPropertyVariables>
-              <reportsDirectory>${project.build.directory}/failsafe-reports/ruby</reportsDirectory>
+              <reportsDirectory>target/failsafe-reports/ruby</reportsDirectory>
             </configuration>
           </execution>
         </executions>
@@ -273,16 +254,26 @@
           <family>unix</family>
         </os>
       </activation>
-      <properties>
-        <groovyclient.gcc.exe>gcc</groovyclient.gcc.exe>
-        <groovyclient.gcc.args>-g -o ${project.build.directory}/groovyclient src/main/c/groovyclient.c</groovyclient.gcc.args>
-      </properties>
       <build>
         <plugins>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-antrun-plugin</artifactId>
             <executions>
+              <execution>
+                <id>compile-gcc</id>
+                <phase>compile</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <tasks>
+                    <exec executable="gcc" failonerror="true">
+                      <arg line="-g -o target/groovyclient src/main/c/groovyclient.c" />
+                    </exec>
+                  </tasks>
+                </configuration>
+              </execution>
               <execution>
                 <id>start-groovyserver</id>
                 <phase>pre-integration-test</phase>
@@ -291,8 +282,10 @@
                 </goals>
                 <configuration>
                   <tasks>
-                      <exec executable="${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}/bin/groovyserver" spawn="true">
-                      <env key="GROOVYSERV_HOME" value="${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}" />
+                    <echo message="Startup groovyserver for integration test" />
+                    <echo message="${groovyserv.home}" />
+                    <exec executable="${groovyserv.home}/bin/groovyserver" spawn="true">
+                      <env key="GROOVYSERV_HOME" value="${groovyserv.home}" />
                       <arg value="-r"/>
                       <arg value="-v"/>
                     </exec>
@@ -308,8 +301,10 @@
                 </goals>
                 <configuration>
                   <tasks>
-                      <exec executable="${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}/bin/groovyserver" spawn="true">
-                      <env key="GROOVYSERV_HOME" value="${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}" />
+                    <echo message="Forcely shutdown groovyserver in the end of integration test" />
+                    <echo message="${groovyserv.home}" />
+                    <exec executable="${groovyserv.home}/bin/groovyserver" spawn="true">
+                      <env key="GROOVYSERV_HOME" value="${groovyserv.home}" />
                       <arg value="-k"/>
                     </exec>
                   </tasks>
@@ -327,10 +322,6 @@
           <family>windows</family>
         </os>
       </activation>
-      <properties>
-        <groovyclient.gcc.exe>gcc-3</groovyclient.gcc.exe>
-        <groovyclient.gcc.args>-mno-cygwin -g -o ${project.build.directory}/groovyclient src/main/c/groovyclient.c -lws2_32</groovyclient.gcc.args>
-      </properties>
       <build>
         <plugins>
           <plugin>
@@ -338,31 +329,35 @@
             <artifactId>maven-antrun-plugin</artifactId>
             <executions>
               <execution>
+                <id>compile-gcc</id>
+                <phase>compile</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <tasks>
+                    <exec executable="gcc-3" failonerror="true">
+                      <arg line="-mno-cygwin -g -o target/groovyclient src/main/c/groovyclient.c -lws2_32" />
+                    </exec>
+                  </tasks>
+                </configuration>
+              </execution>
+              <execution>
                 <id>start-groovyserver</id>
                 <phase>pre-integration-test</phase>
                 <goals>
                   <goal>run</goal>
                 </goals>
                 <configuration>
-                  <!-- FIXME -->
                   <tasks>
-                    <echo message="Startup groovyserver for integration test" />
-                    <exec executable="cygpath" outputproperty="groovyserv.home">
-                      <arg value="--unix"/>
-                      <arg value="${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}" />
-                    </exec>
-                    <exec executable="cygpath" outputproperty="groovyserver.command">
-                      <arg value="--unix"/>
-                      <arg value="${groovyserv.home}/bin/groovyserver" />
-                    </exec>
+                    <echo message="Startup groovyserver for integration test (with cygwin)" />
                     <echo message="${groovyserv.home}" />
-                    <echo message="${groovyserver.command}" />
                     <exec executable="sh" spawn="true">
                       <env key="GROOVYSERV_HOME" value="${groovyserv.home}"/>
                       <arg value="-c"/>
-                      <arg value="${groovyserver.command} -r -v"/>
+                      <arg value="${groovyserv.home}/bin/groovyserver -r -v"/>
                     </exec>
-                    <sleep seconds="15"/>
+                    <sleep seconds="15"/><!-- my machine is too slow :-( -->
                   </tasks>
                 </configuration>
               </execution>
@@ -373,23 +368,13 @@
                   <goal>run</goal>
                 </goals>
                 <configuration>
-                  <!-- FIXME -->
                   <tasks>
-                    <echo message="Forcely shutdown groovyserver in the end of integration test" />
-                    <exec executable="cygpath" outputproperty="groovyserv.home">
-                      <arg value="--unix"/>
-                      <arg value="${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}" />
-                    </exec>
-                    <exec executable="cygpath" outputproperty="groovyserver.command">
-                      <arg value="--unix"/>
-                      <arg value="${groovyserv.home}/bin/groovyserver" />
-                    </exec>
+                    <echo message="Forcely shutdown groovyserver in the end of integration test (with cygwin)" />
                     <echo message="${groovyserv.home}" />
-                    <echo message="${groovyserver.command}" />
                     <exec executable="sh" spawn="true">
                       <env key="GROOVYSERV_HOME" value="${groovyserv.home}"/>
                       <arg value="-c"/>
-                      <arg value="${groovyserver.command} -k"/>
+                      <arg value="${groovyserv.home}/bin/groovyserver -k"/>
                     </exec>
                   </tasks>
                 </configuration>
@@ -402,24 +387,15 @@
                   <goal>run</goal>
                 </goals>
                 <configuration>
-                  <!-- FIXME -->
                   <tasks>
-                    <echo message="Forcely shutdown groovyserver in order to clean" />
-                    <exec executable="cygpath" outputproperty="groovyserv.home">
-                      <arg value="--unix"/>
-                      <arg value="${project.build.directory}/groovyserv-${version}.dir/groovyserv-${version}" />
-                    </exec>
-                    <exec executable="cygpath" outputproperty="groovyserver.command">
-                      <arg value="--unix"/>
-                      <arg value="${groovyserv.home}/bin/groovyserver" />
-                    </exec>
+                    <echo message="Try to shutdown groovyserver in order to clean (with cygwin)" />
                     <echo message="${groovyserv.home}" />
-                    <echo message="${groovyserver.command}" />
                     <exec executable="sh" spawn="true">
                       <env key="GROOVYSERV_HOME" value="${groovyserv.home}"/>
                       <arg value="-c"/>
-                      <arg value="${groovyserver.command} -k"/>
+                      <arg value="${groovyserv.home}/bin/groovyserver -k"/>
                     </exec>
+                    <sleep seconds="5"/><!-- my machine is too slow :-( -->
                   </tasks>
                 </configuration>
               </execution>
