@@ -34,7 +34,7 @@ runs on the others.
 
 Version of Groovy is following:
 
-  - Groovy 1.6 or later
+  - Groovy 1.7 or later
 
 ==========
 Language
@@ -183,8 +183,8 @@ Options are as follows:
 
   -v verbose output. print debugging information etc.
   -q quiet.(default)
-  -k kill the running groovyserver.
-  -r restart groovyserver.
+  -k kill the running groovyserver.(groovyserver.bat cannot use this)
+  -r restart groovyserver.(groovyserver.bat cannot use this)
   -p <port> specify the port that connected from groovyclient.
 
 =============
@@ -207,17 +207,6 @@ Log file
 The output from groovyserver are logged to:
 
   ~/.groovy/groovyserv/groovyserver.log
-
-======
-Tips
-======
-
-Following aliases might be useful.
-
-  alias groovy=groovyclient
-  alias groovyc="groovyclient -e 'org.codehaus.groovy.tools.FileSystemCompiler.main(args)'"
-  alias groovysh="groovyclient -e 'groovy.ui.InteractiveShell.main(args)'"
-  alias groovyConsole="groovyclient -e 'groovy.ui.Console.main(args)'"
 
 =========
 Support

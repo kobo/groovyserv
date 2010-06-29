@@ -45,7 +45,7 @@ GroovyServを使うことで、Groovyコマンドの起動時間を短縮し、�
 
 また、Groovyのバージョンは以下のとおりです。
 
-  - Groovy 1.6以降
+  - Groovy 1.7以降
 
 ============
 言語と構成
@@ -55,9 +55,10 @@ GroovyServを使うことで、Groovyコマンドの起動時間を短縮し、�
 ントが現在動作しています。サーバサイドではJNA(Java Native Access)を使用
 しています。使用するコマンドは以下の通りです。
 
-  groovyserver     GroovyServサーバを起動するコマンド
-  groovyclient     ネイティブバイナリ版GroovyServクライアント。
-  groovyclient.rb  Ruby版GroovyServクライアント。
+  groovyserver     GroovyServサーバを起動するコマンド(シェルスクリプト)
+  groovyserver.bat GroovyServサーバを起動するコマンド(Windows用)
+  groovyclient     ネイティブバイナリ版GroovyServクライアント(バイナリ)
+  groovyclient.rb  Ruby版GroovyServクライアント(要Ruby)
 
 ==============
 セキュリティ
@@ -203,8 +204,8 @@ groovyserverの起動オプションは以下のとおり。
 
    -v 冗長表示。デバッグ情報などを表示します。
    -q メッセージを表示しない。デフォルト。
-   -k 起動しているgroovyserverを終了します。
-   -r 起動しているgroovyserverを再起動します(停止+起動)。
+   -k 起動しているgroovyserverを終了します。※groovyserver.batでは使えません。
+   -r 起動しているgroovyserverを再起動します(停止+起動)。※groovyserver.batでは使えません。
    -p <port> groovyserverがクライアントとの通信に使用する
              ポート番号を指定します。
 
@@ -225,22 +226,9 @@ GROOVYSERVER_PORTを設定してください。
 ログファイル
 ==============
 
-groovyserverのログファイルは以下のファイルに出力されます。
+groovyserverのログは以下のファイルに出力されます。
 
   ~/.groovy/groovyserv/groovyserver.log
-
-======
-Tips
-======
-
-groovyコマンドを実行するとgroovyclientコマンドが呼び出されるように、以
-下のようにエイリアス(別名)指定を行っておくと便利です。以下はbash用のエ
-イリアスの設定です。
-
-  alias groovy=groovyclient
-  alias groovyc="groovyclient -e 'org.codehaus.groovy.tools.FileSystemCompiler.main(args)'"
-  alias groovysh="groovyclient -e 'groovy.ui.InteractiveShell.main(args)'"
-  alias groovyConsole="groovyclient -e 'groovy.ui.Console.main(args)'"
 
 ========
 連絡先
