@@ -179,7 +179,7 @@
         <version>2.5</version>
         <configuration>
           <encoding>UTF-8</encoding>
-          <forkedProcessTimeoutInSeconds>15</forkedProcessTimeoutInSeconds>
+          <forkedProcessTimeoutInSeconds>30</forkedProcessTimeoutInSeconds>
           <environmentVariables>
             <GROOVYSERV_HOME>${groovyserv.home}</GROOVYSERV_HOME>
           </environmentVariables>
