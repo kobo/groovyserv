@@ -26,7 +26,7 @@ hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
 }
 
 #head ul {
-font-size:1.5em;
+font-size:1.2em;
 font-family:"lucida console", "monaco", "andale mono", "bitstream vera sans mono",
 "consolas", monospace;
 font-weight:normal;
@@ -41,6 +41,11 @@ display:inline;
 list-style-type:none;
 padding:0 0.5em 0 0;
 }
+
+a img {
+    border-style:none;
+}
+
 #head ul a, #head ul a:link, #head ul a:visited {
 color:#56534f;
 text-decoration:none;
