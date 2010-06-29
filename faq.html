@@ -21,295 +21,294 @@
 		  <li><a href='faq.html'><img src="images/faq.png">FAQ</a></li>
 		  <li><a href='download.html'><img src="images/download.png">DOWNLOAD</a></li>
 		  <li><a href='http://github.com/kobo/groovyserv'><img src="images/code.png">Code</a></li>
-		</ul>
-	  </div>
-	  <div id='content'>
-
-<dl>
-
-<h2>Contents</h2>
-<ul>
-  <li><a href="#q1">Why groovyserv uses JNA(Java Native Access)?</a></dt>
-  <li><a href="#q2">What happens if I invoke two groovy script which have different
-current working directory?</a></dt>
-  <li><a href="#q3">Supported environments?</a></dt>
-  <li><a href="#q4">Is there MacPorts, *.deb, *.rpm package?</a></dt>
-  <li><a href="#q5">Does cygwin required on windows?</a></dt>
-  <li><a href="#q6">Why groovy client is written in C? Why it is not written in Java?</a></dt>
-  <li><a href="#q7">What is the server-client communication protocol?</a></dt>
-  <li><a href="#q8">If the JVM is shared among each script sessions, static variables are
-shared too?</a></dt>
-  <li><a href="#q9">How I invoke the original groovy command when I aliased 'groovy' to
-groovyclient?</a></dt>
-  <li><a href="#q10">Where is the place GroovyServ log message stored?</a></dt>
-  <li><a href="#q11">How I restart or kill groovyserver?</a></dt>
-  <li><a href="#q12">Why the name of this software is 'GroovyServ'? </a></dt>
-  <li><a href="#q13">Can I use groovyserv by grape's grab annotations?</a></dt>
-  <li><a href="#q14">Can I make groovyclient connect to groovyserver which runs on remote</a></dt>
-  <li><a href="#q15">Can I use JQS(Java Quick Start) with GroovyServe at the same time?</a></dt>
-</ul>
-
-<h2>FAQ</h2>
-
-<div class='QANDA'>
-<dt class='q'><a name="q1">Q</a></dt>
-<dd>Why groovyserv uses JNA(Java Native Access)?
-</dd>
-<dt class='A'>A</dt>
-<dd>
-Because of to change current working directory. To be more specific,
-to call chdir(2) system call or _chdir win32 C runtime function. You
-might think 'user.dir' system property can be used for same purpose ,
-in pure way, but it is not enough because it has no effect to all of
-Java functionality about current working directory. For example, it
-has no effect to call new FileInputStream(".").
-</dd>
-
-</div>
-<div class='QANDA'>
-<dt class='q'><a name="q2">Q</a></dt>
-
-<dd>
-What happens if I invoke two groovy script which have different
-current working directory? For example, using sub-shell and pipe,
-invoke two groovy script concurrently:
- $ (cd /tmp; groovyclient read.groovy ) | ( cd  /var/tmp; groovyclient output.groovy )
-
-</dd>
-<dt class='A'>A</dt>
-
-<dd>
-Exception is occurred when the second groovy command is
-invoked. Following is OK.
-
-  (cd /tmp; groovyclient read.groovy ) | ( cd /tmp; groovyclient output.groovy )
-</dd>
-
-</div>
-<div class='QANDA'>
-<dt class='q'><a name="q3">Q</a></dt>
-
-<dd>
-Supported environments?
-</dd>
-
-<dt class='A'>A</dt>
-
-<dd>
-So far Ubuntu Linux, Windows and Mac OS X are supported.  Basically,
-if the environment supprted by JDK and JNA, GroovyServe can run on
-there potentially.
-</dd>
-
-</div>
-<div class='QANDA'>
-<dt class='q'><a name="q4">Q</a></dt>
-
-<dd>
-Is there MacPorts, *.deb, *.rpm package?
-</dd>
-
-<dt class='A'>A</dt>
-
-<dd>
-No it isn't.
-</dd>
-
-</div>
-<div class='QANDA'>
-<dt class='q'><a name="q5">Q</a></dt>
-
-<dd>
-Does cygwin required on windows?
-</dd>
-
-<dt class='A'>A</dt>
-
-<dd>
-No, it doesn't. In GroovyServ 0.1, groovyclient.exe requires
-cygwin.dll.  However, at GroovyServ 0.2, we rewrite it by mingw and
-the binary don't requires cygwin.dll now, and don't need cygwin
-environment at all.
-</dd>
-
-</div>
-<div class='QANDA'>
-<dt class='q'><a name="q6">Q</a></dt>
-
-<dd>
-Why groovy client is written in C? Why it is not written in Java?
-</dd>
-
-<dt class='A'>A</dt>
-
-<dd>
-This software is just for to reduce startup-time of groovy script.  So
-quck response is the most important factor, so we decided to not to
-use JVM for groovyclient.
-</dd>
-
-</div>
-<div class='QANDA'>
-<dt class='q'><a name="q7">Q</a></dt>
-
-<dd>
-What is the server-client communication protocol?
-</dd>
-
-<dt class='A'>A</dt>
-
-<dd>
-It is a original proprietary protocol. To know the sequence of the
-protocol, please look at the comments in RequestHeader.groovy, or
-groovyclient.rb for details.
-</dd>
-
-</div>
-<div class='QANDA'>
-<dt class='q'><a name="q8">Q</a></dt>
-
-<dd>
-If the JVM is shared among each script sessions, static variables are
-shared too?
-</dd>
-
-<dt class='A'>A</dt>
-
-<dd>
-Yes and no. If the static variables are defined in the script or
-groovy classes you run, those are created on a GroovyClassLoader which
-created for each script sessions. In this case, static variables
-aren't shared for each script because class loaders are diffeent. On
-the other hand, if the static variables are defined by system/bootstrap
-class loaders, those are shared. For example, the values which you
-stored in System.getProperties() are shared among all scripts which
-invoked on the SroovyServ.
-</dd>
-
-</div>
-<div class='QANDA'>
-<dt class='q'><a name="q9">Q</a></dt>
-
-<dd>
-How I invoke the original groovy command when I aliased 'groovy' to
-groovyclient?
-</dd>
-
-<dt class='A'>A</dt>
-
-<dd>
-Please apply the backslash like \groovy(for bash or C-Shell) or
-specify groovy command in full path form.
-</dd>
-
-</div>
-<div class='QANDA'>
-<dt class='q'><a name="q10">Q</a></dt>
-
-<dd>
-Where is the place GroovyServ log message stored?
-</dd>
-
-<dt class='A'>A</dt>
-
-<dd>
-$HOME/.groovy/groovyserver/groovyserver.log.
-</dd>
-
-</div>
-<div class='QANDA'>
-<dt class='q'><a name="q11">Q</a></dt>
-
-<dd>
-How I restart or kill groovyserver?
-</dd>
-
-<dt class='A'>A</dt>
-
-<dd>
-In MacOS X, Linux and cygwin environment, you can specify -r (restart)
-and -k (kill) options to groovyserver command to do it. But 'nocygwin'
-environment, there is no way to restart/kill command line. Please use
-task manager to kill groovyserver, and restart again through
-groovyclient.
-</dd>
-
-</div>
-<div class='QANDA'>
-<dt class='q'><a name="q12">Q</a></dt>
-
-<dd>
-Why the name of this software is 'GroovyServ'? 
-</dd>
-
-<dt class='A'>A</dt>
-
-<dd>
-Because this is like "Gnuserv" for emacs. Do you know?
-</dd>
-
-</div>
-<div class='QANDA'>
-<dt class='q'><a name="q13">Q</a></dt>
-
-<dd>
-Can I use groovyserv by grape's grab annotations?
-</dd>
-
-<dt class='A'>A</dt>
-
-<dd>
-No you can't.
-</dd>
-
-</div>
-<div class='QANDA'>
-<dt class='q'><a name="q14">Q</a></dt>
-
-<dd>
-Can I make groovyclient connect to groovyserver which runs on remote
-server?
-</dd>
- 
-<dt class='A'>A</dt>
-
-<dd>
-No you can't. Connection from host other than localhost is inhibited
-intentionally for security reasons. In addition, only the client which can read secret cookie file on the file system generated by the groovyserver is allowed to be connect server GroovyServ allows to be invoked any script through TCP
-socket, it's could be serious security problem.
-</dd>
-
-</div>
-<div class='QANDA'>
-<dt class='q'><a name="q15">Q</a></dt>
-
-<dd>
-Can I use JQS(Java Quick Start) with GroovyServe at the same time?
-</dd>
-
-<dt class='A'>A</dt>
-
-<dd>
-Yes you can. no problem.
-</dd>
-</div>
-
-
-	  </div>
-
-      <div class="footer">
-		get the source code on GitHub : <a href="http://github.com/kobo/groovyserv">kobo/groovyserv</a>
-      </div>
-
-	</div>
-	<script type="text/javascript">
-	  var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-	  document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-	</script>
-	<script type="text/javascript">
-	  try {
-	  var pageTracker = _gat._getTracker("UA-3438563-4");
-	  pageTracker._trackPageview();
-	  } catch(err) {}</script>
-  </body>
-</html>
+		  </ul>
+		  </div>
+		  <div id='content'>
+
+			<h2>Contents</h2>
+			<ul>
+			  <li><a href="#q1">Why groovyserv uses JNA(Java Native Access)?</a>
+			  <li><a href="#q2">What happens if I invoke two groovy script which have different
+				  current working directory?</a>
+			  <li><a href="#q3">Supported environments?</a>
+			  <li><a href="#q4">Is there MacPorts, *.deb, *.rpm package?</a>
+			  <li><a href="#q5">Does cygwin required on windows?</a>
+			  <li><a href="#q6">Why groovy client is written in C? Why it is not written in Java?</a>
+			  <li><a href="#q7">What is the server-client communication protocol?</a>
+			  <li><a href="#q8">If the JVM is shared among each script sessions, static variables are
+				  shared too?</a>
+			  <li><a href="#q9">How I invoke the original groovy command when I aliased 'groovy' to
+				  groovyclient?</a>
+			  <li><a href="#q10">Where is the place GroovyServ log message stored?</a>
+			  <li><a href="#q11">How I restart or kill groovyserver?</a>
+			  <li><a href="#q12">Why the name of this software is 'GroovyServ'? </a>
+			  <li><a href="#q13">Can I use groovyserv by grape's grab annotations?</a>
+			  <li><a href="#q14">Can I make groovyclient connect to groovyserver which runs on remote</a>
+			  <li><a href="#q15">Can I use JQS(Java Quick Start) with GroovyServe at the same time?</a>
+			  </ul>
+
+			  <h2>FAQ</h2>
+
+			  <div class='QANDA'>
+
+				<span class='question'><a name="q1">Q</a></span>
+				<div class='question'>Why groovyserv uses <a href="https://jna.dev.java.net/">JNA(Java Native Access)</a>?
+				</div>
+				<span class='answer'>A</span>
+				<div class='answer'>
+				  Because of to change current working directory. To be more specific,
+				  to call chdir(2) system call or _chdir win32 C runtime function. You
+				  might think 'user.dir' system property can be used for same purpose ,
+				  in pure way, but it is not enough because it has no effect to all of
+				  Java functionality about current working directory. For example, it
+				  has no effect to call new FileInputStream(".").
+				</div>
+
+			  </div>
+			  <div class='QANDA'>
+				<span class='question'><a name="q2">Q</a></span>
+
+				<div class='question'>
+				  What happens if I invoke two groovy script which have different
+				  current working directory? For example, using sub-shell and pipe,
+				  invoke two groovy script concurrently:
+				  <pre>
+					$ (cd /tmp; groovyclient read.groovy ) | ( cd  /var/tmp; groovyclient output.groovy )
+				  </pre>
+
+				</div>
+				<span class='answer'>A</span>
+
+				<div class='answer'>
+				  Exception is occurred when the second groovy command is
+				  invoked. Following is OK.
+				  <pre>
+					$ (cd /tmp; groovyclient read.groovy ) | ( cd /tmp; groovyclient output.groovy )
+				  </pre>
+				</div>
+
+			  </div>
+			  <div class='QANDA'>
+				<span class='question'><a name="q3">Q</a></span>
+
+				<div class='question'>
+				  Supported environments?
+				</div>
+
+				<span class='answer'>A</span>
+
+				<div class='answer'>
+				  So far Ubuntu Linux, Windows and Mac OS X are supported.  Basically,
+				  if the environment supprted by JDK and JNA, GroovyServe can run on
+				  there potentially.
+				</div>
+
+			  </div>
+			  <div class='QANDA'>
+				<span class='question'><a name="q4">Q</a></span>
+
+				<div class='question'>
+				  Is there MacPorts, *.deb, *.rpm package?
+				</div>
+
+				<span class='answer'>A</span>
+
+				<div class='answer'>
+				  No it isn't.
+				</div>
+
+			  </div>
+			  <div class='QANDA'>
+				<span class='question'><a name="q5">Q</a></span>
+
+				<div class='question'>
+				  Is cygwin required on windows?
+				</div>
+
+				<span class='answer'>A</span>
+
+				<div class='answer'>
+				  No, it isn't. In GroovyServ 0.1, groovyclient.exe requires
+				  cygwin.dll.  However, at GroovyServ 0.2, we rewrite it to possible to be compiled
+				  with mingw and the binary doesn't require cygwin.dll now, and don't need cygwin
+				  environment at all (groovyserver.bat are provided instead of groovyserver shell script).
+				</div>
+
+			  </div>
+			  <div class='QANDA'>
+				<span class='question'><a name="q6">Q</a></span>
+
+				<div class='question'>
+				  Why groovy client is written in C? Why it is not written in Java?
+				</div>
+
+				<span class='answer'>A</span>
+
+				<div class='answer'>
+				  This software is just for to reduce startup-time of groovy script.  So
+				  quck response is the most important factor, so we decided to not to
+				  use JVM for groovyclient.
+				</div>
+
+			  </div>
+			  <div class='QANDA'>
+				<span class='question'><a name="q7">Q</a></span>
+
+				<div class='question'>
+				  What is the server-client communication protocol?
+				</div>
+
+				<span class='answer'>A</span>
+
+				<div class='answer'>
+				  It is a original proprietary protocol. To know the sequence of the
+				  protocol, please look at the comments in RequestHeader.groovy, or
+				  groovyclient.rb for details.
+				</div>
+
+			  </div>
+			  <div class='QANDA'>
+				<span class='question'><a name="q8">Q</a></span>
+
+				<div class='question'>
+				  If the JVM is shared among each script sessions, static variables are
+				  shared too?
+				</div>
+
+				<span class='answer'>A</span>
+
+				<div class='answer'>
+				  Yes and no. If the static variables are defined in the script or
+				  groovy classes you run, those are created on a GroovyClassLoader which
+				  created for each script sessions. In this case, static variables
+				  aren't shared for each script because class loaders are diffeent. On
+				  the other hand, if the static variables are defined by system/bootstrap
+				  class loaders, those are shared. For example, the values which you
+				  stored in System.getProperties() are shared among all scripts which
+				  invoked on the SroovyServ.
+				</div>
+
+			  </div>
+			  <div class='QANDA'>
+				<span class='question'><a name="q9">Q</a></span>
+
+				<div class='question'>
+				  How I invoke the original groovy command when I aliased 'groovy' to
+				  groovyclient?
+				</div>
+
+				<span class='answer'>A</span>
+
+				<div class='answer'>
+				  Please apply the backslash like \groovy(for bash or C-Shell) or
+				  specify groovy command in full path form.
+				</div>
+
+			  </div>
+			  <div class='QANDA'>
+				<span class='question'><a name="q10">Q</a></span>
+
+				<div class='question'>
+				  Where is the place GroovyServ log message stored?
+				</div>
+
+				<span class='answer'>A</span>
+
+				<div class='answer'>
+				  $HOME/.groovy/groovyserver/groovyserver.log.
+				</div>
+
+			  </div>
+			  <div class='QANDA'>
+				<span class='question'><a name="q11">Q</a></span>
+
+				<div class='question'>
+				  How do I restart or kill groovyserver?
+				</div>
+
+				<span class='answer'>A</span>
+				<div class='answer'>
+				  In MacOS X, Linux and cygwin environment, you can specify -r (restart)
+				  and -k (kill) options to groovyserver command to do it. But 'nocygwin'
+				  environment, there is no way to restart/kill command line. Please use
+				  task manager to kill the groovyserver, and restart through
+				  groovyclient.
+				</div>
+
+			  </div>
+			  <div class='QANDA'>
+				<span class='question'><a name="q12">Q</a></span>
+
+				<div class='question'>
+				  Why the name of this software is 'GroovyServ'? 
+				</div>
+
+				<span class='answer'>A</span>
+
+				<div class='answer'>
+				  Because this is like "Gnuserv" for emacs. Do you know?
+				</div>
+
+			  </div>
+			  <div class='QANDA'>
+				<span class='question'><a name="q13">Q</a></span>
+
+				<div class='question'>
+				  Can I use groovyserv by grape's grab annotations?
+				</div>
+
+				<span class='answer'>A</span>
+
+				<div class='answer'>
+				  No you can't.
+				</div>
+
+			  </div>
+			  <div class='QANDA'>
+				<span class='question'><a name="q14">Q</a></span>
+
+				<div class='question'>
+				  Can I make groovyclient connect to groovyserver which runs on remote
+				  server?
+				</div>
+				
+				<span class='answer'>A</span>
+
+				<div class='answer'>
+				  No you can't. Connection from host other than localhost is inhibited
+				  intentionally for security reasons. In addition, only the client which can read secret cookie file on the file system generated by the groovyserver is allowed to be connect server GroovyServ allows to be invoked any script through TCP
+				  socket, it's could be serious security problem.
+				</div>
+
+			  </div>
+			  <div class='QANDA'>
+				<span class='question'><a name="q15">Q</a></span>
+
+				<div class='question'>
+				  Can I use JQS(Java Quick Start) with GroovyServe at the same time?
+				</div>
+
+				<span class='answer'>A</span>
+				<div class='answer'>
+				  Yes you can. No problem.
+				</div>
+			  </div>
+
+			  </div>
+
+			  <div class="footer">
+				get the source code on GitHub : <a href="http://github.com/kobo/groovyserv">kobo/groovyserv</a>
+			  </div>
+
+			  </div>
+			  <script type="text/javascript">
+				var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+				document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+			  </script>
+			  <script type="text/javascript">
+				try {
+				var pageTracker = _gat._getTracker("UA-3438563-4");
+				pageTracker._trackPageview();
+				} catch(err) {}</script>
+			  </body>
+			  </html>
