@@ -278,7 +278,6 @@
                 <configuration>
                   <tasks>
                     <echo message="Startup groovyserver for integration test" />
-                    <echo message="${groovyserv.home}" />
                     <exec executable="${groovyserv.home}/bin/groovyserver" spawn="true">
                       <env key="GROOVYSERV_HOME" value="${groovyserv.home}" />
                       <arg value="-r"/>
@@ -297,7 +296,6 @@
                 <configuration>
                   <tasks>
                     <echo message="Forcely shutdown groovyserver in the end of integration test" />
-                    <echo message="${groovyserv.home}" />
                     <exec executable="${groovyserv.home}/bin/groovyserver" spawn="true">
                       <env key="GROOVYSERV_HOME" value="${groovyserv.home}" />
                       <arg value="-k"/>
