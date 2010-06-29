@@ -43,8 +43,8 @@ class TestUtils {
     }
 
     static getCommand(args) {
-        def client = System.properties.'groovyservClientExecutable'
-        return [client] + args
+        def clientExecs = System.properties.'groovyservClientExecutable'.split(" ") as List
+        return clientExecs + args
     }
 
     /**
