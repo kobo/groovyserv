@@ -42,7 +42,7 @@ class ThreadIT extends GroovyTestCase {
     void testInfinteLoopInThread_Interruptable() {
         def script = """\
             Thread.start {
-                println("started")
+                println('started')
                 while (true) {
                     Thread.sleep 100
                 }
@@ -60,7 +60,7 @@ class ThreadIT extends GroovyTestCase {
     void testInfinteLoopInThread_Uninterruptable() {
         def script = """\
             Thread.start {
-                println("started")
+                println('started')
                 while (true) {
                     /* cannot interruptable */
                 }
