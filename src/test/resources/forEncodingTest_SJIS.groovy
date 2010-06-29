@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-println "ã‚ã„ã†ãˆãŠ"
+println "‚ ‚¢‚¤‚¦‚¨"

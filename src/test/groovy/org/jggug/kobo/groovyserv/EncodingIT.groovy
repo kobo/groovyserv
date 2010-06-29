@@ -20,9 +20,6 @@ import groovy.util.GroovyTestCase
 /**
  * Tests for the {@code groovyclient}.
  * Before running this, you must start groovyserver.
- *
- * If this test fails, please try as follows:
- *     export _JAVA_OPTIONS=-Dfile.encoding=UTF-8
  */
 class EncodingIT extends GroovyTestCase {
 
@@ -32,8 +29,12 @@ class EncodingIT extends GroovyTestCase {
         assertEquals "あいうえお" + SEP, TestUtils.executeClientOk(["-e", '"println(\'あいうえお\')"']).text
     }
 
-    void testExecFile() {
-        assertEquals "あいうえお" + SEP, TestUtils.executeClientOk(["-c", "UTF-8", "src/test/resources/forEncodingTest.groovy"]).text
+    void testExecFile_UTF8() {
+        assertEquals "あいうえお" + SEP, TestUtils.executeClientOk(["-c", "UTF-8", "src/test/resources/forEncodingTest_UTF8.groovy"]).text
+    }
+
+    void testExecFile_SJIS() {
+        assertEquals "あいうえお" + SEP, TestUtils.executeClientOk(["-c", "Shift_JIS", "src/test/resources/forEncodingTest_SJIS.groovy"]).text
     }
 
 }
