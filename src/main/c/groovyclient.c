@@ -111,8 +111,7 @@ int open_socket(char* server_name, int server_port) {
 
 #ifdef WINDOWS_WITHOUT_CYGWIN
   if (connect(fd, (struct sockaddr *)&server, sizeof(server)) == SOCKET_ERROR) {
-    perror("connect");
-    exit(1);
+    return -1;
   }
 #else
   if (connect(fd, (struct sockaddr *)&server, sizeof(server)) < 0) {
@@ -512,13 +511,17 @@ void start_server(int argn, char** argv, int port) {
   char groovyserver_path[MAXPATHLEN];
   strcpy(groovyserver_path, argv[0]);
   char* p = groovyserver_path + strlen(groovyserver_path);
-  while (p > groovyserver_path && *p != '/') {
+  while (p > groovyserver_path && (*p != '/' && *p != '\\')) {
     p--;
   }
-  if (*p == '/') {
+  if (*p == '/' || *p == '\\') {
     p++;
   }
+#ifdef WINDOWS_WITHOUT_CYGWIN
+  sprintf(p, "groovyserver.bat -p %d", port);
+#else
   sprintf(p, "groovyserver -p %d", port);
+#endif
   //  strcat(p, " >> ~/.groovy/groovyserver/groovyserver.log 2>&1");
 
   // start groovyserver.
@@ -581,9 +584,14 @@ int main(int argn, char** argv) {
   }
 #endif
 
+  int trial = 0;
   while ((fd_soc = open_socket(DESTSERV, port)) == -1) {
     fprintf(stderr, "starting server..\n");
     start_server(argn, argv, port);
+	if (trial++ > 3) {
+	  fprintf(stderr, "Cannot invoke groovy server.");
+	  exit(1);
+	}
   }
   read_cookie(cookie, sizeof(cookie));
 
