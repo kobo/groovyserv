@@ -96,7 +96,7 @@ end
 def read_headers(socket)
   headers = {}
   while (line = socket.gets) != nil && line != "\n" do
-    chomp line
+    line.chomp!
     /([a-zA-Z]+): (.+)/ =~ line
     headers[$1] = $2
   end
