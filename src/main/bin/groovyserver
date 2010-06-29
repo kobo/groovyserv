@@ -58,7 +58,7 @@ while [ $# -gt 0 ]; do
             GROOVYSERV_PID_FILE=$GROOVYSERV_WORK_DIR/pid-$PORT
             if [ -f $GROOVYSERV_PID_FILE ]; then
                 PID=`cat $GROOVYSERV_PID_FILE`
-                kill $PID
+                kill -9 $PID
                 echo "kill groovy server $PID($PORT)"
                 rm $GROOVYSERV_PID_FILE
             else
