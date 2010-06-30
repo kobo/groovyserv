@@ -40,6 +40,7 @@ GroovyServを使うことで、Groovyコマンドの起動時間を短縮し、�
 をいただけますと幸いです。
 
   - Windows XP + cygwin
+  - Windows XP (cygwin無し)
   - Mac OS X 10.5/6 (Intel Mac)
   - Ubuntu Linux 9.10
 
@@ -55,7 +56,7 @@ GroovyServを使うことで、Groovyコマンドの起動時間を短縮し、�
 ントが現在動作しています。サーバサイドではJNA(Java Native Access)を使用
 しています。使用するコマンドは以下の通りです。
 
-  groovyserver     GroovyServサーバを起動するコマンド(シェルスクリプト)
+  groovyserver     GroovyServサーバを起動するコマンド(UNIX/cygwin用シェルスクリプト)
   groovyserver.bat GroovyServサーバを起動するコマンド(Windows用)
   groovyclient     ネイティブバイナリ版GroovyServクライアント(バイナリ)
   groovyclient.rb  Ruby版GroovyServクライアント(要Ruby)
@@ -229,6 +230,20 @@ GROOVYSERVER_PORTを設定してください。
 groovyserverのログは以下のファイルに出力されます。
 
   ~/.groovy/groovyserv/groovyserver.log
+
+======
+Tips
+======
+
+groovyコマンドを実行するとgroovyclientコマンドが呼び出されるように、以
+下のようにエイリアス(別名)指定を行っておくと便利です。以下はbash用のエ
+イリアスの設定です。
+
+  alias groovy=groovyclient
+
+Windowsではdoskeyコマンドで以下のように設定することができます。
+
+  doskey groovy=groovyclient $*
 
 ========
 連絡先

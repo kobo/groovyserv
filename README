@@ -12,10 +12,10 @@ invocation is very important. Try-and-run cycles is repeated frequently
 than static-type languages, so sometimes 2 seconds or even a second might
 be intolerable.
 
-GroovyServ reduces the startup time of JVM and Groovy runtime significantly.
-It's at least 10 to 20 times faster than regular Groovy. The following times
-are averages of 3 times which measured invocation in Groovy 1.7 on Windows
-XP (Core(TM) 2 Duo 2GHz).
+GroovyServ reduces the startup time of JVM and Groovy runtime
+significantly. In most situations it is 10 to 20 times faster than
+regular Groovy. The following times are averages of 3 times which
+measured invocation in Groovy 1.7 on Windows XP (Core(TM) 2 Duo 2GHz).
 
   Groovy(non native)  2.32 (sec)
   Groovy(native exe)  0.90 (sec)
@@ -29,6 +29,7 @@ GroovyServ is developed for following environment/OS. Please report if it
 runs on the others.
 
   - Windows XP + cygwin
+  - Windows XP without cygwin
   - Mac OS X 10.5/6 (Intel Mac)
   - Ubuntu Linux 9.10
 
@@ -132,7 +133,8 @@ can also invoke the serverexplicitly.
 
   > groovyserver
 
-About groovyserver command options refer to "groovyserver options".
+About groovyserver command options refer to "groovyserver options"
+section.
 
 =========================
 Restriction/Differences
@@ -207,6 +209,18 @@ Log file
 The output from groovyserver are logged to:
 
   ~/.groovy/groovyserv/groovyserver.log
+
+======
+Tips
+======
+
+Following aliases might be useful.
+
+  alias groovy=groovyclient
+
+For windows environment:
+
+  doskey groovy=groovyclient $*
 
 =========
 Support
