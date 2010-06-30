@@ -1,5 +1,4 @@
-GroovyServ 0.1 README
-March 9th, 2010
+GroovyServ 0.2
 
 ==============
 Introduction
@@ -13,10 +12,10 @@ invocation is very important. Try-and-run cycles is repeated frequently
 than static-type languages, so sometimes 2 seconds or even a second might
 be intolerable.
 
-GroovyServ reduces the startup time of JVM and Groovy runtime significantly.
-It's at least 10 to 20 times faster than regular Groovy. The following times
-are averages of 3 times which measured invocation in Groovy 1.7 on Windows
-XP (Core(TM) 2 Duo 2GHz).
+GroovyServ reduces the startup time of JVM and Groovy runtime
+significantly. In most situations it is 10 to 20 times faster than
+regular Groovy. The following times are averages of 3 times which
+measured invocation in Groovy 1.7 on Windows XP (Core(TM) 2 Duo 2GHz).
 
   Groovy(non native)  2.32 (sec)
   Groovy(native exe)  0.90 (sec)
@@ -30,12 +29,13 @@ GroovyServ is developed for following environment/OS. Please report if it
 runs on the others.
 
   - Windows XP + cygwin
+  - Windows XP without cygwin
   - Mac OS X 10.5/6 (Intel Mac)
   - Ubuntu Linux 9.10
 
 Version of Groovy is following:
 
-  - Groovy 1.6 or later
+  - Groovy 1.7 or later
 
 ==========
 Language
@@ -51,7 +51,7 @@ Security
 GroovyServ has a possibility to run any groovy script from client.
 So server-client connection is limited to the connection from the same
 machine (localhost). And the connection is authenticated by simple
-cookie mechanism. The cookie file is stored at ~/.groovy/groovyserv/key
+cookie mechanism. The cookie file is stored at ~/.groovy/groovyserv/cookie
 and the file mode set to 0400. But in Windows environment, it is not
 effective. So appropriately protect access to the file in Windows if
 needed.
@@ -62,22 +62,22 @@ Install from binary package
 
 Download and expand GroovyServ distribution package
 
-  groovyserv-0.1-win32-bin.zip
+  groovyserv-0.2-win32-bin.zip
 
-or 
+or
 
-  groovyserv-0.1-MacOSX-x86_64-bin.zip
+  groovyserv-0.2-MacOSX-x86_64-bin.zip
 
 to any directory. For example:
 
   > mkdir ~/opt
   > cd ~/opt
-  > unzip groovyserv-0.1-win32-bin.zip
+  > unzip groovyserv-0.2-win32-bin.zip
 
 and add bin directory to PATH environment variable.
 For example in bash/bourne shell:
 
-  export PATH=~/opt/groovyserv-0.1/bin:$PATH
+  export PATH=~/opt/groovyserv-0.2/bin:$PATH
 
 That's all for preparing. When you invoke groovyclient, groovyserver
 automatically starts in background. At first, you might have to wait
@@ -91,26 +91,37 @@ for a few seconds to startup.
 Build from source code
 ========================
 
-Download and expand GroovyServ source package groovyserv-0.1-src.zip
+Download and expand GroovyServ source package groovyserv-0.2-src.zip
 to any directory. For example:
 
   > mkdir -p ~/opt/src
   > cd ~/opt/src
-  > unzip groovyserv-0.1-src.zip
+  > unzip groovyserv-0.2-src.zip
 
 Build with Maven2 as follows:
 
-  > cd ~/opt/src/groovyserv-0.1/
-  > mvn clean assembly:assembly
+  > cd ~/opt/src/groovyserv-0.2/
+  > mvn clean verify
 
-then some zip files will be generated. According to "Install from
+Then some zip files will be generated. According to "Install from
 binary package", install the bin package.
 
-  ~/opt/src/groovyserv-0.1/target/groovyserv-0.1-<OS>-<arch>-bin.zip
+  ~/opt/src/groovyserv-0.2/target/groovyserv-0.2-<OS>-<arch>-bin.zip
 
-If some tests fail, you can skip tests following.
+If some tests fail, you can try as follows:
 
-  > mvn -Dmaven.test.skip=true clean assembly:assembly
+  with UTF-8 encoding:
+
+    > export _JAVA_OPTIONS=-Dfile.encoding=UTF-8
+    > mvn clean verify
+
+  skip integration tests:
+
+    > mvn clean package
+
+  skip all tests:
+
+    > mvn -Dmaven.test.skip=true clean package
 
 ============
 How to use
@@ -122,7 +133,8 @@ can also invoke the serverexplicitly.
 
   > groovyserver
 
-About groovyserver command options refer to "groovyserver options".
+About groovyserver command options refer to "groovyserver options"
+section.
 
 =========================
 Restriction/Differences
@@ -131,7 +143,7 @@ Restriction/Differences
 * You can't concurrently use different current directory on a server.
   If you execute the following,
 
-  > groovyclient ... | (cd /tmp; groovyclient ... ) 
+  > groovyclient ... | (cd /tmp; groovyclient ... )
 
   the following exception will be occurred:
 
@@ -173,8 +185,8 @@ Options are as follows:
 
   -v verbose output. print debugging information etc.
   -q quiet.(default)
-  -k kill the running groovyserver.
-  -r restart groovyserver.
+  -k kill the running groovyserver.(groovyserver.bat cannot use this)
+  -r restart groovyserver.(groovyserver.bat cannot use this)
   -p <port> specify the port that connected from groovyclient.
 
 =============
@@ -196,7 +208,7 @@ Log file
 
 The output from groovyserver are logged to:
 
-  ~/.groovy/groovyserver/<Process ID>-<Port Number>.log
+  ~/.groovy/groovyserv/groovyserver.log
 
 ======
 Tips
@@ -205,9 +217,10 @@ Tips
 Following aliases might be useful.
 
   alias groovy=groovyclient
-  alias groovyc="groovyclient -e 'org.codehaus.groovy.tools.FileSystemCompiler.main(args)'"
-  alias groovysh="groovyclient -e 'groovy.ui.InteractiveShell.main(args)'"
-  alias groovyConsole="groovyclient -e 'groovy.ui.Console.main(args)'"
+
+For windows environment:
+
+  doskey groovy=groovyclient $*
 
 =========
 Support
@@ -219,12 +232,11 @@ http://kobo.github.com/groovyserv/
 License
 =========
 
-Apache License Version 2.0
+The Apache Software License, Version 2.0
 
 ==============
 Presented by
 ==============
 
-Kobo Project.
-NTT Software Corp.
+Project Kobo. NTT Software Corp.
 
