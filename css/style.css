@@ -1,94 +1,129 @@
+@charset "UTF-8";
+
 body {
-	margin-top: 1.0em;
-	background-color: #aaaaff;
-	font-family: "Helvetica,Arial,FreeSans";
-	color: #222222;
-	font-size: 1.1em;
+  margin: 1em;
+  background-color: #aaf;
+  color: #333;
 }
-#container {
-	margin: 0 auto;
-	width: 700px;
+h1 {
+  font-size: 3.8em;
+  margin: 5px 0;
 }
-h1 { font-size: 3.8em; color: #333333; margin-bottom: 3px; }
-h1 a { text-decoration: none; }
-h2 { font-size: 1.5em; color: #333333; }
-h3 { text-align: center; color: #333333; }
-a { color: #333333; }
-.small { font-size: 0.4em; text-align: right; }
-.description { font-size: 1.1em; margin-bottom: 30px; margin-top: 30px; }
-.download { float: right; }
-pre { background: #000; color: #fff; padding: 15px; font-size: 0.8em; }
-hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
-.footer { text-align:center; padding-top:30px; font-style: italic; }
-#header {
-	background: white url('images/gray-shade.png') repeat-x bottom;
-	padding: 20px;
+a {
+  color: #11a;
+  text-decoration: none;
+}
+a:hover {
+  color: #000;
+}
+h2 {
+  font-size: 1.5em;
+  margin: 10px 0 5px 0;
+}
+h3 {
+  text-align: center;
+}
+pre {
+  background: #000;
+  color: #fff;
+  margin: 0 8px;
+  padding: 10px;
+  font-size: 0.8em;
+}
+hr {
+  width: 80%;
+  border: 1px solid #aaa;
+}
+img {
+  vertical-align: middle;
+  margin: 0 2px;
+  border-style: none;
+}
+.section ul li {
+  background: transparent url(../images/triangle.png) no-repeat left center;
+  margin-left: 1em;
+  padding: 4px 0 4px 2em;
 }
 
+.small {
+  font-size: 0.8em;
+  text-align: right;
+}
+.section {
+  margin: 1.5em 0;
+  font-size: 1.1em;
+}
+.section h2 {
+  padding-left: 30px;
+  background: url(../images/star.png) no-repeat;
+}
+.section p {
+  padding: 0.5em;
+}
+
+.footer {
+  text-align: center;
+  margin-top: 15px;
+  font-style: italic;
+}
+
+#head {
+  margin-top: 10px;
+}
 #head ul {
-	font-size:1.2em;
-	font-family:"lucida console", "monaco", "andale mono", "bitstream vera sans mono",
-	"consolas", monospace;
-	font-weight:normal;
-	text-transform:uppercase;
-	letter-spacing:2px;
-	text-align:center;
-	margin:0;
-	padding:0 40px 0.25em 40px;
+  font-size: 1.2em;
+  font-family: "lucida console", "monaco", "andale mono", "bitstream vera sans mono", "consolas", monospace;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-align: center;
 }
-
-#head ul li {
-	display:inline;
-	list-style-type:none;
-	padding:0 0.5em 0 0;
-}
-
-a img {
-    border-style:none;
-}
-
-#head ul a, #head ul a:link, #head ul a:visited {
-	color:#56534f;
-	text-decoration:none;
+#head ul a {
+  color: #555;
 }
 #head ul a:hover {
-	color:#000;
-	text-decoration:underline;
+  color: #000;
+}
+#head ul li {
+  display: inline;
+  list-style-type: none;
+  padding-right: 0.5em;
+}
+
+#container {
+  margin: 0 auto;
+  width: 700px;
 }
 
 #content {
-	color:#111;
-	max-width:52em;
-	min-width:27em;
-	margin:7px auto;
-	border-top:4px solid #333355;
-	border-bottom:4px solid #333355;
-	padding-top:10px;
+  margin: 7px auto;
+  border-top: 4px solid #335;
+  border-bottom: 4px solid #335;
+  padding: 10px 0;
 }
 
 span.answer {
-	color: #2233ff;
-    margin-top:1em;
-	font-size: 1.2em;
-	text-decoration: bold;
+  color: #23f;
+  margin-top: 1em;
+  font-size: 1.2em;
+  text-decoration: bold;
 }
-
 span.question {
-	color: #33aa66;
-	font-size: 1.2em;
-	text-decoration: bold;
-    margin-top:0.5em;
+  color: #3a6;
+  font-size: 1.2em;
+  text-decoration: bold;
+  margin-top: 0.5em;
 }
-
 .QANDA {
-    margin:7px auto;
-    padding: 10px 10px 10px 10px;
-	border-top:4px solid #555555;
-	background: #eeeeff;
-    border-radius: 10px;	/* CSS3 */
-    -webkit-border-radius: 10px;	/* Safari,Google Chrome */
-    -moz-border-radius: 10px;	/* Firefox */
+  margin: 7px auto;
+  padding: 10px;
+  border-top: 4px solid #555;
+  background: #eef;
+  border-radius: 10px;         /* CSS3 */
+  -webkit-border-radius: 10px; /* Safari,Google Chrome */
+  -moz-border-radius: 10px;    /* Firefox */
 }
 
-ul li { list-style-image: url(../images/triangle.png); }
+.download ul li {
+  background: transparent url(../images/download.png) no-repeat left center;
+}
 
