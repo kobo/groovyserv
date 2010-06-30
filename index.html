@@ -16,53 +16,56 @@
 
 	  <div id='head'>
 		<ul>
-		  <li><a href='index.html'><img src="images/home.png">HOME</a></li>
-		  <li><a href='readme.html'><img src="images/document.png">README</a></li>
-		  <li><a href='faq.html'><img src="images/faq.png">FAQ</a></li>
-		  <li><a href='download.html'><img src="images/download.png">DOWNLOAD</a></li>
-		  <li><a href='http://github.com/kobo/groovyserv'><img src="images/code.png">Code</a></li>
+		  <li><a href='index.html'><img src="images/home.png" />HOME</a></li>
+		  <li><a href='document.html'><img src="images/document.png" />DOCUMENT</a></li>
+		  <li><a href='download.html'><img src="images/download.png" />DOWNLOAD</a></li>
+		  <li><a href='http://github.com/kobo/groovyserv'><img src="images/code.png" />Code</a></li>
 		</ul>
 	  </div>
 
 	  <div id='content'>
 		<div class="description">
-		  <h2><img src="images/star.png">Overview</h2>
+		  <h2><img src="images/star.png" />Overview</h2>
 		  <p>GroovyServ makes Groovy's startup time quicker, by
 			pre-invoking groovy as a server. </p>
-
+		  
 		  <p>In the case of software development with scripting
 			languages, it is needless to say that quick try-and-run is
 			very important. In such situation, 2 seconds or even 1
 			second are too long. GroovyServ reduces sensible startup
 			time of the JVM and Groovy runtime significantly. In most
 			situations it is 10 to 20 times faster than regular
-			Groovy.</p>
+			Groovy. You can see <a href="screencast.html">demonstration screencast</a>.
+		  </p>
 		</div>
 
-	  <h2><img src="images/star.png">Feature</h2>
+
+		<h2><img src="images/star.png" />Feature</h2>
 		<div class="description">
-	  <p>GroovyServ supports following features:</p>
-	  <ul>
-		<li>Transparent server invocation. When the server is not running
-		  when the client is invoked, start it in background.</li>
-		<li>Connect System.in/out/err to socket stream.</li>
-		<li>Simultaneous execution of scripts for using pipe.</li>
-		<li>System.exit() trap and exit status redirection.</li>
-		<li>Signal handling(Ctrl-C).</li>
-		<li>Change current working directry appropriately.</li>
-		<li>Cygwin independence for windows(NEW on 0.2).</li>
-		<li>CLASSPATH environment propergation.</li>
-		<li>C and Ruby client.</li>
-		</div>
-	  </ul>
-
+		  <p>GroovyServ supports following feature:</p>
+		  <ul>
+			<li>Faster invocation of groovy script(sometimes 10 times more).</li>
+			<li>Transparent server invocation. When the server is not running
+			  when the client is invoked, start it in background.</li>
+			<li>Connect System.in/out/err to socket stream.</li>
+			<li>Simultaneous execution of scripts. <a href="http://kobo.github.com/groovyserv/faq.html#q2">See FAQ</a>.</li>
+			<li>Traps call of System.exit() and transmit the exit status to the client.</li>
+			<li>Signal handling(Ctrl-C).</li>
+			<li>Change current working directry appropriately. <a href="http://kobo.github.com/groovyserv/faq.html#q1">See FAQ</a>.</li>
+			<li>Cygwin independence for windows(<img src="images/new.png" alt="NEW" />New feature of version 0.2).</li>
+			<li>CLASSPATH environment propagation.</li>
+			<li>C(native binary) and Ruby client.</li>
+			<li>Many unit tests and integration tests are added and source code is fully refactored(<img src="images/new.png" alt="NEW" />New feature of version 0.2).</li>
+		  </div>
+		</ul>
+		
 	  </div>
-
-
-      <div class="footer">
+	  
+	  
+	  <div class="footer">
 		get the source code on GitHub : <a href="http://github.com/kobo/groovyserv">kobo/groovyserv</a>
-      </div>
-
+	  </div>
+	  
 	</div>
 	<script type="text/javascript">
 	  var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
@@ -72,6 +75,8 @@
 	  try {
 	  var pageTracker = _gat._getTracker("UA-3438563-4");
 	  pageTracker._trackPageview();
-	  } catch(err) {}</script>
+	  } catch(err) {}
+	</script>
   </body>
 </html>
+
