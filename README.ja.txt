@@ -1,5 +1,4 @@
-GroovyServ 0.1 README
-2010年03月09日
+GroovyServ 0.2
 
 ==========
 はじめに
@@ -41,12 +40,13 @@ GroovyServを使うことで、Groovyコマンドの起動時間を短縮し、�
 をいただけますと幸いです。
 
   - Windows XP + cygwin
+  - Windows XP (cygwin無し)
   - Mac OS X 10.5/6 (Intel Mac)
   - Ubuntu Linux 9.10
 
 また、Groovyのバージョンは以下のとおりです。
 
-  - Groovy 1.6以降
+  - Groovy 1.7以降
 
 ============
 言語と構成
@@ -56,9 +56,10 @@ GroovyServを使うことで、Groovyコマンドの起動時間を短縮し、�
 ントが現在動作しています。サーバサイドではJNA(Java Native Access)を使用
 しています。使用するコマンドは以下の通りです。
 
-  groovyserver     GroovyServサーバを起動するコマンド
-  groovyclient     ネイティブバイナリ版GroovyServクライアント。
-  groovyclient.rb  Ruby版GroovyServクライアント。
+  groovyserver     GroovyServサーバを起動するコマンド(UNIX/cygwin用シェルスクリプト)
+  groovyserver.bat GroovyServサーバを起動するコマンド(Windows用)
+  groovyclient     ネイティブバイナリ版GroovyServクライアント(バイナリ)
+  groovyclient.rb  Ruby版GroovyServクライアント(要Ruby)
 
 ==============
 セキュリティ
@@ -69,7 +70,7 @@ GroovyServサーバへの接続は、localhostからのみに制限されてお�
 マシン上でもgroovyserverを起動したユーザーと同じユーザが実行した
 groovyclient の接続しか受け付けないように制約をかけています。なお、この
 制約は、サーバが実行後とに生成する秘密のクッキー情報
-~/.groovy/groovyserver/key ファイルの内容を自ユーザのみが読み出せること
+~/.groovy/groovyserv/cookieファイルの内容を自ユーザのみが読み出せること
 に依存しています。このファイルのアクセス制限を、UNIX環境ではowner以外か
 らは読めないように設定(chmod 0400)していますが、Windows環境ではこの設定
 が機能しないため、必要に応じて他のユーザから読み出せないように設定して
@@ -79,18 +80,18 @@ groovyclient の接続しか受け付けないように制約をかけていま�
 バイナリパッケージからのインストール
 ======================================
 
-バイナリパッケージgroovyserv-0.1-<OS>-<arch>-bin.zipを適当なフォルダ
+バイナリパッケージgroovyserv-0.2-<OS>-<arch>-bin.zipを適当なフォルダ
 に展開します。例えば、~/optに展開するとします。
 
   > mkdir ~/opt
   > cd ~/opt
-  > unzip groovyserv-0.1-win32-bin.zip
+  > unzip groovyserv-0.2-win32-bin.zip
 
-上記により~/opt/groovyserv-0.1が展開されます。次に環境変数PATHに上記フォ
+上記により~/opt/groovyserv-0.2が展開されます。次に環境変数PATHに上記フォ
 ルダ配下のbinを追加します。仮に、~/opt/groovyservに展開した場合、以下の
 ように設定します(bashなどの環境変数設定)。
 
-  export PATH=~/opt/groovyserv-0.1/bin:$PATH
+  export PATH=~/opt/groovyserv-0.2/bin:$PATH
 
 設定は以上です。groovyclientを実行するとgroovyserverが起動します。
 
@@ -103,26 +104,36 @@ groovyclient の接続しか受け付けないように制約をかけていま�
 ==========================
 
 まず、GroovyServのソースコード配布パッケージ
-groovyserv-0.1-src.zipを展開します。
+groovyserv-0.2-src.zipを展開します。
 
   > mkdir -p ~/opt/src
   > cd ~/opt/src
-  > unzip groovyserv-0.1-src.zip
+  > unzip groovyserv-0.2-src.zip
 
 Maven2を使ってコンパイルします。
 
-  > cd ~/opt/src/groovyserv-0.1/
-  > mvn clean assembly:assembly
+  > cd ~/opt/src/groovyserv-0.2/
+  > mvn clean verify
 
 コンパイルした結果、バイナリパッケージが
 
-  ~/opt/src/groovyserv-0.1/target/groovyserv-0.1-<OS>-<arch>-bin.zip
+  ~/opt/src/groovyserv-0.2/target/groovyserv-0.2-<OS>-<arch>-bin.zip
 
 という形式で作成されますので、これをバイナリパッケージからのインストー
-ルの場合と同じようにインストールしてください。テストで失敗する場合以下
-のようにテストをスキップすることもできます。
+ルの場合と同じようにインストールしてください。テストで失敗する場合は以
+下をお試しください。
 
-  > mvn -Dmaven.test.skip=true clean assembly:assembly
+  文字エンコードをUTF-8に設定する:
+
+    > export _JAVA_OPTIONS=-Dfile.encoding=UTF-8
+
+  結合テストをスキップする:
+
+    > mvn clean package
+
+  すべてのテストをスキップする:
+
+    > mvn -Dmaven.test.skip=true clean package
 
 ========
 使い方
@@ -151,7 +162,7 @@ groovyserverが起動されます。起動されていない場合、起動の�
   イプでつないで２つのgroovyclientコマンドを実行し、それぞれが異なるカ
   レントディレクトリであるように実行することはできません。
 
-   >  groovyclient -e "..."   | (cd /tmp; groovyclient -e "......") 
+   >  groovyclient -e "..."   | (cd /tmp; groovyclient -e "......")
 
   この場合、以下の例外が発生します。
 
@@ -194,8 +205,8 @@ groovyserverの起動オプションは以下のとおり。
 
    -v 冗長表示。デバッグ情報などを表示します。
    -q メッセージを表示しない。デフォルト。
-   -k 起動しているgroovyserverを終了します。
-   -r 起動しているgroovyserverを再起動します(停止+起動)。
+   -k 起動しているgroovyserverを終了します。※groovyserver.batでは使えません。
+   -r 起動しているgroovyserverを再起動します(停止+起動)。※groovyserver.batでは使えません。
    -p <port> groovyserverがクライアントとの通信に使用する
              ポート番号を指定します。
 
@@ -216,9 +227,9 @@ GROOVYSERVER_PORTを設定してください。
 ログファイル
 ==============
 
-groovyserverのログファイルは以下のファイルに出力されます。
+groovyserverのログは以下のファイルに出力されます。
 
-  ~/.groovy/groovyserver/<プロセスID>-<ポート番号>.log
+  ~/.groovy/groovyserv/groovyserver.log
 
 ======
 Tips
@@ -229,9 +240,10 @@ groovyコマンドを実行するとgroovyclientコマンドが呼び出され�
 イリアスの設定です。
 
   alias groovy=groovyclient
-  alias groovyc="groovyclient -e 'org.codehaus.groovy.tools.FileSystemCompiler.main(args)'"
-  alias groovysh="groovyclient -e 'groovy.ui.InteractiveShell.main(args)'"
-  alias groovyConsole="groovyclient -e 'groovy.ui.Console.main(args)'"
+
+Windowsではdoskeyコマンドで以下のように設定することができます。
+
+  doskey groovy=groovyclient $*
 
 ========
 連絡先
@@ -243,12 +255,11 @@ http://kobo.github.com/groovyserv/
 ライセンス
 ============
 
-Apache License Version 2.0
+The Apache Software License, Version 2.0
 
 ============
 クレジット
 ============
 
-Kobo Project.
-NTT Software Corp.
+Project Kobo. NTT Software Corp.
 
