@@ -19,15 +19,31 @@
   <formats>
     <format>zip</format>
   </formats>
-  <fileSets>
-    <fileSet>
-      <directory></directory>
+  <files>
+    <file>
       <outputDirectory>/</outputDirectory>
-      <includes>
-        <include>README*</include>
-      </includes>
+      <source>README</source>
       <filtered>true</filtered>
-    </fileSet>
+    </file>
+    <file>
+      <outputDirectory>/</outputDirectory>
+      <source>README.ja</source>
+      <filtered>true</filtered>
+    </file>
+    <file>
+      <outputDirectory>/bin</outputDirectory>
+      <source>src/main/bin/groovyserver</source>
+      <fileMode>755</fileMode>
+      <filtered>true</filtered>
+    </file>
+    <file>
+      <outputDirectory>/bin</outputDirectory>
+      <source>src/main/bin/groovyserver.bat</source>
+      <fileMode>755</fileMode>
+      <filtered>true</filtered>
+    </file>
+  </files>
+  <fileSets>
     <fileSet>
       <directory></directory>
       <outputDirectory>/</outputDirectory>
@@ -42,16 +58,6 @@
         <include>groovyclient.rb</include>
       </includes>
       <fileMode>755</fileMode>
-    </fileSet>
-    <fileSet>
-      <directory>src/main/bin</directory>
-      <outputDirectory>/bin</outputDirectory>
-      <includes>
-        <include>groovyserver</include>
-        <include>groovyserver.bat</include>
-      </includes>
-      <fileMode>755</fileMode>
-      <filtered>true</filtered>
     </fileSet>
     <fileSet>
       <directory>target</directory>
