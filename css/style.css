@@ -49,15 +49,26 @@ img {
   font-size: 0.8em;
   text-align: right;
 }
-.section {
+.section,.toc_section {
   margin: 1.5em 0;
   font-size: 1.1em;
 }
+
 .section h2 {
   padding-left: 30px;
   background: url(../images/star.png) no-repeat;
 }
+
+.toc_section h2 {
+  padding-left: 30px;
+  background: url(../images/star.png) no-repeat;
+}
+
 .section p {
+  padding: 0.5em;
+}
+
+.toc_section p {
   padding: 0.5em;
 }
 
@@ -114,6 +125,16 @@ span.question {
   margin-top: 0.5em;
 }
 .QANDA {
+  margin: 7px auto;
+  padding: 10px;
+  border-top: 4px solid #555;
+  background: #eef;
+  border-radius: 10px;         /* CSS3 */
+  -webkit-border-radius: 10px; /* Safari,Google Chrome */
+  -moz-border-radius: 10px;    /* Firefox */
+}
+
+.section, .toc_section {
   margin: 7px auto;
   padding: 10px;
   border-top: 4px solid #555;
