@@ -79,17 +79,21 @@ img {
   display: inline;
   list-style-type: none;
 }
-#nav ul li a {
-  color: #555;
+#nav ul li a,
+#nav ul li span {
+  color: #666;
   padding: 0 30px 0 20px;
 }
 #nav ul li a:hover {
+  color: #222;
+}
+#nav ul li span.current {
   color: #000;
 }
-#nav ul li a.home     { background: transparent url(../images/home.png) no-repeat left center; }
-#nav ul li a.document { background: transparent url(../images/document.png) no-repeat left center; }
-#nav ul li a.download { background: transparent url(../images/download.png) no-repeat left center; }
-#nav ul li a.source   { background: transparent url(../images/code.png) no-repeat left center; }
+#nav ul li .home     { background: transparent url(../images/home.png) no-repeat left center; }
+#nav ul li .document { background: transparent url(../images/document.png) no-repeat left center; }
+#nav ul li .download { background: transparent url(../images/download.png) no-repeat left center; }
+#nav ul li .source   { background: transparent url(../images/code.png) no-repeat left center; }
 
 #content {
   padding: 20px;
