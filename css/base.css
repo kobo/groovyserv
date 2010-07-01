@@ -9,28 +9,35 @@ body {
   background: #eee;
   color: #333;
 }
+
 h1 {
   font-size: 172.8%;
 }
+
 h2 {
   font-size: 144.0%;
 }
+
 h3 {
   font-size: 122.0%;
 }
+
 a {
   color: #11a;
   text-decoration: none;
 }
+
 a:hover {
   color: #000;
 }
+
 pre {
   background: #000;
   color: #fff;
   margin: 0 5px;
   padding: 10px;
 }
+
 img {
   vertical-align: middle;
   margin: 0 2px;
