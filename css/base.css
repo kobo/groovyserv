@@ -57,20 +57,20 @@ img {
 #container {
   margin: 0 auto;
   width: 1000px;
-  background: #fff;
+  background: #ddf;
 }
 
 #header {
+  background: #bbd;
   text-align: center;
 }
 #header #project {
   font-size: 90%;
   text-align: right;
-  padding-right: 20px;
+  padding: 0 20px 10px 0;
 }
 
 #nav {
-  margin-top: 5px;
   padding: 3px 0;
   border-top: 1px solid #eee;
   border-bottom: 1px solid #aaa;
@@ -103,7 +103,7 @@ img {
 #content .section {
   margin-bottom: 15px;
   padding: 15px 20px 15px 20px;
-  background: #fdc;
+  background: #eee;
   border-radius: 7px;         /* CSS3 */
   -webkit-border-radius: 7px; /* Safari,Google Chrome */
   -moz-border-radius: 7px;    /* Firefox */
@@ -122,7 +122,7 @@ img {
 }
 #content .section .new {
   background: transparent url(../images/new.png) no-repeat left center;
-  padding: 0 5px 0 24px;
+  padding: 5px 5px 5px 24px;
   color: #f30;
 }
 
