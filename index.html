@@ -7,21 +7,24 @@
     <title>GroovyServ @ GitHub</title>
   </head>
   <body>
-    <a id="github_ribbon" href="http://github.com/kobo/groovyserv"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
+    <div id="github_ribbon">
+      <a href="http://github.com/kobo/groovyserv"><img src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
+    </div>
 
     <div id="container">
-      <img src="images/logo.png" alt="GroovyServ" />
-
-      <div class="small">
-        by <a href="http://github.com/kobo">kobo</a> project
+      <div id="header">
+        <img id="logo" src="images/logo.png" alt="GroovyServ" />
+        <div id="project">
+          by <a href="http://github.com/kobo">kobo</a> project
+        </div>
       </div>
 
-      <div id="head">
+      <div id="nav">
         <ul>
-          <li><a href='index.html'><img src="images/home.png" />HOME</a></li>
-          <li><a href='document.html'><img src="images/document.png" />DOCUMENT</a></li>
-          <li><a href='download.html'><img src="images/download.png" />DOWNLOAD</a></li>
-          <li><a href='http://github.com/kobo/groovyserv'><img src="images/code.png" />Code</a></li>
+          <li><a class="home" href="index.html">Home</a></li>
+          <li><a class="document" href="document.html">Document</a></li>
+          <li><a class="download" href="download.html">Download</a></li>
+          <li><a class="source" href="http://github.com/kobo/groovyserv">Source</a></li>
         </ul>
       </div>
 
@@ -44,33 +47,30 @@
           <p>GroovyServ supports following features:</p>
           <ul>
             <li>Faster invocation of groovy script(sometimes 10 times more).</li>
-            <li>Transparent server invocation. When the server is not running
-              when the client is invoked, start it in background.</li>
+            <li>Transparent server invocation. When the server is not running when the client is invoked, start it in background.</li>
             <li>Connect System.in/out/err to socket stream.</li>
             <li>Simultaneous execution of scripts. <a href="http://kobo.github.com/groovyserv/faq.html#q2">See FAQ</a>.</li>
             <li>Traps call of System.exit() and transmit the exit status to the client.</li>
             <li>Signal handling(Ctrl-C).</li>
             <li>Change current working directry appropriately. <a href="http://kobo.github.com/groovyserv/faq.html#q1">See FAQ</a>.</li>
-            <li>Cygwin independence for windows(<font color="#ff5500"><img src="images/new.png" alt="NEW" />New feature of version 0.2</font>).</li>
             <li>CLASSPATH environment propagation.</li>
             <li>C(native binary) and Ruby client.</li>
-            <li>Many unit tests and integration tests are added and source code is fully refactored(<font color="#ff5500"><img src="images/new.png" alt="NEW" />New feature of version 0.2</font>).</li>
-          </div>
-        </ul>
-
+            <li>Cygwin independence for windows(<span class="new">New feature of version 0.2</span>).</li>
+            <li>Many unit tests and integration tests are added and source code is fully refactored(<span class="new">New feature of version 0.2</new>).</li>
+          </ul>
+        </div>
         <div class="section">
-		  <h2>Contact</h2>
-		  <p>
-			If you need help or find bug or want to send patch, please join
-			<a href="http://groups.google.com/group/groovyserv">GroovyServ Google Group</a> (<a href="mail:groovyserv@googlegroups.com">groovyserv@googlegroups.com</a>)
-		  or use <a href="http://github.com/kobo/groovyserv">github</a>.
-		  </p>
-		</div>
-
-      <div class="footer">
-        Get the source code on GitHub : <a href="http://github.com/kobo/groovyserv">kobo/groovyserv</a>
+          <h2>Contact</h2>
+          <p>If you need help or find bug or want to send patch, please join
+          <a href="http://groups.google.com/group/groovyserv">GroovyServ Google Group</a>
+          (<a href="mail:groovyserv@googlegroups.com">groovyserv@googlegroups.com</a>)
+          or use <a href="http://github.com/kobo/groovyserv">github</a>.</p>
+        </div>
       </div>
 
+      <div id="footer">
+        Get the source code on GitHub : <a href="http://github.com/kobo/groovyserv">kobo/groovyserv</a>
+      </div>
     </div>
 
     <script type="text/javascript">
@@ -81,8 +81,5 @@
         pageTracker._trackPageview();
       } catch(err) {}
     </script>
-
-
   </body>
 </html>
-
