@@ -1,13 +1,22 @@
 @charset "UTF-8";
 
+/************************************************/
+/* Base                                         */
+/************************************************/
+
 body {
-  margin: 1em;
-  background-color: #aaf;
+  padding: 0 15px;
+  background: #eee;
   color: #333;
 }
 h1 {
-  font-size: 3.8em;
-  margin: 5px 0;
+  font-size: 172.8%;
+}
+h2 {
+  font-size: 144.0%;
+}
+h3 {
+  font-size: 122.0%;
 }
 a {
   color: #11a;
@@ -16,159 +25,125 @@ a {
 a:hover {
   color: #000;
 }
-h2 {
-  font-size: 1.5em;
-  margin: 10px 0 5px 0;
-}
-h3 {
-  text-align: center;
-}
 pre {
   background: #000;
   color: #fff;
-  margin: 0 8px;
+  margin: 0 5px;
   padding: 10px;
-  font-size: 0.8em;
-}
-hr {
-  width: 80%;
-  border: 1px solid #aaa;
 }
 img {
   vertical-align: middle;
   margin: 0 2px;
   border-style: none;
 }
-.section ul li {
-  background: transparent url(../images/triangle.png) no-repeat left center;
-  margin-left: 1em;
-  padding: 4px 0 4px 2em;
-}
 
-.section,.toc_section {
-  margin: 1.5em 0;
-  font-size: 1.1em;
-}
-
-.section h2 {
-  padding-left: 30px;
-  background: url(../images/star.png) no-repeat;
-}
-
-.toc_section h2 {
-  padding-left: 30px;
-  background: url(../images/star.png) no-repeat;
-}
-
-.section p {
-  padding: 0.5em;
-}
-
-.toc_section p {
-  padding: 0.5em;
-}
+/************************************************/
+/* Each part                                    */
+/************************************************/
 
 #github_ribbon img {
   position: absolute;
   top: 0;
   right: 0;
-  border: 0;
+}
+
+#container {
+  margin: 0 auto;
+  width: 1000px;
+  background: #fff;
 }
 
 #header {
-  font-size: 0.8em;
-  text-align: right;
-}
-#footer {
   text-align: center;
-  margin-top: 15px;
-  font-style: italic;
+}
+#header #project {
+  font-size: 90%;
+  text-align: right;
+  padding-right: 20px;
 }
 
 #nav {
-  margin-top: 10px;
+  margin-top: 5px;
+  padding: 3px 0;
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #aaa;
+  background: #ddd;
 }
 #nav ul {
-  font-size: 1.2em;
-  font-family: "lucida console", "monaco", "andale mono", "bitstream vera sans mono", "consolas", monospace;
+  font-size: 120%;
   text-transform: uppercase;
-  letter-spacing: 2px;
   text-align: center;
-}
-#nav ul a {
-  color: #555;
-  padding: 0 5px 0 25px;
-}
-#nav ul a:hover {
-  color: #000;
 }
 #nav ul li {
   display: inline;
   list-style-type: none;
 }
-#nav a.home {
-  background: transparent url(../images/home.png) no-repeat left center;
+#nav ul li a {
+  color: #555;
+  padding: 0 10px 0 24px;
 }
-#nav a.document {
-  background: transparent url(../images/document.png) no-repeat left center;
+#nav ul li a:hover {
+  color: #000;
 }
-#nav a.download {
-  background: transparent url(../images/download.png) no-repeat left center;
-}
-#nav a.source {
-  background: transparent url(../images/code.png) no-repeat left center;
-}
-
-#container {
-  margin: 0 auto;
-  width: 700px;
-}
+#nav ul li a.home     { background: transparent url(../images/home.png) no-repeat left center; }
+#nav ul li a.document { background: transparent url(../images/document.png) no-repeat left center; }
+#nav ul li a.download { background: transparent url(../images/download.png) no-repeat left center; }
+#nav ul li a.source   { background: transparent url(../images/code.png) no-repeat left center; }
 
 #content {
-  margin: 7px auto;
-  border-top: 4px solid #335;
-  border-bottom: 4px solid #335;
-  padding: 10px 0;
+  padding: 20px;
+}
+#content .section {
+  margin-bottom: 15px;
+  padding: 15px 20px 15px 20px;
+  background: #fdc;
+  border-radius: 7px;         /* CSS3 */
+  -webkit-border-radius: 7px; /* Safari,Google Chrome */
+  -moz-border-radius: 7px;    /* Firefox */
+}
+#content .section h2 {
+  background: url(../images/star.png) no-repeat left center;
+  padding: 4px 0 4px 30px;
+  margin: 2px 0 8px 0;
+}
+#content .section p {
+  padding: 0.5em;
+}
+#content .section ul li {
+  background: transparent url(../images/triangle.png) no-repeat left center;
+  margin-left: 1em;
+  padding: 4px 0 4px 24px;
+}
+#content .section .new {
+  background: transparent url(../images/new.png) no-repeat left center;
+  padding: 0 5px 0 24px;
+  color: #f30;
 }
 
-span.answer {
-  color: #23f;
-  margin-top: 1em;
-  font-size: 1.2em;
-  text-decoration: bold;
+/* used only in faq.html */
+#content .section .answer {
+  margin-top: 10px;
 }
-span.question {
-  color: #3a6;
-  font-size: 1.2em;
-  text-decoration: bold;
-  margin-top: 0.5em;
+#content .section h3 {
+  font-size: 144.0%;
+  margin: 0;
+  padding: 0;
+  float: left;
 }
-.QANDA {
-  margin: 7px auto;
-  padding: 10px;
-  border-top: 4px solid #555;
-  background: #eef;
-  border-radius: 10px;         /* CSS3 */
-  -webkit-border-radius: 10px; /* Safari,Google Chrome */
-  -moz-border-radius: 10px;    /* Firefox */
+#content .section p {
+  margin: 0 0 0 24px;
+  padding: 5px;
 }
+#content .section .question h3 { color: #930; }
+#content .section .answer   h3 { color: #390; }
 
-.section, .toc_section {
-  margin: 7px auto;
-  padding: 10px;
-  border-top: 4px solid #555;
-  background: #eef;
-  border-radius: 10px;         /* CSS3 */
-  -webkit-border-radius: 10px; /* Safari,Google Chrome */
-  -moz-border-radius: 10px;    /* Firefox */
-}
-
-.download ul li {
+/* used only in download.html */
+#content .section.download ul li {
   background: transparent url(../images/download.png) no-repeat left center;
 }
 
-.new {
-  background: transparent url(../images/new.png) no-repeat left center;
-  padding: 0 5px 0 25px;
-  color: #f30;
+#footer {
+  text-align: center;
+  padding: 10px;
+  font-style: italic;
 }
