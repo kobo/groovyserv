@@ -96,7 +96,7 @@ img {
 #nav ul li .source   { background: transparent url(../images/code.png) no-repeat left center; }
 
 #content {
-  padding: 20px;
+  padding: 20px 30px;
 }
 #content .section {
   margin-bottom: 15px;
