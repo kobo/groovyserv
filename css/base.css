@@ -87,7 +87,7 @@ img {
 }
 #nav ul li a {
   color: #555;
-  padding: 0 10px 0 24px;
+  padding: 0 10px 0 20px;
 }
 #nav ul li a:hover {
   color: #000;
@@ -111,15 +111,14 @@ img {
 #content .section h2 {
   background: url(../images/star.png) no-repeat left center;
   padding: 4px 0 4px 30px;
-  margin: 2px 0 8px 0;
 }
 #content .section p {
-  padding: 0.5em;
+  padding: 9px;
 }
 #content .section ul li {
   background: transparent url(../images/triangle.png) no-repeat left center;
-  margin-left: 1em;
-  padding: 4px 0 4px 24px;
+  margin-left: 24px;
+  padding: 4px 0 4px 20px;
 }
 #content .section .new {
   background: transparent url(../images/new.png) no-repeat left center;
@@ -154,3 +153,4 @@ img {
   padding: 10px;
   font-style: italic;
 }
+
