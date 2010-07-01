@@ -99,7 +99,7 @@
             </goals>
             <configuration>
               <source>
-                System.properties."trimmed.os.name" = System.properties."os.name".replaceAll(/ /, '')
+                System.properties."trimmed.os.name" = System.properties."os.name".replaceAll(/ /, '').toLowerCase()
               </source>
             </configuration>
           </execution>
