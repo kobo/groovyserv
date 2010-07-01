@@ -55,7 +55,7 @@ img {
 }
 
 #header {
-  background: #bbd;
+  background: transparent url(../images/header_bg.png) no-repeat left center;
   text-align: center;
 }
 #header #project {
@@ -68,7 +68,7 @@ img {
   padding: 3px 0;
   border-top: 1px solid #eee;
   border-bottom: 1px solid #aaa;
-  background: #ddd;
+  background: #ccc;
 }
 #nav ul {
   font-size: 120%;
@@ -81,7 +81,7 @@ img {
 }
 #nav ul li a {
   color: #555;
-  padding: 0 10px 0 20px;
+  padding: 0 30px 0 20px;
 }
 #nav ul li a:hover {
   color: #000;
