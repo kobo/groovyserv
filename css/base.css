@@ -48,12 +48,6 @@ img {
 /* Each part                                    */
 /************************************************/
 
-#github_ribbon img {
-  position: absolute;
-  top: 0;
-  right: 0;
-}
-
 #container {
   margin: 0 auto;
   width: 1000px;
