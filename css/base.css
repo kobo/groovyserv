@@ -29,6 +29,7 @@ a {
 
 a:hover {
   color: #000;
+  text-decoration: underline;
 }
 
 pre {
@@ -66,9 +67,8 @@ img {
 
 #nav {
   padding: 3px 0;
-  border-top: 1px solid #eee;
-  border-bottom: 1px solid #aaa;
   background: #ccc;
+  background: transparent url(../images/nav_bg.png) repeat-x bottom;
 }
 #nav ul {
   font-size: 120%;
@@ -81,7 +81,7 @@ img {
 }
 #nav ul li a,
 #nav ul li span {
-  color: #666;
+  color: #555;
   padding: 0 30px 0 20px;
 }
 #nav ul li a:hover {
