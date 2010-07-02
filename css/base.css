@@ -52,17 +52,21 @@ img {
 #container {
   margin: 0 auto;
   width: 1000px;
-  background: #ddf;
+  background: #dde;
 }
 
 #header {
+  position: relative;
   background: transparent url(../images/header_bg.png) no-repeat left center;
   text-align: center;
+  height: 120px;
 }
 #header #project {
+  position: absolute;
+  right: 20px;
+  bottom: 10px;
   font-size: 90%;
   text-align: right;
-  padding: 0 20px 10px 0;
 }
 
 #nav {
