@@ -17,7 +17,7 @@
       <div id="nav">
         <ul>
           <li><a class="home" href="index.html">Home</a></li>
-          <li><span class="document current" href="document.html">Documentation</span></li>
+          <li><a class="document" href="document.html">Documentation</a></li>
           <li><a class="download" href="download.html">Download</a></li>
           <li><a class="source" href="http://github.com/kobo/groovyserv">Source</a></li>
         </ul>
@@ -25,20 +25,24 @@
 
       <div id="content">
         <div class="section">
-          <h2>Getting Started</h2>
-          <ul>
-            <li><a href="README.html">README</a></li>
-            <li><a href="README.ja.html">README (Japanese)</a></li>
-            <li><a href="screencast.html">Screencast</a></li>
-          </ul>
+          <h2>Changes in version 0.2 (2010-06-30)</h2>
+          <pre>
+ New Features:
+
+ - Independence from cygwin.dll on windows environment.  Now it can be compiled with mingw.
+ - Added batch file version groovyserver startup script (for uses on windows who don't want to install cygwin).
+
+ Improvements:
+
+ - Wholly refactored implementation.
+ - Added unit tests and integration tests (some of integration tests are a little fragile still now).
+ - Output more informative log with -v option.
+ - All log output to ./groovy/groovyserv/groovyserver.log.
+          </pre>
         </div>
         <div class="section">
-          <h2>Refference</h2>
-          <ul>
-            <li><a href="changelog.html">Change Log</a></li>
-            <li><a href="faq.html">FAQ</a></li>
-            <li><a href="license.html">License</a></li>
-          </ul>
+          <h2>Changes in version 0.1 (2010-03-09)</h2>
+          <p>First release</p>
         </div>
       </div>
 
