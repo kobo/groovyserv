@@ -23,12 +23,6 @@
     <file>
       <outputDirectory>/</outputDirectory>
       <source>README</source>
-      <filtered>true</filtered>
-    </file>
-    <file>
-      <outputDirectory>/</outputDirectory>
-      <source>README.ja</source>
-      <filtered>true</filtered>
     </file>
     <file>
       <outputDirectory>/bin</outputDirectory>
