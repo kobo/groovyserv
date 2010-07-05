@@ -66,12 +66,12 @@
             <p>What happens if I invoke two groovy script which have different
             current working directory? For example, using sub-shell and pipe,
             invoke two groovy script concurrently:</p>
-            <pre>$ (cd /tmp; groovyclient read.groovy ) | ( cd  /var/tmp; groovyclient output.groovy )</pre>
+            <code>$ (cd /tmp; groovyclient read.groovy ) | ( cd  /var/tmp; groovyclient output.groovy )</code>
           </div>
           <div class="answer">
             <h3>A</h3>
             <p>This is restricted case. Exception is occurred when the second groovy command is invoked. Following is OK.</p>
-            <pre>$ (cd /tmp; groovyclient read.groovy ) | ( cd /tmp; groovyclient output.groovy )</pre>
+            <code>$ (cd /tmp; groovyclient read.groovy ) | ( cd /tmp; groovyclient output.groovy )</code>
           </div>
         </div>
         <div class="section" id="q3">
