@@ -190,7 +190,7 @@
         <artifactId>maven-failsafe-plugin</artifactId>
         <version>2.5</version>
         <configuration>
-          <forkedProcessTimeoutInSeconds>30</forkedProcessTimeoutInSeconds>
+          <forkMode>never</forkMode>
           <environmentVariables>
             <GROOVYSERV_HOME>${groovyserv.home}</GROOVYSERV_HOME>
           </environmentVariables>
