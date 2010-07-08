@@ -150,6 +150,24 @@ If some tests fail, you can try as follows:
 
     > mvn -Dmaven.test.skip=true clean package
 
+=======================
+Environment variables
+=======================
+
+GroovyServ uses both two following environment variables in runtime.
+
+  HOME
+
+    It's used to decide ~/.groovy/groovyserv directory path.
+    It's set by default if in unix-like OS, but in Windows you must set by yourself.
+    Add HOME as user variables in [System Properties&gt;Advanced&gt;Environment Variables].
+    It may need to restart Windows.
+
+  GROOVY_HOME
+
+    It's used to specify groovy command path.
+    Generally, it has been already set through installing Groovy.
+
 ============
 How to use
 ============

@@ -107,12 +107,12 @@ groovyclient の接続しか受け付けないように制約をかけていま�
 バイナリパッケージからのインストール
 ======================================
 
-バイナリパッケージgroovyserv-0.2-<OS>-<arch>-bin.zipを適当なフォルダ
+バイナリパッケージgroovyserv-0.2-&lt;OS&gt;-&lt;arch&gt;-bin.zipを適当なフォルダ
 に展開します。例えば、~/optに展開するとします。
 
-  > mkdir ~/opt
-  > cd ~/opt
-  > unzip groovyserv-0.2-win32-bin.zip
+  &gt; mkdir ~/opt
+  &gt; cd ~/opt
+  &gt; unzip groovyserv-0.2-win32-bin.zip
 
 上記により~/opt/groovyserv-0.2が展開されます。次に環境変数PATHに上記フォ
 ルダ配下のbinを追加します。仮に、~/opt/groovyservに展開した場合、以下の
@@ -122,7 +122,7 @@ groovyclient の接続しか受け付けないように制約をかけていま�
 
 設定は以上です。groovyclientを実行するとgroovyserverが起動します。
 
-  > groovyclient -v
+  &gt; groovyclient -v
   starting server..
   Groovy Version: 1.7.0 JVM: 1.6.0_13
 
@@ -133,18 +133,18 @@ groovyclient の接続しか受け付けないように制約をかけていま�
 まず、GroovyServのソースコード配布パッケージ
 groovyserv-0.2-src.zipを展開します。
 
-  > mkdir -p ~/opt/src
-  > cd ~/opt/src
-  > unzip groovyserv-0.2-src.zip
+  &gt; mkdir -p ~/opt/src
+  &gt; cd ~/opt/src
+  &gt; unzip groovyserv-0.2-src.zip
 
 Maven2を使ってコンパイルします。
 
-  > cd ~/opt/src/groovyserv-0.2/
-  > mvn clean verify
+  &gt; cd ~/opt/src/groovyserv-0.2/
+  &gt; mvn clean verify
 
 コンパイルした結果、バイナリパッケージが
 
-  ~/opt/src/groovyserv-0.2/target/groovyserv-0.2-<OS>-<arch>-bin.zip
+  ~/opt/src/groovyserv-0.2/target/groovyserv-0.2-&lt;OS&gt;-&lt;arch&gt;-bin.zip
 
 という形式で作成されますので、これをバイナリパッケージからのインストー
 ルの場合と同じようにインストールしてください。テストで失敗する場合は以
@@ -152,15 +152,35 @@ Maven2を使ってコンパイルします。
 
   文字エンコードをUTF-8に設定する:
 
-    > export _JAVA_OPTIONS=-Dfile.encoding=UTF-8
+    &gt; export _JAVA_OPTIONS=-Dfile.encoding=UTF-8
 
   結合テストをスキップする:
 
-    > mvn clean package
+    &gt; mvn clean package
 
   すべてのテストをスキップする:
 
-    > mvn -Dmaven.test.skip=true clean package
+    &gt; mvn -Dmaven.test.skip=true clean package
+
+==========
+環境変数
+==========
+
+GroovyServは、実行時に以下の2つの環境変数を使用します。
+
+  HOME
+
+    クッキーファイルやログファイルを格納する~/.groovy/groovyserv ディレ
+    クトリを決定するために使用します。Unix系のOSであれば標準で設定され
+    ているので問題ありませんが、 Windowsの場合は自分で設定しておく必要
+    があります。[システムのプロパティ&gt;詳細設定&gt;環境変数]でユーザ
+    の環境変数として追加してください。設定後、OSの再起動が必要になるか
+    もしれません。
+
+  GROOVY_HOME
+
+    groovyコマンドのパスを特定するために使用します。
+    通常はGroovyのインストール作業の一貫で設定されています。
 
 ========
 使い方
@@ -173,11 +193,11 @@ groovyserverが起動されます。起動されていない場合、起動の�
 
 明示的にgroovyserverを起動しておくこともできます。
 
-  > groovyserver
+  &gt; groovyserver
 
 起動オプションに-vを指定すると詳細メッセージが表示されます。
 
-  > groovyserver -v
+  &gt; groovyserver -v
 
 その他の起動オプションについては後述します。
 
@@ -189,7 +209,7 @@ groovyserverが起動されます。起動されていない場合、起動の�
   イプでつないで２つのgroovyclientコマンドを実行し、それぞれが異なるカ
   レントディレクトリであるように実行することはできません。
 
-   >  groovyclient -e "..."   | (cd /tmp; groovyclient -e "......")
+   &gt;  groovyclient -e "..."   | (cd /tmp; groovyclient -e "......")
 
   この場合、以下の例外が発生します。
 
@@ -206,8 +226,8 @@ groovyserverが起動されます。起動されていない場合、起動の�
 * 静的変数はgroovyプログラム間の実行で共有されます。たとえば、システム
   プロパティが共有されます。
 
-  > groovyclient -e "System.setProperty('a','abc')"
-  > groovyclient -e "println System.getProperty('a')"
+  &gt; groovyclient -e "System.setProperty('a','abc')"
+  &gt; groovyclient -e "println System.getProperty('a')"
   abc
 
   ただし、System.out/System.in/System.errはそれぞれのセッション毎に区別
@@ -234,7 +254,7 @@ groovyserverの起動オプションは以下のとおり。
    -q メッセージを表示しない。デフォルト。
    -k 起動しているgroovyserverを終了します。※groovyserver.batでは使えません。
    -r 起動しているgroovyserverを再起動します(停止+起動)。※groovyserver.batでは使えません。
-   -p <port> groovyserverがクライアントとの通信に使用する
+   -p &lt;port&gt; groovyserverがクライアントとの通信に使用する
              ポート番号を指定します。
 
 ============
@@ -244,7 +264,7 @@ groovyserverの起動オプションは以下のとおり。
 groovyserverが通信に使用するポート番号を変更するには、環境変数
 GROOVYSERVER_PORTを設定してください。
 
-  > export GROOVYSERVER_PORT=1963
+  &gt; export GROOVYSERVER_PORT=1963
 
 クライアントでもGROOVYSERVER_PORTの値が通信するポート番号として使用され
 ますが、-pオプションで設定することもできます。環境変数と-pオプション両
