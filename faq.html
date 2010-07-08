@@ -27,98 +27,95 @@
         <div class="section">
           <h2>FAQ</h2>
           <ul>
-            <li><a href="#q1">Why GroovyServ uses JNA(Java Native Access)?</a></li>
-            <li><a href="#q2">What happens if I invoke two groovy script which have different current working directory?</a></li>
-            <li><a href="#q3">Supported environments?</a></li>
-            <li><a href="#q4">Is there MacPorts, *.deb, *.rpm package?</a></li>
-            <li><a href="#q5">Does cygwin required on windows?</a></li>
-            <li><a href="#q6">Why groovy client is written in C? Why it is not written in Java?</a></li>
+            <li><a href="#q1">Why does GroovyServ use JNA(Java Native Access)?</a></li>
+            <li><a href="#q2">What happens if I invoke two Groovy scripts which have different current working directory at the same time?</a></li>
+            <li><a href="#q3">What environments are supported?</a></li>
+            <li><a href="#q4">Are there packages for MacPorts, *.deb, *.rpm?</a></li>
+            <li><a href="#q5">Does GroovyServ for Windows require Cygwin?</a></li>
+            <li><a href="#q6">Why is groovyclient written in C? Why isn't it written in Java?</a></li>
             <li><a href="#q7">What is the server-client communication protocol?</a></li>
-            <li><a href="#q8">If the JVM is shared among each script sessions, static variables are shared too?</a></li>
-            <li><a href="#q9">How I invoke the original groovy command when I aliased 'groovy' to groovyclient?</a></li>
-            <li><a href="#q10">Where is the place GroovyServ log message stored?</a></li>
-            <li><a href="#q11">How I restart or kill GroovyServer?</a></li>
-            <li><a href="#q12">Why the name of this software is 'GroovyServ'? </a></li>
-            <li><a href="#q13">Can I use GroovyServ by grape's grab annotations?</a></li>
-            <li><a href="#q14">Can I make groovyclient connect to GroovyServer which runs on remote</a></li>
-            <li><a href="#q15">Can I use JQS(Java Quick Start) with GroovyServe at the same time?</a></li>
+            <li><a href="#q8">If the JVM process is shared by each script session, static variables are shared too?</a></li>
+            <li><a href="#q9">How can I invoke the original groovy command when 'groovy' has been aliased to groovyclient?</a></li>
+            <li><a href="#q10">Where is there a log file?</a></li>
+            <li><a href="#q11">How can I restart or kill groovyserver?</a></li>
+            <li><a href="#q12">Why is the name of this software 'GroovyServ'?</a></li>
+            <li><a href="#q13">Can I use GroovyServ with Grape's @Grab annotation?</a></li>
+            <li><a href="#q14">Can groovyclient connect to groovyserver running on remote server?</a></li>
+            <li><a href="#q15">Can I use JQS(Java Quick Start) with GroovyServ at the same time?</a></li>
           </ul>
         </div>
 
         <div class="section" id="q1">
           <div class="question">
             <h3>Q</h3>
-            <p>Why GroovyServ uses <a href="https://jna.dev.java.net/">JNA(Java Native Access)</a>?</p>
+            <p>Why does GroovyServ use <a href="https://jna.dev.java.net/">JNA(Java Native Access)</a>?</p>
           </div>
           <div class="answer">
             <h3>A</h3>
-            <p>Because of to change current working directory. To be more specific,
-            to call chdir(2) system call or _chdir win32 C runtime function. You
-            might think 'user.dir' system property can be used for same purpose ,
-            in pure way, but it is not enough because it has no effect to all of
-            Java functionality about current working directory. For example, it
-            has no effect to call new FileInputStream(".").</p>
+            <p>Because to change current working directory.
+            To be more specific, to call chdir(2) system call or _chdir win32 C runtime function.
+            You might think 'user.dir' system property can be used for same purpose,
+            in Pure Java way, but it is not enough because it has no effect to all of
+            Java functionality about current working directory.
+            For example, it has no effect to call new FileInputStream(".").</p>
           </div>
         </div>
         <div class="section" id="q2">
           <div class="question">
             <h3>Q</h3>
-            <p>What happens if I invoke two groovy script which have different
-            current working directory? For example, using sub-shell and pipe,
-            invoke two groovy script concurrently:</p>
+            <p>What happens if I invoke two Groovy scripts which have different current working directory at the same time?
+            For example, using sub-shell and pipe, two Groovy scripts concurrently are invoked:</p>
             <code>$ (cd /tmp; groovyclient read.groovy ) | ( cd  /var/tmp; groovyclient output.groovy )</code>
           </div>
           <div class="answer">
             <h3>A</h3>
-            <p>This is restricted case. Exception is occurred when the second groovy command is invoked. Following is OK.</p>
+            <p>This is the restricted case. Exception occurs when the second groovyclient command is invoked. Instead, the following works well.</p>
             <code>$ (cd /tmp; groovyclient read.groovy ) | ( cd /tmp; groovyclient output.groovy )</code>
           </div>
         </div>
         <div class="section" id="q3">
           <div class="question">
             <h3>Q</h3>
-            <p>
-            What are supported environments?</p>
+            <p>What environments are supported?</p>
           </div>
           <div class="answer">
             <h3>A</h3>
             <p>So far Ubuntu Linux, Windows and Mac OS X are supported.
-            Basically, if the environment supprted by JDK and JNA, GroovyServe can run on there potentially.</p>
+            Basically, GroovyServ can run on the environment which supports JDK and JNA.</p>
           </div>
         </div>
         <div class="section" id="q4">
           <div class="question">
             <h3>Q</h3>
-            <p>Is there MacPorts, *.deb, *.rpm package?</p>
+            <p>Are there packages for MacPorts, *.deb, *.rpm?</p>
           </div>
           <div class="answer">
             <h3>A</h3>
-            <p>No it isn't.</p>
+            <p>No, there aren't.</p>
           </div>
         </div>
         <div class="section" id="q5">
           <div class="question">
             <h3>Q</h3>
-            <p>Is cygwin required on windows?</p>
+            <p>Does GroovyServ for Windows require Cygwin?</p>
           </div>
           <div class="answer">
             <h3>A</h3>
-            <p>No, it isn't. In GroovyServ 0.1, groovyclient.exe requires
-            cygwin.dll.  However, at GroovyServ 0.2, we rewrite it to possible to be compiled
-            with mingw and the binary doesn't require cygwin.dll now, and don't need cygwin
-            environment at all (groovyserver.bat are provided instead of groovyserver shell script).</p>
+            <p>No, it doesn't. In GroovyServ 0.1 groovyclient.exe required cygwin.dll.
+            In GroovyServ 0.2, however, we rewrote it to be able to compile with MinGW.
+            So now, it doesn't require cygwin.dll and Cygwin environment at all.
+            New groovyserver.bat are provided instead of groovyserver shell script.</p>
           </div>
         </div>
         <div class="section" id="q6">
           <div class="question">
             <h3>Q</h3>
-            <p>Why groovy client is written in C? Why it is not written in Java?</p>
+            <p>Why is groovyclient written in C? Why isn't it written in Java?</p>
           </div>
           <div class="answer">
             <h3>A</h3>
-            <p>This software is just for to reduce startup-time of groovy script.
-            So quick response is the most important factor, so we decided to not to
-            use JVM for groovyclient.</p>
+            <p>The purpose of GroovyServ is to reduce startup-time of Groovy script and quick response is the most important factor.
+            So we could not use Java for groovyclient.</p>
           </div>
         </div>
         <div class="section" id="q7">
@@ -128,106 +125,99 @@
           </div>
           <div class="answer">
             <h3>A</h3>
-            <p>It is a original proprietary protocol. To know the sequence of the
-            protocol, please look at the comments in RequestHeader.groovy, or
-            groovyclient.rb for details.</p>
+            <p>It is a original proprietary protocol. To know the sequence of the protocol,
+            please read comments in RequestHeader.groovy or groovyclient.rb for details.</p>
           </div>
         </div>
         <div class="section" id="q8">
           <div class="question">
             <h3>Q</h3>
-            <p>If the JVM is shared among each script sessions, static variables are shared too?</p>
+            <p>If the JVM process is shared by each script session, static variables are shared too?</p>
           </div>
           <div class="answer">
             <h3>A</h3>
-            <p>Yes and no. If the static variables are defined in the script or
-            groovy classes you run, those are created on a GroovyClassLoader which
-            created for each script sessions. In this case, static variables
-            aren't shared for each script because class loaders are diffeent. On
-            the other hand, if the static variables are defined by system/bootstrap
-            class loaders, those are shared. For example, the values which you
-            stored in System.getProperties() are shared among all scripts which
-            invoked on the SroovyServ.</p>
+            <p>Yes and No.
+            If the static variables are defined in the script or Groovy classes you run,
+            they are defined on a GroovyClassLoader created for each script session.
+            In this case, static variables aren't shared for each script because class loaders are different.
+            On the other hand, if the static variables are defined by system/bootstrap class loaders, they are shared.
+            For example, the values which you stored in System.getProperties() are shared among all scripts invoked on the GroovyServ.</p>
           </div>
         </div>
         <div class="section" id="q9">
           <div class="question">
             <h3>Q</h3>
-            <p>How I invoke the original groovy command when I aliased 'groovy' to
-            groovyclient?</p>
+            <p>How can I invoke the original groovy command when 'groovy' has been aliased to groovyclient?</p>
           </div>
           <div class="answer">
             <h3>A</h3>
-            <p>Please apply the backslash like \groovy(for bash or C-Shell) or
-            specify groovy command in full path form.</p>
+            <p>Append the backslash as prefix like \groovy(for bash or csh). Or specify groovy command in full path.</p>
           </div>
         </div>
         <div class="section" id="q10">
           <div class="question">
             <h3>Q</h3>
-            <p>Where is the place GroovyServ log message stored?</p>
+            <p>Where is there a log file?</p>
           </div>
           <div class="answer">
             <h3>A</h3>
-            <p>$HOME/.groovy/groovyserver/groovyserver.log.</p>
+            <p>See $HOME/.groovy/groovyserver/groovyserver.log.</p>
           </div>
         </div>
         <div class="section" id="q11">
           <div class="question">
             <h3>Q</h3>
-            <p>How do I restart or kill groovyserver?</p>
+            <p>How can I restart or kill groovyserver?</p>
           </div>
           <div class="answer">
             <h3>A</h3>
-            <p>In MacOS X, Linux and cygwin environment, you can specify -r (restart)
-            and -k (kill) options to groovyserver command to do it. But 'nocygwin'
-            environment, there is no way to restart/kill command line. Please use
-            task manager to kill the groovyserver, and restart through
-            groovyclient.</p>
+            <p>In Mac OS X, Linux and Cygwin environment, you can use -r (restart) and -k (kill) options for groovyserver command.
+            But in non-Cygwin environment on Windows, there is no way to restart/kill.
+            Please use task manager to kill the groovyserver and restart through groovyclient or directly groovyserver.bat.</p>
           </div>
         </div>
         <div class="section" id="q12">
           <div class="question">
             <h3>Q</h3>
-            <p>Why the name of this software is 'GroovyServ'? </p>
+            <p>Why is the name of this software 'GroovyServ'?</p>
           </div>
           <div class="answer">
             <h3>A</h3>
-            <p>Because this is like "Gnuserv" for emacs. Do you know?</p>
+            <p>Because this is like "Gnuserv" for Emacs. Do you know it?</p>
           </div>
         </div>
         <div class="section" id="q13">
           <div class="question">
             <h3>Q</h3>
-            <p>Can I use GroovyServ by grape's grab annotations?</p>
+            <p>Can I use GroovyServ with Grape's @Grab annotation?</p>
           </div>
           <div class="answer">
             <h3>A</h3>
-            <p>No you can't.</p>
+            <p>No, you can't.</p>
           </div>
         </div>
         <div class="section" id="q14">
           <div class="question">
             <h3>Q</h3>
-            <p>Can I make groovyclient connect to groovyserver which runs on remote server?</p>
+            <p>Can groovyclient connect to groovyserver running on remote server?</p>
           </div>
           <div class="answer">
             <h3>A</h3>
-            <p>No you can't. Connection from the host other than localhost is inhibited
-            intentionally for security reasons. In addition, only the client which can
-            read secret cookie file on the file system generated by the groovyserver is allowed to be connected.
-            Because of GroovyServer invokes any script through TCP
-            socket, this restriction is required.</p>
+            <p>
+            No, it can't.
+            A connection from the host other than localhost is inhibited for security reasons.
+            Only a client which can read a secret cookie file created by the groovyserver is allowed to connect.
+            This restriction is needed because groovyserver invokes any script containing even evil code through TCP socket.</p>
           </div>
         </div>
         <div class="section" id="q15">
           <div class="question">
             <h3>Q</h3>
-            <p>Can I use JQS(Java Quick Start) with GroovyServe at the same time?</p>
+            <p>Can I use JQS(Java Quick Start) with GroovyServ at the same time?</p>
           </div>
           <div class="answer">
             <h3>A</h3>
-            <p>Yes you can. No problem.</p>
+            <p>Yes, you can. No problem.</p>
           </div>
         </div>
       </div>
