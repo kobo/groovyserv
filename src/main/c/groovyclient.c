@@ -155,7 +155,7 @@ void send_header(int fd, int argn, char** argv, char* cookie) {
 
   // send command line arguments.
   for (i=1; i<argn; i++) {
-	p+= sprintf(p, "%s: %s\n", HEADER_KEY_ARG, argv[i]);
+    p+= sprintf(p, "%s: %s\n", HEADER_KEY_ARG, argv[i]);
     // TODO: check buffer overrrun
   }
 
@@ -208,22 +208,22 @@ char* read_line(int fd, char* buf, int size) {
    int i;
    for (i=0; i<size; i++) {
 #ifdef WINDOWS_WITHOUT_CYGWIN
-	 int ret = recv(fd, buf+i, 1, 0);
-	 //	 int ret = recv(fd, buf+i, 100, 0);
-	 if (ret == -1) {
-	   printf("error : %d\n", WSAGetLastError());
-	   exit(1);
-	 }
-	 if (ret != 1) {
-	   // signal handler output breaks stream.
+     int ret = recv(fd, buf+i, 1, 0);
+     //     int ret = recv(fd, buf+i, 100, 0);
+     if (ret == -1) {
+       printf("error : %d\n", WSAGetLastError());
+       exit(1);
+     }
+     if (ret != 1) {
+       // signal handler output breaks stream.
        return NULL;
-	 }
+     }
 #else
-	 read(fd, buf+i, 1);
+     read(fd, buf+i, 1);
 #endif
-	 if (buf[i] == '\n') {
-	   return buf;
-	 }
+     if (buf[i] == '\n') {
+       return buf;
+     }
    }
    return buf;
  }
@@ -346,14 +346,14 @@ int send_to_server(int fd)
 void copy_stdin_to_soc(int fd) {
   int ch;
   while (1) {
-	send_to_server(fd);
+    send_to_server(fd);
   }
 }
 
 void invoke_thread(int fd) {
   DWORD id = 1;
   HANDLE hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)
-								copy_stdin_to_soc, (LPVOID)fd, 0, &id);
+                                copy_stdin_to_soc, (LPVOID)fd, 0, &id);
 }
 
 int session(int fd)
@@ -363,31 +363,31 @@ int session(int fd)
   invoke_thread(fd);
 
   while (1) {
-	int size = read_headers(fd, headers, MAX_HEADER);
-	if (size == 0) {
-	  return 1;
-	}
-	// Process exit
-	char* status = find_header(headers, HEADER_KEY_STATUS, size);
-	if (status != NULL) {
-	  int stat = atoi(status);
-	  return stat;
-	}
+    int size = read_headers(fd, headers, MAX_HEADER);
+    if (size == 0) {
+      return 1;
+    }
+    // Process exit
+    char* status = find_header(headers, HEADER_KEY_STATUS, size);
+    if (status != NULL) {
+      int stat = atoi(status);
+      return stat;
+    }
 
-	// Dispatch data from server to stdout/err.
-	char* sid = find_header(headers, HEADER_KEY_CHANNEL, size);
-	if (sid == NULL) {
-	  fprintf(stderr, "\nrequired header %s not found\n", HEADER_KEY_CHANNEL);
-	  return 1;
-	}
-	char* chunk_size = find_header(headers, HEADER_KEY_SIZE, size);
-	if (chunk_size == NULL) {
-	  fprintf(stderr, "\nrequired header %s not found\n", HEADER_KEY_SIZE);
-	  return 1;
-	}
-	if (split_socket_output(fd, sid, atoi(chunk_size)) == EOF) {
-	  return 0;
-	}
+    // Dispatch data from server to stdout/err.
+    char* sid = find_header(headers, HEADER_KEY_CHANNEL, size);
+    if (sid == NULL) {
+      fprintf(stderr, "\nrequired header %s not found\n", HEADER_KEY_CHANNEL);
+      return 1;
+    }
+    char* chunk_size = find_header(headers, HEADER_KEY_SIZE, size);
+    if (chunk_size == NULL) {
+      fprintf(stderr, "\nrequired header %s not found\n", HEADER_KEY_SIZE);
+      return 1;
+    }
+    if (split_socket_output(fd, sid, atoi(chunk_size)) == EOF) {
+      return 0;
+    }
   }
 }
 
@@ -479,7 +479,7 @@ void mk_dir(const char* path) {
   struct stat buf;
   if (stat(path, &buf) == -1) {
 #ifndef WINDOWS_WITHOUT_CYGWIN
-	// TODO: create folder for mingw
+    // TODO: create folder for mingw
     if (errno == ENOENT) {
       char cmdbuf[strlen(path) + 7];
       sprintf(cmdbuf, "mkdir %s", path);
@@ -531,15 +531,15 @@ void read_cookie(char* cookie, int size) {
   sprintf(path, "%s/%s", getenv("HOME"), ".groovy/groovyserv/cookie");
   FILE* fp = fopen(path, "r");
   if (fp != NULL) {
-	if (fgets(cookie, size, fp) == NULL) {
-	  perror("fgets");
-	  exit(1);
-	}
-	fclose(fp);
+    if (fgets(cookie, size, fp) == NULL) {
+      perror("fgets");
+      exit(1);
+    }
+    fclose(fp);
   }
   else {
-	fprintf(stderr, "cannot open cookie file\n");
-	exit(1);
+    fprintf(stderr, "cannot open cookie file\n");
+    exit(1);
   }
 }
 
@@ -554,23 +554,23 @@ int main(int argn, char** argv) {
   int port = DESTPORT;
   char* port_str = getenv("GROOVYSERVER_PORT");
   if (port_str != NULL) {
-	if (sscanf(port_str, "%d", &port) != 1) {
-	  fprintf(stderr, "port format error\n");
-	  exit(1);
-	}
+    if (sscanf(port_str, "%d", &port) != 1) {
+      fprintf(stderr, "port format error\n");
+      exit(1);
+    }
   }
 
 #ifdef WINDOWS_WITHOUT_CYGWIN
   WSADATA wsadata;
   if (WSAStartup(MAKEWORD(1,1), &wsadata) == SOCKET_ERROR) {
-	printf("Error creating socket.");
-	exit(1);
+    printf("Error creating socket.");
+    exit(1);
   }
 
   // make standard output to binary mode.
   if (_setmode( _fileno(stdout), _O_BINARY) < 0) {
-	printf("setmode failed.");
-	exit(1);
+    printf("setmode failed.");
+    exit(1);
   }
 #endif
 
@@ -578,10 +578,10 @@ int main(int argn, char** argv) {
   while ((fd_soc = open_socket(DESTSERV, port)) == -1) {
     fprintf(stderr, "starting server..\n");
     start_server(argn, argv, port);
-	if (trial++ > 3) {
-	  fprintf(stderr, "Cannot invoke groovy server.");
-	  exit(1);
-	}
+    if (trial++ > 3) {
+      fprintf(stderr, "Cannot invoke groovy server.");
+      exit(1);
+    }
   }
   read_cookie(cookie, sizeof(cookie));
 
