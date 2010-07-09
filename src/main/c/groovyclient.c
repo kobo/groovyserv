@@ -576,12 +576,18 @@ int main(int argn, char** argv) {
 
   int trial = 0;
   while ((fd_soc = open_socket(DESTSERV, port)) == -1) {
-    fprintf(stderr, "starting server..\n");
+    fprintf(stderr, "starting server...\n");
     start_server(argn, argv, port);
-    if (trial++ > 3) {
-      fprintf(stderr, "Cannot invoke groovy server.");
+    if (trial >= 2) {
+      fprintf(stderr, "Cannot invoke groovy server.\n");
       exit(1);
     }
+#ifdef WINDOWS_WITHOUT_CYGWIN
+    Sleep(1000);
+#else
+    sleep(1);
+#endif
+    trial++;
   }
   read_cookie(cookie, sizeof(cookie));
 
