@@ -34,7 +34,9 @@ shift
 goto loop
 :break
 
-set CP=%GROOVYSERV_HOME%\lib\jna-3.2.2.jar;%CP%
+set CP=%GROOVYSERV_HOME%\lib\jna-3.2.2.jar;
 set CP=%GROOVYSERV_HOME%\lib\groovyserv-${project.version}.jar;%CP%
+set CLASSPATH=%CP%
 
-start "groovyserver" /B "%GROOVY_HOME%"\bin\groovy -cp "%CP%" %GROOVYSERV_OPTS% -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)"
+start "groovyserver" /B %GROOVY_HOME%\bin\groovy %GROOVYSERV_OPTS% -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)"
+
