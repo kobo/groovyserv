@@ -475,25 +475,46 @@ static void signal_handler(int sig) {
   exit(1);
 }
 
+char* scriptdir(char* result_dir, char* script_path) {
+  char work_path[MAXPATHLEN];
+  strcpy(work_path, script_path);
+  char* work_pt = work_path + strlen(work_path);
+  while (work_pt > work_path && (*work_pt != '/' && *work_pt != '\\')) {
+    work_pt--;
+  }
+  if (*work_pt == '/' || *work_pt == '\\') {
+    work_pt++;
+  }
+  strncpy(result_dir, work_path, work_pt - work_path);
+}
+
 void start_server(int argn, char** argv, int port) {
+  // resolve base directory
+  char basedir_path[MAXPATHLEN];
+  char* groovyserv_home = getenv("GROOVYSERV_HOME");
+  if (groovyserv_home == NULL) {
+      scriptdir(basedir_path, argv[0]);
+  } else {
+#ifdef WINDOWS_WITHOUT_CYGWIN
+      sprintf(basedir_path, "%s\\bin\\", groovyserv_home);
+#else
+      sprintf(basedir_path, "%s/bin/", groovyserv_home);
+#endif
+  }
+  //fprintf(stderr, "DEBUG: basedir_path: %s\n", basedir_path);
+
   // make command line to invoke groovyserver
   char groovyserver_path[MAXPATHLEN];
-  strcpy(groovyserver_path, argv[0]);
-  char* p = groovyserver_path + strlen(groovyserver_path);
-  while (p > groovyserver_path && (*p != '/' && *p != '\\')) {
-    p--;
-  }
-  if (*p == '/' || *p == '\\') {
-    p++;
-  }
 #ifdef WINDOWS_WITHOUT_CYGWIN
-  sprintf(p, "groovyserver.bat -p %d", port);
+  sprintf(groovyserver_path, "%sgroovyserver.bat -p %d", basedir_path, port);
 #else
-  sprintf(p, "groovyserver -p %d", port);
+  sprintf(groovyserver_path, "%sgroovyserver -p %d", basedir_path, port);
 #endif
+  //fprintf(stderr, "DEBUG: groovyserver_path: %s\n", groovyserver_path);
 
   // start groovyserver.
   system(groovyserver_path);
+
 #ifdef WINDOWS_WITHOUT_CYGWIN
   Sleep(3000);
 #else
