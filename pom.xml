@@ -283,7 +283,7 @@
                 <configuration>
                   <tasks>
                     <echo message="Startup groovyserver for integration test" />
-                    <exec executable="${groovyserv.home}/bin/groovyserver" spawn="true">
+                    <exec executable="${groovyserv.home}/bin/groovyserver">
                       <env key="GROOVYSERV_HOME" value="${groovyserv.home}" />
                       <arg value="-r"/>
                       <arg value="-v"/>
@@ -301,7 +301,7 @@
                 <configuration>
                   <tasks>
                     <echo message="Forcely shutdown groovyserver in the end of integration test" />
-                    <exec executable="${groovyserv.home}/bin/groovyserver" spawn="true">
+                    <exec executable="${groovyserv.home}/bin/groovyserver">
                       <env key="GROOVYSERV_HOME" value="${groovyserv.home}" />
                       <arg value="-k"/>
                     </exec>
@@ -349,7 +349,7 @@
                 <configuration>
                   <tasks>
                     <echo message="Startup groovyserver for integration test (with cygwin)" />
-                    <exec executable="sh" spawn="true">
+                    <exec executable="sh">
                       <env key="GROOVYSERV_HOME" value="${groovyserv.home}"/>
                       <arg value="-c"/>
                       <arg value="${groovyserv.home}/bin/groovyserver -r -v"/>
@@ -367,7 +367,7 @@
                 <configuration>
                   <tasks>
                     <echo message="Forcely shutdown groovyserver in the end of integration test (with cygwin)" />
-                    <exec executable="sh" spawn="true">
+                    <exec executable="sh">
                       <env key="GROOVYSERV_HOME" value="${groovyserv.home}"/>
                       <arg value="-c"/>
                       <arg value="${groovyserv.home}/bin/groovyserver -k"/>
@@ -385,7 +385,7 @@
                 <configuration>
                   <tasks>
                     <echo message="Try to shutdown groovyserver in order to clean (with cygwin)" />
-                    <exec executable="sh" spawn="true">
+                    <exec executable="sh">
                       <env key="GROOVYSERV_HOME" value="${groovyserv.home}"/>
                       <arg value="-c"/>
                       <arg value="${groovyserv.home}/bin/groovyserver -k"/>
