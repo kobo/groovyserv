@@ -475,28 +475,6 @@ static void signal_handler(int sig) {
   exit(1);
 }
 
-void mk_dir(const char* path) {
-  struct stat buf;
-  if (stat(path, &buf) == -1) {
-#ifndef WINDOWS_WITHOUT_CYGWIN
-    // TODO: create folder for mingw
-    if (errno == ENOENT) {
-      char cmdbuf[strlen(path) + 7];
-      sprintf(cmdbuf, "mkdir %s", path);
-      system(cmdbuf);
-      return;
-    }
-#endif
-
-    perror("stat");
-    exit(1);
-  }
-  if (!S_ISDIR(buf.st_mode)) {
-    fprintf(stderr, "\npath %s is not directory.", path);
-    exit(1);
-  }
-}
-
 void start_server(int argn, char** argv, int port) {
   // make command line to invoke groovyserver
   char groovyserver_path[MAXPATHLEN];
