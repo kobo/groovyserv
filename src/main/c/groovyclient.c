@@ -476,16 +476,26 @@ static void signal_handler(int sig) {
 }
 
 char* scriptdir(char* result_dir, char* script_path) {
-  char work_path[MAXPATHLEN];
+  // prepare work variable of script path
+  int script_path_length = strlen(script_path);
+  char work_path[script_path_length];
   strcpy(work_path, script_path);
-  char* work_pt = work_path + strlen(work_path);
+
+  // cut off a part of script name
+  char* work_pt = work_path + script_path_length;
   while (work_pt > work_path && (*work_pt != '/' && *work_pt != '\\')) {
     work_pt--;
   }
   if (*work_pt == '/' || *work_pt == '\\') {
     work_pt++;
   }
-  strncpy(result_dir, work_path, work_pt - work_path);
+  if (*work_pt != NULL) { // cut
+    *work_pt = NULL;
+  }
+
+  // set result
+  strcpy(result_dir, work_path);
+  //fprintf(stderr, "DEBUG: result_dir: %s, %d\n", result_dir, strlen(result_dir));
 }
 
 void start_server(int argn, char** argv, int port) {
@@ -501,7 +511,7 @@ void start_server(int argn, char** argv, int port) {
       sprintf(basedir_path, "%s/bin/", groovyserv_home);
 #endif
   }
-  //fprintf(stderr, "DEBUG: basedir_path: %s\n", basedir_path);
+  //fprintf(stderr, "DEBUG: basedir_path: %s, %d\n", basedir_path, strlen(basedir_path));
 
   // make command line to invoke groovyserver
   char groovyserver_path[MAXPATHLEN];
@@ -510,7 +520,7 @@ void start_server(int argn, char** argv, int port) {
 #else
   sprintf(groovyserver_path, "%sgroovyserver -p %d", basedir_path, port);
 #endif
-  //fprintf(stderr, "DEBUG: groovyserver_path: %s\n", groovyserver_path);
+  //fprintf(stderr, "DEBUG: groovyserver_path: %s, %d\n", groovyserver_path, strlen(groovyserver_path));
 
   // start groovyserver.
   system(groovyserver_path);
