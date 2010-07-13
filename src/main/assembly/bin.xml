@@ -21,17 +21,17 @@
   </formats>
   <files>
     <file>
-      <outputDirectory>/</outputDirectory>
+      <outputDirectory></outputDirectory>
       <source>README</source>
     </file>
     <file>
-      <outputDirectory>/bin</outputDirectory>
+      <outputDirectory>bin</outputDirectory>
       <source>src/main/bin/groovyserver</source>
       <fileMode>755</fileMode>
       <filtered>true</filtered>
     </file>
     <file>
-      <outputDirectory>/bin</outputDirectory>
+      <outputDirectory>bin</outputDirectory>
       <source>src/main/bin/groovyserver.bat</source>
       <fileMode>755</fileMode>
       <filtered>true</filtered>
@@ -40,14 +40,14 @@
   <fileSets>
     <fileSet>
       <directory></directory>
-      <outputDirectory>/</outputDirectory>
+      <outputDirectory></outputDirectory>
       <includes>
         <include>LICENSE</include>
       </includes>
     </fileSet>
     <fileSet>
       <directory>src/main/bin</directory>
-      <outputDirectory>/bin</outputDirectory>
+      <outputDirectory>bin</outputDirectory>
       <includes>
         <include>groovyclient.rb</include>
       </includes>
@@ -55,7 +55,7 @@
     </fileSet>
     <fileSet>
       <directory>target</directory>
-      <outputDirectory>/bin</outputDirectory>
+      <outputDirectory>bin</outputDirectory>
       <includes>
         <include>groovyclient</include>
         <include>groovyclient.exe</include>
@@ -64,7 +64,7 @@
     </fileSet>
     <fileSet>
       <directory>target</directory>
-      <outputDirectory>/lib</outputDirectory>
+      <outputDirectory>lib</outputDirectory>
       <includes>
         <include>groovyserv-*.jar</include>
       </includes>
@@ -74,7 +74,7 @@
     <dependencySet>
       <unpack>false</unpack>
       <scope>runtime</scope>
-      <outputDirectory>/lib</outputDirectory>
+      <outputDirectory>lib</outputDirectory>
       <includes>
         <include>net.java.dev.jna:*</include>
       </includes>
