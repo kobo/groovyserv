@@ -79,7 +79,7 @@ int open_socket(char* server_name, int server_port) {
     struct sockaddr_in server;
 
     hostent = gethostbyname(server_name); // lookup IP
-    if (hostent == NULL ) {
+    if (hostent == NULL) {
         perror("gethostbyname");
         exit(1);
     }
@@ -193,9 +193,9 @@ void read_header(char* buf, struct header_t* header) {
 
 char* read_line(int fd, char* buf, int size) {
      int i;
-     for (i=0; i<size; i++) {
+     for (i = 0; i < size; i++) {
 #ifdef WINDOWS
-         int ret = recv(fd, buf+i, 1, 0);
+         int ret = recv(fd, buf + i, 1, 0);
          if (ret == -1) {
              printf("error : %d\n", WSAGetLastError());
              exit(1);
@@ -205,7 +205,7 @@ char* read_line(int fd, char* buf, int size) {
              return NULL;
          }
 #else
-         read(fd, buf+i, 1);
+         read(fd, buf + i, 1);
 #endif
          if (buf[i] == '\n') {
              return buf;
@@ -248,7 +248,7 @@ int read_headers(int fd, struct header_t headers[], int header_buf_size) {
  */
 char* find_header(struct header_t headers[], const char* key, int nhdrs) {
     int i;
-    for (i = 0; i<nhdrs; i++) {
+    for (i = 0; i < nhdrs; i++) {
         if (strcmp(headers[i].key, key) == 0) {
             return headers[i].value;
         }
@@ -329,7 +329,6 @@ int send_to_server(int fd) {
 #ifdef WINDOWS
 
 void copy_stdin_to_soc(int fd) {
-    int ch;
     while (1) {
         send_to_server(fd);
     }
@@ -397,8 +396,7 @@ int session(int fd) {
         FD_SET(0, &read_set);
         FD_SET(fd, &read_set);
 
-        if ((ret = select(FD_SETSIZE, &read_set, (fd_set*)NULL,
-                                            (fd_set*)NULL, NULL)) == -1) {
+        if ((ret = select(FD_SETSIZE, &read_set, (fd_set*)NULL, (fd_set*)NULL, NULL)) == -1) {
             perror("select failure");
             exit(1);
         }
@@ -486,12 +484,12 @@ void start_server(int argn, char** argv, int port) {
     char basedir_path[MAXPATHLEN];
     char* groovyserv_home = getenv("GROOVYSERV_HOME");
     if (groovyserv_home == NULL) {
-            scriptdir(basedir_path, argv[0]);
+        scriptdir(basedir_path, argv[0]);
     } else {
 #ifdef WINDOWS
-            sprintf(basedir_path, "%s\\bin\\", groovyserv_home);
+        sprintf(basedir_path, "%s\\bin\\", groovyserv_home);
 #else
-            sprintf(basedir_path, "%s/bin/", groovyserv_home);
+        sprintf(basedir_path, "%s/bin/", groovyserv_home);
 #endif
     }
     //fprintf(stderr, "DEBUG: basedir_path: %s, %d\n", basedir_path, strlen(basedir_path));
