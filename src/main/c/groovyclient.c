@@ -489,8 +489,8 @@ char* scriptdir(char* result_dir, char* script_path) {
   if (*work_pt == '/' || *work_pt == '\\') {
     work_pt++;
   }
-  if (*work_pt != NULL) { // cut
-    *work_pt = NULL;
+  if (*work_pt != '\0') { // cut
+    *work_pt = '\0';
   }
 
   // set result
