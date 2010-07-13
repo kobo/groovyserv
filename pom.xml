@@ -288,7 +288,7 @@
                       <arg value="-r"/>
                       <arg value="-v"/>
                     </exec>
-                    <sleep seconds="3"/>
+                    <sleep seconds="5"/>
                   </tasks>
                 </configuration>
               </execution>
