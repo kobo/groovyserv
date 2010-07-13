@@ -15,9 +15,9 @@
  */
 
 #if defined(_MSC_VER) || defined(__MINGW32__)
-#define WINDOWS_WITHOUT_CYGWIN
+#define WINDOWS
 #else
-#define CYGWIN_OR_UNIX
+#define UNIX
 #endif
 
 #include <stdio.h>
@@ -26,7 +26,7 @@
 #include <assert.h>
 
 #include <sys/types.h> /* netinet/in.h */
-#ifdef WINDOWS_WITHOUT_CYGWIN
+#ifdef WINDOWS
 #include <windows.h>
 #include <winsock2.h>
 #include <process.h>
@@ -43,11 +43,6 @@
 #include <unistd.h>
 #include <signal.h>
 #include <sys/stat.h>
-
-#if defined(__CYGWIN__)
-#include <sys/cygwin.h>
-#include <w32api/windef.h>
-#endif
 
 #define DESTSERV "localhost"
 #define DESTPORT 1961
@@ -100,7 +95,7 @@ int open_socket(char* server_name, int server_port) {
   server.sin_port = htons(server_port);
 
   int fd;
-#ifdef WINDOWS_WITHOUT_CYGWIN
+#ifdef WINDOWS
   if ((fd = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP))  == INVALID_SOCKET) {
 #else
   if ((fd = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
@@ -109,7 +104,7 @@ int open_socket(char* server_name, int server_port) {
     exit(1);
   }
 
-#ifdef WINDOWS_WITHOUT_CYGWIN
+#ifdef WINDOWS
   if (connect(fd, (struct sockaddr *)&server, sizeof(server)) == SOCKET_ERROR) {
     return -1;
   }
@@ -144,10 +139,6 @@ void send_header(int fd, int argn, char** argv, char* cookie) {
     exit(1);
   }
 
-#if defined(__CYGWIN__)
-  cygwin_conv_to_win32_path(cwd, p);
-#endif
-
   p += strlen(cwd);
   *p++ = '\n';
 
@@ -170,7 +161,7 @@ void send_header(int fd, int argn, char** argv, char* cookie) {
     fprintf(stderr, "\nheader size too big\n");
     exit(1);
   }
-#ifdef WINDOWS_WITHOUT_CYGWIN
+#ifdef WINDOWS
   send(fd, read_buf, p-read_buf, 0);
 #else
   write(fd, read_buf, p-read_buf);
@@ -207,7 +198,7 @@ void read_header(char* buf, struct header_t* header) {
 char* read_line(int fd, char* buf, int size) {
    int i;
    for (i=0; i<size; i++) {
-#ifdef WINDOWS_WITHOUT_CYGWIN
+#ifdef WINDOWS
      int ret = recv(fd, buf+i, 1, 0);
      //     int ret = recv(fd, buf+i, 100, 0);
      if (ret == -1) {
@@ -299,7 +290,7 @@ int split_socket_output(int soc, char* stream_identifier, int size) {
     }
     read_buf = realloc(read_buf, read_buf_size);
   }
-#ifdef WINDOWS_WITHOUT_CYGWIN
+#ifdef WINDOWS
   int ret = recv(soc, read_buf, size, 0);
   assert(ret == size);
 #else
@@ -327,7 +318,7 @@ int send_to_server(int fd)
   char write_buf[BUFFER_SIZE];
   sprintf(write_buf, "Size: %d\n\n", ret); // TODO: check size
 
-#ifdef WINDOWS_WITHOUT_CYGWIN
+#ifdef WINDOWS
   send(fd, write_buf, strlen(write_buf), 0);
   send(fd, read_buf, ret, 0);
 #else
@@ -341,7 +332,7 @@ int send_to_server(int fd)
   return 0;
 }
 
-#ifdef WINDOWS_WITHOUT_CYGWIN
+#ifdef WINDOWS
 
 void copy_stdin_to_soc(int fd) {
   int ch;
@@ -465,7 +456,7 @@ int session(int fd)
 static int fd_soc;
 
 static void signal_handler(int sig) {
-#ifdef WINDOWS_WITHOUT_CYGWIN
+#ifdef WINDOWS
   send(fd_soc, "Size: -1\n\n", 10, 0);
   closesocket(fd_soc);
 #else
@@ -505,7 +496,7 @@ void start_server(int argn, char** argv, int port) {
   if (groovyserv_home == NULL) {
       scriptdir(basedir_path, argv[0]);
   } else {
-#ifdef WINDOWS_WITHOUT_CYGWIN
+#ifdef WINDOWS
       sprintf(basedir_path, "%s\\bin\\", groovyserv_home);
 #else
       sprintf(basedir_path, "%s/bin/", groovyserv_home);
@@ -515,7 +506,7 @@ void start_server(int argn, char** argv, int port) {
 
   // make command line to invoke groovyserver
   char groovyserver_path[MAXPATHLEN];
-#ifdef WINDOWS_WITHOUT_CYGWIN
+#ifdef WINDOWS
   sprintf(groovyserver_path, "%sgroovyserver.bat -p %d", basedir_path, port);
 #else
   sprintf(groovyserver_path, "%sgroovyserver -p %d", basedir_path, port);
@@ -525,7 +516,7 @@ void start_server(int argn, char** argv, int port) {
   // start groovyserver.
   system(groovyserver_path);
 
-#ifdef WINDOWS_WITHOUT_CYGWIN
+#ifdef WINDOWS
   Sleep(3000);
 #else
   sleep(3);
@@ -569,7 +560,7 @@ int main(int argn, char** argv) {
     }
   }
 
-#ifdef WINDOWS_WITHOUT_CYGWIN
+#ifdef WINDOWS
   WSADATA wsadata;
   if (WSAStartup(MAKEWORD(1,1), &wsadata) == SOCKET_ERROR) {
     printf("Error creating socket.");
@@ -591,7 +582,7 @@ int main(int argn, char** argv) {
       fprintf(stderr, "Cannot invoke groovy server.\n");
       exit(1);
     }
-#ifdef WINDOWS_WITHOUT_CYGWIN
+#ifdef WINDOWS
     Sleep(1000);
 #else
     sleep(1);
@@ -603,7 +594,7 @@ int main(int argn, char** argv) {
   send_header(fd_soc, argn, argv, cookie);
   int status = session(fd_soc);
 
-#ifdef WINDOWS_WITHOUT_CYGWIN
+#ifdef WINDOWS
   WSACleanup();
 #endif
 
