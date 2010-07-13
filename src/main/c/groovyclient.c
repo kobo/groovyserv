@@ -46,7 +46,6 @@
 
 #define DESTSERV "localhost"
 #define DESTPORT 1961
-#define MAX_INT_WIDTH 10 /* assume int size is 32bit */
 #define BUFFER_SIZE 512
 
 /* request headers */
@@ -61,13 +60,10 @@ const char * const HEADER_KEY_SIZE = "Size";
 const char * const HEADER_KEY_STATUS = "Status";
 
 const int CR = 0x0d;
-const int LF = 0x0a;
 
 #define MAX_HEADER_KEY_LEN 30
 #define MAX_HEADER_VALUE_LEN 512
 #define MAX_HEADER 10
-
-#define SERVER_NOT_RUNNING 15
 
 struct header_t {
   char key[MAX_HEADER_KEY_LEN+1];
