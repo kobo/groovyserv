@@ -48,13 +48,13 @@
 #define DESTPORT 1961
 #define BUFFER_SIZE 512
 
-/* request headers */
+// request headers
 const char * const HEADER_KEY_CURRENT_WORKING_DIR = "Cwd";
 const char * const HEADER_KEY_ARG = "Arg";
 const char * const HEADER_KEY_CP = "Cp";
 const char * const HEADER_KEY_COOKIE = "Cookie";
 
-/* response headers */
+// response headers
 const char * const HEADER_KEY_CHANNEL = "Channel";
 const char * const HEADER_KEY_SIZE = "Size";
 const char * const HEADER_KEY_STATUS = "Status";
@@ -390,7 +390,7 @@ int session(int fd) {
     int stdin_closed = 0;
 
     while (1) {
-        /* initialize the set of file descriptor */
+        // initialize the set of file descriptor
         FD_ZERO(&read_set);
 
         // watch stdin of client and socket.
@@ -403,11 +403,11 @@ int session(int fd) {
             exit(1);
         }
 
-        if (ret != 0) { /* detect changed descriptor */
-            if (!stdin_closed && FD_ISSET(0, &read_set)) { /* stdin */
+        if (ret != 0) { // detect changed descriptor
+            if (!stdin_closed && FD_ISSET(0, &read_set)) { // stdin
                 stdin_closed = send_to_server(fd);
             }
-            if (FD_ISSET(fd, &read_set)){ /* socket */
+            if (FD_ISSET(fd, &read_set)){ // socket
                 struct header_t headers[MAX_HEADER];
                 int size = read_headers(fd, headers, MAX_HEADER);
                 if (size == 0) {
