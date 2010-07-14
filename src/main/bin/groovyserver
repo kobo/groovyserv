@@ -25,8 +25,8 @@ if [ "x$GROOVY_HOME" = "x" ]; then
 fi
 
 GROOVYSERV_WORK_DIR=~/.groovy/groovyserv
-if [ ! -d $GROOVYSERV_WORK_DIR ]; then
-    mkdir -p $GROOVYSERV_WORK_DIR
+if [ ! -d "$GROOVYSERV_WORK_DIR" ]; then
+    mkdir -p "$GROOVYSERV_WORK_DIR"
 fi
 
 PORT=1961
@@ -55,12 +55,12 @@ while [ $# -gt 0 ]; do
             shift
             ;;
         -[kr])
-            GROOVYSERV_PID_FILE=$GROOVYSERV_WORK_DIR/pid-$PORT
-            if [ -f $GROOVYSERV_PID_FILE ]; then
-                PID=`cat $GROOVYSERV_PID_FILE`
+            GROOVYSERV_PID_FILE="$GROOVYSERV_WORK_DIR/pid-$PORT"
+            if [ -f "$GROOVYSERV_PID_FILE" ]; then
+                PID=`cat "$GROOVYSERV_PID_FILE"`
                 kill -9 $PID
                 echo "kill groovy server $PID($PORT)"
-                rm $GROOVYSERV_PID_FILE
+                rm "$GROOVYSERV_PID_FILE"
             else
                 echo "pid file $GROOVYSERV_PID_FILE not found"
             fi
@@ -87,11 +87,11 @@ done
 # Check multi invoking
 #-------------------------------------------
 
-GROOVYSERV_PID_FILE=$GROOVYSERV_WORK_DIR/pid-$PORT
-if [ -f $GROOVYSERV_PID_FILE ]; then
-    PID=`cat $GROOVYSERV_PID_FILE`
+GROOVYSERV_PID_FILE="$GROOVYSERV_WORK_DIR/pid-$PORT"
+if [ -f "$GROOVYSERV_PID_FILE" ]; then
+    PID=`cat "$GROOVYSERV_PID_FILE"`
     if ! ps -p $PID | grep $PID > /dev/null; then
-        rm $GROOVYSERV_PID_FILE
+        rm "$GROOVYSERV_PID_FILE"
     else
         echo "ERROR: Groovy server already running, pid is $PID."
         echo "To kill the server, run \"groovyserver -k\"."
@@ -118,7 +118,7 @@ nohup "$GROOVY_HOME/bin/groovy" $GROOVYSERV_OPTS -e "org.jggug.kobo.groovyserv.G
 
 PID=$!
 if ps -p $PID | grep $PID > /dev/null; then
-    echo $PID > $GROOVYSERV_PID_FILE
+    echo $PID > "$GROOVYSERV_PID_FILE"
 else
     echo "ERROR: cannot store PID to file $GROOVYSERV_PID_FILE"
     exit 1
