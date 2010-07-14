@@ -129,7 +129,9 @@ img {
   padding: 4px 0 4px 30px;
 }
 #content .section p {
-  padding: 9px;
+  margin: 0 0 0 24px;
+  padding: 5px;
+  line-height: 20px;
 }
 #content .section ul li {
   background: transparent url(../images/triangle.png) no-repeat left center;
@@ -151,10 +153,6 @@ img {
   margin: 0;
   padding: 0;
   float: left;
-}
-#content .section p {
-  margin: 0 0 0 24px;
-  padding: 5px;
 }
 #content .section .question h3 { color: #930; }
 #content .section .answer   h3 { color: #390; }
