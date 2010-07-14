@@ -97,9 +97,9 @@ or
 
 to any directory. For example:
 
-  > mkdir ~/opt
-  > cd ~/opt
-  > unzip groovyserv-0.2-win32-bin.zip
+  &gt; mkdir ~/opt
+  &gt; cd ~/opt
+  &gt; unzip groovyserv-0.2-win32-bin.zip
 
 and add bin directory to PATH environment variable.
 For example in bash/bourne shell:
@@ -110,7 +110,7 @@ That's all for preparing. When you invoke groovyclient, groovyserver
 automatically starts in background. At first, you might have to wait
 for a few seconds to startup.
 
-  > groovyclient -v
+  &gt; groovyclient -v
   starting server..
   Groovy Version: 1.7.0 JVM: 1.6.0_13
 
@@ -121,34 +121,34 @@ Build from source code
 Download and expand GroovyServ source package groovyserv-0.2-src.zip
 to any directory. For example:
 
-  > mkdir -p ~/opt/src
-  > cd ~/opt/src
-  > unzip groovyserv-0.2-src.zip
+  &gt; mkdir -p ~/opt/src
+  &gt; cd ~/opt/src
+  &gt; unzip groovyserv-0.2-src.zip
 
 Build with Maven2 as follows:
 
-  > cd ~/opt/src/groovyserv-0.2/
-  > mvn clean verify
+  &gt; cd ~/opt/src/groovyserv-0.2/
+  &gt; mvn clean verify
 
 Then some zip files will be generated. According to "Install from
 binary package", install the bin package.
 
-  ~/opt/src/groovyserv-0.2/target/groovyserv-0.2-<OS>-<arch>-bin.zip
+  ~/opt/src/groovyserv-0.2/target/groovyserv-0.2-&lt;OS&gt;-&lt;arch&gt;-bin.zip
 
 If some tests fail, you can try as follows:
 
   with UTF-8 encoding:
 
-    > export _JAVA_OPTIONS=-Dfile.encoding=UTF-8
-    > mvn clean verify
+    &gt; export _JAVA_OPTIONS=-Dfile.encoding=UTF-8
+    &gt; mvn clean verify
 
   skip integration tests:
 
-    > mvn clean package
+    &gt; mvn clean package
 
   skip all tests:
 
-    > mvn -Dmaven.test.skip=true clean package
+    &gt; mvn -Dmaven.test.skip=true clean package
 
 =======================
 Environment variables
@@ -181,7 +181,7 @@ You can use 'groovyclient' command as a replacement of 'groovy'
 command.  If the server is not running, it starts automatically. You
 can also invoke the serverexplicitly.
 
-  > groovyserver
+  &gt; groovyserver
 
 About groovyserver command options refer to "groovyserver options"
 section.
@@ -193,7 +193,7 @@ Restriction/Differences
 * You can't concurrently use different current directory on a server.
   If you execute the following,
 
-  > groovyclient ... | (cd /tmp; groovyclient ... )
+  &gt; groovyclient ... | (cd /tmp; groovyclient ... )
 
   the following exception will be occurred:
 
@@ -209,8 +209,8 @@ Restriction/Differences
 * A static variable is shared among groovy program executions.
   For instance, the system properties are shared.
 
- > groovy -e "System.setProperty('a','abc')"
- > groovy -e "println System.getProperty('a')"
+ &gt; groovy -e "System.setProperty('a','abc')"
+ &gt; groovy -e "println System.getProperty('a')"
  abc
 
 * Environment variables at which the groovyclient started is not used
@@ -218,7 +218,7 @@ Restriction/Differences
   new environment variables to running groovyserver process, you must
   restart the server.
 
-  > groovyserver -r
+  &gt; groovyserver -r
 
   But as an exception, the value of CLASSPATH variable of which the
   groovyclient started is effective.
@@ -233,11 +233,11 @@ groovyserver options
 
 Options are as follows:
 
-  -v verbose output. print debugging information etc.
-  -q quiet.(default)
-  -k kill the running groovyserver.(groovyserver.bat cannot use this)
-  -r restart groovyserver.(groovyserver.bat cannot use this)
-  -p <port> specify the port that connected from groovyclient.
+  -q        quiet (default)
+  -v        verbose output. print debugging information etc.
+  -k        kill the running groovyserver (groovyserver.bat cannot use this)
+  -r        restart groovyserver (groovyserver.bat cannot use this)
+  -p &lt;port&gt; specify the port that connected from groovyclient
 
 =============
 Port number
@@ -246,7 +246,7 @@ Port number
 To change the port number which groovyserver uses, you can use
 GROOVYSERVER_PORT environment variable instead of -p option.
 
-  > export GROOVYSERVER_PORT=1963
+  &gt; export GROOVYSERVER_PORT=1963
 
 groovyclient uses GROOVYSERVER_PORT variable in default. But you can
 specify port number by -p option of groovyclient. In groovyclient, -p
@@ -268,7 +268,7 @@ Following aliases might be useful.
 
   alias groovy=groovyclient
 
-For windows environment:
+For Windows environment:
 
   doskey groovy=groovyclient $*
           </pre>
