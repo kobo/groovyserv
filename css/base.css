@@ -59,7 +59,9 @@ img {
 #container {
   margin: 0 auto;
   width: 1000px;
-  background: #dde;
+  background: #d9e0f0;
+  -webkit-box-shadow: 0 0 50px #aaa; /* Safari,Google Chrome */
+  -moz-box-shadow: 0 0 50px #aaa;    /* Firefox */
 }
 
 #header {
@@ -98,6 +100,8 @@ img {
 }
 #nav ul li a:hover {
   color: #222;
+  text-decoration: none;
+  text-shadow: 0 0 10px #ff5;
 }
 #nav ul li span.current {
   color: #000;
@@ -117,6 +121,8 @@ img {
   border-radius: 7px;         /* CSS3 */
   -webkit-border-radius: 7px; /* Safari,Google Chrome */
   -moz-border-radius: 7px;    /* Firefox */
+  -webkit-box-shadow: 0 0 10px #ccc; /* Safari,Google Chrome */
+  -moz-box-shadow: 0 0 10px #ccc;    /* Firefox */
 }
 #content .section h2 {
   background: url(../images/star.png) no-repeat left center;
