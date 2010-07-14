@@ -53,14 +53,26 @@ set CP=%GROOVYSERV_HOME%\lib\groovyserv-${project.version}.jar;%CP%
 set CLASSPATH=%CP%
 rem echo DEBUG: CLASSPATH: %CLASSPATH%
 
-rem -------------------------
-rem Compatibility for cygwin
-rem -------------------------
+rem ---------------------------------
+rem Compatibility for cygwin (FIXME)
+rem ---------------------------------
 if "%JAVA_HOME:~0,9%" == "/cygdrive" (
     for /f %%z in ('cygpath.exe -d "%JAVA_HOME%"') do set JAVA_HOME=%%z
 )
 if "%GROOVY_HOME:~0,9%" == "/cygdrive" (
     for /f %%z in ('cygpath.exe -d "%GROOVY_HOME%"') do set GROOVY_HOME=%%z
+)
+rem echo DEBUG: JAVA_HOME: %JAVA_HOME%
+rem echo DEBUG: GROOVY_HOME: %GROOVY_HOME%
+
+rem --------------------------------------------------------------------
+rem Replace long name to short name only if under Program Files (FIXME)
+rem --------------------------------------------------------------------
+if "%JAVA_HOME:~3,13%" == "Program Files" (
+    set JAVA_HOME=%JAVA_HOME:Program Files=PROGRA~1%
+)
+if "%GROOVY_HOME:~3,13%" == "Program Files" (
+    set GROOVY_HOME=%GROOVY_HOME:Program Files=PROGRA~1%
 )
 rem echo DEBUG: JAVA_HOME: %JAVA_HOME%
 rem echo DEBUG: GROOVY_HOME: %GROOVY_HOME%

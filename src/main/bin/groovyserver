@@ -110,7 +110,7 @@ CP="$GROOVYSERV_HOME/lib/jna-3.2.2.jar"
 CP="$GROOVYSERV_HOME/lib/groovyserv-${project.version}.jar:$CP"
 export CLASSPATH=$CP
 
-nohup $GROOVY_HOME/bin/groovy $GROOVYSERV_OPTS -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)" > /dev/null 2>&1 &
+nohup "$GROOVY_HOME/bin/groovy" $GROOVYSERV_OPTS -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)" > /dev/null 2>&1 &
 
 #-------------------------------------------
 # Store PID
