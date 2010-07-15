@@ -71,7 +71,12 @@ GroovyServを使うことで、Groovyコマンドの起動時間を短縮し、�
   - Mac OS X 10.5/6 (Intel Mac)
   - Ubuntu Linux 9.10
 
-また、Groovyのバージョンは以下のとおりです。
+JDKのバージョンは以下のとおりです。
+
+  - JDK 6u20以降 (Mac OS X)
+  - JDK 6u21以降 (Windows, Linux)
+
+Groovyのバージョンは以下のとおりです。
 
   - Groovy 1.7以降
 
@@ -161,6 +166,9 @@ Maven2を使ってコンパイルします。
   すべてのテストをスキップする:
 
     &gt; mvn -Dmaven.test.skip=true clean package
+
+Windows上でビルドするためにはCygwinとgccが必要です。
+ビルドを実行する前にインストールしてください。
 
 ==========
 環境変数

@@ -48,7 +48,7 @@ measured invocation in Groovy 1.7 on Windows XP (Core(TM) 2 Duo 2GHz).
   Groovy(native exe)  0.90 (sec)
   GroovyServ          0.10 (sec)
 
-==============
+<span id="requirements">==============</span>
 Requirements
 ==============
 
@@ -59,6 +59,11 @@ runs on the others.
   - Windows XP without cygwin
   - Mac OS X 10.5/6 (Intel Mac)
   - Ubuntu Linux 9.10
+
+Version of JDK is following:
+
+  - JDK 6u20 or later (Mac OS X)
+  - JDK 6u21 or later (Windows, Linux)
 
 Version of Groovy is following:
 
@@ -149,6 +154,9 @@ If some tests fail, you can try as follows:
   skip all tests:
 
     &gt; mvn -Dmaven.test.skip=true clean package
+
+To build it in Windows, you need Cygwin and gcc.
+You must install them before trying to build.
 
 =======================
 Environment variables
