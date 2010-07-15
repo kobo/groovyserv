@@ -44,6 +44,7 @@
             <li><a href="#q15">Can I use JQS(Java Quick Start) with GroovyServ at the same time?</a></li>
             <li><a href="#q16">I installed GroovyServ, but it doesn't work.</a></li>
             <li><a href="#q17">When I built GroovyServ by myself in Windows, some errors occured. What's required?</a></li>
+            <li><a href="#q18">Why is GroovyServ's binary so sensitive to JDK version?</a></li>
           </ul>
         </div>
 
@@ -252,6 +253,20 @@
             <p>To build it in Windows, you need Cygwin and gcc.</p>
           </div>
         </div>
+        <div class="section" id="q18">
+          <div class="question">
+            <h3>Q</h3>
+            <p>Why is GroovyServ's binary so sensitive to JDK version?</p>
+          </div>
+          <div class="answer">
+            <h3>A</h3>
+            <p>Current binary has a risk of IncompatibleClassChangeError because compiled Groovy classes has dependencies to JDK version.
+            I assume that it's a bug (or specification) of Groovy, or limit for a case of using groovyc.
+            Currently, it is very important to choose the appropriate binary for your environments, especially for your JDK version.
+            We are trying workaround now...</p>
+          </div>
+        </div>
+      </div>
       </div>
 
       <div id="footer">
