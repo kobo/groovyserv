@@ -518,7 +518,11 @@ void start_server(int argn, char** argv, int port) {
  */
 void read_cookie(char* cookie, int size) {
     char path[MAXPATHLEN];
-    sprintf(path, "%s/%s", getenv("HOME"), ".groovy/groovyserv/cookie");
+#ifdef WINDOWS
+    sprintf(path, "%s\\.groovy\\groovyserv\\cookie", getenv("USERPROFILE"));
+#else
+    sprintf(path, "%s/.groovy/groovyserv/cookie", getenv("HOME"));
+#endif
     FILE* fp = fopen(path, "r");
     if (fp != NULL) {
         if (fgets(cookie, size, fp) == NULL) {

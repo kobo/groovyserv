@@ -22,8 +22,12 @@ require 'socket'
 
 DESTHOST = "localhost" # for security
 DESTPORT = 1961
-DOT_DIR = ENV['HOME'] + "/.groovy/groovyserv"
-COOKIE_FILE = DOT_DIR + "/cookie"
+if RUBY_PLATFORM.downcase =~ /mswin(?!ce)|mingw|cygwin|bccwin/  # if windows
+  HOME_DIR = ENV['USERPROFILE']
+else
+  HOME_DIR = ENV['HOME']
+end
+COOKIE_FILE = HOME_DIR + "/.groovy/groovyserv/cookie"
 GROOVYSERVER_CMD = ENV.fetch("GROOVYSERV_HOME", File.dirname($0)+"/..") + "/bin/groovyserver"
 
 #-------------------------------------------
