@@ -158,18 +158,24 @@ If some tests fail, you can try as follows:
 To build it in Windows, you need Cygwin and gcc.
 You must install them before trying to build.
 
-=======================
+<span id="environmentVariables">=======================</span>
 Environment variables
 =======================
 
 GroovyServ uses all three following environment variables in runtime.
 
-  HOME
+  HOME (only in Linux or Mac OS X)
 
-    It's used to decide ~/.groovy/groovyserv directory path.
-    It's set by default if in unix-like OS, but in Windows you must set by yourself.
-    Add HOME as user variables in [System Properties&gt;Advanced&gt;Environment Variables].
-    It may need to restart Windows.
+    It's used to decide ~/.groovy/groovyserv directory path which is
+    used for logging, storing cookie and PID. It's set by default in
+    unix-like OS.
+
+  USERPROFILE (only in Windows)
+
+    It's used to decide ~\.groovy\groovyserv directory path which is
+    used for logging, storing cookie and PID. It's set by default in
+    Windows. If server process is invoked by groovyserver.bat, PID
+    file doesn't exist.
 
   JAVA_HOME
 

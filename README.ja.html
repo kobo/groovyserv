@@ -176,13 +176,17 @@ Windows上でビルドするためにはCygwinとgccが必要です。
 
 GroovyServは、実行時に以下の3つの環境変数を使用します。
 
-  HOME
+  HOME (LinuxまたはMac OS Xの場合のみ)
 
-    クッキーファイルやログファイルを格納する~/.groovy/groovyserv ディレ
+    クッキーやPID、ログファイルを格納する~/.groovy/groovyserv ディレ
     クトリを決定するために使用します。Unix系のOSであれば標準で設定され
-    ているので問題ありませんが、 Windowsの場合は自分で設定しておく必要
-    があります。[システムのプロパティ&gt;詳細設定&gt;環境変数]でユーザの環境変数
-    として追加してください。設定後、OSの再起動が必要になるかもしれません。
+    ています。
+
+  USERPROFILE (Windowsの場合のみ)
+
+    クッキーやPID、ログファイルを格納する~/.groovy/groovyserv ディレ
+    クトリを決定するために使用します。Windows標準で設定されています。
+    BATファイルで起動された場合は、PIDファイルは作成されません。
 
   JAVA_HOME
 

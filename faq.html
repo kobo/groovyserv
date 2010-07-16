@@ -164,7 +164,10 @@
           </div>
           <div class="answer">
             <h3>A</h3>
-            <p>See $HOME/.groovy/groovyserver/groovyserver.log.</p>
+            <ul>
+              <li>$HOME/.groovy/groovyserver/groovyserver.log (Linux, Mac OS X)</li>
+              <li>%USERPROFILE%/.groovy/groovyserver/groovyserver.log (Windows)</li>
+            </ul>
           </div>
         </div>
         <div class="section" id="q11">
@@ -174,9 +177,11 @@
           </div>
           <div class="answer">
             <h3>A</h3>
-            <p>In Mac OS X, Linux and Cygwin environment, you can use -r (restart) and -k (kill) options for groovyserver command.
-            But in non-Cygwin environment on Windows, there is no way to restart/kill.
-            Please use task manager to kill the groovyserver and restart through groovyclient or directly groovyserver.bat.</p>
+            <p>In Mac OS X, Linux environment, you can use -r (restart) and -k (kill) options for groovyserver command.
+            But in Windows, there is no way to restart/kill a server process.
+            Please use task manager to kill the groovyserver and restart through groovyclient or directly groovyserver.bat.
+            If you installed Cygwin, you could use groovyserver command instead of groovyserver.bat (including transparent invoking by groovyclient)
+            and use -r and -k options.</p>
           </div>
         </div>
         <div class="section" id="q12">
@@ -232,7 +237,9 @@
             <h3>A</h3>
             <p>I think it is caused by either reasons as follows:</p>
             <ul>
-              <li>GroovyServ requires HOME, JAVA_HOME and GROOVY_HOME environment variables. Please confirm if they exists.</li>
+              <li>GroovyServ requires HOME/USERPROFILE, JAVA_HOME and GROOVY_HOME environment variables. Please confirm if they exists.
+                  See <a href="README.html#environmentVariables">"Environment variables" in README</a>.
+                </li>
               <li>An executable file we built isn't appropriate to your environment. Please build it by yourself.
                   See <a href="README.html#build">"Build from source code" in README</a>.
               </li>
