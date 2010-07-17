@@ -35,8 +35,12 @@ class StandardStreams {
 
     static void init() {
         System.in  = ALTERNATES.ins
-        System.out = new PrintStream(ALTERNATES.out)
-        System.err = new PrintStream(ALTERNATES.err)
+        System.out = new PrintStream(ALTERNATES.out) {
+            void close() { /* do nothing */ }
+        }
+        System.err = new PrintStream(ALTERNATES.err) {
+            void close() { /* do nothing */ }
+        }
     }
 
 }
