@@ -47,7 +47,7 @@ class StreamRequestHandler implements Runnable {
                 }
                 if (request.isEmpty()) {
                     DebugUtils.verboseLog "${id}: Recieved empty request from client"
-                    continue
+                    throw new ClientInterruptionException("${id}: Empty request by client request")
                 }
                 if (request.isInterrupted()) {
                     DebugUtils.verboseLog "${id}: Recieved interrupted request from client"
