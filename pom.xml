@@ -168,6 +168,17 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <includes><!-- TODO to specify not by class name but package or other pattern -->
+            <include>**/GroovyMain2.class</include>
+            <include>**/NoExitSecurityManager2.class</include>
+            <include>**/SystemExitException.class</include>
+          </includes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
           <source>1.5</source>
