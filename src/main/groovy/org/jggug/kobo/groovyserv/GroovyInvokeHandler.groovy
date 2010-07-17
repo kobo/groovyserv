@@ -75,7 +75,7 @@ class GroovyInvokeHandler implements Runnable {
     }
 
     private invokeGroovy(args) {
-        DebugUtils.verboseLog("${id}: invoking groovy: ${args}")
+        DebugUtils.verboseLog("${id}: Invoking groovy: ${args}")
         try {
             GroovyMain2.main(args as String[])
         } catch (SystemExitException e) {
