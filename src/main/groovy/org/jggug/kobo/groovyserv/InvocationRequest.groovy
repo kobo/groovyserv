@@ -48,9 +48,6 @@ class InvocationRequest {
             Thread.sleep(5000) // to prevent from brute force atack
             throw new InvalidRequestHeaderException("Authentication failed. Cookie is unmatched: ${clientCookie} <=> ${serverCookie.token}")
         }
-        if (!args) {
-            throw new InvalidRequestHeaderException("'Args' header is not found: ${port}")
-        }
     }
 
 }
