@@ -51,11 +51,20 @@ class DebugUtils {
     private static formatLog(message, Throwable e) {
         def sw = new StringWriter()
         def pw = new PrintWriter(sw)
-        pw.println message
+        def timestamp = currentTimestamp() // use same timestamp per call of formatLog
+        message.eachLine { line ->
+            pw.println(timestamp + " " + line)
+        }
         if (e) {
-            pw << "---> " << formatStackTrace(e)
+            ("---> " + formatStackTrace(e)).eachLine { line ->
+                pw.println(timestamp + " " + line)
+            }
         }
         sw.toString().trim()
+    }
+
+    private static currentTimestamp() {
+        new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS").format(new Date())
     }
 
     private static writeLog(formatted) {
