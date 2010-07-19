@@ -27,6 +27,7 @@ class GroovyServer {
 
     private static final int DEFAULT_PORT = 1961
 
+    private ServerSocket serverSocket
     private Cookie cookie
 
     static void main(String[] args) {
@@ -39,8 +40,9 @@ class GroovyServer {
             setupStandardStreams()
             setupSecurityManager()
             setupRunningMode()
-            setupCookie()
             startServer()
+            setupCookie()
+            handleRequest()
         }
         catch (GroovyServerException e) {
             DebugUtils.errorLog("Error: GroovyServer", e)
@@ -71,8 +73,11 @@ class GroovyServer {
 
     private void startServer() {
         int port = getPortNumber()
-        def serverSocket = new ServerSocket(port)
+        serverSocket = new ServerSocket(port)
         DebugUtils.verboseLog "Accepting server socket: ${port}"
+    }
+
+    private void handleRequest() {
         while (true) {
             def socket = serverSocket.accept()
             DebugUtils.verboseLog "Recieved socket: ${socket}"
