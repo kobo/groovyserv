@@ -119,17 +119,25 @@ end
 #-------------------------------------------
 # Main
 #-------------------------------------------
+
+# a mode to confirm server status
+need_starting_server = ARGV.delete("--without-invoking-server")
+
 failCount = 0
 begin
   TCPSocket.open(DESTHOST, DESTPORT) { |socket|
     Signal.trap(:INT) {
       send_interrupt(socket)
       socket.close()
-      exit 1
+      exit 9
     }
     session(socket)
   }
 rescue Errno::ECONNREFUSED
+  if need_starting_server
+    puts "ERROR: groovyserver isn't running"
+    exit 1
+  end
   if failCount >= 3
     puts "ERROR: Failed to start up groovyserver: #{GROOVYSERVER_CMD}"
     exit 1
