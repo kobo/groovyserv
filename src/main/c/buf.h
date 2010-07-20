@@ -10,9 +10,9 @@
 #endif
 
 typedef struct buf {
-  int size;
-  int buffer_size;
-  char* buffer;
+    int size;
+    int buffer_size;
+    char* buffer;
 } buf;
 
 int buf_strnlen(const char* const str, int n);
