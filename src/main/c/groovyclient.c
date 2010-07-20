@@ -44,6 +44,8 @@
 #include <signal.h>
 #include <sys/stat.h>
 
+#include "buf.h"
+
 #define DESTSERV "localhost"
 #define DESTPORT 1961
 #define BUFFER_SIZE 512
@@ -116,6 +118,7 @@ int open_socket(char* server_name, int server_port) {
     return fd;
 }
 
+
 /*
  * send_header.
  * Send header information which includes current working direcotry,
@@ -123,45 +126,41 @@ int open_socket(char* server_name, int server_port) {
  * to the server.
  */
 void send_header(int fd, int argn, char** argv, char* cookie) {
-    char read_buf[BUFFER_SIZE];
-    char* p = read_buf;
+    char path_buffer[MAXPATHLEN];
+    buf read_buf = buf_new(BUFFER_SIZE, NULL);
     int i;
 
     // send current working directory.
-    p += sprintf(p, "%s: ", HEADER_KEY_CURRENT_WORKING_DIR);
-    char* cwd = getcwd(p, MAXPATHLEN);
+    buf_printf(&read_buf, "%s: ", HEADER_KEY_CURRENT_WORKING_DIR);
+    char* cwd = getcwd(path_buffer, MAXPATHLEN);
     if (cwd == NULL) {
         perror("getcwd");
         exit(1);
     }
 
-    p += strlen(cwd);
-    *p++ = '\n';
+    buf_add(&read_buf, cwd);
+    buf_add(&read_buf, "\n");
 
-    p += sprintf(p, "%s: %s\n", HEADER_KEY_COOKIE, cookie);
+    buf_printf(&read_buf, "%s: %s\n", HEADER_KEY_COOKIE, cookie);
 
     // send command line arguments.
     for (i=1; i<argn; i++) {
-        p+= sprintf(p, "%s: %s\n", HEADER_KEY_ARG, argv[i]);
-        // TODO: check buffer overrrun
+        buf_printf(&read_buf, "%s: %s\n", HEADER_KEY_ARG, argv[i]);
     }
 
     char* cp = getenv("CLASSPATH");
     if (cp != NULL && *cp != '\0') {
-        p += sprintf(p, "%s: %s\n", HEADER_KEY_CP, cp);
-        // TODO: check buffer overrrun
+        buf_printf(&read_buf, "%s: %s\n", HEADER_KEY_CP, cp);
     }
 
-    *p++ = '\n';
-    if (p - read_buf > BUFFER_SIZE) {
-        fprintf(stderr, "\nheader size too big\n");
-        exit(1);
-    }
+    buf_printf(&read_buf, "\n");
+
 #ifdef WINDOWS
-    send(fd, read_buf, p-read_buf, 0);
+    send(fd, read_buf.buffer, read_buf.size, 0);
 #else
-    write(fd, read_buf, p-read_buf);
+    write(fd, read_buf.buffer, read_buf.size);
 #endif
+    buf_delete(&read_buf);
 }
 
 /*
