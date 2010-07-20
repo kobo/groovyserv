@@ -23,6 +23,7 @@
     <file>
       <outputDirectory></outputDirectory>
       <source>README</source>
+      <fileMode>644</fileMode>
     </file>
     <file>
       <outputDirectory>bin</outputDirectory>
