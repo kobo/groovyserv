@@ -89,7 +89,7 @@ done
 
 GROOVYSERV_PID_FILE="$GROOVYSERV_WORK_DIR/pid-$PORT"
 if [ -f "$GROOVYSERV_PID_FILE" ]; then
-    if [ "`find \"$GROOVYSERV_PID_FILE\" -mtime -30s`" != "" ] ; then
+    if [ "`find \"$GROOVYSERV_PID_FILE\" -mmin -30`" != "" ] ; then
         echo "starting server by another session..."
         exit 2
     fi
