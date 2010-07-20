@@ -197,11 +197,17 @@
         <div class="section" id="q13">
           <div class="question">
             <h3>Q</h3>
-            <p>Can I use GroovyServ with Grape's @Grab annotation?</p>
+            <p>Can I use Grape's @Grab annotation in GroovyServ?</p>
           </div>
           <div class="answer">
             <h3>A</h3>
-            <p>No, you can't.</p>
+            <p>Basically, yes.
+            But you will see OutOfMemoryError of PermGen if you use transitive dependencies.
+            I seem that a way to resolve transitive dependencies is different of resolving direct dependencies in Groovy.
+            ClassLoader for transitive dependencies is maybe higher than one for script.
+            So if you use a Grape with transitive dependencies, memory of PermGen will leak and finally OutOufMemoryError will occur.
+            As workaround, you can restart your groovyserver process, for example by "groovyserver -r" command.
+            </p>
           </div>
         </div>
         <div class="section" id="q14">
