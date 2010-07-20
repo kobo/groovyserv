@@ -170,7 +170,7 @@ void send_header(int fd, int argn, char** argv, char* cookie) {
 void read_header(char* buf, struct header_t* header) {
     char* p = strtok(buf, " :");
     if (strlen(p) > MAX_HEADER_KEY_LEN) {
-        fprintf(stderr, "\nkey %s too long\n", p);
+        fprintf(stderr, "\nERROR: key %s too long\n", p);
         exit(1);
     }
     strncpy(header->key, p, MAX_HEADER_KEY_LEN);
@@ -180,11 +180,11 @@ void read_header(char* buf, struct header_t* header) {
         p++;
     }
     if (*p == '\n' || *p == '\0') {
-        fprintf(stderr, "\nformat error\n");
+        fprintf(stderr, "\nERROR: format error\n");
         exit(1);
     }
     if (strlen(p) > MAX_HEADER_VALUE_LEN) {
-        fprintf(stderr, "\nkey %s too long\n", p);
+        fprintf(stderr, "\nERROR: key %s too long\n", p);
         exit(1);
     }
 
@@ -235,7 +235,7 @@ int read_headers(int fd, struct header_t headers[], int header_buf_size) {
         }
         read_header(read_buf, headers+pos);
         if (++pos >= header_buf_size) {
-            fprintf(stderr, "\ntoo many headers\n");
+            fprintf(stderr, "\nERROR: too many headers\n");
             exit(1);
         }
     }
@@ -269,7 +269,7 @@ int split_socket_output(int soc, char* stream_identifier, int size) {
         output_fd = 2; /* stderr */
     }
     else {
-        fprintf(stderr, "\nunrecognizable stream identifier: %s.\n", stream_identifier);
+        fprintf(stderr, "\nERROR: unrecognizable stream identifier: %s.\n", stream_identifier);
         exit(1);
     }
 
@@ -359,12 +359,12 @@ int session(int fd) {
         // Dispatch data from server to stdout/err.
         char* sid = find_header(headers, HEADER_KEY_CHANNEL, size);
         if (sid == NULL) {
-            fprintf(stderr, "\nrequired header %s not found\n", HEADER_KEY_CHANNEL);
+            fprintf(stderr, "\nERROR: required header %s not found\n", HEADER_KEY_CHANNEL);
             return 1;
         }
         char* chunk_size = find_header(headers, HEADER_KEY_SIZE, size);
         if (chunk_size == NULL) {
-            fprintf(stderr, "\nrequired header %s not found\n", HEADER_KEY_SIZE);
+            fprintf(stderr, "\nERROR: required header %s not found\n", HEADER_KEY_SIZE);
             return 1;
         }
         if (split_socket_output(fd, sid, atoi(chunk_size)) == EOF) {
@@ -422,13 +422,13 @@ int session(int fd) {
                 // Dispatch data from server to stdout/err.
                 char* sid = find_header(headers, HEADER_KEY_CHANNEL, size);
                 if (sid == NULL) {
-                    fprintf(stderr, "\nrequired header %s not found\n", HEADER_KEY_CHANNEL);
+                    fprintf(stderr, "\nERROR: required header %s not found\n", HEADER_KEY_CHANNEL);
                     return 1;
                 }
 
                 char* chunk_size = find_header(headers, HEADER_KEY_SIZE, size);
                 if (chunk_size == NULL) {
-                    fprintf(stderr, "\nrequired header %s not found\n", HEADER_KEY_SIZE);
+                    fprintf(stderr, "\nERROR: required header %s not found\n", HEADER_KEY_SIZE);
                     return 1;
                 }
                 if (split_socket_output(fd, sid, atoi(chunk_size)) == EOF) {
@@ -437,7 +437,7 @@ int session(int fd) {
             }
         }
         else {
-            fprintf(stderr, "\ntimeout?\n");
+            fprintf(stderr, "\nERROR: timeout?\n");
         }
     }
 }
@@ -480,6 +480,8 @@ char* scriptdir(char* result_dir, char* script_path) {
 }
 
 void start_server(int argn, char** argv, int port) {
+    fprintf(stderr, "starting server...\n");
+
     // resolve base directory
     char basedir_path[MAXPATHLEN];
     char* groovyserv_home = getenv("GROOVYSERV_HOME");
@@ -505,12 +507,6 @@ void start_server(int argn, char** argv, int port) {
 
     // start groovyserver.
     system(groovyserver_path);
-
-#ifdef WINDOWS
-    Sleep(3000);
-#else
-    sleep(3);
-#endif
 }
 
 /*
@@ -532,7 +528,7 @@ void read_cookie(char* cookie, int size) {
         fclose(fp);
     }
     else {
-        fprintf(stderr, "cannot open cookie file\n");
+        fprintf(stderr, "ERROR: cannot open cookie file\n");
         exit(1);
     }
 }
@@ -549,7 +545,7 @@ int main(int argn, char** argv) {
     char* port_str = getenv("GROOVYSERVER_PORT");
     if (port_str != NULL) {
         if (sscanf(port_str, "%d", &port) != 1) {
-            fprintf(stderr, "port format error\n");
+            fprintf(stderr, "ERROR: port format error\n");
             exit(1);
         }
     }
@@ -568,20 +564,20 @@ int main(int argn, char** argv) {
     }
 #endif
 
-    int trial = 0;
+    int failCount = 0;
     while ((fd_soc = open_socket(DESTSERV, port)) == -1) {
-        fprintf(stderr, "starting server...\n");
-        start_server(argn, argv, port);
-        if (trial >= 2) {
-            fprintf(stderr, "Cannot invoke groovy server.\n");
+        if (failCount >= 3) {
+            fprintf(stderr, "ERROR: Failed to start up groovyserver\n");
             exit(1);
         }
+        start_server(argn, argv, port);
+
 #ifdef WINDOWS
-        Sleep(1000);
+    Sleep(3000);
 #else
-        sleep(1);
+    sleep(3);
 #endif
-        trial++;
+        failCount++;
     }
     read_cookie(cookie, sizeof(cookie));
 
