@@ -62,14 +62,15 @@ const char * const HEADER_KEY_SIZE = "Size";
 const char * const HEADER_KEY_STATUS = "Status";
 
 const int CR = 0x0d;
+const int CANCEL = 0x18;
 
 #define MAX_HEADER_KEY_LEN 30
 #define MAX_HEADER_VALUE_LEN 512
 #define MAX_HEADER 10
 
 struct header_t {
-    char key[MAX_HEADER_KEY_LEN+1];
-    char value[MAX_HEADER_VALUE_LEN+1];
+    char key[MAX_HEADER_KEY_LEN + 1];
+    char value[MAX_HEADER_VALUE_LEN + 1];
 };
 
 /*
@@ -167,26 +168,37 @@ void send_header(int fd, int argn, char** argv, char* cookie) {
  * parse server response header.
  */
 void read_header(char* buf, struct header_t* header) {
+    // key
     char* p = strtok(buf, " :");
-    if (strlen(p) > MAX_HEADER_KEY_LEN) {
-        fprintf(stderr, "\nERROR: key %s too long\n", p);
+    if (p == NULL || strlen(p) > MAX_HEADER_KEY_LEN) {
+        fprintf(stderr, "ERROR: key \"%s\" too long\n", p);
         exit(1);
+    }
+    int i;
+    for (i = 0; i < strlen(p); i++) {
+        if (*p == CANCEL) {
+            exit(0);
+        }
+        if (iscntrl(p[i])) {
+            fprintf(stderr, "ERROR: key \"%s\" is invalid: %x\n", p, p[i]);
+            exit(1);
+        }
     }
     strncpy(header->key, p, MAX_HEADER_KEY_LEN);
 
-    p = strtok(NULL, " :\n");
-    while (p != NULL && isspace(*p)) {
+    // value
+    p = strtok(NULL, "\n");
+    while (p != NULL && isspace(*p)) { // ignore spaces
         p++;
     }
-    if (p == NULL || *p == '\n') {
-        fprintf(stderr, "\nERROR: format error\n");
+    if (p == NULL || strlen(p) > MAX_HEADER_VALUE_LEN) {
+        fprintf(stderr, "ERROR: value of key \"%s\" too long: %s\n", header->key, p);
         exit(1);
     }
-    if (strlen(p) > MAX_HEADER_VALUE_LEN) {
-        fprintf(stderr, "\nERROR: key %s too long\n", p);
-        exit(1);
+    if (*p == '\n') {
+        strncpy(header->value, "", MAX_HEADER_VALUE_LEN);
+        return;
     }
-
     strncpy(header->value, p, MAX_HEADER_VALUE_LEN);
 }
 
@@ -226,17 +238,18 @@ int read_headers(int fd, struct header_t headers[], int header_buf_size) {
         if (p == NULL) {
             return 0;
         }
-        if (*p == CR) {
+        if (*p == CR) { // ignore if CR
             p++;
         }
-        if (*p == '\n') {
+        if (*p == '\n') { // if empty line
             break;
         }
-        read_header(read_buf, headers+pos);
-        if (++pos >= header_buf_size) {
-            fprintf(stderr, "\nERROR: too many headers\n");
+        read_header(read_buf, headers + pos);
+        if (pos > header_buf_size) {
+            fprintf(stderr, "ERROR: too many headers\n");
             exit(1);
         }
+        pos++;
     }
     return pos;
 }
@@ -267,7 +280,7 @@ int split_socket_output(int soc, char* stream_identifier, int size) {
         output_fd = 2; /* stderr */
     }
     else {
-        fprintf(stderr, "\nERROR: unrecognizable stream identifier: %s.\n", stream_identifier);
+        fprintf(stderr, "ERROR: unrecognizable stream identifier: %s.\n", stream_identifier);
         exit(1);
     }
 
@@ -357,12 +370,12 @@ int session(int fd) {
         // Dispatch data from server to stdout/err.
         char* sid = find_header(headers, HEADER_KEY_CHANNEL, size);
         if (sid == NULL) {
-            fprintf(stderr, "\nERROR: required header %s not found\n", HEADER_KEY_CHANNEL);
+            fprintf(stderr, "ERROR: required header %s not found\n", HEADER_KEY_CHANNEL);
             return 1;
         }
         char* chunk_size = find_header(headers, HEADER_KEY_SIZE, size);
         if (chunk_size == NULL) {
-            fprintf(stderr, "\nERROR: required header %s not found\n", HEADER_KEY_SIZE);
+            fprintf(stderr, "ERROR: required header %s not found\n", HEADER_KEY_SIZE);
             return 1;
         }
         if (split_socket_output(fd, sid, atoi(chunk_size)) == EOF) {
@@ -420,13 +433,13 @@ int session(int fd) {
                 // Dispatch data from server to stdout/err.
                 char* sid = find_header(headers, HEADER_KEY_CHANNEL, size);
                 if (sid == NULL) {
-                    fprintf(stderr, "\nERROR: required header %s not found\n", HEADER_KEY_CHANNEL);
+                    fprintf(stderr, "ERROR: required header %s not found\n", HEADER_KEY_CHANNEL);
                     return 1;
                 }
 
                 char* chunk_size = find_header(headers, HEADER_KEY_SIZE, size);
                 if (chunk_size == NULL) {
-                    fprintf(stderr, "\nERROR: required header %s not found\n", HEADER_KEY_SIZE);
+                    fprintf(stderr, "ERROR: required header %s not found\n", HEADER_KEY_SIZE);
                     return 1;
                 }
                 if (split_socket_output(fd, sid, atoi(chunk_size)) == EOF) {
@@ -435,7 +448,7 @@ int session(int fd) {
             }
         }
         else {
-            fprintf(stderr, "\nERROR: timeout?\n");
+            fprintf(stderr, "ERROR: timeout?\n");
         }
     }
 }
