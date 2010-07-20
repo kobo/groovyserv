@@ -154,6 +154,7 @@ void send_header(int fd, int argn, char** argv, char* cookie) {
     }
 
     buf_printf(&read_buf, "\n");
+    read_buf.size--; /* remove trailing '\0' */
 
 #ifdef WINDOWS
     send(fd, read_buf.buffer, read_buf.size, 0);
