@@ -30,7 +30,7 @@ class GroovyInvokeHandler implements Runnable {
     }
 
     /**
-     * @throws GroovyServerExitException
+     * @throws GServExitException
      *              When user code called System.exit().
      *              Acutally this exception is wrapped by ExecutionException.
      * @throws InvalidRequestHeaderException
@@ -79,7 +79,7 @@ class GroovyInvokeHandler implements Runnable {
         try {
             GroovyMain2.main(args as String[])
         } catch (SystemExitException e) {
-            throw new GroovyServerExitException(e.exitStatus, e.message, e)
+            throw new GServExitException(e.exitStatus, e.message, e)
         }
     }
 

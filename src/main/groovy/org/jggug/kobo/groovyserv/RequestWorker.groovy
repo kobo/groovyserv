@@ -45,7 +45,7 @@ class RequestWorker extends ThreadPoolExecutor {
         super(THREAD_COUNT, THREAD_COUNT, 0, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>())
         this.id = "GroovyServ:RequestWorker:${socket.port}"
 
-        def rootThreadGroup = new GroovyServerThreadGroup("GroovyServ:ThreadGroup:${socket.port}")
+        def rootThreadGroup = new GServThreadGroup("GroovyServ:ThreadGroup:${socket.port}")
         this.conn = new ClientConnection(cookie, socket, rootThreadGroup)
 
         // for management sub threads in invoke handler.
@@ -54,7 +54,7 @@ class RequestWorker extends ThreadPoolExecutor {
             Thread newThread(Runnable runnable) {
                 // giving individual sub thread group for each thread
                 // in order to kill invoke handler's sub threads which were started in user scripts.
-                def subThreadGroup = new GroovyServerThreadGroup(rootThreadGroup, "${rootThreadGroup.name}:${index.getAndIncrement()}")
+                def subThreadGroup = new GServThreadGroup(rootThreadGroup, "${rootThreadGroup.name}:${index.getAndIncrement()}")
                 new Thread(subThreadGroup, runnable)
             }
         })
@@ -73,7 +73,7 @@ class RequestWorker extends ThreadPoolExecutor {
 
             DebugUtils.verboseLog("${id}: Request worker is started")
         }
-        catch (GroovyServerException e) {
+        catch (GServException e) {
             // cancelling all tasks
             if (!isShutdown()) shutdownNow()
 
@@ -119,7 +119,7 @@ class RequestWorker extends ThreadPoolExecutor {
                 }
                 break
             default:
-                throw new GroovyServerIllegalStateException("${id}: unexpected state: runnable=${runnable}, invokeFuture=${invokeFuture}, streamFuture=${streamFuture}")
+                throw new GServIllegalStateException("${id}: unexpected state: runnable=${runnable}, invokeFuture=${invokeFuture}, streamFuture=${streamFuture}")
         }
     }
 
@@ -148,11 +148,11 @@ class RequestWorker extends ThreadPoolExecutor {
             DebugUtils.verboseLog("${id}: Interrupted: ${e.message}")
             return ExitStatus.INTERRUPTED.code
         }
-        catch (GroovyServerExitException e) {
+        catch (GServExitException e) {
             DebugUtils.verboseLog("${id}: Exited: ${e.exitStatus}: ${e.message}")
             return e.exitStatus
         }
-        catch (GroovyServerException e) {
+        catch (GServException e) {
             DebugUtils.errorLog("${id}: Error: ${e.exitStatus}", e)
             return e.exitStatus
         }

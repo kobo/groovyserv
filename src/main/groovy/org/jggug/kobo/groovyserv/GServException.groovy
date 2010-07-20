@@ -1,7 +1,7 @@
 /*
  * Copyright 2009-2010 the original author or authors.
  *
- * Licensed under the Apache License, Version 2.0 (the "License")
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,23 +19,17 @@ package org.jggug.kobo.groovyserv
 /**
  * @author NAKANO Yasuharu
  */
-class GroovyServerThreadGroup extends ThreadGroup {
+class GServException extends RuntimeException {
 
-    GroovyServerThreadGroup(String name) {
-        super(name)
+    int exitStatus
+
+    GServException(String message, Throwable e = null) {
+        this(ExitStatus.UNEXPECTED_ERROR.code, message, e)
     }
 
-    GroovyServerThreadGroup(ThreadGroup parent, String name) {
-        super(parent, name)
+    GServException(int exitStatus, String message, Throwable e = null) {
+        super(message, e)
+        this.exitStatus = exitStatus
     }
-
-    @Override
-    void uncaughtException(Thread thread, Throwable e) {
-        DebugUtils.errorLog("${name}: Uncaught exception: ${thread}", e)
-    }
-
-    @Override
-    String toString() { name }
 
 }
-

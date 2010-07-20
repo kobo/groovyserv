@@ -42,7 +42,7 @@ class ClientConnectionRepository {
         def thread = Thread.currentThread()
         def connection = findConnection(thread.threadGroup)
         if (connection == null) {
-            throw new GroovyServerIllegalStateException("ClientConnectionRepository: Not found client connection: ${thread}")
+            throw new GServIllegalStateException("ClientConnectionRepository: Not found client connection: ${thread}")
         }
         return connection
     }

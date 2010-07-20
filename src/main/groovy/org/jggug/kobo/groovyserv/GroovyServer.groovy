@@ -44,7 +44,7 @@ class GroovyServer {
             setupCookie()
             handleRequest()
         }
-        catch (GroovyServerException e) {
+        catch (GServException e) {
             DebugUtils.errorLog("Error: GroovyServer", e)
             System.exit(e.exitStatus)
         }

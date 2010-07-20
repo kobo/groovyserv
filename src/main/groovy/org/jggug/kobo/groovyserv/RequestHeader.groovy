@@ -81,7 +81,7 @@ class RequestHeader {
 
     /**
      * @throws InvalidRequestHeaderException
-     * @throws GroovyServerIOException
+     * @throws GServIOException
      */
     static InvocationRequest readInvokationRequest(ClientConnection conn) {
         Map<String, List<String>> headers = readHeaders(conn)
@@ -99,7 +99,7 @@ class RequestHeader {
 
     /**
      * @throws InvalidRequestHeaderException
-     * @throws GroovyServerIOException
+     * @throws GServIOException
      */
     static StreamRequest readStreamRequest(ClientConnection conn) {
         Map<String, List<String>> headers = readHeaders(conn)
@@ -131,10 +131,10 @@ class RequestHeader {
             return headers
         }
         catch (InterruptedIOException e) {
-            throw new GroovyServerIOException("${id}: I/O interrupted: interrupted while reading line", e)
+            throw new GServIOException("${id}: I/O interrupted: interrupted while reading line", e)
         }
         catch (IOException e) {
-            throw new GroovyServerIOException("${id}: I/O error: failed to read line: ${e.message}", e)
+            throw new GServIOException("${id}: I/O error: failed to read line: ${e.message}", e)
         }
     }
 

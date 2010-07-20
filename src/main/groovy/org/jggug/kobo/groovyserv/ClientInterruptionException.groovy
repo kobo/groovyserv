@@ -19,7 +19,7 @@ package org.jggug.kobo.groovyserv
 /**
  * @author NAKANO Yasuharu
  */
-class ClientInterruptionException extends GroovyServerException {
+class ClientInterruptionException extends GServException {
 
     ClientInterruptionException(String message, Throwable e = null) {
         super(ExitStatus.INTERRUPTED.code, message, e)

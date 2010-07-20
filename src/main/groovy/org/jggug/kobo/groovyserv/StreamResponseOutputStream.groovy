@@ -81,8 +81,8 @@ ${DebugUtils.dump(b, offset, length)}
     private OutputStream getCurrentOutputStream() {
         try {
             ClientConnectionRepository.instance.currentConnection.outputStream
-        } catch (GroovyServerIllegalStateException e) {
-            throw new GroovyServerIOException("Cannot get a current client connection", e)
+        } catch (GServIllegalStateException e) {
+            throw new GServIOException("Cannot get a current client connection", e)
         }
     }
 

@@ -19,10 +19,10 @@ package org.jggug.kobo.groovyserv
 /**
  * @author NAKANO Yasuharu
  */
-class GroovyServerExitException extends GroovyServerException {
+class GServIllegalStateException extends GServException {
 
-    GroovyServerExitException(int exitStatus, String message, Throwable e = null) {
-        super(exitStatus, message, e)
+    GServIllegalStateException(String message, Throwable e = null) {
+        super(ExitStatus.ILLEGAL_STATE.code, message, e)
     }
 
 }

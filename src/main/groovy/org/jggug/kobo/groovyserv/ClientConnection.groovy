@@ -40,7 +40,7 @@ class ClientConnection implements Closeable {
 
     /**
      * @throws InvalidRequestHeaderException
-     * @throws GroovyServerIOException
+     * @throws GServIOException
      */
     InvocationRequest openSession() {
         RequestHeader.readInvokationRequest(this)
@@ -48,23 +48,23 @@ class ClientConnection implements Closeable {
 
     /**
      * @throws InvalidRequestHeaderException
-     * @throws GroovyServerIOException
+     * @throws GServIOException
      */
     StreamRequest readStreamRequest() {
         RequestHeader.readStreamRequest(this)
     }
 
     /**
-     * @throws GroovyServerIOException
+     * @throws GServIOException
      */
     void writeFromStreamRequest(byte[] buff, int offset, int result) {
         try {
             pipedOutputStream.write(buff, offset, result)
             pipedOutputStream.flush()
         } catch (InterruptedIOException e) {
-            throw new GroovyServerIOException("${id}: I/O interrupted: Failed to write to piped stream", e)
+            throw new GServIOException("${id}: I/O interrupted: Failed to write to piped stream", e)
         } catch (IOException e) {
-            throw new GroovyServerIOException("${id}: I/O error: Failed to write to piped stream", e)
+            throw new GServIOException("${id}: I/O error: Failed to write to piped stream", e)
         }
     }
 
@@ -83,7 +83,7 @@ class ClientConnection implements Closeable {
     }
 
     /**
-     * @throws GroovyServerIOException
+     * @throws GServIOException
      */
     void sendExit(int status) {
         try {
@@ -92,7 +92,7 @@ class ClientConnection implements Closeable {
                 flush()
             }
         } catch (IOException e) {
-            throw new GroovyServerIOException("${id}: I/O error: failed to send exit status", e)
+            throw new GServIOException("${id}: I/O error: failed to send exit status", e)
         }
     }
 

@@ -19,7 +19,7 @@ package org.jggug.kobo.groovyserv
 /**
  * @author NAKANO Yasuharu
  */
-class InvalidRequestHeaderException extends GroovyServerException {
+class InvalidRequestHeaderException extends GServException {
 
     InvalidRequestHeaderException(String message, Throwable e = null) {
         super(ExitStatus.INVALID_REQUEST.code, message, e)

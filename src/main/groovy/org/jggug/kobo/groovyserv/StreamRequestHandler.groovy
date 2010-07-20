@@ -69,7 +69,7 @@ class StreamRequestHandler implements Runnable {
         catch (InterruptedException e) {
             DebugUtils.verboseLog("${id}: Thread interrupted: ${e.message}") // ignored details
         }
-        catch (GroovyServerIOException e) {
+        catch (GServIOException e) {
             DebugUtils.verboseLog("${id}: I/O error: ${e.message}") // ignored details
         }
         catch (InterruptedIOException e) {
