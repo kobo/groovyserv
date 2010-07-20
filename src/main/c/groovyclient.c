@@ -148,7 +148,7 @@ void send_header(int fd, int argn, char** argv, char* cookie) {
     }
 
     char* cp = getenv("CLASSPATH");
-    if (cp != NULL && *cp != '\0') {
+    if (cp != NULL) {
         buf_printf(&read_buf, "%s: %s\n", HEADER_KEY_CP, cp);
     }
 
@@ -175,10 +175,10 @@ void read_header(char* buf, struct header_t* header) {
     strncpy(header->key, p, MAX_HEADER_KEY_LEN);
 
     p = strtok(NULL, " :\n");
-    while (isspace(*p)) {
+    while (p != NULL && isspace(*p)) {
         p++;
     }
-    if (*p == '\n' || *p == '\0') {
+    if (p == NULL || *p == '\n') {
         fprintf(stderr, "\nERROR: format error\n");
         exit(1);
     }
@@ -468,7 +468,7 @@ char* scriptdir(char* result_dir, char* script_path) {
     if (*work_pt == '/' || *work_pt == '\\') {
         work_pt++;
     }
-    if (*work_pt != '\0') { // cut
+    if (work_pt != NULL) { // cut
         *work_pt = '\0';
     }
 
