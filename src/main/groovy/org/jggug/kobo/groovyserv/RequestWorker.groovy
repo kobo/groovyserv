@@ -149,7 +149,7 @@ class RequestWorker extends ThreadPoolExecutor {
             return ExitStatus.INTERRUPTED.code
         }
         catch (GServExitException e) {
-            DebugUtils.verboseLog("${id}: Exited: ${e.exitStatus}: ${e.message}")
+            DebugUtils.verboseLog("${id}: Exited: ${e.exitStatus}: ${e.message}", e)
             return e.exitStatus
         }
         catch (GServException e) {
