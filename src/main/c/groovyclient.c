@@ -118,7 +118,6 @@ int open_socket(char* server_name, int server_port) {
     return fd;
 }
 
-
 /*
  * send_header.
  * Send header information which includes current working direcotry,
@@ -239,7 +238,6 @@ int read_headers(int fd, struct header_t headers[], int header_buf_size) {
             exit(1);
         }
     }
-
     return pos;
 }
 
