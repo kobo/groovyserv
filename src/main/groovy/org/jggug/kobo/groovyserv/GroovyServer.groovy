@@ -75,6 +75,7 @@ class GroovyServer {
         int port = getPortNumber()
         serverSocket = new ServerSocket(port)
         DebugUtils.verboseLog "Accepting server socket: ${port}"
+        DebugUtils.infoLog "Server started with port: ${port}"
     }
 
     private void handleRequest() {

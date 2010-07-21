@@ -32,6 +32,11 @@ class DebugUtils {
         writeLog(formatted)
     }
 
+    static infoLog(message, Throwable e = null) {
+        def formatted = formatLog(message, e)
+        writeLog(formatted)
+    }
+
     static verboseLog(message, Throwable e = null) {
         if (!isVerboseMode()) return
 
