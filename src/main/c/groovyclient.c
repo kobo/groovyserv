@@ -74,7 +74,6 @@ struct header_t {
 };
 
 /*
- * open_socket.
  * Make socket and connect to the server (fixed to localhost).
  */
 int open_socket(char* server_name, int server_port) {
@@ -120,7 +119,6 @@ int open_socket(char* server_name, int server_port) {
 }
 
 /*
- * send_header.
  * Send header information which includes current working direcotry,
  * command line arguments, and CLASSPATH environment variable
  * to the server.
@@ -280,7 +278,6 @@ char* find_header(struct header_t headers[], const char* key, int nhdrs) {
 }
 
 /*
- * split_socket_output.
  * Receive a chunk, and write it to stdout or stderr.
  */
 int split_socket_output(int soc, char* stream_identifier, int size) {
@@ -319,7 +316,6 @@ int split_socket_output(int soc, char* stream_identifier, int size) {
 }
 
 /*
- * send_to_server.
  * Copy data from stdin and send it to the server.
  */
 int send_to_server(int fd) {
@@ -399,7 +395,6 @@ int session(int fd) {
 #else
 
 /*
- * session.
  * asynchronus input (select) with the stdin and the socket connection
  * to the server. copy input data from stdin to server, and
  * copy received data from the server to stdout/stderr.
@@ -557,7 +552,6 @@ void read_cookie(char* cookie, int size) {
 }
 
 /*
- * main.
  * open socket and initiate session.
  */
 int main(int argn, char** argv) {
