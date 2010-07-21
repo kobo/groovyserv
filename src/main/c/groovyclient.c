@@ -82,7 +82,7 @@ int open_socket(char* server_name, int server_port) {
 
     hostent = gethostbyname(server_name); // lookup IP
     if (hostent == NULL) {
-        perror("gethostbyname");
+        perror("ERROR: gethostbyname");
         exit(1);
     }
 
@@ -98,7 +98,7 @@ int open_socket(char* server_name, int server_port) {
 #else
     if ((fd = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
 #endif
-        perror("socket");
+        perror("ERROR: socket");
         exit(1);
     }
 
@@ -111,7 +111,7 @@ int open_socket(char* server_name, int server_port) {
         if (errno = ECONNREFUSED) {
             return -1;
         }
-        perror("connect");
+        perror("ERROR: connect");
         exit(1);
     }
 #endif
@@ -132,7 +132,7 @@ void send_header(int fd, int argn, char** argv, char* cookie) {
     buf_printf(&read_buf, "%s: ", HEADER_KEY_CURRENT_WORKING_DIR);
     char* cwd = getcwd(path_buffer, MAXPATHLEN);
     if (cwd == NULL) {
-        perror("getcwd");
+        perror("ERROR: getcwd");
         exit(1);
     }
 
@@ -328,7 +328,7 @@ int send_to_server(int fd) {
     int ret;
 
     if ((ret = read(0, read_buf, BUFFER_SIZE)) == -1){ // TODO buffering
-        perror("read failure from stdin");
+        perror("ERROR: failed to read from stdin");
         exit(1);
     }
     read_buf[ret] = '\0';
@@ -417,7 +417,7 @@ int session(int fd) {
         FD_SET(0, &read_set);
         FD_SET(fd, &read_set);
         if ((ret = select(FD_SETSIZE, &read_set, (fd_set*)NULL, (fd_set*)NULL, NULL)) == -1) {
-            perror("select failure");
+            perror("ERROR: select failure");
             exit(1);
         }
         if (ret == 0) {
@@ -541,7 +541,7 @@ void read_cookie(char* cookie, int size) {
     FILE* fp = fopen(path, "r");
     if (fp != NULL) {
         if (fgets(cookie, size, fp) == NULL) {
-            perror("fgets");
+            perror("ERROR: fgets");
             exit(1);
         }
         fclose(fp);
