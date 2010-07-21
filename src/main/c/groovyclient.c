@@ -244,6 +244,7 @@ int read_headers(int fd, struct header_t headers[]) {
     char *p;
     int pos = 0;
     while (1) {
+        memset(read_buf, 0, sizeof(read_buf));
         p = read_line(fd, read_buf, BUFFER_SIZE);
         if (p == NULL) {
             return 0;
@@ -359,9 +360,9 @@ void invoke_thread(int fd) {
 }
 
 int session(int fd) {
+    struct header_t headers[MAX_HEADER];
     invoke_thread(fd);
     while (1) {
-        struct header_t headers[MAX_HEADER];
         int size = read_headers(fd, headers);
         if (size == 0) {
             return 0; // as normal exit if header size 0
@@ -400,6 +401,7 @@ int session(int fd) {
  * stream identifier(sid) header is 'out' or 'err'.
  */
 int session(int fd) {
+    struct header_t headers[MAX_HEADER];
     fd_set read_set;
     int ret;
     int stdin_closed = 0;
@@ -424,7 +426,6 @@ int session(int fd) {
             stdin_closed = send_to_server(fd);
         }
         if (FD_ISSET(fd, &read_set)){ // socket
-            struct header_t headers[MAX_HEADER];
             int size = read_headers(fd, headers);
             if (size == 0) {
                 return 0; // as normal exit if header size 0
