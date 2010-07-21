@@ -166,13 +166,12 @@ void send_header(int fd, int argn, char** argv, char* cookie) {
  * parse server response header.
  */
 void read_header(char* buf, struct header_t* header) {
-    //fprintf(stderr, "DEBUG: -------------------------\n");
-    //fprintf(stderr, "DEBUG: header line: %s\n", buf);
+    //fprintf(stderr, "DEBUG: read_header: line: %s<LF> (size:%d)\n", buf, strlen(buf));
 
     // key
     char* p = strtok(buf, " :");
     if (p == NULL) {
-        fprintf(stderr, "ERROR: key \"%s\" is NULL\n", p);
+        fprintf(stderr, "ERROR: key is NULL\n", p);
         exit(1);
     }
     if (strlen(p) > MAX_HEADER_KEY_LEN) {
@@ -198,18 +197,20 @@ void read_header(char* buf, struct header_t* header) {
 
     // value
     p = strtok(NULL, "\n");
-    while (p != NULL && isspace(*p)) { // ignore spaces
-        p++;
-    }
     if (p == NULL) {
         fprintf(stderr, "ERROR: value of key \"%s\" is NULL: %s\n", header->key, p);
         exit(1);
+    }
+    while (isspace(*p)) { // ignore spaces
+        p++;
     }
     if (strlen(p) > MAX_HEADER_VALUE_LEN) {
         fprintf(stderr, "ERROR: value of key \"%s\" is too long: %s\n", header->key, p);
         exit(1);
     }
     strncpy(header->value, p, MAX_HEADER_VALUE_LEN);
+
+    //fprintf(stderr, "DEBUG: read_header: parsed: \"%s\"(size:%d) => \"%s\"(size:%d)\n", header->key, strlen(header->key), header->value, strlen(header->value));
 }
 
 char* read_line(int fd, char* buf, int size) {
@@ -218,20 +219,23 @@ char* read_line(int fd, char* buf, int size) {
 #ifdef WINDOWS
          int ret = recv(fd, buf + i, 1, 0);
          if (ret == -1) {
-             printf("error : %d\n", WSAGetLastError());
+             fprintf(stderr, "ERROR: failed to read line: %d\n", WSAGetLastError());
              exit(1);
          }
          if (ret != 1) {
              // signal handler output breaks stream.
+             //fprintf(stderr, "DEBUG: read_line (maybe by signal handler): %d\n", ret);
              return NULL;
          }
 #else
          read(fd, buf + i, 1);
 #endif
          if (buf[i] == '\n') {
+             //fprintf(stderr, "DEBUG: read_line (until LF): %s<LF> (size:%d)\n", buf, strlen(buf));
              return buf;
          }
      }
+     //fprintf(stderr, "DEBUG: read_line (size over): %s<END> (size:%d)\n", buf, strlen(buf));
      return buf;
  }
 
@@ -246,10 +250,10 @@ int read_headers(int fd, struct header_t headers[]) {
     while (1) {
         memset(read_buf, 0, sizeof(read_buf));
         p = read_line(fd, read_buf, BUFFER_SIZE);
-        if (p == NULL) {
+        if (*p == '\0') {
             return 0;
         }
-        if (*p == CR) { // ignore if CR
+        if (*p == CR) { // FIXME For what is it worth?
             p++;
         }
         if (*p == '\n') { // if empty line
@@ -290,7 +294,7 @@ int split_socket_output(int soc, char* stream_identifier, int size) {
         output_fd = 2; /* stderr */
     }
     else {
-        fprintf(stderr, "ERROR: unrecognizable stream identifier: %s.\n", stream_identifier);
+        fprintf(stderr, "ERROR: unrecognizable stream identifier: %s\n", stream_identifier);
         exit(1);
     }
 
@@ -485,13 +489,13 @@ char* scriptdir(char* result_dir, char* script_path) {
     if (*work_pt == '/' || *work_pt == '\\') {
         work_pt++;
     }
-    if (work_pt != NULL) { // cut
+    if (*work_pt != '\0') { // cut
         *work_pt = '\0';
     }
 
     // set result
     strcpy(result_dir, work_path);
-    //fprintf(stderr, "DEBUG: result_dir: %s, %d\n", result_dir, strlen(result_dir));
+    //fprintf(stderr, "DEBUG: scriptdir: %s, %d\n", result_dir, strlen(result_dir));
 }
 
 void start_server(int argn, char** argv, int port) {
@@ -567,13 +571,13 @@ int main(int argn, char** argv) {
 #ifdef WINDOWS
     WSADATA wsadata;
     if (WSAStartup(MAKEWORD(1,1), &wsadata) == SOCKET_ERROR) {
-        printf("Error creating socket.");
+        fprintf(stderr, "ERROR: creating socket");
         exit(1);
     }
 
     // make standard output to binary mode.
     if (_setmode( _fileno(stdout), _O_BINARY) < 0) {
-        printf("setmode failed.");
+        fprintf(stderr, "ERROR: setmode failed");
         exit(1);
     }
 #endif
