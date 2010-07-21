@@ -78,6 +78,9 @@ end
 
 def handle_socket(socket)
   headers = read_headers(socket)
+  if headers.empty?
+    exit 1
+  end
   if headers['Status']
     exit headers['Status'].to_i
   end
@@ -146,6 +149,9 @@ rescue Errno::ECONNREFUSED
   sleep 3
   failCount += 1
   retry
+rescue Errno::ECONNRESET, Errno::EPIPE
+  # normally exit if reset by peer or broken pipe
+  exit 0
 rescue => e
   puts "ERROR: #{e.message}"
   puts e.backtrace
