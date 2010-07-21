@@ -65,13 +65,12 @@ class RequestWorker extends ThreadPoolExecutor {
             def request = conn.openSession()
             streamFuture  = submit(new StreamRequestHandler(conn))
             invokeFuture = submit(new GroovyInvokeHandler(request))
+            DebugUtils.verboseLog("${id}: Request worker is started")
 
             Thread.sleep(1000)
 
             // when all tasks will finish, executor will be shut down.
             shutdown()
-
-            DebugUtils.verboseLog("${id}: Request worker is started")
         }
         catch (GServException e) {
             // cancelling all tasks
