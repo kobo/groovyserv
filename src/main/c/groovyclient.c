@@ -168,18 +168,30 @@ void send_header(int fd, int argn, char** argv, char* cookie) {
  * parse server response header.
  */
 void read_header(char* buf, struct header_t* header) {
+    //fprintf(stderr, "DEBUG: -------------------------\n");
+    //fprintf(stderr, "DEBUG: header line: %s\n", buf);
+
     // key
     char* p = strtok(buf, " :");
-    if (p == NULL || strlen(p) > MAX_HEADER_KEY_LEN) {
-        fprintf(stderr, "ERROR: key \"%s\" too long\n", p);
+    if (p == NULL) {
+        fprintf(stderr, "ERROR: key \"%s\" is NULL\n", p);
+        exit(1);
+    }
+    if (strlen(p) > MAX_HEADER_KEY_LEN) {
+        fprintf(stderr, "ERROR: key \"%s\" is too long\n", p);
         exit(1);
     }
     int i;
     for (i = 0; i < strlen(p); i++) {
-        if (*p == CANCEL) {
+        if (p[i] == CANCEL) {
             exit(0);
         }
-        if (iscntrl(p[i])) {
+        if (isspace(p[i])) {
+            // if invoked "groovyclient" without arguments, it should works
+            // as error message command and print usage by delegated groovy command
+            return;
+        }
+        if (!isalnum(p[i])) {
             fprintf(stderr, "ERROR: key \"%s\" is invalid: %x\n", p, p[i]);
             exit(1);
         }
@@ -191,13 +203,13 @@ void read_header(char* buf, struct header_t* header) {
     while (p != NULL && isspace(*p)) { // ignore spaces
         p++;
     }
-    if (p == NULL || strlen(p) > MAX_HEADER_VALUE_LEN) {
-        fprintf(stderr, "ERROR: value of key \"%s\" too long: %s\n", header->key, p);
+    if (p == NULL) {
+        fprintf(stderr, "ERROR: value of key \"%s\" is NULL: %s\n", header->key, p);
         exit(1);
     }
-    if (*p == '\n') {
-        strncpy(header->value, "", MAX_HEADER_VALUE_LEN);
-        return;
+    if (strlen(p) > MAX_HEADER_VALUE_LEN) {
+        fprintf(stderr, "ERROR: value of key \"%s\" is too long: %s\n", header->key, p);
+        exit(1);
     }
     strncpy(header->value, p, MAX_HEADER_VALUE_LEN);
 }
@@ -358,7 +370,7 @@ int session(int fd) {
     while (1) {
         int size = read_headers(fd, headers, MAX_HEADER);
         if (size == 0) {
-            return 1;
+            return 0; // as normal exit if header size 0
         }
         // Process exit
         char* status = find_header(headers, HEADER_KEY_STATUS, size);
@@ -420,7 +432,7 @@ int session(int fd) {
                 struct header_t headers[MAX_HEADER];
                 int size = read_headers(fd, headers, MAX_HEADER);
                 if (size == 0) {
-                    continue;
+                    return 0; // as normal exit if header size 0
                 }
 
                 // Process exit
