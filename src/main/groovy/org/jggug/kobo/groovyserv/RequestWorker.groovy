@@ -63,7 +63,7 @@ class RequestWorker extends ThreadPoolExecutor {
     void start() {
         try {
             def request = conn.openSession()
-            streamFuture  = submit(new StreamRequestHandler(conn))
+            streamFuture = submit(new StreamRequestHandler(conn))
             invokeFuture = submit(new GroovyInvokeHandler(request))
             DebugUtils.verboseLog("${id}: Request worker is started")
 
