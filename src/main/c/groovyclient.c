@@ -582,8 +582,16 @@ int main(int argn, char** argv) {
     }
 #endif
 
+// ----------------------------------------------------- ADDED FROM HERE
+    char* dest_host = getenv("GROOVYSERV_DEST_HOST");
+    if (dest_host == NULL) {
+        dest_host = DESTSERV;
+    }
+// ----------------------------------------------------- ADDED TO HERE
+
     int failCount = 0;
-    while ((fd_soc = open_socket(DESTSERV, port)) == -1) {
+//    while ((fd_soc = open_socket(DESTSERV, port)) == -1) {
+    while ((fd_soc = open_socket(dest_host, port)) == -1) { // MODIFIED THIS LINE
         if (failCount >= 3) {
             fprintf(stderr, "ERROR: Failed to start up groovyserver\n");
             exit(1);

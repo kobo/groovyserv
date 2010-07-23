@@ -44,10 +44,10 @@ class InvocationRequest {
         if (!cwd) {
             throw new InvalidRequestHeaderException("'Cwd' header is not found: ${port}")
         }
-        if (!clientCookie || !serverCookie.isValid(clientCookie)) {
-            Thread.sleep(5000) // to prevent from brute force atack
-            throw new InvalidRequestHeaderException("Authentication failed. Cookie is unmatched: ${clientCookie} <=> ${serverCookie.token}")
-        }
+//        if (!clientCookie || !serverCookie.isValid(clientCookie)) {
+//            Thread.sleep(5000) // to prevent from brute force atack
+//            throw new InvalidRequestHeaderException("Authentication failed. Cookie is unmatched: ${clientCookie} <=> ${serverCookie.token}")
+//        }
     }
 
 }

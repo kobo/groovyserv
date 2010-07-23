@@ -81,10 +81,10 @@ class GroovyServer {
         while (true) {
             def socket = serverSocket.accept()
             DebugUtils.verboseLog "Recieved socket: ${socket}"
-            if (!socket.localSocketAddress.address.isLoopbackAddress()) { // only from localhost
-                DebugUtils.errorLog "Cannot accept except loopback address: ${socket}"
-                continue
-            }
+//            if (!socket.localSocketAddress.address.isLoopbackAddress()) { // only from localhost
+//                DebugUtils.errorLog "Cannot accept except loopback address: ${socket}"
+//                continue
+//            }
             DebugUtils.verboseLog "Accepted socket: ${socket}"
 
             // this socket will be closed under a responsibility of RequestWorker
