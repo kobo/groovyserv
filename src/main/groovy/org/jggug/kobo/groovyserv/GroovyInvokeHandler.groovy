@@ -44,6 +44,10 @@ class GroovyInvokeHandler implements Runnable {
         try {
             CurrentDirHolder.instance.setDir(request.cwd)
             setupClasspath(request)
+            if (request.args.contains("蒸着")) {
+                println "宇宙刑事ギャバン!!"
+                return
+            }
             invokeGroovy(request.args)
             awaitAllSubThreads()
         }
