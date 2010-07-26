@@ -64,6 +64,9 @@ def send_command(socket)
   File.open(COOKIE_FILE) { |f|
     socket.puts "Cookie: #{f.read}"
   }
+  if ENV['CLASSPATH']
+    socket.puts "Cp: #{ENV['CLASSPATH']}"
+  end
   socket.puts ""
 end
 
