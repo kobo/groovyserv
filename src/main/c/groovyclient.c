@@ -143,7 +143,9 @@ void send_header(int fd, int argc, char** argv, char* cookie) {
 
     // send command line arguments.
     for (i = 1; i < argc; i++) {
-        buf_printf(&read_buf, "%s: %s\n", HEADER_KEY_ARG, argv[i]);
+        if (argv[i] != NULL) {
+            buf_printf(&read_buf, "%s: %s\n", HEADER_KEY_ARG, argv[i]);
+        }
     }
 
     char* cp = getenv("CLASSPATH");
@@ -462,19 +464,6 @@ int start_session(int fd) {
 }
 #endif
 
-static int fd_soc;
-
-static void signal_handler(int sig) {
-#ifdef WINDOWS
-    send(fd_soc, "Size: -1\n\n", 10, 0);
-    closesocket(fd_soc);
-#else
-    write(fd_soc, "Size: -1\n\n", 10);
-    close(fd_soc);
-#endif
-    exit(1);
-}
-
 char* scriptdir(char* result_dir, char* script_path) {
     // prepare work variable of script path
     int script_path_length = strlen(script_path);
@@ -552,13 +541,24 @@ void read_cookie(char* cookie, int size) {
     }
 }
 
-/*
- * open socket and initiate session.
- */
-int main(int argc, char** argv) {
-    signal(SIGINT, signal_handler);
-    char cookie[BUFFER_SIZE];
+struct argument_t {
+    int argc;
+    char** argv;
+    int need_invocation_server;
+};
 
+int need_invocation_server(int argc, char** argv) {
+    int i;
+    for (i = 0; i < argc; i++) {
+        if (strcmp(argv[i], "--without-invocation-server") == 0) {
+            argv[i] = NULL;
+            return 1;
+        }
+    }
+    return 0;
+}
+
+int resolve_port() {
     int port = DESTPORT;
     char* port_str = getenv("GROOVYSERVER_PORT");
     if (port_str != NULL) {
@@ -567,7 +567,53 @@ int main(int argc, char** argv) {
             exit(1);
         }
     }
+    return port;
+}
 
+int connect_server(int argc, char** argv) {
+    int fd;
+
+    int port = resolve_port();
+    int without_invocation_server = need_invocation_server(argc, argv);
+    int failCount = 0;
+    while ((fd = open_socket(DESTSERV, port)) == -1) {
+        if (without_invocation_server == 1) {
+            fprintf(stderr, "ERROR: Cannot connect to groovyserver\n");
+            exit(9);
+        }
+        if (failCount >= 3) {
+            fprintf(stderr, "ERROR: Failed to start up groovyserver\n");
+            exit(1);
+        }
+        start_server(argv[0], port);
+
+#ifdef WINDOWS
+        Sleep(3000);
+#else
+        sleep(3);
+#endif
+        failCount++;
+    }
+    return fd;
+}
+
+static int fd_soc;
+
+static void signal_handler(int sig) {
+#ifdef WINDOWS
+    send(fd_soc, "Size: -1\n\n", 10, 0);
+    closesocket(fd_soc);
+#else
+    write(fd_soc, "Size: -1\n\n", 10);
+    close(fd_soc);
+#endif
+    exit(1);
+}
+
+/*
+ * open socket and initiate session.
+ */
+int main(int argc, char** argv) {
 #ifdef WINDOWS
     WSADATA wsadata;
     if (WSAStartup(MAKEWORD(1,1), &wsadata) == SOCKET_ERROR) {
@@ -582,21 +628,11 @@ int main(int argc, char** argv) {
     }
 #endif
 
-    int failCount = 0;
-    while ((fd_soc = open_socket(DESTSERV, port)) == -1) {
-        if (failCount >= 3) {
-            fprintf(stderr, "ERROR: Failed to start up groovyserver\n");
-            exit(1);
-        }
-        start_server(argv[0], port);
+    fd_soc = connect_server(argc, argv);
 
-#ifdef WINDOWS
-        Sleep(3000);
-#else
-        sleep(3);
-#endif
-        failCount++;
-    }
+    signal(SIGINT, signal_handler); // using fd_soc in handler
+
+    char cookie[BUFFER_SIZE];
     read_cookie(cookie, sizeof(cookie));
 
     send_header(fd_soc, argc, argv, cookie);
@@ -606,5 +642,6 @@ int main(int argc, char** argv) {
     WSACleanup();
 #endif
 
-    exit(status);
+    return status;
 }
+
