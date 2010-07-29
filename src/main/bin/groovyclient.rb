@@ -135,14 +135,14 @@ begin
     Signal.trap(:INT) {
       send_interrupt(socket)
       socket.close()
-      exit 9
+      exit 8
     }
     session(socket)
   }
 rescue Errno::ECONNREFUSED
   if need_starting_server
     puts "ERROR: groovyserver isn't running"
-    exit 1
+    exit 9
   end
   if failCount >= 3
     puts "ERROR: Failed to start up groovyserver: #{GROOVYSERVER_CMD}"
