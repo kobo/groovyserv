@@ -550,7 +550,7 @@ struct argument_t {
 int need_invocation_server(int argc, char** argv) {
     int i;
     for (i = 0; i < argc; i++) {
-        if (strcmp(argv[i], "--without-invocation-server") == 0) {
+        if (strcmp(argv[i], "--without-invoking-server") == 0) {
             argv[i] = NULL;
             return 1;
         }
@@ -578,7 +578,7 @@ int connect_server(int argc, char** argv) {
     int failCount = 0;
     while ((fd = open_socket(DESTSERV, port)) == -1) {
         if (without_invocation_server == 1) {
-            fprintf(stderr, "ERROR: Cannot connect to groovyserver\n");
+            fprintf(stderr, "ERROR: groovyserver isn't running\n");
             exit(9);
         }
         if (failCount >= 3) {
