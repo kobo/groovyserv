@@ -123,7 +123,7 @@ int open_socket(char* server_name, int server_port) {
  * command line arguments, and CLASSPATH environment variable
  * to the server.
  */
-void send_header(int fd, int argn, char** argv, char* cookie) {
+void send_header(int fd, int argc, char** argv, char* cookie) {
     char path_buffer[MAXPATHLEN];
     buf read_buf = buf_new(BUFFER_SIZE, NULL);
     int i;
@@ -142,7 +142,7 @@ void send_header(int fd, int argn, char** argv, char* cookie) {
     buf_printf(&read_buf, "%s: %s\n", HEADER_KEY_COOKIE, cookie);
 
     // send command line arguments.
-    for (i=1; i<argn; i++) {
+    for (i = 1; i < argc; i++) {
         buf_printf(&read_buf, "%s: %s\n", HEADER_KEY_ARG, argv[i]);
     }
 
@@ -363,7 +363,7 @@ void invoke_thread(int fd) {
     HANDLE hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) copy_stdin_to_soc, (LPVOID)fd, 0, &id);
 }
 
-int session(int fd) {
+int start_session(int fd) {
     struct header_t headers[MAX_HEADER];
     invoke_thread(fd);
     while (1) {
@@ -404,7 +404,7 @@ int session(int fd) {
  * destination of output is stdout or stderr are distinguished by
  * stream identifier(sid) header is 'out' or 'err'.
  */
-int session(int fd) {
+int start_session(int fd) {
     struct header_t headers[MAX_HEADER];
     fd_set read_set;
     int ret;
@@ -498,14 +498,14 @@ char* scriptdir(char* result_dir, char* script_path) {
     //fprintf(stderr, "DEBUG: scriptdir: %s, %d\n", result_dir, strlen(result_dir));
 }
 
-void start_server(int argn, char** argv, int port) {
+void start_server(char* script_path, int port) {
     fprintf(stderr, "starting server...\n");
 
     // resolve base directory
     char basedir_path[MAXPATHLEN];
     char* groovyserv_home = getenv("GROOVYSERV_HOME");
     if (groovyserv_home == NULL) {
-        scriptdir(basedir_path, argv[0]);
+        scriptdir(basedir_path, script_path);
     } else {
 #ifdef WINDOWS
         sprintf(basedir_path, "%s\\bin\\", groovyserv_home);
@@ -555,7 +555,7 @@ void read_cookie(char* cookie, int size) {
 /*
  * open socket and initiate session.
  */
-int main(int argn, char** argv) {
+int main(int argc, char** argv) {
     signal(SIGINT, signal_handler);
     char cookie[BUFFER_SIZE];
 
@@ -588,19 +588,19 @@ int main(int argn, char** argv) {
             fprintf(stderr, "ERROR: Failed to start up groovyserver\n");
             exit(1);
         }
-        start_server(argn, argv, port);
+        start_server(argv[0], port);
 
 #ifdef WINDOWS
-    Sleep(3000);
+        Sleep(3000);
 #else
-    sleep(3);
+        sleep(3);
 #endif
         failCount++;
     }
     read_cookie(cookie, sizeof(cookie));
 
-    send_header(fd_soc, argn, argv, cookie);
-    int status = session(fd_soc);
+    send_header(fd_soc, argc, argv, cookie);
+    int status = start_session(fd_soc);
 
 #ifdef WINDOWS
     WSACleanup();
