@@ -39,7 +39,7 @@ GROOVYSERV_COOKIE_FILE="$GROOVYSERV_WORK_DIR/cookie"
 
 GROOVYCLIENT_CMD="${GROOVYSERV_HOME:-"`dirname $0`/.."}/bin/groovyclient"
 IS_SERVER_AVAILABLE="$GROOVYCLIENT_CMD --without-invoking-server -v"
-EXPIRED_PID_FILE="find $GROOVYSERV_PID_FILE -mmin +1"
+EXPIRED_PID_FILE="( cd \"$GROOVYSERV_WORK_DIR\" && find . -name pid-$PORT -mmin +1 )"
 
 #-------------------------------------------
 # Handle arguments
@@ -105,7 +105,7 @@ if [ -f "$GROOVYSERV_PID_FILE" ]; then
     fi
 
     # if PID file doesn't expired, terminate invoking server
-    if [ "`$EXPIRED_PID_FILE`" = "" ]; then
+    if [ "`sh -c \"$EXPIRED_PID_FILE\"`" = "" ]; then
         echo "WARN: Another process may be starting groovyserver."
         exit 1
     fi
@@ -155,7 +155,7 @@ while TRUE; do
     fi
 
     # if PID file was expired while to connect to server is failing, error
-    if [ "`$EXPIRED_PID_FILE`" != "" ]; then
+    if [ "`sh -c \"$EXPIRED_PID_FILE\"`" != "" ]; then
         echo "ERROR: Timeout. Confirm if groovyserver $PID($PORT) is running."
         exit 1
     fi
