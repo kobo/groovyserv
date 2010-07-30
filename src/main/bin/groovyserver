@@ -91,20 +91,20 @@ while [ $# -gt 0 ]; do
 done
 
 #-------------------------------------------
-# Check multi invoking
+# Check duplicated invoking
 #-------------------------------------------
 
 if [ -f "$GROOVYSERV_PID_FILE" ]; then
     EXISTED_PID=`cat "$GROOVYSERV_PID_FILE"`
 
-    # if connecting to server is succeed, return successfully
+    # if connecting to server is succeed, return with warning message
     $IS_SERVER_AVAILABLE > /dev/null 2>&1
     if [ $? -eq 0 ]; then
         echo "WARN: groovyserver is already running as $EXISTED_PID($PORT)"
         exit 1
     fi
 
-    # if PID file doesn't expired, terminate invoking server
+    # if PID file doesn't expired, terminate the sequence of invoking server
     if [ "`sh -c \"$EXPIRED_PID_FILE\"`" = "" ]; then
         echo "WARN: Another process may be starting groovyserver."
         exit 1
