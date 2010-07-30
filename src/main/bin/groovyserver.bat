@@ -36,9 +36,24 @@ if "%1" == "" (
 ) else if "%1" == "-p" (
     if "%2" == "" (
         echo ERROR: port number must be specified
-        exit 1
+        goto end
     )
     set GROOVYSERV_OPTS=%GROOVYSERV_OPTS% -Dgroovyserver.port=%2
+    shift
+) else if "%1" == "-k" (
+    echo ERROR: batch file version groovyserver invoker is not support %1.
+    goto end
+) else if "%1" == "-r" (
+    echo ERROR: batch file version groovyserver invoker is not support %1.
+    goto end
+) else (
+    echo Usage: groovyserver [options]
+    echo options:
+    echo   -v       verbose output. print debugging information etc.
+    echo   -q       quiet ^(default^)
+    echo   -p port  specify the port for groovyserver
+    echo   -k,-r are not supported in batch version of groovyserver invoker.
+    goto end
 )
 shift
 goto loop
@@ -83,3 +98,4 @@ rem Start server
 rem -------------
 start "groovyserver" /B %GROOVY_HOME%\bin\groovy %GROOVYSERV_OPTS% "%GROOVYSERV_HOME%\groovy\org\jggug\kobo\groovyserv\GroovyServer.groovy"
 
+:end
