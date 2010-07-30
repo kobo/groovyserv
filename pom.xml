@@ -299,7 +299,6 @@
                       <arg value="-r"/>
                       <arg value="-v"/>
                     </exec>
-                    <sleep seconds="5"/>
                   </tasks>
                 </configuration>
               </execution>
@@ -365,7 +364,6 @@
                       <arg value="-c"/>
                       <arg value="${groovyserv.home}/bin/groovyserver -r -v"/>
                     </exec>
-                    <sleep seconds="15"/><!-- my machine is too slow :-( -->
                   </tasks>
                 </configuration>
               </execution>
@@ -401,7 +399,6 @@
                       <arg value="-c"/>
                       <arg value="${groovyserv.home}/bin/groovyserver -k"/>
                     </exec>
-                    <sleep seconds="5"/><!-- my machine is too slow :-( -->
                   </tasks>
                 </configuration>
               </execution>
