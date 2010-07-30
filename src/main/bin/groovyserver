@@ -139,7 +139,7 @@ fi
 # Wait for available
 #-------------------------------------------
 
-while TRUE; do
+while true; do
     echo -n "."
     sleep 1
 
