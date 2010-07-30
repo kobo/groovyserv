@@ -49,7 +49,7 @@ if [ "$GROOVYSERVER_PORT" != "" ]; then
     export PORT=$GROOVYSERVER_PORT
 fi
 
-if [ $OS_CYGWIN ]; then
+if $OS_CYGWIN; then
   HOME=`cygpath -u "$USERPROFILE"`
   JAVA_HOME=`cygpath -u "$JAVA_HOME"`
   GROOVY_HOME=`cygpath -u "$GROOVY_HOME"`
