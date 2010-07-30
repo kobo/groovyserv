@@ -15,6 +15,26 @@
 # limitations under the License.
 #
 
+
+#-------------------------------------------
+# OS specific support
+#-------------------------------------------
+
+OS_CYGWIN=false
+OS_MSYS=false
+OS_DARWIN=false
+case "`uname`" in
+  OS_CYGWIN* )
+    OS_CYGWIN=true
+    ;;
+  Darwin* )
+    OS_DARWIN=true
+    ;;
+  MINGW* )
+    OS_MSYS=true
+    ;;
+esac
+
 #-------------------------------------------
 # Setup and Initialize
 #-------------------------------------------
@@ -29,7 +49,13 @@ if [ "$GROOVYSERVER_PORT" != "" ]; then
     export PORT=$GROOVYSERVER_PORT
 fi
 
-GROOVYSERV_WORK_DIR=~/.groovy/groovyserv
+if [ $OS_CYGWIN ]; then
+  HOME=`cygpath -u "$USERPROFILE"`
+  JAVA_HOME=`cygpath -u "$JAVA_HOME"`
+  GROOVY_HOME=`cygpath -u "$GROOVY_HOME"`
+fi
+
+GROOVYSERV_WORK_DIR=$HOME/.groovy/groovyserv
 if [ ! -d "$GROOVYSERV_WORK_DIR" ]; then
     mkdir -p "$GROOVYSERV_WORK_DIR"
 fi
