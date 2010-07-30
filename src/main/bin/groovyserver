@@ -24,7 +24,7 @@ OS_CYGWIN=false
 OS_MSYS=false
 OS_DARWIN=false
 case "`uname`" in
-  OS_CYGWIN* )
+  CYGWIN* )
     OS_CYGWIN=true
     ;;
   Darwin* )
