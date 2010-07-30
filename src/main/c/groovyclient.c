@@ -252,6 +252,9 @@ int read_headers(int fd, struct header_t headers[]) {
     while (1) {
         memset(read_buf, 0, sizeof(read_buf));
         p = read_line(fd, read_buf, BUFFER_SIZE);
+        if (p == NULL) {
+          return 0;
+        }
         if (*p == '\0') {
             return 0;
         }
