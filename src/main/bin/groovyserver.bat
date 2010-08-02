@@ -65,7 +65,7 @@ rem Set class path
 rem ---------------
 set CP=%GROOVYSERV_HOME%\lib\jna-3.2.2.jar;
 set CP=%GROOVYSERV_HOME%\lib\groovyserv-${project.version}.jar;%CP%
-set CP=%GROOVYSERV_HOME%\groovy;%CP%
+set CP=%GROOVYSERV_HOME%\groovy;%CP%   :: for easy hack
 set CLASSPATH=%CP%;%CLASSPATH%
 rem echo DEBUG: CLASSPATH: %CLASSPATH%
 
@@ -96,6 +96,6 @@ rem echo DEBUG: GROOVY_HOME: %GROOVY_HOME%
 rem -------------
 rem Start server
 rem -------------
-start "groovyserver" /B %GROOVY_HOME%\bin\groovy %GROOVYSERV_OPTS% "%GROOVYSERV_HOME%\groovy\org\jggug\kobo\groovyserv\GroovyServer.groovy"
+start "groovyserver" /B %GROOVY_HOME%\bin\groovy %GROOVYSERV_OPTS% -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)"
 
 :end

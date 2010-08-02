@@ -70,10 +70,6 @@
         <include>groovyserv-*.jar</include>
       </includes>
     </fileSet>
-    <fileSet>
-      <directory>src/main/groovy</directory>
-      <outputDirectory>groovy</outputDirectory>
-    </fileSet>
   </fileSets>
   <dependencySets>
     <dependencySet>

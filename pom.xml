@@ -168,12 +168,34 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-resources</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/target/classes</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>src/main/groovy</directory>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
         <configuration>
-          <includes><!-- TODO to specify not by class name but package or other pattern -->
+          <includes>
             <include>**/GroovyMain2.class</include>
             <include>**/NoExitSecurityManager2.class</include>
             <include>**/SystemExitException.class</include>
+            <include>**/*.groovy</include>
           </includes>
         </configuration>
       </plugin>
