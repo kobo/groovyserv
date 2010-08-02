@@ -15,7 +15,6 @@
 # limitations under the License.
 #
 
-
 #-------------------------------------------
 # OS specific support
 #-------------------------------------------
@@ -64,7 +63,7 @@ GROOVYSERV_PID_FILE="$GROOVYSERV_WORK_DIR/pid-$PORT"
 GROOVYSERV_COOKIE_FILE="$GROOVYSERV_WORK_DIR/cookie"
 
 GROOVYCLIENT_CMD="${GROOVYSERV_HOME:-"`dirname $0`/.."}/bin/groovyclient"
-IS_SERVER_AVAILABLE="$GROOVYCLIENT_CMD --without-invoking-server -v"
+IS_SERVER_AVAILABLE="$GROOVYCLIENT_CMD --without-invoking-server -e \"\""
 EXPIRED_PID_FILE="( cd \"$GROOVYSERV_WORK_DIR\" && find . -name pid-$PORT -mmin +1 )"
 
 #-------------------------------------------
