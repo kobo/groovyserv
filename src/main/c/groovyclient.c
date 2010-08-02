@@ -293,10 +293,10 @@ char* find_header(struct header_t headers[], const char* key, int nhdrs) {
 int split_socket_output(int soc, char* stream_identifier, int size) {
     int output_fd;
     if (strcmp(stream_identifier, "out") == 0) {
-        output_fd = 1; /* stdout */
+	    output_fd = fileno(stdout); /* stdout */
     }
     else if (strcmp(stream_identifier, "err") == 0) {
-        output_fd = 2; /* stderr */
+	    output_fd = fileno(stderr); /* stderr */
     }
     else {
         fprintf(stderr, "ERROR: unrecognizable stream identifier: %s\n", stream_identifier);
@@ -329,10 +329,10 @@ int split_socket_output(int soc, char* stream_identifier, int size) {
  * Copy data from stdin and send it to the server.
  */
 int send_to_server(int fd) {
-    char read_buf[BUFFER_SIZE];
+    char read_buf[BUFFER_SIZE+1];
     int ret;
 
-    if ((ret = read(0, read_buf, BUFFER_SIZE)) == -1){ // TODO buffering
+    if ((ret = read(fileno(stdin), read_buf, BUFFER_SIZE)) == -1){ // TODO buffering
         perror("ERROR: failed to read from stdin");
         exit(1);
     }
