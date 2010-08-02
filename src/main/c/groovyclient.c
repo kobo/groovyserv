@@ -293,10 +293,10 @@ char* find_header(struct header_t headers[], const char* key, int nhdrs) {
 int split_socket_output(int soc, char* stream_identifier, int size) {
     int output_fd;
     if (strcmp(stream_identifier, "out") == 0) {
-	    output_fd = fileno(stdout); /* stdout */
+        output_fd = fileno(stdout);
     }
     else if (strcmp(stream_identifier, "err") == 0) {
-	    output_fd = fileno(stderr); /* stderr */
+        output_fd = fileno(stderr);
     }
     else {
         fprintf(stderr, "ERROR: unrecognizable stream identifier: %s\n", stream_identifier);
@@ -625,7 +625,7 @@ int main(int argc, char** argv) {
     }
 
     // make standard output to binary mode.
-    if (_setmode( _fileno(stdout), _O_BINARY) < 0) {
+    if (_setmode(_fileno(stdout), _O_BINARY) < 0) {
         fprintf(stderr, "ERROR: setmode failed");
         exit(1);
     }
