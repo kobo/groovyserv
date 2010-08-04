@@ -81,27 +81,19 @@ if "%GROOVY_HOME:~0,9%" == "/cygdrive" (
 rem echo DEBUG: JAVA_HOME: %JAVA_HOME%
 rem echo DEBUG: GROOVY_HOME: %GROOVY_HOME%
 
-rem --------------------------------------------------------------------
-rem Replace long name to short name only if under Program Files (FIXME)
-rem --------------------------------------------------------------------
-if "%JAVA_HOME:~3,13%" == "Program Files" (
-    set JAVA_HOME=%JAVA_HOME:Program Files=PROGRA~1%
-)
-if "%GROOVY_HOME:~3,13%" == "Program Files" (
-    set GROOVY_HOME=%GROOVY_HOME:Program Files=PROGRA~1%
-)
-rem echo DEBUG: JAVA_HOME: %JAVA_HOME%
-rem echo DEBUG: GROOVY_HOME: %GROOVY_HOME%
-
 rem -------------
 rem Start server
 rem -------------
 
-start "groovyserver" /MIN %GROOVY_HOME%\bin\groovy %GROOVYSERV_OPTS% -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)"
+rem --------------------------------------------------------------------
+rem Replace long name to short name by using %~s of for cmommand.
+rem Because start command can't accept spaces in command line.
+rem --------------------------------------------------------------------
+for %%A in (%GROOVY_HOME%\bin\groovy) do start "groovyserver" /MIN %%A %GROOVYSERV_OPTS% -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)"
 
 rem -------------------------------------------
 rem  Wait for available
-erm -------------------------------------------
+rem -------------------------------------------
 
 goto check
 :loop2
