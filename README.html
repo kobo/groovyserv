@@ -94,22 +94,22 @@ Install from binary package
 
 Download and expand GroovyServ distribution package
 
-  groovyserv-0.3-win32-bin.zip
+  groovyserv-0.4-win32-bin.zip
 
 or
 
-  groovyserv-0.3-MacOSX-x86_64-bin.zip
+  groovyserv-0.4-MacOSX-x86_64-bin.zip
 
 to any directory. For example:
 
   &gt; mkdir ~/opt
   &gt; cd ~/opt
-  &gt; unzip groovyserv-0.3-win32-bin.zip
+  &gt; unzip groovyserv-0.4-win32-bin.zip
 
 and add bin directory to PATH environment variable.
 For example in bash/bourne shell:
 
-  export PATH=~/opt/groovyserv-0.3/bin:$PATH
+  export PATH=~/opt/groovyserv-0.4/bin:$PATH
 
 That's all for preparing. When you invoke groovyclient, groovyserver
 automatically starts in background. At first, you might have to wait
@@ -123,22 +123,22 @@ for a few seconds to startup.
 Build from source code
 ========================
 
-Download and expand GroovyServ source package groovyserv-0.3-src.zip
+Download and expand GroovyServ source package groovyserv-0.4-src.zip
 to any directory. For example:
 
   &gt; mkdir -p ~/opt/src
   &gt; cd ~/opt/src
-  &gt; unzip groovyserv-0.3-src.zip
+  &gt; unzip groovyserv-0.4-src.zip
 
 Build with Maven2 as follows:
 
-  &gt; cd ~/opt/src/groovyserv-0.3/
+  &gt; cd ~/opt/src/groovyserv-0.4/
   &gt; mvn clean verify
 
 Then some zip files will be generated. According to "Install from
 binary package", install the bin package.
 
-  ~/opt/src/groovyserv-0.3/target/groovyserv-0.3-&lt;OS&gt;-&lt;arch&gt;-bin.zip
+  ~/opt/src/groovyserv-0.4/target/groovyserv-0.4-&lt;OS&gt;-&lt;arch&gt;-bin.zip
 
 If some tests fail, you can try as follows:
 

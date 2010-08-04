@@ -112,18 +112,18 @@ groovyclient の接続しか受け付けないように制約をかけていま�
 バイナリパッケージからのインストール
 ======================================
 
-バイナリパッケージgroovyserv-0.3-&lt;OS&gt;-&lt;arch&gt;-bin.zipを適当なフォルダ
+バイナリパッケージgroovyserv-0.4-&lt;OS&gt;-&lt;arch&gt;-bin.zipを適当なフォルダ
 に展開します。例えば、~/optに展開するとします。
 
   &gt; mkdir ~/opt
   &gt; cd ~/opt
-  &gt; unzip groovyserv-0.3-win32-bin.zip
+  &gt; unzip groovyserv-0.4-win32-bin.zip
 
-上記により~/opt/groovyserv-0.3が展開されます。次に環境変数PATHに上記フォ
+上記により~/opt/groovyserv-0.4が展開されます。次に環境変数PATHに上記フォ
 ルダ配下のbinを追加します。仮に、~/opt/groovyservに展開した場合、以下の
 ように設定します(bashなどの環境変数設定)。
 
-  export PATH=~/opt/groovyserv-0.3/bin:$PATH
+  export PATH=~/opt/groovyserv-0.4/bin:$PATH
 
 設定は以上です。groovyclientを実行するとgroovyserverが起動します。
 
@@ -136,20 +136,20 @@ groovyclient の接続しか受け付けないように制約をかけていま�
 ==========================
 
 まず、GroovyServのソースコード配布パッケージ
-groovyserv-0.3-src.zipを展開します。
+groovyserv-0.4-src.zipを展開します。
 
   &gt; mkdir -p ~/opt/src
   &gt; cd ~/opt/src
-  &gt; unzip groovyserv-0.3-src.zip
+  &gt; unzip groovyserv-0.4-src.zip
 
 Maven2を使ってコンパイルします。
 
-  &gt; cd ~/opt/src/groovyserv-0.3/
+  &gt; cd ~/opt/src/groovyserv-0.4/
   &gt; mvn clean verify
 
 コンパイルした結果、バイナリパッケージが
 
-  ~/opt/src/groovyserv-0.3/target/groovyserv-0.3-&lt;OS&gt;-&lt;arch&gt;-bin.zip
+  ~/opt/src/groovyserv-0.4/target/groovyserv-0.4-&lt;OS&gt;-&lt;arch&gt;-bin.zip
 
 という形式で作成されますので、これをバイナリパッケージからのインストー
 ルの場合と同じようにインストールしてください。テストで失敗する場合は以
@@ -174,7 +174,7 @@ Windows上でビルドするためにはCygwinとgccが必要です。
 環境変数
 ==========
 
-GroovyServは、実行時に以下の3つの環境変数を使用します。
+GroovyServは、実行時に以下の環境変数を使用します。
 
   HOME (LinuxまたはMac OS Xの場合のみ)
 

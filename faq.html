@@ -273,10 +273,12 @@
           </div>
           <div class="answer">
             <h3>A</h3>
-            <p>Current binary has a risk of IncompatibleClassChangeError because compiled Groovy classes has dependencies to JDK version.
+            <p class="removed">Current binary has a risk of IncompatibleClassChangeError because compiled Groovy classes has dependencies to JDK version.
             I assume that it's a bug (or specification) of Groovy, or limit for a case of using groovyc.
             Currently, it is very important to choose the appropriate binary for your environments, especially for your JDK version.
             We are trying workaround now...</p>
+            <p>Since GroovyServ 0.4, Groovy scirpts aren't compiled and are packaged as a plain text file having .groovy extension into jar file.
+            I hope that such a problem will not bother us again ;-)</p>
           </div>
         </div>
       </div>
