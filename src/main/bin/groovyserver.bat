@@ -86,10 +86,16 @@ rem Start server
 rem -------------
 
 rem --------------------------------------------------------------------
-rem Replace long name to short name by using %~s of for cmommand.
+rem Replace long name to short name by using ^%^~s of for cmommand.
 rem Because start command can't accept spaces in command line.
 rem --------------------------------------------------------------------
-for %%A in (%GROOVY_HOME%\bin\groovy) do start "groovyserver" /MIN %%A %GROOVYSERV_OPTS% -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)"
+
+for %%A in ("%GROOVY_HOME%"\bin\groovy) do start "groovyserver" /MIN %%~sA %GROOVYSERV_OPTS% -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)"
+
+if errorlevel 1 (
+  echo ERROR: invoke groovy command.
+  exit /b 1
+)
 
 rem -------------------------------------------
 rem  Wait for available
