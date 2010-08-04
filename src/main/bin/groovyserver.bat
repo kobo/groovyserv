@@ -53,6 +53,7 @@ if "%1" == "" (
     echo   -q       quiet ^(default^)
     echo   -p port  specify the port for groovyserver
     echo   -k,-r are not supported in batch version of groovyserver invoker.
+    echo.
     goto end
 )
 shift
@@ -95,6 +96,26 @@ rem echo DEBUG: GROOVY_HOME: %GROOVY_HOME%
 rem -------------
 rem Start server
 rem -------------
-start "groovyserver" /B %GROOVY_HOME%\bin\groovy %GROOVYSERV_OPTS% -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)"
+
+start "groovyserver" /MIN %GROOVY_HOME%\bin\groovy %GROOVYSERV_OPTS% -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)"
+
+rem -------------------------------------------
+rem  Wait for available
+erm -------------------------------------------
+
+goto check
+:loop2
+
+rem trickey way to echo without newline
+SET /P X=.< NUL
+
+rem trickey way to wait one second
+ping -n 1 127.0.0.1 >NUL
+
+:check
+rem if connecting to server is succeed, return successfully
+groovyclient --without-invoking-server -e "" > NUL 2>&1
+if not errorlevel 1 goto end
+goto loop2
 
 :end
