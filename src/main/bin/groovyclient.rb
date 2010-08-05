@@ -21,7 +21,7 @@ require 'socket'
 #-------------------------------------------
 
 DESTHOST = "localhost" # for security
-DESTPORT = 1961
+DESTPORT = ENV.fetch("GROOVYSERVER_PORT", 1961)
 if RUBY_PLATFORM.downcase =~ /mswin(?!ce)|mingw|cygwin|bccwin/  # if windows
   HOME_DIR = ENV['USERPROFILE']
 else
@@ -40,7 +40,7 @@ def start_server()
     puts "ERROR: Command not found: #{GROOVYSERVER_CMD}"
     exit 1
   end
-  system GROOVYSERVER_CMD
+  system(GROOVYSERVER_CMD, "-p", "#{DESTPORT}")
 end
 
 def session(socket)

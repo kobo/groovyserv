@@ -35,71 +35,30 @@ case "`uname`" in
 esac
 
 #-------------------------------------------
-# Setup and Initialize
-#-------------------------------------------
-
-if [ "x$GROOVY_HOME" = "x" ]; then
-    echo "ERROR: Environment variable GROOVY_HOME must be set."
-    exit 1
-fi
-
-PORT=1961
-if [ "$GROOVYSERVER_PORT" != "" ]; then
-    export PORT=$GROOVYSERVER_PORT
-fi
-
-if $OS_CYGWIN; then
-  HOME=`cygpath -u "$USERPROFILE"`
-  JAVA_HOME=`cygpath -u "$JAVA_HOME"`
-  GROOVY_HOME=`cygpath -u "$GROOVY_HOME"`
-fi
-
-GROOVYSERV_WORK_DIR=$HOME/.groovy/groovyserv
-if [ ! -d "$GROOVYSERV_WORK_DIR" ]; then
-    mkdir -p "$GROOVYSERV_WORK_DIR"
-fi
-
-GROOVYSERV_PID_FILE="$GROOVYSERV_WORK_DIR/pid-$PORT"
-GROOVYSERV_COOKIE_FILE="$GROOVYSERV_WORK_DIR/cookie"
-
-GROOVYCLIENT_CMD="${GROOVYSERV_HOME:-"`dirname $0`/.."}/bin/groovyclient"
-IS_SERVER_AVAILABLE="$GROOVYCLIENT_CMD --without-invoking-server -e \"\""
-EXPIRED_PID_FILE="( cd \"$GROOVYSERV_WORK_DIR\" && find . -name pid-$PORT -mmin +1 )"
-
-#-------------------------------------------
-# Handle arguments
+# Handle others options
 #-------------------------------------------
 
 while [ $# -gt 0 ]; do
     case $1 in
         -q)
-            export GROOVYSERV_OPTS="$GROOVYSERV_OPTS -Dgroovyserver.verbose=false"
+            GROOVYSERV_OPTS="$GROOVYSERV_OPTS -Dgroovyserver.verbose=false"
             shift
             ;;
         -v)
-            export GROOVYSERV_OPTS="$GROOVYSERV_OPTS -Dgroovyserver.verbose=true"
+            GROOVYSERV_OPTS="$GROOVYSERV_OPTS -Dgroovyserver.verbose=true"
             shift
             ;;
         -p)
             shift
-            PORT=$1
-            export GROOVYSERV_OPTS="$GROOVYSERV_OPTS -Dgroovyserver.port=$PORT"
+            GROOVYSERVER_PORT=$1
             shift
             ;;
-        -[kr])
-            if [ -f "$GROOVYSERV_PID_FILE" ]; then
-                EXISTED_PID=`cat "$GROOVYSERV_PID_FILE"`
-                kill -9 $EXISTED_PID
-                echo "Killed groovyserver of $EXISTED_PID($PORT)"
-                rm -f "$GROOVYSERV_PID_FILE"
-                rm -f "$GROOVYSERV_COOKIE_FILE"
-            else
-                echo "PID file $GROOVYSERV_PID_FILE not found"
-            fi
-            if [ "$1" = "-k" ]; then
-                exit 0
-            fi
-            echo "Restarting groovyserver"
+        -k)
+            DO_KILL=KILL_ONLY
+            shift
+            ;;
+        -r)
+            DO_KILL=RESTART
             shift
             ;;
         *)
@@ -114,6 +73,55 @@ while [ $# -gt 0 ]; do
             ;;
     esac
 done
+
+#-------------------------------------------
+# Setup variables
+#-------------------------------------------
+
+if [ "x$GROOVY_HOME" = "x" ]; then
+    echo "ERROR: Environment variable GROOVY_HOME must be set."
+    exit 1
+fi
+
+if $OS_CYGWIN; then
+  USER_HOME=`cygpath -u "$USERPROFILE"`
+  export JAVA_HOME=`cygpath -u "$JAVA_HOME"`
+  export GROOVY_HOME=`cygpath -u "$GROOVY_HOME"`
+fi
+
+GROOVYSERV_WORK_DIR=${USER_HOME:-$HOME}/.groovy/groovyserv
+if [ ! -d "$GROOVYSERV_WORK_DIR" ]; then
+    mkdir -p "$GROOVYSERV_WORK_DIR"
+fi
+
+PORT=${GROOVYSERVER_PORT:-1961}
+GROOVYSERV_OPTS="$GROOVYSERV_OPTS -Dgroovyserver.port=$PORT"
+
+GROOVYSERV_PID_FILE="$GROOVYSERV_WORK_DIR/pid-$PORT"
+GROOVYSERV_COOKIE_FILE="$GROOVYSERV_WORK_DIR/cookie"
+
+GROOVYCLIENT_CMD="${GROOVYSERV_HOME:-"`dirname $0`/.."}/bin/groovyclient"
+IS_SERVER_AVAILABLE="env GROOVYSERVER_PORT=$PORT $GROOVYCLIENT_CMD --without-invoking-server -e \"\""
+EXPIRED_PID_FILE="( cd \"$GROOVYSERV_WORK_DIR\" && find . -name pid-$PORT -mmin +1 )"
+
+#-------------------------------------------
+# Kill process if specified
+#-------------------------------------------
+if [ "$DO_KILL" != "" ]; then
+    if [ -f "$GROOVYSERV_PID_FILE" ]; then
+        EXISTED_PID=`cat "$GROOVYSERV_PID_FILE"`
+        kill -9 $EXISTED_PID
+        echo "Killed groovyserver of $EXISTED_PID($PORT)"
+        rm -f "$GROOVYSERV_PID_FILE"
+        rm -f "$GROOVYSERV_COOKIE_FILE"
+    else
+        echo "PID file $GROOVYSERV_PID_FILE not found"
+    fi
+    if [ "$DO_KILL" = "KILL_ONLY" ]; then
+        exit 0
+    fi
+    echo "Restarting groovyserver"
+fi
 
 #-------------------------------------------
 # Check duplicated invoking
