@@ -108,11 +108,11 @@ rem trickey way to echo without newline
 SET /P X=.< NUL
 
 rem trickey way to wait one second
-ping -n 1 127.0.0.1 >NUL
+ping -n 2 127.0.0.1 >NUL
 
 :check
 rem if connecting to server is succeed, return successfully
-groovyclient --without-invoking-server -e "" > NUL 2>&1
+"%GROOVYSERV_HOME%"\bin\groovyclient --without-invoking-server -e "" > NUL 2>&1
 if not errorlevel 1 goto end
 goto loop2
 
