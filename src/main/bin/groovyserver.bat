@@ -51,8 +51,8 @@ if "%1" == "" (
     echo options:
     echo   -v       verbose output. print debugging information etc.
     echo   -q       quiet ^(default^)
-    echo   ^(-k       unsupported in groovyserver.bat^)
-    echo   ^(-r       unsupported in groovyserver.bat^)
+    echo  ^(-k       unsupported in groovyserver.bat^)
+    echo  ^(-r       unsupported in groovyserver.bat^)
     echo   -p port  specify the port for groovyserver
     echo.
     goto end
@@ -91,7 +91,7 @@ rem echo DEBUG: GROOVY_CMD: %GROOVY_CMD%
 rem -------------
 rem Start server
 rem -------------
-start "groovyserver" /MIN %GROOVY_CMD% %GROOVYSERV_OPTS% -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)"
+start "groovyserver[port:%GROOVYSERVER_PORT%]" /MIN %GROOVY_CMD% %GROOVYSERV_OPTS% -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)"
 if errorlevel 1 (
     echo ERROR: Failed to invoke groovy command.
     exit /B 1
