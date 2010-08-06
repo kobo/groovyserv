@@ -38,7 +38,7 @@ if "%1" == "" (
         echo ERROR: Port number must be specified.
         goto end
     )
-    set GROOVYSERV_OPTS=%GROOVYSERV_OPTS% -Dgroovyserver.port=%2
+    set GROOVYSERVER_PORT=%2
     shift
 ) else if "%1" == "-k" (
     echo ERROR: groovyserver.bat does not support %1.
@@ -60,6 +60,14 @@ if "%1" == "" (
 shift
 goto loop
 :break
+
+rem --------------------
+rem Specify port number
+rem --------------------
+if not defined GROOVYSERVER_PORT (
+    set GROOVYSERVER_PORT=1961
+)
+set GROOVYSERV_OPTS=%GROOVYSERV_OPTS% -Dgroovyserver.port=%GROOVYSERVER_PORT%
 rem echo DEBUG: GROOVYSERV_OPTS: %GROOVYSERV_OPTS%
 
 rem ---------------
