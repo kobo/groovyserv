@@ -34,6 +34,8 @@ New Features:
 Improvements:
 
 - Supported -p, -n options of groovyclient (See help of groovy command).
+- And you can also execute the following command:
+    $ ls | groovyclient -e "System.in.eachLine{ println it }"
 - Filters written in Groovy works well.
 - Using a environment variable USERPROFILE instead of HOME in Windows.
 - Improved support of invoking groovyserver on Cygwin.
