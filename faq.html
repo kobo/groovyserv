@@ -177,11 +177,9 @@
           </div>
           <div class="answer">
             <h3>A</h3>
-            <p>In Mac OS X, Linux environment, you can use -r (restart) and -k (kill) options for groovyserver command.
-            But in Windows, there is no way to restart/kill a server process.
-            Please use task manager to kill the groovyserver and restart through groovyclient or directly groovyserver.bat.
-            If you installed Cygwin, you could use groovyserver command instead of groovyserver.bat (including transparent invoking by groovyclient)
-            and use -r and -k options.</p>
+            <p>In Mac OS X, Linux and Cygwin environment, you can use -r (restart) and -k (kill) options of groovyserver command (as an exception, when using Cygwin and transparent server invocation, -r and -k is invalid).
+            In Windows without cygwin, or using transparent server invocaiton with Cygwin, groovyserver shows a window for control the server. By closing the window you can stop the groovyserver.
+</p>
           </div>
         </div>
         <div class="section" id="q12">
