@@ -50,7 +50,6 @@ if "%1" == "" (
     echo Usage: groovyserver.bat [options]
     echo options:
     echo   -v       verbose output. print debugging information etc.
-    echo   -q       quiet ^(default^)
     echo  ^(-k       unsupported in groovyserver.bat^)
     echo  ^(-r       unsupported in groovyserver.bat^)
     echo   -p port  specify the port for groovyserver
