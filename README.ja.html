@@ -198,6 +198,10 @@ GroovyServは、実行時に以下の環境変数を使用します。
     groovyコマンドのパスを特定するために使用します。
     通常はGroovyのインストール作業の一貫で設定されています。
 
+  GROOVYSERVER_PORT (オプション)
+
+    サーバやクライアントでポート番号を指定する場合に使用します。
+
 ========
 使い方
 ========
@@ -332,14 +336,22 @@ groovyserverの透過的な起動の際には、内部的にgroovyserver.batが�
 ポート番号
 ============
 
-groovyserverが通信に使用するポート番号を変更するには、環境変数
-GROOVYSERVER_PORTを設定してください。
+サーバが通信に使用するポート番号を変更するには、環境変数
+GROOVYSERVER_PORTを設定するか、-pオプションを指定してください。
+環境変数と-pオプション両方が指定された場合、-pオプションの値が優先されます。
 
   &gt; export GROOVYSERVER_PORT=1963
+  &gt; groovyserver
 
-クライアントでもGROOVYSERVER_PORTの値が通信するポート番号として使用され
-ますが、-pオプションで設定することもできます。環境変数と-pオプション両
-方が指定された場合、-pオプションの値が優先されます。
+または
+
+  &gt; groovyserver -p 1963
+
+クライアント側では-pオプションはgroovyコマンドで使用されているため、
+ポート指定には使えません。環境変数GROOVYSERVER_PORTでのみ指定可能です。
+
+  &gt; export GROOVYSERVER_PORT=1963
+  &gt; groovyclient -v
 
 ==============
 ログファイル

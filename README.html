@@ -162,7 +162,7 @@ You must install them before trying to build.
 Environment variables
 =======================
 
-GroovyServ uses all three following environment variables in runtime.
+GroovyServ uses the following environment variables in runtime.
 
   HOME (only in Linux or Mac OS X)
 
@@ -186,6 +186,10 @@ GroovyServ uses all three following environment variables in runtime.
 
     It's used to specify groovy command path.
     Generally, it has been already set through installing Groovy.
+
+  GROOVYSERVER_PORT (optinal)
+
+    It's used to specify the port number for server or client.
 
 ============
 How to use
@@ -318,20 +322,28 @@ internally. If it is needed, please invoke groovyserver explicitly.
 Port number
 =============
 
-to change the port number which groovyserver uses, you can use
-groovyserver_port environment variable instead of -p option.
+In groovyserver, to change the port number, you can use GROOVYSERVER_PORT
+environment variable or -p option. The -p option is treated more prior
+than GROOVYSERVER_PORT environment variable.
 
-  &gt; export groovyserver_port=1963
+  &gt; export GROOVYSERVER_PORT=1963
+  &gt; groovyserver
 
-groovyclient uses groovyserver_port variable in default. but you can
-specify port number by -p option of groovyclient. in groovyclient, -p
-option is treated more prior than groovyserver_port environment variable.
+or
+
+  &gt; groovyserver -p 1963
+
+In groovyclient, -p option is reserved by original groovy client. So you
+can use only GROOVYSERVER_PORT environment variable.
+
+  &gt; export GROOVYSERVER_PORT=1963
+  &gt; groovyclient -v
 
 ==========
 Log file
 ==========
 
-the output from groovyserver are logged to:
+The output from groovyserver are logged to:
 
   ~/.groovy/groovyserv/groovyserver.log
 
@@ -339,11 +351,11 @@ the output from groovyserver are logged to:
 tips
 ======
 
-following aliases might be useful.
+Following aliases might be useful.
 
   alias groovy=groovyclient
 
-for windows environment:
+For windows environment:
 
   doskey groovy=groovyclient $*
           </pre>
