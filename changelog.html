@@ -27,9 +27,14 @@
         <div class="section" id="0.4">
           <h2>Changes in version 0.4 (2010-08-04)</h2>
           <pre>
+New Features:
+
+- groovyserver.bat shows a window which can be used to stop the server in Windows.
+
 Improvements:
 
-- Supported -p, -n options of groovyclient.
+- Supported -p, -n options of groovyclient (See help of groovy command).
+- Filters written in Groovy works well.
 - Using a environment variable USERPROFILE instead of HOME in Windows.
 - Improved support of invoking groovyserver on Cygwin.
 - Improved a process of invoking groovyserver.
@@ -41,7 +46,9 @@ Bug Fixes:
 
 - Cannot print nothing after an error about pipe occurred once.
 - Segmentation fault occurs with too long arguments.
+- Some bugs makes segmentation faults around communication handling is fixed.
 - Fix for ignored CLASSPATH environment variable in groovyclient.rb
+- Fix for a unified way of specifying port number.
           </pre>
         </div>
         <div class="section" id="0.3">
