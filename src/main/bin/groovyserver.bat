@@ -35,24 +35,25 @@ if "%1" == "" (
     set GROOVYSERV_OPTS=%GROOVYSERV_OPTS% -Dgroovyserver.verbose=true
 ) else if "%1" == "-p" (
     if "%2" == "" (
-        echo ERROR: port number must be specified
+        echo ERROR: Port number must be specified.
         goto end
     )
     set GROOVYSERV_OPTS=%GROOVYSERV_OPTS% -Dgroovyserver.port=%2
     shift
 ) else if "%1" == "-k" (
-    echo ERROR: batch file version groovyserver invoker is not support %1.
+    echo ERROR: groovyserver.bat does not support %1.
     goto end
 ) else if "%1" == "-r" (
-    echo ERROR: batch file version groovyserver invoker is not support %1.
+    echo ERROR: groovyserver.bat does not support %1.
     goto end
 ) else (
-    echo Usage: groovyserver [options]
+    echo Usage: groovyserver.bat [options]
     echo options:
     echo   -v       verbose output. print debugging information etc.
     echo   -q       quiet ^(default^)
+    echo   ^(-k       unsupported in groovyserver.bat^)
+    echo   ^(-r       unsupported in groovyserver.bat^)
     echo   -p port  specify the port for groovyserver
-    echo   -k,-r are not supported in batch version of groovyserver invoker.
     echo.
     goto end
 )
@@ -81,34 +82,31 @@ if "%GROOVY_HOME:~0,9%" == "/cygdrive" (
 rem echo DEBUG: JAVA_HOME: %JAVA_HOME%
 rem echo DEBUG: GROOVY_HOME: %GROOVY_HOME%
 
+rem --------------------------------
+rem Replace long name to short name
+rem --------------------------------
+for %%A in ("%GROOVY_HOME%"\bin\groovy) do set GROOVY_CMD=%%~sA
+rem echo DEBUG: GROOVY_CMD: %GROOVY_CMD%
+
 rem -------------
 rem Start server
 rem -------------
-
-rem --------------------------------------------------------------------
-rem Replace long name to short name by using ^%^~s of for cmommand.
-rem Because start command can't accept spaces in command line.
-rem --------------------------------------------------------------------
-
-for %%A in ("%GROOVY_HOME%"\bin\groovy) do start "groovyserver" /MIN %%~sA %GROOVYSERV_OPTS% -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)"
-
+start "groovyserver" /MIN %GROOVY_CMD% %GROOVYSERV_OPTS% -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)"
 if errorlevel 1 (
-  echo ERROR: invoke groovy command.
-  exit /b 1
+    echo ERROR: Failed to invoke groovy command.
+    exit /B 1
 )
 
 rem -------------------------------------------
 rem  Wait for available
 rem -------------------------------------------
-
 goto check
 :loop2
-
 rem trickey way to echo without newline
 SET /P X=.< NUL
 
 rem trickey way to wait one second
-ping -n 2 127.0.0.1 >NUL
+ping -n 2 127.0.0.1 > NUL
 
 :check
 rem if connecting to server is succeed, return successfully
@@ -117,3 +115,4 @@ if not errorlevel 1 goto end
 goto loop2
 
 :end
+
