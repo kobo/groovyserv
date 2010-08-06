@@ -123,4 +123,5 @@ if not errorlevel 1 goto end
 goto loop2
 
 :end
+echo.
 
