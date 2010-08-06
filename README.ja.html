@@ -35,8 +35,8 @@ GroovyServは、Groovy処理系をサーバとして動作させることでgroo
 の起動を見た目上高速化するものです。groovyclientコマンドはTCP/IP 通信
 を使ってすでに起動しているGroovyランタイムと通信し、結果を出力します。
 
-もし、Emacsのemacsserver/emacsclient(もしくはgnuserver/gnuclient)をご存
-知であれば理解が早いでしょう。
+もし、Emacsのgnuserv(gnudoit)やemacsserver/emacsclientをご存知であれば
+理解が早いでしょう。
 
 Groovyスクリプトを開発する場合、起動速度がとても重要です。Groovyは動的
 言語であるため、コンパイル時にあらかじめチェックできないエラーについて、
@@ -66,8 +66,8 @@ GroovyServを使うことで、Groovyコマンドの起動時間を短縮し、�
 動作確認を行っているOSは以下のとおりです。他の環境で動作した場合レポート
 をいただけますと幸いです。
 
-  - Windows XP + cygwin
-  - Windows XP (cygwin無し)
+  - Windows XP + Cygwin 1.7.x
+  - Windows XP (Cygwin無し)
   - Mac OS X 10.5/6 (Intel Mac)
   - Ubuntu Linux 9.10
 
@@ -88,7 +88,7 @@ Groovyのバージョンは以下のとおりです。
 ントが現在動作しています。サーバサイドではJNA(Java Native Access)を使用
 しています。使用するコマンドは以下の通りです。
 
-  groovyserver     GroovyServサーバを起動するコマンド(UNIX/cygwin用シェルスクリプト)
+  groovyserver     GroovyServサーバを起動するコマンド(UNIX/Cygwin用シェルスクリプト)
   groovyserver.bat GroovyServサーバを起動するコマンド(Windows用)
   groovyclient     ネイティブバイナリ版GroovyServクライアント(バイナリ)
   groovyclient.rb  Ruby版GroovyServクライアント(要Ruby)
@@ -271,6 +271,62 @@ groovyserverの起動オプションは以下のとおり。
    -k        起動しているgroovyserverを終了します ※groovyserver.batでは使えません。
    -r        起動しているgroovyserverを再起動します(停止+起動) ※groovyserver.batでは使えません。
    -p &lt;port&gt; groovyserverがクライアントとの通信に使用するポート番号を指定します
+
+==================================
+groovyserverの終了と再起動
+==================================
+
+groovyserverの起動方法には、Bashのシェルスクリプトであるgroovyserver、
+もしくはバッチファイルであるgroovyserver.batを用いて明示的に起動する方
+法と、groovyclientから透過的にバックグラウンドで起動する方法の２つがあ
+ります。
+
+groovyserverを明示的に起動するためのコマンドは以下の通りです
+
+ - シェルスクリプトgroovyserver    (MacOS X, Linux, Cygwin)
+ - バッチファイルgrovyserver.bat   (Windows(Cygwin不要))
+
+これらが利用可能な環境を以下に整理します。
+
+
+                          | Windows      | Windows      | MacOS X,
+                          | Cygwin       | nocygwin     | Linux  
+--------------------------+--------------+--------------+-----------
+groovyserver              | OK           |   N/A        | N/A
+--------------------------+--------------+--------------+-----------
+groovyserver.bat          | OK           |   OK         | N/A
+--------------------------+--------------+--------------+-----------
+
+                           N/A ... 利用不可
+                           OK ... 利用可
+
+バッチファイル版groovyserver.batでは、技術的な理由により、-rオプション
+と-kオプションは利用できません。そのため、コマンドラインからは
+groovyserverの終了と再起動を行うことができません。その代わり、起動した
+groovyserverは別ウィンドウで最小化されて実行されるため、Windowsの操作で
+ウィンドウを閉じることで終了することができます。その後、groovyclientを
+実行することでgroovyserverの再起動を行うことができます。
+
+注意が必要なのは、Cygwin環境下でも、groovyclient.exeを経由した
+groovyserverの透過的な起動の際には、内部的にgroovyserver.batが使用され
+るということです。このため、Cygwin環境下では以下のような状況となります。
+
+ - シェルスクリプト版groovyserverで明示的に起動する場合、同じくシェルス
+   クリプト版groovyserverを-k,-rオプションを指定して実行することで、
+   groovyserverの終了と再起動を行うことができる。
+
+ - バッチファイル版groovyserver.batで明示的に起動する場合、
+   groovyserverの終了は、ウィンドウを閉じることで行う。
+
+ - groovyclient.exeを通じてgroovyserverの透過的な起動を行う場合、
+   groovyserverの終了は、ウィンドウを閉じることで行う。
+
+ややこしいですが、将来的には、バッチファイル版でも-r,-kオプションを実装
+したいと思っています。
+
+なお、透過的起動では、内部で起動するgroovyserver.batにオプション(例え
+ば-vオプション)を設定することはできません。必要な場合明示的な起動を行っ
+てください。
 
 ============
 ポート番号

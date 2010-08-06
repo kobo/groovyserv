@@ -32,7 +32,7 @@ Introduction
 ==============
 
 GroovyServ makes startup time quicker, by pre-invoking groovy as a TCP/IP
-server. (If you know gnuserv/gnuclient, this is like that.)
+server. If you know gnuserv(gnudoit)/emacsserver/emacsclient, this is like that.
 
 In the case of scripting in dynamic-type languages, quick response about
 invocation is very important. Try-and-run cycles is repeated frequently
@@ -55,8 +55,8 @@ Requirements
 GroovyServ is developed for following environment/OS. Please report if it
 runs on the others.
 
-  - Windows XP + cygwin
-  - Windows XP without cygwin
+  - Windows XP + Cygwin 1.7.x
+  - Windows XP without Cygwin
   - Mac OS X 10.5/6 (Intel Mac)
   - Ubuntu Linux 9.10
 
@@ -253,36 +253,97 @@ Options are as follows:
   -r        restart groovyserver (groovyserver.bat cannot use this)
   -p &lt;port&gt; specify the port that connected from groovyclient
 
+==================================
+Stop and restart groovyserver 
+==================================
+
+There are two ways for invoke groovyserver. First one is, called
+explicit server invocation, using bash shell script 'groovyserver' or
+use batch file 'groovyserver.bat'.  Second one is, called transparent
+server invocation, the groovyclient which detects groovyserver not
+running, invokes groovyserver backgrond automatically.
+
+The commands for explicit server invocation are:
+
+ - Bash shell script 'groovyserver' (for MacOS X, Linux, Cygwin)
+ - batch file 'grovyserver.bat'     (For Windows without Cygwin)
+
+Following shows the availability of those commands:
+
+
+                          | Windows      | Windows      | MacOS X,
+                          | Cygwin       | nocygwin     | Linux  
+--------------------------+--------------+--------------+-----------
+groovyserver              | OK           |   N/A        | N/A
+--------------------------+--------------+--------------+-----------
+groovyserver.bat          | OK           |   OK         | N/A
+--------------------------+--------------+--------------+-----------
+
+                           N/A ... Not Available
+                           OK ...  Available
+
+Batch file version groovyserver.bat don't support -r and -k options
+because of technical reasons. So you can't neither stop nor restart
+groovyserver from command line. Instead, when invoke groovyserver
+through groovyserver.bat it appeals as a minimized window, so you can
+stop it by closing the window. After that you can restart groovyserver
+transparently through groovyclient.
+
+It's to be noted that even under Cygwin environment, groovyclient uses
+'groovyserver.bat' internally rather than 'groovyserver' shell script
+at transparent invocation.
+
+Under Cygwin, therefore, the situation is as follows:
+
+ - When invoke groovyserver explicitly with groovyserver shell
+   script, you can use the same groovyserver shell script with -r or
+   -k option to restart or stop the groovyserver.
+
+ - When invoke groovyserver explicitly with groovyserver.bat batch
+   file, you can stop the groovyserver by closing the window which
+   opened by the groovyserver.bat.
+
+ - If invoke groovyserver transparently through groovyclient.exe, you
+   can stop the groovyserver by closing the window which opened by the
+   groovyserver.bat.
+
+It might be confusing so we would like to implement -r and -k options
+for groovyserver.bat in future.
+
+Incidentally, in the case of transparent invocation you can't supply
+options(e.g. -v) for groovyserver/.bat which to be invoked
+internally. If it is needed, please invoke groovyserver explicitly.
+
 =============
 Port number
 =============
 
-To change the port number which groovyserver uses, you can use
-GROOVYSERVER_PORT environment variable instead of -p option.
+to change the port number which groovyserver uses, you can use
+groovyserver_port environment variable instead of -p option.
 
-  &gt; export GROOVYSERVER_PORT=1963
+  &gt; export groovyserver_port=1963
 
-groovyclient uses GROOVYSERVER_PORT variable in default. But you can
-specify port number by -p option of groovyclient. In groovyclient, -p
-option is treated more prior than GROOVYSERVER_PORT environment variable.
+groovyclient uses groovyserver_port variable in default. but you can
+specify port number by -p option of groovyclient. in groovyclient, -p
+option is treated more prior than groovyserver_port environment variable.
 
 ==========
 Log file
 ==========
 
-The output from groovyserver are logged to:
+the output from groovyserver are logged to:
 
   ~/.groovy/groovyserv/groovyserver.log
 
 ======
-Tips
+tips
 ======
 
-Following aliases might be useful.
+following aliases might be useful.
 
   alias groovy=groovyclient
 
-For Windows environment:
+for windows environment:
 
   doskey groovy=groovyclient $*
           </pre>
