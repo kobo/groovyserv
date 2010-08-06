@@ -53,7 +53,6 @@ if "%1" == "" (
     echo  ^(-k       unsupported in groovyserver.bat^)
     echo  ^(-r       unsupported in groovyserver.bat^)
     echo   -p port  specify the port for groovyserver
-    echo.
     goto end
 )
 shift
