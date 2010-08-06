@@ -492,6 +492,7 @@ char* scriptdir(char* result_dir, char* script_path) {
 
 void start_server(char* script_path, int port) {
     fprintf(stderr, "starting server...\n");
+    fflush(stderr);
 
     // resolve base directory
     char basedir_path[MAXPATHLEN];
