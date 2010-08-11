@@ -27,6 +27,7 @@ class InvocationRequest {
     List<String> args    // required
     String clientCookie  // required
     Cookie serverCookie  // required
+    List<String> envVars // optional
 
     InvocationRequest(map) {
         this.port = map.port
@@ -35,6 +36,7 @@ class InvocationRequest {
         this.args = map.args
         this.clientCookie = map.clientCookie
         this.serverCookie = map.serverCookie
+        this.envVars = map.envVars
     }
 
     /**

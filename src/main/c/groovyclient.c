@@ -50,9 +50,22 @@
 #define DESTPORT 1961
 #define BUFFER_SIZE 512
 
+#define USAGE_STRING \
+  "Usage:\n" \
+  "groovyclient -C[options for client] [args/options for groovy command]\n" \
+  "  where [options for client] are:\n" \
+  "    -Ch        ... show help message.\n" \
+  "    -Cm=MASK*  ... pass environment vars which starts with MASK.\n" \
+  "    -Cm=*      ... pass all environment vars.\n" \
+/*
+  "    -Cm=A,B,C  ... pass environment vars A,B,C.\n"
+*/
+
+
 // request headers
 const char * const HEADER_KEY_CURRENT_WORKING_DIR = "Cwd";
 const char * const HEADER_KEY_ARG = "Arg";
+const char * const HEADER_KEY_ENV = "Env";
 const char * const HEADER_KEY_CP = "Cp";
 const char * const HEADER_KEY_COOKIE = "Cookie";
 
@@ -60,6 +73,8 @@ const char * const HEADER_KEY_COOKIE = "Cookie";
 const char * const HEADER_KEY_CHANNEL = "Channel";
 const char * const HEADER_KEY_SIZE = "Size";
 const char * const HEADER_KEY_STATUS = "Status";
+
+const char * const CLIENT_OPTION_PREFIX = "-C";
 
 const int CR = 0x0d;
 const int CANCEL = 0x18;
@@ -71,6 +86,24 @@ const int CANCEL = 0x18;
 struct header_t {
     char key[MAX_HEADER_KEY_LEN + 1];
     char value[MAX_HEADER_VALUE_LEN + 1];
+};
+
+#ifdef WINDOWS
+extern char __declspec(dllimport) **environ;
+#else
+extern char **environ;
+#endif
+
+#define TRUE 1
+#define FALSE 0
+#define BOOL int
+
+struct option_t {
+    BOOL without_invocation_server;
+    char* env_mask; // NULL for nothing, "*" for ALL, else env matches.
+} client_option = {
+    FALSE,
+    NULL
 };
 
 /*
@@ -118,6 +151,15 @@ int open_socket(char* server_name, int server_port) {
     return fd;
 }
 
+BOOL mask_match(char* pattern, const char* const str) {
+    // FIXME: tenuki jissou.
+    char* p = strstr(pattern, "*");
+    if (p != NULL) {
+        *p = '\0';
+    }
+    return strstr(str, pattern) != NULL;
+}
+
 /*
  * Send header information which includes current working direcotry,
  * command line arguments, and CLASSPATH environment variable
@@ -145,6 +187,16 @@ void send_header(int fd, int argc, char** argv, char* cookie) {
     for (i = 1; i < argc; i++) {
         if (argv[i] != NULL) {
             buf_printf(&read_buf, "%s: %s\n", HEADER_KEY_ARG, argv[i]);
+        }
+    }
+
+    // send envvars.
+    if (client_option.env_mask != NULL) {
+        for (i = 1; environ[i] != NULL; i++) {
+            if (strcmp(client_option.env_mask, "*") == 0
+                || mask_match(client_option.env_mask, environ[i])) {
+                 buf_printf(&read_buf, "%s: %s\n", HEADER_KEY_ENV, environ[i]);
+            }
         }
     }
 
@@ -545,15 +597,15 @@ void read_cookie(char* cookie, int size) {
     }
 }
 
-int need_invocation_server(int argc, char** argv) {
+void remove_client_options(int argc, char** argv) {
     int i;
     for (i = 0; i < argc; i++) {
-        if (strcmp(argv[i], "--without-invoking-server") == 0) {
+        if (strcmp(argv[i], "--without-invoking-server") == 0
+            || strncmp(argv[i], CLIENT_OPTION_PREFIX,
+                       strlen(CLIENT_OPTION_PREFIX)) == 0) {
             argv[i] = NULL;
-            return 1;
         }
     }
-    return 0;
 }
 
 int resolve_port() {
@@ -568,14 +620,14 @@ int resolve_port() {
     return port;
 }
 
-int connect_server(int argc, char** argv) {
+int connect_server(char* argv0) {
     int fd;
 
     int port = resolve_port();
-    int without_invocation_server = need_invocation_server(argc, argv);
     int failCount = 0;
+    
     while ((fd = open_socket(DESTSERV, port)) == -1) {
-        if (without_invocation_server == 1) {
+        if (client_option.without_invocation_server == TRUE) {
             fprintf(stderr, "ERROR: groovyserver isn't running\n");
             exit(9);
         }
@@ -583,7 +635,7 @@ int connect_server(int argc, char** argv) {
             fprintf(stderr, "ERROR: Failed to start up groovyserver\n");
             exit(1);
         }
-        start_server(argv[0], port);
+        start_server(argv0, port);
 
 #ifdef WINDOWS
         Sleep(3000);
@@ -608,6 +660,38 @@ static void signal_handler(int sig) {
     exit(1);
 }
 
+void usage() {
+    printf("%s\n", USAGE_STRING);
+}
+
+void scan_option(struct option_t* option, int argc, char **argv) {
+    int i;
+    for (i = 1; i < argc; i++) {
+        if (strcmp(argv[i], "--without-invoking-server") == 0) {
+            client_option.without_invocation_server = TRUE;
+            continue;
+        }
+        if (strncmp(argv[i], CLIENT_OPTION_PREFIX,
+                    strlen(CLIENT_OPTION_PREFIX)) == 0) {
+            switch (argv[i][strlen(CLIENT_OPTION_PREFIX)]) {
+            case 'h': /* help */
+                usage();
+                exit(1);
+            case 'm': /* environment mask */
+                if (argv[i][strlen(CLIENT_OPTION_PREFIX)+1] != '=') {
+                    usage();
+                    exit(1);
+                }
+                client_option.env_mask = argv[i]+ strlen(CLIENT_OPTION_PREFIX) + 2;
+                break;
+            default:
+                fprintf(stderr, "ERROR: unknown client option: %s\n", argv[i]);
+                exit(1);
+            }
+        }
+    }
+}
+
 /*
  * open socket and initiate session.
  */
@@ -626,7 +710,10 @@ int main(int argc, char** argv) {
     }
 #endif
 
-    fd_soc = connect_server(argc, argv);
+    scan_option(&client_option, argc, argv);
+    remove_client_options(argc, argv);
+
+    fd_soc = connect_server(argv[0]);
 
     signal(SIGINT, signal_handler); // using fd_soc in handler
 

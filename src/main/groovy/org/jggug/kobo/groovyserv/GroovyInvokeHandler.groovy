@@ -29,6 +29,14 @@ class GroovyInvokeHandler implements Runnable {
         this.request = request
     }
 
+    private void setupEnvVars(List<String> vars) {
+        vars.each {
+            DebugUtils.verboseLog("${id}: ${it}")
+            def (key,value) = it.split('=', 2)
+            PlatformMethods.setenv(key, value)
+        }
+    }
+
     /**
      * @throws GServExitException
      *              When user code called System.exit().
@@ -43,6 +51,7 @@ class GroovyInvokeHandler implements Runnable {
         DebugUtils.verboseLog("${id}: Thread started")
         try {
             CurrentDirHolder.instance.setDir(request.cwd)
+            setupEnvVars(request.envVars);
             setupClasspath(request)
             invokeGroovy(request.args)
             awaitAllSubThreads()

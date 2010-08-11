@@ -30,5 +30,13 @@ class PlatformMethods {
             CLibrary.INSTANCE.chdir(dir)
         }
     }
+    static setenv(String envName, String value) {
+        if (Platform.isWindows()) {
+            CLibrary.INSTANCE._setenv(envName, value)
+        }
+        else {
+            CLibrary.INSTANCE.setenv(envName, value)
+        }
+    }
 }
 

@@ -78,12 +78,13 @@ class RequestHeader {
     private final static String HEADER_COOKIE = "Cookie"
     private final static String HEADER_STREAM_ID = "Channel"
     private final static String HEADER_SIZE = "Size"
+    private final static String HEADER_ENV = "Env"
 
     /**
      * @throws InvalidRequestHeaderException
      * @throws GServIOException
      */
-    static InvocationRequest readInvokationRequest(ClientConnection conn) {
+    static InvocationRequest readInvocationRequest(ClientConnection conn) {
         Map<String, List<String>> headers = readHeaders(conn)
         def request = new InvocationRequest(
             port: conn.socket.port,
@@ -91,7 +92,8 @@ class RequestHeader {
             classpath: headers[HEADER_CP]?.getAt(0),
             args: headers[HEADER_ARG],
             clientCookie: headers[HEADER_COOKIE]?.getAt(0),
-            serverCookie: conn.cookie
+            serverCookie: conn.cookie,
+            envVars: headers[HEADER_ENV]
         )
         request.check()
         return request

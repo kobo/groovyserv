@@ -43,7 +43,7 @@ class ClientConnection implements Closeable {
      * @throws GServIOException
      */
     InvocationRequest openSession() {
-        RequestHeader.readInvokationRequest(this)
+        RequestHeader.readInvocationRequest(this)
     }
 
     /**
