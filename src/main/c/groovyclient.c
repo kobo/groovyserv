@@ -545,12 +545,6 @@ void read_cookie(char* cookie, int size) {
     }
 }
 
-struct argument_t {
-    int argc;
-    char** argv;
-    int need_invocation_server;
-};
-
 int need_invocation_server(int argc, char** argv) {
     int i;
     for (i = 0; i < argc; i++) {
