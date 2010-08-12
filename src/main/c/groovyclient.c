@@ -151,13 +151,24 @@ int open_socket(char* server_name, int server_port) {
     return fd;
 }
 
-BOOL mask_match(char* pattern, const char* const str) {
-    // FIXME: tenuki jissou.
+/*
+ * return TRUE if the NAME part of str("NAME=VALUE") matches pattern.
+ */
+BOOL mask_match(char* pattern, const char* str) {
+    char* pos = strchr(str, '=');
+    if (pos == NULL) {
+        printf("ERROR: environment variable %s format invalid\n", str);
+        exit(1);
+    }
+	*pos = '\0';
+	/* treat "MASK*" as "MASK" */ // FIXME for wildcard matching.
     char* p = strstr(pattern, "*");
     if (p != NULL) {
         *p = '\0';
     }
-    return strstr(str, pattern) != NULL;
+	BOOL result = strstr(str, pattern) != NULL;
+	*pos = '=';
+    return result;
 }
 
 /*

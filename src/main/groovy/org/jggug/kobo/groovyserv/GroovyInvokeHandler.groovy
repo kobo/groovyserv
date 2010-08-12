@@ -32,8 +32,7 @@ class GroovyInvokeHandler implements Runnable {
     private void setupEnvVars(List<String> vars) {
         vars.each {
             DebugUtils.verboseLog("${id}: ${it}")
-            def (key,value) = it.split('=', 2)
-            PlatformMethods.setenv(key, value)
+            PlatformMethods.putenv(it)
         }
     }
 

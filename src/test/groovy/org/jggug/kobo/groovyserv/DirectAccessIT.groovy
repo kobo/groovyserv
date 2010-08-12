@@ -106,5 +106,34 @@ assert ins.read() == -1
         }
     }
 
+    void testEnvPassig() {
+        Random random = new Random(new Date().time)
+        String envVarName = "__ENV"+random.nextInt()
+        String envVarValue = "__VALUE"+random.nextInt()
+        new Socket("localhost", 1961).withStreams { ins, out ->
+// ------------------------
+out << """\
+Cwd: /tmp
+Arg: -e
+Arg: println System.getenv("$envVarName")
+Env: $envVarName=$envVarValue
+Cookie: ${FileUtils.COOKIE_FILE.text}
+
+"""
+// ------------------------
+assert ins.text == """\
+Channel: out
+Size: ${envVarValue.size()}
+
+${envVarValue}Channel: out
+Size: ${SEP.size()}
+
+${SEP}Status: 0
+
+""".toString()
+
+        }
+    }
+
 }
 

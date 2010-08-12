@@ -28,6 +28,6 @@ interface CLibrary extends Library {
     CLibrary INSTANCE = Native.loadLibrary(libname, CLibrary.class)
     int chdir(String dir)
     int _chdir(String dir)
-    void setenv(String varName, String value)
-    void _setenv(String varName, String value)
+    void putenv(String envVar)
+    void _putenv(String envName)
 }

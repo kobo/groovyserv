@@ -25,17 +25,25 @@ package org.jggug.kobo.groovyserv
  *
  * InvocationRequest ::=
  *    'Cwd:' <cwd> LF
- *    'Arg:' <argn> LF
  *    'Arg:' <arg1> LF
  *    'Arg:' <arg2> LF
+ *    'Arg:' <arg3> LF
+ *      :
+ *    'Env:' <env1>=<value1> LF
+ *    'Env:' <env2>=<value2> LF
+ *    'Env:' <env3>=<value3> LF
+ *      :
  *    'Cp:' <classpath> LF
  *    'Cookie:' <cookie> LF
  *    LF
  *
  *   where:
  *     <cwd> is current working directory.
- *     <arg1><arg2>.. are commandline arguments(optional).
- *     <classpath>.. is the value of environment variable CLASSPATH(optional).
+ *     <arg1>,<arg2>.. are commandline arguments(optional).
+ *     <env1>,<env2>.. are environment variable names which sent to the server(optional).
+ *     <value1>,<valeu2>.. are environment variable values which sent to 
+ *                         the server(optional).
+ *     <classpath> is the value of environment variable CLASSPATH(optional).
  *     <cookie> is authentication value which certify client is the user who
  *              invoked the server.
  *     LF is line feed (0x0a, '\n').

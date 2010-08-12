@@ -22,6 +22,12 @@ import com.sun.jna.Platform
  * @author UEHARA Junji
  */
 class PlatformMethods {
+
+   /**
+     * set the current working directory to dir.
+     *
+     * @param dir directory to be set as current working directory.
+     */
     static chdir(String dir) {
         if (Platform.isWindows()) {
             CLibrary.INSTANCE._chdir(dir)
@@ -30,12 +36,19 @@ class PlatformMethods {
             CLibrary.INSTANCE.chdir(dir)
         }
     }
-    static setenv(String envName, String value) {
+
+    /**
+     *
+     * set the current working directory to dir.
+     *
+     * @param envVar 'NAME=VALUE' style environmet variable information.
+     */
+    static putenv(String envVar) {
         if (Platform.isWindows()) {
-            CLibrary.INSTANCE._setenv(envName, value)
+            CLibrary.INSTANCE._putenv(envVar)
         }
         else {
-            CLibrary.INSTANCE.setenv(envName, value)
+            CLibrary.INSTANCE.putenv(envVar)
         }
     }
 }
