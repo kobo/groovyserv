@@ -51,5 +51,10 @@ class PlatformMethods {
             CLibrary.INSTANCE.putenv(envVar)
         }
     }
+
+    static String getenv(String envVarName) {
+        return CLibrary.INSTANCE.getenv(envVarName)
+    }
+
 }
 

@@ -29,5 +29,6 @@ interface CLibrary extends Library {
     int chdir(String dir)
     int _chdir(String dir)
     void putenv(String envVar)
-    void _putenv(String envName)
+    void _putenv(String envVar)
+    String getenv(String envVarName)
 }
