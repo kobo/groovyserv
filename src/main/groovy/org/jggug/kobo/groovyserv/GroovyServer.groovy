@@ -15,7 +15,6 @@
  */
 package org.jggug.kobo.groovyserv
 
-
 /**
  * GroovyServer runs groovy command background.
  * This makes groovy response time at startup very quicker.
@@ -42,6 +41,7 @@ class GroovyServer {
             setupRunningMode()
             startServer()
             setupCookie()
+            ReplaceMethods.init()
             handleRequest()
         }
         catch (GServException e) {

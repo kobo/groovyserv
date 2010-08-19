@@ -22,10 +22,12 @@ package org.jggug.kobo.groovyserv
  */
 class ReplaceMethods {
 
-    
     public static void init() {
+        DebugUtils.verboseLog("ReplaceMethods.init()")
         System.metaClass.static.getenv = {String name ->
-            return PlatformMethods.getenv()
+            String result = PlatformMethods.getenv(name)
+            DebugUtils.verboseLog("getenv(${name})=>$result")
+            return result
         }
     }
 
