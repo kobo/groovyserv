@@ -31,4 +31,5 @@ interface CLibrary extends Library {
     void putenv(String envVar)
     void _putenv(String envVar)
     String getenv(String envVarName)
+    int setenv(String envVarName, String envVarValue, int overwrite)
 }

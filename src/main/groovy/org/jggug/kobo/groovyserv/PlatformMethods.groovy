@@ -48,7 +48,12 @@ class PlatformMethods {
             CLibrary.INSTANCE._putenv(envVar)
         }
         else {
-            CLibrary.INSTANCE.putenv(envVar)
+            // You can't use putenv() in UNI*X here. Because
+            // putenv() keeps the reference to original string, so
+            // when the JVM GC correct the area, envrironment lose the var
+            // and getenv() can't find that var.
+            def (name, value) = envVar.split('=', 2);
+            CLibrary.INSTANCE.setenv(name, value, 1);
         }
     }
 
