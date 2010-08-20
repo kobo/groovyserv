@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include <assert.h>
 
 #include <sys/types.h>  // netinet/in.h
@@ -49,18 +50,6 @@
 #define DESTSERV "localhost"
 #define DESTPORT 1961
 #define BUFFER_SIZE 512
-
-#define USAGE_STRING \
-  "Usage:\n" \
-  "groovyclient -C[options for client] [args/options for groovy command]\n" \
-  "  where [options for client] are:\n" \
-  "    -Ch        ... show help message.\n" \
-  "    -Cm=MASK*  ... pass environment vars which starts with MASK.\n" \
-  "    -Cm=*      ... pass all environment vars.\n" \
-/*
-  "    -Cm=A,B,C  ... pass environment vars A,B,C.\n"
-*/
-
 
 // request headers
 const char * const HEADER_KEY_CURRENT_WORKING_DIR = "Cwd";
@@ -98,13 +87,44 @@ extern char **environ;
 #define FALSE 0
 #define BOOL int
 
+#define MAX_MASK 10
+
 struct option_t {
     BOOL without_invocation_server;
-    char* env_mask; // NULL for nothing, "*" for ALL, else env matches.
+    char* env_include_mask[MAX_MASK];
+    char* env_exclude_mask[MAX_MASK];
 } client_option = {
     FALSE,
-    NULL
+    {}, // NULL initialized
+    {}, // NULL initialized
 };
+
+struct option_param_t {
+  char* name;
+  char* value;
+};
+
+enum OPTION_TYPE {
+  OPT_WITHOUT_INVOCATION_SERVER,
+  OPT_HELP,
+  OPT_ENV_INCLUDE_MASK,
+  OPT_ENV_EXCLUDE_MASK,
+};
+
+struct option_info_t {
+  char* name;
+  enum OPTION_TYPE type;
+  BOOL take_value;
+} option_info[] = {
+  { "without-invoking-server", OPT_WITHOUT_INVOCATION_SERVER, FALSE },
+  { "envin", OPT_ENV_INCLUDE_MASK, TRUE },
+  { "envex", OPT_ENV_EXCLUDE_MASK, TRUE },
+  { "help", OPT_HELP, FALSE },
+  { "h", OPT_HELP, FALSE },
+  { "", OPT_HELP, FALSE },
+};
+
+
 
 /*
  * Make socket and connect to the server (fixed to localhost).
@@ -152,23 +172,47 @@ int open_socket(char* server_name, int server_port) {
 }
 
 /*
- * return TRUE if the NAME part of str("NAME=VALUE") matches pattern.
+ * return TRUE if the NAME part of str("NAME=VALUE") matches the pattern.
  */
 BOOL mask_match(char* pattern, const char* str) {
     char* pos = strchr(str, '=');
+
+	if (strcmp(pattern, "*") == 0) {
+		return TRUE;
+	}
     if (pos == NULL) {
         printf("ERROR: environment variable %s format invalid\n", str);
         exit(1);
     }
 	*pos = '\0';
-	/* treat "MASK*" as "MASK" */ // FIXME for wildcard matching.
     char* p = strstr(pattern, "*");
     if (p != NULL) {
-        *p = '\0';
+        *p = '\0';	/* treat "MASK*" as "MASK" */ // FIXME for wildcard matching.
     }
 	BOOL result = strstr(str, pattern) != NULL;
-	*pos = '=';
+	*pos = '='; // resume terminted NAME.
     return result;
+}
+
+BOOL masks_match(char** masks, char* str) {
+	char** p;
+	for (p = masks; p-masks < MAX_MASK && *p != NULL; p++) {
+		if (mask_match(*p, str)) {
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
+
+void make_env_headers(buf* read_buf, char** env, char** inc_mask, char** exc_mask) {
+	int i;
+	for (i = 1; env[i] != NULL; i++) {
+		if (masks_match(client_option.env_include_mask, env[i])) {
+			if (!masks_match(client_option.env_exclude_mask, env[i])) {
+				buf_printf(read_buf, "%s: %s\n", HEADER_KEY_ENV, env[i]);
+			}
+		}
+	}
 }
 
 /*
@@ -202,13 +246,11 @@ void send_header(int fd, int argc, char** argv, char* cookie) {
     }
 
     // send envvars.
-    if (client_option.env_mask != NULL) {
-        for (i = 1; environ[i] != NULL; i++) {
-            if (strcmp(client_option.env_mask, "*") == 0
-                || mask_match(client_option.env_mask, environ[i])) {
-                 buf_printf(&read_buf, "%s: %s\n", HEADER_KEY_ENV, environ[i]);
-            }
-        }
+    if (client_option.env_include_mask != NULL) {
+		make_env_headers(&read_buf,
+						 environ,
+						 client_option.env_include_mask,
+						 client_option.env_exclude_mask);
     }
 
     char* cp = getenv("CLASSPATH");
@@ -672,35 +714,142 @@ static void signal_handler(int sig) {
 }
 
 void usage() {
-    printf("%s\n", USAGE_STRING);
+    printf("Usage:\n"													\
+		   "groovyclient %s[options for client] [args/options for groovy command]\n" \
+		   "  where [options for client] are:\n"						\
+		   "    %sh        ... show help message.\n"					\
+		   "    %senvin=MASK ... pass environment vars which matches with MASK.\n" \
+		   "    %senvin=*    ... pass all environment vars.\n" \
+		   "    %senvex=MASK ... don't pass environment vars which matches with MASK.\n" \
+		   , CLIENT_OPTION_PREFIX
+		   , CLIENT_OPTION_PREFIX
+		   , CLIENT_OPTION_PREFIX
+		   , CLIENT_OPTION_PREFIX
+		   , CLIENT_OPTION_PREFIX
+		   );
+
 }
 
-void scan_option(struct option_t* option, int argc, char **argv) {
-    int i;
-    for (i = 1; i < argc; i++) {
-        if (strcmp(argv[i], "--without-invoking-server") == 0) {
-            client_option.without_invocation_server = TRUE;
-            continue;
-        }
-        if (strncmp(argv[i], CLIENT_OPTION_PREFIX,
-                    strlen(CLIENT_OPTION_PREFIX)) == 0) {
-            switch (argv[i][strlen(CLIENT_OPTION_PREFIX)]) {
-            case 'h': /* help */
-                usage();
-                exit(1);
-            case 'm': /* environment mask */
-                if (argv[i][strlen(CLIENT_OPTION_PREFIX)+1] != '=') {
-                    usage();
-                    exit(1);
-                }
-                client_option.env_mask = argv[i]+ strlen(CLIENT_OPTION_PREFIX) + 2;
-                break;
-            default:
-                fprintf(stderr, "ERROR: unknown client option: %s\n", argv[i]);
-                exit(1);
-            }
-        }
+BOOL is_client_option(char* s) {
+    return strncmp(s, CLIENT_OPTION_PREFIX,
+				   strlen(CLIENT_OPTION_PREFIX)) == 0;
+}
+
+BOOL is_option_name_valid_char(c) {
+    if (c == '\0') {
+        return FALSE;
     }
+    return isalnum(c) || strchr("_-", c) != NULL;
+}
+
+char* get_option_name_value(struct option_param_t* opt, char* arg) {
+    char* p;
+    for (p = arg; is_option_name_valid_char(*p); p++) {
+        /*nothing*/
+    }
+    opt->name = arg;
+    if (*p == '=') {
+        *p = '\0';
+        opt->value = p+1;
+    }
+    else if (*p == '\0') {
+        opt->value = NULL;
+    }
+    else {
+        fprintf(stderr, "ERROR: illeval option format %s\n", arg);
+        usage();
+        exit(1);
+    }
+}
+
+void set_mask_option(char ** env_mask, char* value)
+{
+	char** p;
+	for (p = env_mask; p-env_mask < MAX_MASK && *p != NULL; p++) {
+		;
+	}
+	if (p-env_mask == MAX_MASK) {
+		fprintf(stderr, "ERROR: too many mask option: %s\n", value);
+		usage();
+		exit(1);
+	}
+	*p = value;
+}
+
+void option_formal_check(struct option_info_t* opt, struct option_param_t *param) {
+	if (param->value != NULL && opt->take_value==FALSE) {
+		fprintf(stderr, "ERROR: option %s can't take param\n", param->name);
+		exit(1);
+	}
+	else if (param->value == NULL && opt->take_value==TRUE) {
+		fprintf(stderr, "ERROR: option %s require param\n", param->name);
+		exit(1);
+	}
+}
+
+struct option_info_t* what_option(struct option_param_t* param) {
+	int j = 0;
+	for (j=0; j<sizeof(option_info)/sizeof(struct option_info_t); j++) {
+		if (strcmp(option_info[j].name, param->name) == 0) {
+			option_formal_check(&option_info[j], param);
+			return &option_info[j];
+		}
+	}
+	return NULL;
+}
+
+void scan_options(struct option_t* option, int argc, char **argv) {
+	int i;
+	for (i = 1; i < argc; i++) {
+		if (strcmp(argv[i], "--without-invoking-server") == 0) {
+			option->without_invocation_server = TRUE;
+			continue;
+		}
+		if (is_client_option(argv[i])) {
+			struct option_param_t param;
+			get_option_name_value(&param, argv[i]+strlen(CLIENT_OPTION_PREFIX));
+
+			struct option_info_t* opt = what_option(&param);
+			if (opt == NULL) {
+				fprintf(stderr, "ERROR: unknown option %s\n", param.name);
+				usage();
+				exit(1);
+			}
+			switch (opt->type) {
+			case OPT_WITHOUT_INVOCATION_SERVER:
+				option->without_invocation_server = TRUE;
+				break;
+			case OPT_HELP:
+				usage();
+				exit(1);
+				break;
+			case OPT_ENV_INCLUDE_MASK:
+				set_mask_option(option->env_include_mask, param.value);
+				break;
+			case OPT_ENV_EXCLUDE_MASK:
+				set_mask_option(option->env_exclude_mask, param.value);
+				break;
+			}
+		}
+	}
+}
+
+void print_mask_option(char ** env_mask)
+{
+	char** p;
+	for (p = env_mask; p-env_mask < MAX_MASK && *p != NULL; p++) {
+		printf("%s ", *p);
+	}
+}
+
+void print_options(struct option_t *opt) {
+	printf("without_invocation_server = %d\n", opt->without_invocation_server);
+	printf("env_include_mask = { ");
+	print_mask_option(opt->env_include_mask);
+	printf("}\n");
+	printf("env_exclude_mask = { ");
+	print_mask_option(opt->env_exclude_mask);
+	printf("}\n");
 }
 
 /*
@@ -721,7 +870,12 @@ int main(int argc, char** argv) {
     }
 #endif
 
-    scan_option(&client_option, argc, argv);
+    scan_options(&client_option, argc, argv);
+
+#ifdef DEBUG
+	print_options(&client_option);
+#endif
+	
     remove_client_options(argc, argv);
 
     fd_soc = connect_server(argv[0]);
