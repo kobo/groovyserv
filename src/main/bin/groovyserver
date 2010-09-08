@@ -167,7 +167,7 @@ fi
 #-------------------------------------------
 
 while true; do
-    echo -n "."
+    /bin/echo -n "."
     sleep 1
 
     # waiting until cookie filed is created
