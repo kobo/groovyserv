@@ -166,7 +166,7 @@ resolve_symlink() {
         if [ $(echo $ORIGINAL_FILEPATH | cut -c 1) == "/" ]; then
             echo "$ORIGINAL_FILEPATH"
         else
-            echo "$(dirname $TARGET)/$(ORIGINAL_FILENAME)"
+            echo "$(dirname $TARGET)/$ORIGINAL_FILEPATH"
         fi
     else
         echo "$TARGET"
