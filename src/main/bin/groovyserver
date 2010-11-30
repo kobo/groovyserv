@@ -154,14 +154,32 @@ fi
 # Resolve GROOVYSERV_HOME
 #-------------------------------------------
 
+resolve_symlink() {
+    local TARGET=$1
+
+    # if target is symbolic link
+    if `readlink $TARGET >/dev/null 2>&1`; then
+        local ORIGINAL_FILEPATH=`readlink $TARGET`
+
+        # if original is specified as absolute path
+        if [ $(echo $ORIGINAL_FILEPATH | cut -c 1) == "/" ]; then
+            echo "$ORIGINAL_FILEPATH"
+        else
+            echo "$(dirname $TARGET)/$(ORIGINAL_FILENAME)"
+        fi
+    else
+        echo "$TARGET"
+    fi
+}
 expand_path() {
     local TARGET=$1
     if [ -d "$TARGET" ]; then
         echo $(cd $TARGET && pwd -P)
     elif [ -f "$TARGET" ]; then
-        TARGET_F="$(readlink $0)"
-        TARGET_D="$(cd $(dirname $TARGET) && pwd -P)"
-        echo "$TARGET_D/$TARGET_F"
+        local FILENAME=$(basename $TARGET)
+        local DIR_EXPANDED="$(expand_path $(dirname $TARGET))"
+        local PATH_EXPANDED="$DIR_EXPANDED/$FILENAME"
+        echo $(resolve_symlink $PATH_EXPANDED)
     else
         echo "$TARGET"
     fi
