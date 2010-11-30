@@ -193,7 +193,8 @@ if [ ! -d "$GROOVYSERV_HOME" ]; then
         GROOVYSERV_HOME="$GROOVYSERV_HOME/libexec"
     fi
 fi
-if [ ! -d "$GROOVYSERV_HOME/lib" ]; then
+ls $GROOVYSERV_HOME/lib/groovyserv-*.jar >/dev/null 2>&1
+if [ ! $? -eq 0 ]; then
     echo "ERROR: Not found a valid GROOVYSERV_HOME directory: $GROOVYSERV_HOME"
     exit 1
 fi
