@@ -203,10 +203,7 @@ fi
 # Invoke server
 #-------------------------------------------
 
-CP="$GROOVYSERV_HOME/lib/jna-3.2.2.jar"
-CP="$GROOVYSERV_HOME/lib/groovyserv-${project.version}.jar:$CP"
-export CLASSPATH=$CP:$CLASSPATH
-
+export CLASSPATH=$CP:$GROOVYSERV_HOME/lib/*
 nohup "$GROOVY_BIN" $GROOVYSERV_OPTS -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)" > /dev/null 2>&1 &
 
 #-------------------------------------------
