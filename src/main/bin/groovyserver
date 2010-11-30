@@ -154,7 +154,7 @@ fi
 # Resolve GROOVYSERV_HOME
 #-------------------------------------------
 
-function expand_path() {
+expand_path() {
     local TARGET=$1
     if [ -d "$TARGET" ]; then
         echo $(cd $TARGET && pwd -P)
