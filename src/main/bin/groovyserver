@@ -102,6 +102,7 @@ EXPIRED_PID_FILE="( cd \"$GROOVYSERV_WORK_DIR\" && find . -name pid-$PORT -mmin 
 #-------------------------------------------
 # Kill process if specified
 #-------------------------------------------
+
 if [ "$DO_KILL" != "" ]; then
     if [ -f "$GROOVYSERV_PID_FILE" ]; then
         EXISTED_PID=`cat "$GROOVYSERV_PID_FILE"`
@@ -140,10 +141,38 @@ if [ -f "$GROOVYSERV_PID_FILE" ]; then
 fi
 
 #-------------------------------------------
+# Resolve GROOVYSERV_HOME
+#-------------------------------------------
+
+function expand_path() {
+    local TARGET=$1
+    if [ -d "$TARGET" ]; then
+        echo $(cd $TARGET && pwd -P)
+    elif [ -f "$TARGET" ]; then
+        TARGET_F="$(readlink $0)"
+        TARGET_D="$(cd $(dirname $TARGET) && pwd -P)"
+        echo "$TARGET_D/$TARGET_F"
+    else
+        echo "$TARGET"
+    fi
+}
+if [ ! -d "$GROOVYSERV_HOME" ]; then
+    GROOVYSERV_HOME="$(dirname $(dirname $(expand_path $0)))"
+
+    # for Homebrew in Mac OS X
+    if [ -d $GROOVYSERV_HOME/libexec ]; then
+        GROOVYSERV_HOME="$GROOVYSERV_HOME/libexec"
+    fi
+fi
+if [ ! -d "$GROOVYSERV_HOME/lib" ]; then
+    echo "ERROR: Not found a valid GROOVYSERV_HOME directory: $GROOVYSERV_HOME"
+    exit 1
+fi
+
+#-------------------------------------------
 # Invoke server
 #-------------------------------------------
 
-GROOVYSERV_HOME=${GROOVYSERV_HOME:-"`dirname $0`/.."}
 CP="$GROOVYSERV_HOME/lib/jna-3.2.2.jar"
 CP="$GROOVYSERV_HOME/lib/groovyserv-${project.version}.jar:$CP"
 export CLASSPATH=$CP:$CLASSPATH
