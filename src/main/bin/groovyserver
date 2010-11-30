@@ -73,7 +73,7 @@ done
 # Find groovy command
 #-------------------------------------------
 
-if `which -s groovy`; then
+if `which groovy >/dev/null 2>&1`; then
     GROOVY_BIN=groovy
 elif [ "x$GROOVY_HOME" != "x" ]; then
     if $OS_CYGWIN; then
