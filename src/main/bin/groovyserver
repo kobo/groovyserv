@@ -173,8 +173,13 @@ export CLASSPATH="$CP:$GROOVYSERV_HOME/lib/*"
 if [ "$DO_KILL" != "" ]; then
     if [ -f "$GROOVYSERV_PID_FILE" ]; then
         EXISTED_PID=`cat "$GROOVYSERV_PID_FILE"`
-        kill -9 $EXISTED_PID
-        echo "Killed groovyserver of $EXISTED_PID($PORT)"
+        ps -p $EXISTED_PID >/dev/null 2>&1
+        if [ $? -eq 0 ]; then
+            kill -9 $EXISTED_PID
+            echo "Killed groovyserver of $EXISTED_PID($PORT)"
+        else
+            echo "Process of groovyserver of $EXISTED_PID($PORT) not found"
+        fi
         rm -f "$GROOVYSERV_PID_FILE"
         rm -f "$GROOVYSERV_COOKIE_FILE"
     else
