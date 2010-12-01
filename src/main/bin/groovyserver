@@ -98,7 +98,8 @@ resolve_symlink() {
     local TARGET=$1
 
     # if target is symbolic link
-    if `readlink $TARGET >/dev/null 2>&1`; then
+    readlink $TARGET >/dev/null 2>&1
+    if [ $? -eq 0 ]; then
         local ORIGINAL_FILEPATH=`readlink $TARGET`
 
         # if original is specified as absolute path
@@ -218,7 +219,8 @@ nohup "$GROOVY_BIN" $GROOVYSERV_OPTS -e "org.jggug.kobo.groovyserv.GroovyServer.
 
 sleep 1
 PID=$!
-if ps -p $PID | grep $PID > /dev/null; then
+ps -p $PID | grep $PID > /dev/null
+if [ $? -eq 0 ]; then
     echo $PID > "$GROOVYSERV_PID_FILE"
 else
     echo "ERROR: Failed to store PID into file $GROOVYSERV_PID_FILE"
