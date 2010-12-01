@@ -141,7 +141,17 @@ fi
 echo "GROOVYSERV_HOME: $GROOVYSERV_HOME"
 
 #-------------------------------------------
-# Setup variables
+# Find groovyclient command
+#-------------------------------------------
+
+GROOVYCLIENT_BIN="$GROOVYSERV_HOME/bin/groovyclient"
+if [ ! -x "$GROOVYCLIENT_BIN" ]; then
+    echo "ERROR: Not found a groovyclient command in GROOVYSERV_HOME: $GROOVYCLIENT_BIN"
+    exit 1
+fi
+
+#-------------------------------------------
+# Setup other variables
 #-------------------------------------------
 
 if $OS_CYGWIN; then
@@ -160,8 +170,7 @@ GROOVYSERV_OPTS="$GROOVYSERV_OPTS -Dgroovyserver.port=$PORT"
 GROOVYSERV_PID_FILE="$GROOVYSERV_WORK_DIR/pid-$PORT"
 GROOVYSERV_COOKIE_FILE="$GROOVYSERV_WORK_DIR/cookie"
 
-GROOVYCLIENT_CMD="$GROOVYSERV_HOME/bin/groovyclient"
-IS_SERVER_AVAILABLE="env GROOVYSERVER_PORT=$PORT $GROOVYCLIENT_CMD --without-invoking-server -e \"\""
+IS_SERVER_AVAILABLE="env GROOVYSERVER_PORT=$PORT $GROOVYCLIENT_BIN --without-invoking-server -e \"\""
 EXPIRED_PID_FILE="( cd \"$GROOVYSERV_WORK_DIR\" && find . -name pid-$PORT -mmin +1 )"
 
 export CLASSPATH="$CP:$GROOVYSERV_HOME/lib/*"
