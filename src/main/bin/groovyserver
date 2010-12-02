@@ -117,10 +117,10 @@ expand_path() {
     if [ -d "$TARGET" ]; then
         echo $(cd $TARGET && pwd -P)
     elif [ -f "$TARGET" ]; then
-        local FILENAME=$(basename $TARGET)
-        local DIR_EXPANDED="$(expand_path $(dirname $TARGET))"
-        local PATH_EXPANDED="$DIR_EXPANDED/$FILENAME"
-        echo $(resolve_symlink $PATH_EXPANDED)
+        local TARGET_RESOLVED=$(resolve_symlink $TARGET)
+        local FILENAME=$(basename $TARGET_RESOLVED)
+        local DIR_EXPANDED="$(expand_path $(dirname $TARGET_RESOLVED))"
+        echo "$DIR_EXPANDED/$FILENAME"
     else
         echo "$TARGET"
     fi
