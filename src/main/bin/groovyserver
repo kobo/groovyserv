@@ -98,8 +98,7 @@ resolve_symlink() {
     local TARGET=$1
 
     # if target is symbolic link
-    readlink $TARGET >/dev/null 2>&1
-    if [ $? -eq 0 ]; then
+    if [ -L $TARGET ]; then
         local ORIGINAL_FILEPATH=`readlink $TARGET`
 
         # if original is specified as absolute path
