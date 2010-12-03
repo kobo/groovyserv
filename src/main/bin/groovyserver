@@ -82,10 +82,10 @@ if [ "x$GROOVY_HOME" != "x" ]; then
         echo "ERROR: Not found a groovy command in GROOVY_HOME: $GROOVY_BIN"
         exit 1
     fi
-    echo "Groovy: $GROOVY_BIN"
+    echo "GROOVY: $GROOVY_BIN"
 elif which groovy >/dev/null 2>&1; then
     GROOVY_BIN=groovy
-    echo "Groovy: $(which groovy)"
+    echo "GROOVY: $(which groovy)"
 else
     echo "ERROR: Not found a groovy command. Required either PATH having groovy command or GROOVY_HOME"
     exit 1
