@@ -73,18 +73,19 @@ done
 # Find groovy command
 #-------------------------------------------
 
-which groovy >/dev/null 2>&1
-if [ $? -eq 0 ]; then
-    GROOVY_BIN=groovy
-elif [ "x$GROOVY_HOME" != "x" ]; then
+if [ "x$GROOVY_HOME" != "x" ]; then
     if $OS_CYGWIN; then
         export GROOVY_HOME=`cygpath -u "$GROOVY_HOME"`
     fi
     GROOVY_BIN="$GROOVY_HOME/bin/groovy"
     if [ ! -x "$GROOVY_BIN" ]; then
-        echo "ERROR: Not found a valid groovy command in GROOVY_HOME: $GROOVY_BIN"
+        echo "ERROR: Not found a groovy command in GROOVY_HOME: $GROOVY_BIN"
         exit 1
     fi
+    echo "Groovy: $GROOVY_BIN"
+elif which groovy >/dev/null 2>&1; then
+    GROOVY_BIN=groovy
+    echo "Groovy: $(which groovy)"
 else
     echo "ERROR: Not found a groovy command. Required either PATH having groovy command or GROOVY_HOME"
     exit 1
