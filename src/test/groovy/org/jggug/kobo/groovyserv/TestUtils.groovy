@@ -42,10 +42,29 @@ class TestUtils {
         return p
     }
 
+	static executeClientWithEnv(args, env) {
+		def command = getCommandWithEnv(args, env)
+        def p = command.execute()
+        p.waitFor()
+        //println "${command.join(' ')} => ${p.exitValue()}"
+        return p
+    }
+
     static getCommand(args) {
         def clientExecs = System.properties.'groovyservClientExecutable'.split(" ") as List
         return clientExecs + args
     }
+
+    /*
+     * Get a groovyclient command line which can invoke a groovycient instance with specified
+     * environment variable(s).
+     */
+	static getCommandWithEnv(args, env) {
+		def clientExecs = System.properties.'groovyservClientExecutable'.split(" ") as List
+        def result = ["env", env, *clientExecs, *args ]
+        println result
+		return result
+	}
 
     /**
      * Reading and return available bytes.
