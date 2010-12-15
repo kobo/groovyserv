@@ -64,6 +64,7 @@ const char * const HEADER_KEY_SIZE = "Size";
 const char * const HEADER_KEY_STATUS = "Status";
 
 const char * const CLIENT_OPTION_PREFIX = "-C";
+char * const MATCH_ALL_PATTERN = "*";
 
 const int CR = 0x0d;
 const int CANCEL = 0x18;
@@ -91,9 +92,11 @@ extern char **environ;
 
 struct option_t {
     BOOL without_invocation_server;
+    BOOL help;
     char* env_include_mask[MAX_MASK];
     char* env_exclude_mask[MAX_MASK];
 } client_option = {
+    FALSE,
     FALSE,
     {}, // NULL initialized
     {}, // NULL initialized
@@ -108,6 +111,7 @@ enum OPTION_TYPE {
   OPT_WITHOUT_INVOCATION_SERVER,
   OPT_HELP,
   OPT_ENV_INCLUDE_MASK,
+  OPT_ENV_ALL,
   OPT_ENV_EXCLUDE_MASK,
 };
 
@@ -117,14 +121,19 @@ struct option_info_t {
   BOOL take_value;
 } option_info[] = {
   { "without-invoking-server", OPT_WITHOUT_INVOCATION_SERVER, FALSE },
-  { "envin", OPT_ENV_INCLUDE_MASK, TRUE },
-  { "envex", OPT_ENV_EXCLUDE_MASK, TRUE },
+  { "env", OPT_ENV_INCLUDE_MASK, TRUE },
+  { "env-all", OPT_ENV_ALL, FALSE },
+  { "env-exclude", OPT_ENV_EXCLUDE_MASK, TRUE },
   { "help", OPT_HELP, FALSE },
   { "h", OPT_HELP, FALSE },
   { "", OPT_HELP, FALSE },
 };
 
-
+char *groovy_help_options[] = {
+    "--help",
+    "-help",
+    "-h"
+};
 
 /*
  * Make socket and connect to the server (fixed to localhost).
@@ -177,7 +186,7 @@ int open_socket(char* server_name, int server_port) {
 BOOL mask_match(char* pattern, const char* str) {
     char* pos = strchr(str, '=');
 
-	if (strcmp(pattern, "*") == 0) {
+	if (strcmp(pattern, MATCH_ALL_PATTERN) == 0) {
 		return TRUE;
 	}
     if (pos == NULL) {
@@ -185,7 +194,7 @@ BOOL mask_match(char* pattern, const char* str) {
         exit(1);
     }
 	*pos = '\0';
-    char* p = strstr(pattern, "*");
+    char* p = strstr(pattern, MATCH_ALL_PATTERN);
     if (p != NULL) {
         *p = '\0';	/* treat "MASK*" as "MASK" */ // FIXME for wildcard matching.
     }
@@ -714,13 +723,19 @@ static void signal_handler(int sig) {
 }
 
 void usage() {
-    printf("Usage:\n"													\
-		   "groovyclient %s[options for client] [args/options for groovy command]\n" \
-		   "  where [options for client] are:\n"						\
-		   "    %sh        ... show help message.\n"					\
-		   "    %senvin=MASK ... pass environment vars which matches with MASK.\n" \
-		   "    %senvin=*    ... pass all environment vars.\n" \
-		   "    %senvex=MASK ... don't pass environment vars which matches with MASK.\n" \
+    printf("\n"	
+           "usage: groovyclient %s[options for groovyclient] [args/options for groovy]\n" \
+           "options:\n"	\
+		   "  %sh,%shelp                        Usage information of groovyclient options\n" \
+		   "  %senv=<pattern>                   Pass the environment variables which name\n" \
+           "                                    matches with the specified pattern. On the\n" \
+           "                                    server process, those variables are set to\n" \
+           "                                    or overwitten by the value which the client\n" \
+           "                                    process holds.\n" \
+		   "  %senv_all                         Pass all environment vars\n" \
+		   "  %senv_exclude=<pattern>           Don't pass the environment variables which\n" \
+		   "                                    name matches with pattern\n" \
+		   , CLIENT_OPTION_PREFIX
 		   , CLIENT_OPTION_PREFIX
 		   , CLIENT_OPTION_PREFIX
 		   , CLIENT_OPTION_PREFIX
@@ -733,6 +748,17 @@ void usage() {
 BOOL is_client_option(char* s) {
     return strncmp(s, CLIENT_OPTION_PREFIX,
 				   strlen(CLIENT_OPTION_PREFIX)) == 0;
+}
+
+BOOL is_groovy_help_option(char* s) {
+    char** p;
+    for (p = groovy_help_options;
+         (p-groovy_help_options) < sizeof(groovy_help_options[0])/sizeof(groovy_help_options); p++) {
+        if (strcmp(*p, s) == 0) {
+            return TRUE;
+        }
+    }
+    return FALSE;
 }
 
 BOOL is_option_name_valid_char(c) {
@@ -790,8 +816,8 @@ void option_formal_check(struct option_info_t* opt, struct option_param_t *param
 struct option_info_t* what_option(struct option_param_t* param) {
 	int j = 0;
 	for (j=0; j<sizeof(option_info)/sizeof(struct option_info_t); j++) {
-		if (strcmp(option_info[j].name, param->name) == 0) {
-			option_formal_check(&option_info[j], param);
+        if (strcmp(option_info[j].name, param->name) == 0) {
+            option_formal_check(&option_info[j], param);
 			return &option_info[j];
 		}
 	}
@@ -800,14 +826,27 @@ struct option_info_t* what_option(struct option_param_t* param) {
 
 void scan_options(struct option_t* option, int argc, char **argv) {
 	int i;
+    if (argc <= 1) {
+            option->help = TRUE;
+            return;
+    }
 	for (i = 1; i < argc; i++) {
 		if (strcmp(argv[i], "--without-invoking-server") == 0) {
 			option->without_invocation_server = TRUE;
 			continue;
 		}
+
+        // TODO: rewrite with is_groovy_help_option(char* s)
+        if (strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-help") == 0 || strcmp(argv[i], "-h") == 0) {
+            option->help = TRUE;
+            return;
+        }
 		if (is_client_option(argv[i])) {
-			struct option_param_t param;
-			get_option_name_value(&param, argv[i]+strlen(CLIENT_OPTION_PREFIX));
+
+            struct option_param_t param;
+            char* name_value = argv[i]+strlen(CLIENT_OPTION_PREFIX);
+            
+            get_option_name_value(&param, name_value);
 
 			struct option_info_t* opt = what_option(&param);
 			if (opt == NULL) {
@@ -815,6 +854,7 @@ void scan_options(struct option_t* option, int argc, char **argv) {
 				usage();
 				exit(1);
 			}
+
 			switch (opt->type) {
 			case OPT_WITHOUT_INVOCATION_SERVER:
 				option->without_invocation_server = TRUE;
@@ -825,6 +865,9 @@ void scan_options(struct option_t* option, int argc, char **argv) {
 				break;
 			case OPT_ENV_INCLUDE_MASK:
 				set_mask_option(option->env_include_mask, param.value);
+				break;
+			case OPT_ENV_ALL:
+				set_mask_option(option->env_include_mask, MATCH_ALL_PATTERN);
 				break;
 			case OPT_ENV_EXCLUDE_MASK:
 				set_mask_option(option->env_exclude_mask, param.value);
@@ -887,6 +930,11 @@ int main(int argc, char** argv) {
 
     send_header(fd_soc, argc, argv, cookie);
     int status = start_session(fd_soc);
+
+    if (client_option.help) {
+        usage();
+        exit(0);
+    }
 
 #ifdef WINDOWS
     WSACleanup();

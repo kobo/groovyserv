@@ -25,38 +25,56 @@ class EnvPropergateIT extends GroovyTestCase {
 
    static final String SEP = System.getProperty("line.separator")
 
+   static final String usageString = """\
+
+usage: groovyclient -C[options for groovyclient] [args/options for groovy]
+options:
+  -Ch,-Chelp                        Usage information of groovyclient options
+  -Cenv=<pattern>                   Pass the environment variables which name
+                                    matches with the specified pattern. On the
+                                    server process, those variables are set to
+                                    or overwitten by the value which the client
+                                    process holds.
+  -Cenv_all                         Pass all environment vars
+  -Cenv_exclude=<pattern>           Don't pass the environment variables which
+                                    name matches with pattern
+"""
+
    void testExec_envin_c_option_usage() {
        if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) { // TODO: not implement this feature on ruby client.
            return
        }
-	   def p = TestUtils.executeClient(["-Ch"])
-	   assert p.text == """\
-Usage:
-groovyclient -C[options for client] [args/options for groovy command]
-  where [options for client] are:
-    -Ch        ... show help message.
-    -Cenvin=MASK ... pass environment vars which matches with MASK.
-    -Cenvin=*    ... pass all environment vars.
-    -Cenvex=MASK ... don't pass environment vars which matches with MASK.
-"""
-	   assert p.err.text == ""
-	   assertEquals 1, p.exitValue()
+	   def p1 = TestUtils.executeClient(["-Ch"])
+	   assert p1.text == usageString
+
+	   def p2 = TestUtils.executeClient(["-Chelp"])
+	   assert p2.text == usageString
+   }
+
+   void testExec_envin_c_option_merged_usage() {
+       if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) { // TODO: not implement this feature on ruby client.
+           return
+       }
+	   def p1 = TestUtils.executeClient(["--help"])
+	   assert p1.text.endsWith(usageString)
+
+	   def p2 = TestUtils.executeClient(["-help"])
+	   assert p2.text.endsWith(usageString)
+
+	   def p3 = TestUtils.executeClient(["-h"])
+	   assert p3.text.endsWith(usageString)
+
+	   def p4 = TestUtils.executeClient([])
+	   assert p4.text.endsWith(usageString)
    }
 
    void testExec_envin_c_option_usage_on_illegalloption() {
        if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) { // TODO: not implement this feature on ruby client.
            return
        }
-	   def p = TestUtils.executeClient(["-Cxxx=", "-e", '"println(System.getenv(\'PATH\'))"'])
-	   assert p.text == """\
-Usage:
-groovyclient -C[options for client] [args/options for groovy command]
-  where [options for client] are:
-    -Ch        ... show help message.
-    -Cenvin=MASK ... pass environment vars which matches with MASK.
-    -Cenvin=*    ... pass all environment vars.
-    -Cenvex=MASK ... don't pass environment vars which matches with MASK.
-"""
+	   def p = TestUtils.executeClient(["-Cxxx", "-e", '"println(System.getenv(\'PATH\'))"'])
+	   assert p.text == usageString
+
 	   assert p.err.text == """\
 ERROR: unknown option xxx
 """
@@ -67,7 +85,7 @@ ERROR: unknown option xxx
        if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) { // TODO: not implement this feature on ruby client.
            return
        }
-       def p = TestUtils.executeClientWithEnv(["-Cenvin=ABCDEF", "-e", '"println(System.getenv(\'ABCDEF\'))"'],
+       def p = TestUtils.executeClientWithEnv(["-Cenv=ABCDEF", "-e", '"println(System.getenv(\'ABCDEF\'))"'],
                                               ["ABCDEF=1234"])
 	   assert p.err.text == ""
        assert p.text == """1234
@@ -79,7 +97,7 @@ ERROR: unknown option xxx
        if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) { // TODO: not implement this feature on ruby client.
            return
        }
-       def p = TestUtils.executeClientWithEnv(["-Cenvin=GHI", "-e", '"println(System.getenv(\'GHIJK\'))"'],
+       def p = TestUtils.executeClientWithEnv(["-Cenv=GHI", "-e", '"println(System.getenv(\'GHIJK\'))"'],
                                               ["GHIJK=1234"])
 	   assert p.err.text == ""
        assert p.text == """1234
@@ -91,7 +109,7 @@ ERROR: unknown option xxx
        if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) { // TODO: not implement this feature on ruby client.
            return
        }
-       def p = TestUtils.executeClientWithEnv(["-Cenvin=NOP", "-e", '"println(System.getenv(\'LMNOP\'))"'],
+       def p = TestUtils.executeClientWithEnv(["-Cenv=NOP", "-e", '"println(System.getenv(\'LMNOP\'))"'],
                                               ["LMNOP=1234"])
 	   assert p.err.text == ""
        assert p.text == """1234
@@ -103,7 +121,7 @@ ERROR: unknown option xxx
        if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) { // TODO: not implement this feature on ruby client.
            return
        }
-       def p = TestUtils.executeClientWithEnv(["-Cenvin=RST", "-e", '"println(System.getenv(\'QRSTU\'))"'],
+       def p = TestUtils.executeClientWithEnv(["-Cenv=RST", "-e", '"println(System.getenv(\'QRSTU\'))"'],
                                               ["QRSTU=1234"])
 	   assert p.err.text == ""
        assert p.text == """1234
@@ -115,7 +133,7 @@ ERROR: unknown option xxx
        if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) { // TODO: not implement this feature on ruby client.
            return
        }
-       def p = TestUtils.executeClientWithEnv(["-Cenvin=*", "-e", '"println(System.getenv(\'VWXY\'))"'],
+       def p = TestUtils.executeClientWithEnv(["-Cenv_all", "-e", '"println(System.getenv(\'VWXY\'))"'],
                                               ["VWXY=1234"])
 	   assert p.err.text == ""
        assert p.text == """1234
@@ -135,7 +153,7 @@ ERROR: unknown option xxx
        if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) { // TODO: not implement this feature on ruby client.
            return
        }
-       def p = TestUtils.executeClientWithEnv(["-Cenvin=A", "-e", '"println(System.getenv(\'A01\')+System.getenv(\'A02\'))"'],
+       def p = TestUtils.executeClientWithEnv(["-Cenv=A", "-e", '"println(System.getenv(\'A01\')+System.getenv(\'A02\'))"'],
                                               ["A01=1234", "A02=5678"])
 	   assert p.err.text == ""
        assert p.text == """12345678
@@ -147,7 +165,7 @@ ERROR: unknown option xxx
        if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) { // TODO: not implement this feature on ruby client.
            return
        }
-       def p = TestUtils.executeClientWithEnv(["-Cenvin=Z", "-e", '"println(System.getenv(\'AZ\')+System.getenv(\'BZ\'))"'],
+       def p = TestUtils.executeClientWithEnv(["-Cenv=Z", "-e", '"println(System.getenv(\'AZ\')+System.getenv(\'BZ\'))"'],
                                               ["AZ=1234", "BZ=5678"])
 	   assert p.err.text == ""
        assert p.text == """12345678
@@ -159,7 +177,7 @@ ERROR: unknown option xxx
        if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) { // TODO: not implement this feature on ruby client.
            return
        }
-       def p = TestUtils.executeClientWithEnv(["-Cenvin=X", "-e", '"println(System.getenv(\'AXZ\')+System.getenv(\'BXZ\'))"'],
+       def p = TestUtils.executeClientWithEnv(["-Cenv=X", "-e", '"println(System.getenv(\'AXZ\')+System.getenv(\'BXZ\'))"'],
                                               ["AXZ=1234", "BXZ=5678"])
 	   assert p.err.text == ""
        assert p.text == """12345678
@@ -173,7 +191,7 @@ ERROR: unknown option xxx
        }
        def varname = 'X' * 100
        def varvalue = 'Y' * 100
-       def p = TestUtils.executeClientWithEnv(["-Cenvin=$varname", "-e", '"println(System.getenv(\''+varname+'\'))"'],
+       def p = TestUtils.executeClientWithEnv(["-Cenv=$varname", "-e", '"println(System.getenv(\''+varname+'\'))"'],
                                               ["$varname=$varvalue"])
 	   assert p.err.text == ""
        assert p.text == """$varvalue
@@ -185,7 +203,7 @@ ERROR: unknown option xxx
        if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) { // TODO: not implement this feature on ruby client.
            return
        }
-       def p = TestUtils.executeClientWithEnv(["-Cenvin=X", "-Cenvex=X01", "-e", '"println(System.getenv(\'X01\')+System.getenv(\'X02\'))"'],
+       def p = TestUtils.executeClientWithEnv(["-Cenv=X", "-Cenv_exclude=X01", "-e", '"println(System.getenv(\'X01\')+System.getenv(\'X02\'))"'],
                                               ["X01=1234", "X02=5678"])
 	   assert p.err.text == ""
        assert p.text == """null5678
@@ -197,7 +215,7 @@ ERROR: unknown option xxx
        if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) { // TODO: not implement this feature on ruby client.
            return
        }
-       def p = TestUtils.executeClientWithEnv(["-Cenvin=X03", "-Cenvex=X03", "-e", '"println(System.getenv(\'X03\'))"'],
+       def p = TestUtils.executeClientWithEnv(["-Cenv=X03", "-Cenv_exclude=X03", "-e", '"println(System.getenv(\'X03\'))"'],
                                               ["X03=1234"])
 	   assert p.err.text == ""
        assert p.text == """null
@@ -210,7 +228,7 @@ ERROR: unknown option xxx
        if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) { // TODO: not implement this feature on ruby client.
            return
        }
-       def p = TestUtils.executeClientWithEnv(["-Cenvin=*", "-Cenvex=X04", "-e", '"println(System.getenv(\'X04\')+System.getenv(\'X05\'))"'],
+       def p = TestUtils.executeClientWithEnv(["-Cenv_all", "-Cenv_exclude=X04", "-e", '"println(System.getenv(\'X04\')+System.getenv(\'X05\'))"'],
                                               ["X04=1234", "X05=5678"])
 	   assert p.err.text == ""
        assert p.text == """null5678
@@ -222,12 +240,41 @@ ERROR: unknown option xxx
        if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) { // TODO: not implement this feature on ruby client.
            return
        }
-       def p = TestUtils.executeClientWithEnv(["-Cenvin=*", "-e", '"println(System.getenv(\'X06\'))"'],
+       def p = TestUtils.executeClientWithEnv(["-Cenv_all", "-e", '"println(System.getenv(\'X06\'))"'],
                                               ["X06=1234"])
 	   assert p.err.text == ""
        assert p.text == """1234
 """
 	   assertEquals 0, p.exitValue()
    }
+
+   void testExec_env_keep_and_overwrite() {
+       if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) { // TODO: not implement this feature on ruby client.
+           return
+       }
+       def p1 = TestUtils.executeClientWithEnv(["-Cenv_all", "-e", '"print(System.getenv(\'Y01\'))"'], ["Y01=1234"])
+	   assert p1.err.text == ""
+       assert p1.text == "1234"
+	   assertEquals 0, p1.exitValue()
+
+       // keep
+       def p2 = TestUtils.executeClientWithEnv(["-Cenv_all", "-e", '"print(System.getenv(\'Y01\'))"'])
+	   assert p2.err.text == ""
+       assert p2.text == "1234"
+	   assertEquals 0, p2.exitValue()
+
+       // overwrite
+       def p3 = TestUtils.executeClientWithEnv(["-Cenv_all", "-e", '"print(System.getenv(\'Y01\'))"'], ["Y01=5678"])
+	   assert p3.err.text == ""
+       assert p3.text == "5678"
+	   assertEquals 0, p3.exitValue()
+
+       // keep
+       def p4 = TestUtils.executeClientWithEnv(["-Cenv_all", "-e", '"print(System.getenv(\'Y01\'))"'])
+	   assert p4.err.text == ""
+       assert p4.text == "5678"
+	   assertEquals 0, p4.exitValue()
+   }
+   
    
 }
