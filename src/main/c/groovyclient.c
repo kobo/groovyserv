@@ -46,6 +46,8 @@
 #include <sys/stat.h>
 
 #include "buf.h"
+#include "option.h"
+#include "bool.h"
 
 #define DESTSERV "localhost"
 #define DESTPORT 1961
@@ -63,8 +65,6 @@ const char * const HEADER_KEY_CHANNEL = "Channel";
 const char * const HEADER_KEY_SIZE = "Size";
 const char * const HEADER_KEY_STATUS = "Status";
 
-const char * const CLIENT_OPTION_PREFIX = "-C";
-char * const MATCH_ALL_PATTERN = "*";
 
 const int CR = 0x0d;
 const int CANCEL = 0x18;
@@ -84,61 +84,11 @@ extern char __declspec(dllimport) **environ;
 extern char **environ;
 #endif
 
-#define TRUE 1
-#define FALSE 0
-#define BOOL int
-
-#define MAX_MASK 10
-
-struct option_t {
-    BOOL without_invocation_server;
-    BOOL help;
-    char* env_include_mask[MAX_MASK];
-    char* env_exclude_mask[MAX_MASK];
-} client_option = {
-    FALSE,
-    FALSE,
-    {}, // NULL initialized
-    {}, // NULL initialized
-};
-
-struct option_param_t {
-  char* name;
-  char* value;
-};
-
-enum OPTION_TYPE {
-  OPT_WITHOUT_INVOCATION_SERVER,
-  OPT_HELP,
-  OPT_ENV_INCLUDE_MASK,
-  OPT_ENV_ALL,
-  OPT_ENV_EXCLUDE_MASK,
-};
-
-struct option_info_t {
-  char* name;
-  enum OPTION_TYPE type;
-  BOOL take_value;
-} option_info[] = {
-  { "without-invoking-server", OPT_WITHOUT_INVOCATION_SERVER, FALSE },
-  { "env", OPT_ENV_INCLUDE_MASK, TRUE },
-  { "env-all", OPT_ENV_ALL, FALSE },
-  { "env-exclude", OPT_ENV_EXCLUDE_MASK, TRUE },
-  { "help", OPT_HELP, FALSE },
-  { "h", OPT_HELP, FALSE },
-  { "", OPT_HELP, FALSE },
-};
-
-char *groovy_help_options[] = {
-    "--help",
-    "-help",
-    "-h"
-};
-
 /*
  * Make socket and connect to the server (fixed to localhost).
  */
-int open_socket(char* server_name, int server_port) {
+int open_socket(char* server_name, int server_port)
+{
     struct hostent *hostent;
     struct sockaddr_in server;
 
@@ -183,7 +133,8 @@ int open_socket(char* server_name, int server_port) {
 /*
  * return TRUE if the NAME part of str("NAME=VALUE") matches the pattern.
  */
-BOOL mask_match(char* pattern, const char* str) {
+BOOL mask_match(char* pattern, const char* str)
+{
     char* pos = strchr(str, '=');
 
 	if (strcmp(pattern, MATCH_ALL_PATTERN) == 0) {
@@ -203,7 +154,8 @@ BOOL mask_match(char* pattern, const char* str) {
     return result;
 }
 
-BOOL masks_match(char** masks, char* str) {
+BOOL masks_match(char** masks, char* str)
+{
 	char** p;
 	for (p = masks; p-masks < MAX_MASK && *p != NULL; p++) {
 		if (mask_match(*p, str)) {
@@ -213,7 +165,8 @@ BOOL masks_match(char** masks, char* str) {
 	return FALSE;
 }
 
-void make_env_headers(buf* read_buf, char** env, char** inc_mask, char** exc_mask) {
+void make_env_headers(buf* read_buf, char** env, char** inc_mask, char** exc_mask)
+{
 	int i;
 	for (i = 1; env[i] != NULL; i++) {
 		if (masks_match(client_option.env_include_mask, env[i])) {
@@ -229,7 +182,8 @@ void make_env_headers(buf* read_buf, char** env, char** inc_mask, char** exc_mas
  * command line arguments, and CLASSPATH environment variable
  * to the server.
  */
-void send_header(int fd, int argc, char** argv, char* cookie) {
+void send_header(int fd, int argc, char** argv, char* cookie)
+{
     char path_buffer[MAXPATHLEN];
     buf read_buf = buf_new(BUFFER_SIZE, NULL);
     int i;
@@ -281,7 +235,8 @@ void send_header(int fd, int argc, char** argv, char* cookie) {
 /*
  * parse server response header.
  */
-void read_header(char* buf, struct header_t* header) {
+void read_header(char* buf, struct header_t* header)
+{
     //fprintf(stderr, "DEBUG: read_header: line: %s<LF> (size:%d)\n", buf, strlen(buf));
 
     // key
@@ -329,7 +284,8 @@ void read_header(char* buf, struct header_t* header) {
     //fprintf(stderr, "DEBUG: read_header: parsed: \"%s\"(size:%d) => \"%s\"(size:%d)\n", header->key, strlen(header->key), header->value, strlen(header->value));
 }
 
-char* read_line(int fd, char* buf, int size) {
+char* read_line(int fd, char* buf, int size)
+{
      int i;
      for (i = 0; i < size; i++) {
 #ifdef WINDOWS
@@ -358,7 +314,8 @@ char* read_line(int fd, char* buf, int size) {
 /*
  * read server response headers.
  */
-int read_headers(int fd, struct header_t headers[]) {
+int read_headers(int fd, struct header_t headers[])
+{
     char read_buf[BUFFER_SIZE];
     int result = 0;
     char *p;
@@ -391,7 +348,8 @@ int read_headers(int fd, struct header_t headers[]) {
 /*
  * find header value.
  */
-char* find_header(struct header_t headers[], const char* key, int nhdrs) {
+char* find_header(struct header_t headers[], const char* key, int nhdrs)
+{
     int i;
     for (i = 0; i < nhdrs; i++) {
         if (strcmp(headers[i].key, key) == 0) {
@@ -404,7 +362,8 @@ char* find_header(struct header_t headers[], const char* key, int nhdrs) {
 /*
  * Receive a chunk, and write it to stdout or stderr.
  */
-int split_socket_output(int soc, char* stream_identifier, int size) {
+int split_socket_output(int soc, char* stream_identifier, int size)
+{
     int output_fd;
     if (strcmp(stream_identifier, "out") == 0) {
         output_fd = fileno(stdout);
@@ -442,7 +401,8 @@ int split_socket_output(int soc, char* stream_identifier, int size) {
 /*
  * Copy data from stdin and send it to the server.
  */
-int send_to_server(int fd) {
+int send_to_server(int fd)
+{
     char read_buf[BUFFER_SIZE+1];
     int ret;
 
@@ -471,18 +431,21 @@ int send_to_server(int fd) {
 
 #ifdef WINDOWS
 
-void copy_stdin_to_soc(int fd) {
+void copy_stdin_to_soc(int fd)
+{
     while (1) {
         send_to_server(fd);
     }
 }
 
-void invoke_thread(int fd) {
+void invoke_thread(int fd)
+{
     DWORD id = 1;
     HANDLE hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) copy_stdin_to_soc, (LPVOID)fd, 0, &id);
 }
 
-int start_session(int fd) {
+int start_session(int fd)
+{
     struct header_t headers[MAX_HEADER];
     invoke_thread(fd);
     while (1) {
@@ -523,7 +486,8 @@ int start_session(int fd) {
  * destination of output is stdout or stderr are distinguished by
  * stream identifier(sid) header is 'out' or 'err'.
  */
-int start_session(int fd) {
+int start_session(int fd)
+{
     struct header_t headers[MAX_HEADER];
     fd_set read_set;
     int ret;
@@ -581,7 +545,8 @@ int start_session(int fd) {
 }
 #endif
 
-char* scriptdir(char* result_dir, char* script_path) {
+char* scriptdir(char* result_dir, char* script_path)
+{
     // prepare work variable of script path
     int script_path_length = strlen(script_path);
     char work_path[script_path_length];
@@ -638,7 +603,8 @@ void start_server(char* script_path, int port) {
 /*
  * read authentication cookie. 
  */
-void read_cookie(char* cookie, int size) {
+void read_cookie(char* cookie, int size)
+{
     char path[MAXPATHLEN];
 #ifdef WINDOWS
     sprintf(path, "%s\\.groovy\\groovyserv\\cookie", getenv("USERPROFILE"));
@@ -659,18 +625,8 @@ void read_cookie(char* cookie, int size) {
     }
 }
 
-void remove_client_options(int argc, char** argv) {
-    int i;
-    for (i = 0; i < argc; i++) {
-        if (strcmp(argv[i], "--without-invoking-server") == 0
-            || strncmp(argv[i], CLIENT_OPTION_PREFIX,
-                       strlen(CLIENT_OPTION_PREFIX)) == 0) {
-            argv[i] = NULL;
-        }
-    }
-}
-
-int resolve_port() {
+int resolve_port()
+{
     int port = DESTPORT;
     char* port_str = getenv("GROOVYSERVER_PORT");
     if (port_str != NULL) {
@@ -722,184 +678,11 @@ static void signal_handler(int sig) {
     exit(1);
 }
 
-void usage() {
-    printf("\n"	
-           "usage: groovyclient %s[options for groovyclient] [args/options for groovy]\n" \
-           "options:\n"	\
-		   "  %sh,%shelp                        Usage information of groovyclient options\n" \
-		   "  %senv,%senv-include=<pattern>     Pass the environment variables which name\n" \
-           "                                    matches with the specified pattern. On the\n" \
-           "                                    server process, those variables are set to\n" \
-           "                                    or overwitten by the value which the client\n" \
-           "                                    process holds.\n" \
-		   "  %senv-all                         Pass all environment vars\n" \
-		   "  %senv-exclude=<pattern>           Don't pass the environment variables which\n" \
-		   "                                    name matches with pattern\n" \
-		   , CLIENT_OPTION_PREFIX
-		   , CLIENT_OPTION_PREFIX
-		   , CLIENT_OPTION_PREFIX
-		   , CLIENT_OPTION_PREFIX
-		   , CLIENT_OPTION_PREFIX
-		   , CLIENT_OPTION_PREFIX
-		   , CLIENT_OPTION_PREFIX
-		   );
-
-}
-
-BOOL is_client_option(char* s) {
-    return strncmp(s, CLIENT_OPTION_PREFIX,
-				   strlen(CLIENT_OPTION_PREFIX)) == 0;
-}
-
-BOOL is_groovy_help_option(char* s) {
-    char** p;
-    for (p = groovy_help_options;
-         (p-groovy_help_options) < sizeof(groovy_help_options[0])/sizeof(groovy_help_options); p++) {
-        if (strcmp(*p, s) == 0) {
-            return TRUE;
-        }
-    }
-    return FALSE;
-}
-
-BOOL is_option_name_valid_char(c) {
-    if (c == '\0') {
-        return FALSE;
-    }
-    return isalnum(c) || strchr("_-", c) != NULL;
-}
-
-char* get_option_name_value(struct option_param_t* opt, char* arg) {
-    char* p;
-    for (p = arg; is_option_name_valid_char(*p); p++) {
-        /*nothing*/
-    }
-    opt->name = arg;
-    if (*p == '=') {
-        *p = '\0';
-        opt->value = p+1;
-    }
-    else if (*p == '\0') {
-        opt->value = NULL;
-    }
-    else {
-        fprintf(stderr, "ERROR: illeval option format %s\n", arg);
-        usage();
-        exit(1);
-    }
-}
-
-void set_mask_option(char ** env_mask, char* value)
-{
-	char** p;
-	for (p = env_mask; p-env_mask < MAX_MASK && *p != NULL; p++) {
-		;
-	}
-	if (p-env_mask == MAX_MASK) {
-		fprintf(stderr, "ERROR: too many mask option: %s\n", value);
-		usage();
-		exit(1);
-	}
-	*p = value;
-}
-
-void option_formal_check(struct option_info_t* opt, struct option_param_t *param) {
-	if (param->value != NULL && opt->take_value==FALSE) {
-		fprintf(stderr, "ERROR: option %s can't take param\n", param->name);
-		exit(1);
-	}
-	else if (param->value == NULL && opt->take_value==TRUE) {
-		fprintf(stderr, "ERROR: option %s require param\n", param->name);
-		exit(1);
-	}
-}
-
-struct option_info_t* what_option(struct option_param_t* param) {
-	int j = 0;
-	for (j=0; j<sizeof(option_info)/sizeof(struct option_info_t); j++) {
-        if (strcmp(option_info[j].name, param->name) == 0) {
-            option_formal_check(&option_info[j], param);
-			return &option_info[j];
-		}
-	}
-	return NULL;
-}
-
-void scan_options(struct option_t* option, int argc, char **argv) {
-	int i;
-    if (argc <= 1) {
-            option->help = TRUE;
-            return;
-    }
-	for (i = 1; i < argc; i++) {
-		if (strcmp(argv[i], "--without-invoking-server") == 0) {
-			option->without_invocation_server = TRUE;
-			continue;
-		}
-
-        // TODO: rewrite with is_groovy_help_option(char* s)
-        if (strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-help") == 0 || strcmp(argv[i], "-h") == 0) {
-            option->help = TRUE;
-            return;
-        }
-		if (is_client_option(argv[i])) {
-
-            struct option_param_t param;
-            char* name_value = argv[i]+strlen(CLIENT_OPTION_PREFIX);
-            
-            get_option_name_value(&param, name_value);
-
-			struct option_info_t* opt = what_option(&param);
-			if (opt == NULL) {
-				fprintf(stderr, "ERROR: unknown option %s\n", param.name);
-				usage();
-				exit(1);
-			}
-
-			switch (opt->type) {
-			case OPT_WITHOUT_INVOCATION_SERVER:
-				option->without_invocation_server = TRUE;
-				break;
-			case OPT_HELP:
-				usage();
-				exit(1);
-				break;
-			case OPT_ENV_INCLUDE_MASK:
-				set_mask_option(option->env_include_mask, param.value);
-				break;
-			case OPT_ENV_ALL:
-				set_mask_option(option->env_include_mask, MATCH_ALL_PATTERN);
-				break;
-			case OPT_ENV_EXCLUDE_MASK:
-				set_mask_option(option->env_exclude_mask, param.value);
-				break;
-			}
-		}
-	}
-}
-
-void print_mask_option(char ** env_mask)
-{
-	char** p;
-	for (p = env_mask; p-env_mask < MAX_MASK && *p != NULL; p++) {
-		printf("%s ", *p);
-	}
-}
-
-void print_options(struct option_t *opt) {
-	printf("without_invocation_server = %d\n", opt->without_invocation_server);
-	printf("env_include_mask = { ");
-	print_mask_option(opt->env_include_mask);
-	printf("}\n");
-	printf("env_exclude_mask = { ");
-	print_mask_option(opt->env_exclude_mask);
-	printf("}\n");
-}
-
 /*
  * open socket and initiate session.
  */
-int main(int argc, char** argv) {
+int main(int argc, char** argv)
+{
 #ifdef WINDOWS
     WSADATA wsadata;
     if (WSAStartup(MAKEWORD(1,1), &wsadata) == SOCKET_ERROR) {

@@ -22,7 +22,8 @@
 
 #include "buf.h"
 
-int buf_strnlen(const char* const str, int n) {
+int buf_strnlen(const char* const str, int n)
+{
     int result = 0;
     const char* p;
     for (p = str; *p; p++) {
@@ -34,7 +35,8 @@ int buf_strnlen(const char* const str, int n) {
     return result;
 }
 
-buf* buf_init(buf* buf, int size, const char* const initial) {
+buf* buf_init(buf* buf, int size, const char* const initial)
+{
     assert(buf != NULL);
     if (size == 0) {
         size = DEFAULT_BUFFER_SIZE;
@@ -52,13 +54,15 @@ buf* buf_init(buf* buf, int size, const char* const initial) {
     return buf;
 }
 
-buf buf_new(int size, const char* const initial) {
+buf buf_new(int size, const char* const initial)
+{
     buf result;
     buf_init(&result, size, initial);
     return result;
 }
 
-void buf_delete(buf* buf) {
+void buf_delete(buf* buf)
+{
     assert(buf != NULL);
     free(buf->buffer);
     buf->size = 0;
@@ -66,7 +70,8 @@ void buf_delete(buf* buf) {
     buf->buffer_size = 0;
 }
 
-buf* buf_offs_ncopy(buf* buf, int offs, const char* const str, int n) {
+buf* buf_offs_ncopy(buf* buf, int offs, const char* const str, int n)
+{
     assert(buf != NULL);
     assert(str != NULL);
     assert(offs >= 0);
@@ -80,23 +85,26 @@ buf* buf_offs_ncopy(buf* buf, int offs, const char* const str, int n) {
     return buf;
 }
 
-buf* buf_strcopy(buf* buf, const char* const str) {
+buf* buf_strcopy(buf* buf, const char* const str)
+{
     assert(str != NULL);
     return buf_offs_ncopy(buf, 0, str, strlen(str) + 1);
 }
 
-
-buf* buf_nstrcopy(buf* buf, const char* const str, int n) {
+buf* buf_nstrcopy(buf* buf, const char* const str, int n)
+{
     assert(str != NULL);
     return buf_offs_ncopy(buf, 0, str, n);
 }
 
-buf* buf_add(buf* buf, const char* const str) {
+buf* buf_add(buf* buf, const char* const str)
+{
     assert(str != NULL);
     return buf_offs_ncopy(buf, buf_strnlen(buf->buffer, buf->size), str, strlen(str) + 1);
 }
 
-buf* buf_offs_vprintf(buf* buf, int offs, const char* const fmt, va_list vlist) {
+buf* buf_offs_vprintf(buf* buf, int offs, const char* const fmt, va_list vlist)
+{
     va_list ap;
     int rest;
     int printf_output_size;
@@ -112,7 +120,8 @@ buf* buf_offs_vprintf(buf* buf, int offs, const char* const fmt, va_list vlist) 
     return buf;
 }
 
-buf* buf_offs_printf(buf* b, int offs, const char* const fmt, ...) {
+buf* buf_offs_printf(buf* b, int offs, const char* const fmt, ...)
+{
     buf* result;
     va_list ap;
     va_start(ap, fmt);
@@ -121,7 +130,8 @@ buf* buf_offs_printf(buf* b, int offs, const char* const fmt, ...) {
     return result;
 }
 
-buf* buf_printf(buf* b, const char* const fmt, ...) {
+buf* buf_printf(buf* b, const char* const fmt, ...)
+{
     buf* result;
     va_list ap;
     va_start(ap, fmt);
