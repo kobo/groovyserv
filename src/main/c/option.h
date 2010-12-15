@@ -38,9 +38,9 @@ struct option_param_t {
 enum OPTION_TYPE {
   OPT_WITHOUT_INVOCATION_SERVER,
   OPT_HELP,
-  OPT_ENV_INCLUDE_MASK,
+  OPT_ENV_INCLUDE,
   OPT_ENV_ALL,
-  OPT_ENV_EXCLUDE_MASK,
+  OPT_ENV_EXCLUDE,
 };
 
 struct option_info_t {

@@ -26,15 +26,16 @@
 struct option_t client_option = {
     FALSE,
     FALSE,
-    {}, // NULL initialized
-    {}, // NULL initialized
+    {}, // each array elements are expected to be filled with NULLs
+    {}, // each array elements are expected to be filled with NULLs
 };
 
 struct option_info_t option_info[] = {
     { "without-invoking-server", OPT_WITHOUT_INVOCATION_SERVER, FALSE },
-    { "env", OPT_ENV_INCLUDE_MASK, TRUE },
+    { "env", OPT_ENV_INCLUDE, TRUE },
+    { "env-include", OPT_ENV_INCLUDE, TRUE },
     { "env-all", OPT_ENV_ALL, FALSE },
-    { "env-exclude", OPT_ENV_EXCLUDE_MASK, TRUE },
+    { "env-exclude", OPT_ENV_EXCLUDE, TRUE },
     { "help", OPT_HELP, FALSE },
     { "h", OPT_HELP, FALSE },
     { "", OPT_HELP, FALSE },
@@ -49,17 +50,19 @@ static char *groovy_help_options[] = {
 void usage()
 {
     printf("\n"	
-           "usage: groovyclient %s[options for groovyclient] [args/options for groovy]\n" \
+           "usage: groovyclient %s[option for groovyclient] [args/options for groovy]\n" \
            "options:\n"	\
-		   "  %sh,%shelp                        Usage information of groovyclient options\n" \
-		   "  %senv,%senv-include=<pattern>     Pass the environment variables which name\n" \
-           "                                    matches with the specified pattern. On the\n" \
-           "                                    server process, those variables are set to\n" \
-           "                                    or overwitten by the value which the client\n" \
-           "                                    process holds.\n" \
-		   "  %senv-all                         Pass all environment vars\n" \
-		   "  %senv-exclude=<pattern>           Don't pass the environment variables which\n" \
-		   "                                    name matches with pattern\n" \
+		   "  %sh,%shelp                       Usage information of groovyclient options\n" \
+
+		   "  %senv,%senv-include=<pattern>    Pass the environment variables which name\n" \
+           "                                   matches with the specified pattern. The values\n" \
+           "                                   of matched variables on the client process are\n" \
+           "                                   sent to the server process, and the values of\n"
+           "                                   same name environment variable on the server\n" \
+           "                                   are set to or overwitten by the passed values. \n" \
+		   "  %senv-all                        Pass all environment variables on client process\n" \
+		   "  %senv-exclude=<pattern>          Don't pass the environment variables which\n" \
+		   "                                   name matches with pattern\n" \
 		   , CLIENT_OPTION_PREFIX
 		   , CLIENT_OPTION_PREFIX
 		   , CLIENT_OPTION_PREFIX
@@ -81,7 +84,7 @@ BOOL is_groovy_help_option(char* s)
 {
     char** p;
     for (p = groovy_help_options;
-         (p-groovy_help_options) < sizeof(groovy_help_options[0])/sizeof(groovy_help_options); p++) {
+         (p-groovy_help_options) < sizeof(groovy_help_options)/sizeof(groovy_help_options[0]); p++) {
         if (strcmp(*p, s) == 0) {
             return TRUE;
         }
@@ -169,8 +172,7 @@ void scan_options(struct option_t* option, int argc, char **argv)
 			continue;
 		}
 
-        // TODO: rewrite with is_groovy_help_option(char* s)
-        if (strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-help") == 0 || strcmp(argv[i], "-h") == 0) {
+        if (is_groovy_help_option(argv[i])) {
             option->help = TRUE;
             return;
         }
@@ -196,13 +198,13 @@ void scan_options(struct option_t* option, int argc, char **argv)
 				usage();
 				exit(1);
 				break;
-			case OPT_ENV_INCLUDE_MASK:
+			case OPT_ENV_INCLUDE:
 				set_mask_option(option->env_include_mask, param.value);
 				break;
 			case OPT_ENV_ALL:
 				set_mask_option(option->env_include_mask, MATCH_ALL_PATTERN);
 				break;
-			case OPT_ENV_EXCLUDE_MASK:
+			case OPT_ENV_EXCLUDE:
 				set_mask_option(option->env_exclude_mask, param.value);
 				break;
 			}
@@ -240,4 +242,3 @@ void remove_client_options(int argc, char** argv)
         }
     }
 }
-

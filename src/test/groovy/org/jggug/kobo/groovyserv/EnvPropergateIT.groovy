@@ -27,17 +27,18 @@ class EnvPropergateIT extends GroovyTestCase {
 
    static final String usageString = """\
 
-usage: groovyclient -C[options for groovyclient] [args/options for groovy]
+usage: groovyclient -C[option for groovyclient] [args/options for groovy]
 options:
-  -Ch,-Chelp                        Usage information of groovyclient options
-  -Cenv,-Cenv-include=<pattern>     Pass the environment variables which name
-                                    matches with the specified pattern. On the
-                                    server process, those variables are set to
-                                    or overwitten by the value which the client
-                                    process holds.
-  -Cenv-all                         Pass all environment vars
-  -Cenv-exclude=<pattern>           Don't pass the environment variables which
-                                    name matches with pattern
+  -Ch,-Chelp                       Usage information of groovyclient options
+  -Cenv,-Cenv-include=<pattern>    Pass the environment variables which name
+                                   matches with the specified pattern. The values
+                                   of matched variables on the client process are
+                                   sent to the server process, and the values of
+                                   same name environment variable on the server
+                                   are set to or overwitten by the passed values. 
+  -Cenv-all                        Pass all environment variables on client process
+  -Cenv-exclude=<pattern>          Don't pass the environment variables which
+                                   name matches with pattern
 """
 
    void testExec_envin_c_option_usage() {
@@ -247,6 +248,20 @@ ERROR: unknown option xxx
 """
 	   assertEquals 0, p.exitValue()
    }
+
+   void testExec_envin_and_envex_multivars() {
+       if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) { // TODO: not implement this feature on ruby client.
+           return
+       }
+       def p = TestUtils.executeClientWithEnv(["-Cenv=X", "-Cenv-include=Y",
+                                               "-Cenv-exclude=XX",  "-Cenv-exclude=YY",
+                                               "-e", '"print(System.getenv(\'X07\')+System.getenv(\'Y07\')+System.getenv(\'XX\')+System.getenv(\'YY\'))"'],
+                                              ["X07=1234", "Y07=5678", "XX=abcd", "YY=efgh"])
+	   assert p.err.text == ""
+       assert p.text == """12345678nullnull"""
+	   assertEquals 0, p.exitValue()
+   }
+
 
    void testExec_env_keep_and_overwrite() {
        if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) { // TODO: not implement this feature on ruby client.
