@@ -61,9 +61,7 @@ class TestUtils {
      */
 	static getCommandWithEnv(args, env) {
 		def clientExecs = System.properties.'groovyservClientExecutable'.split(" ") as List
-        def result = ["env", env, *clientExecs, *args ]
-        println result
-		return result
+        return ["env", env, *clientExecs, *args ]
 	}
 
     /**

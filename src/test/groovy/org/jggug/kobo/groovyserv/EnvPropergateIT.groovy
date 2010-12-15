@@ -25,7 +25,28 @@ class EnvPropergateIT extends GroovyTestCase {
 
    static final String SEP = System.getProperty("line.separator")
 
-   void testExec_envinMaskLack() {
+   void testExec_envin_c_option_usage() {
+       if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) {
+           return
+       }
+	   def p = TestUtils.executeClient(["-Ch"])
+	   assert p.text == """\
+Usage:
+groovyclient -C[options for client] [args/options for groovy command]
+  where [options for client] are:
+    -Ch        ... show help message.
+    -Cenvin=MASK ... pass environment vars which matches with MASK.
+    -Cenvin=*    ... pass all environment vars.
+    -Cenvex=MASK ... don't pass environment vars which matches with MASK.
+"""
+	   assert p.err.text == ""
+	   assertEquals 1, p.exitValue()
+   }
+
+   void testExec_envin_c_option_usage_on_illegalloption() {
+       if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) {
+           return
+       }
 	   def p = TestUtils.executeClient(["-Cxxx=", "-e", '"println(System.getenv(\'PATH\'))"'])
 	   assert p.text == """\
 Usage:
@@ -43,11 +64,62 @@ ERROR: unknown option xxx
 	   assertEquals 1, p.exitValue()
    }
 
-   void testExec_envin01k() {
+   void testExec_envin_fullmatch() {
+       if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) {
+           return
+       }
        def p = TestUtils.executeClientWithEnv(["-Cenvin=ABCDEF", "-e", '"println(System.getenv(\'ABCDEF\'))"'],
                                               "ABCDEF=1234")
        assert p.text == """1234
 """
    }
+
+
+   void testExec_envin_startsWith() {
+       if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) {
+           return
+       }
+       def p = TestUtils.executeClientWithEnv(["-Cenvin=GHI", "-e", '"println(System.getenv(\'GHIJK\'))"'],
+                                              "GHIJK=1234")
+       assert p.text == """1234
+"""
+   }
+
+   void testExec_envin_endsWith() {
+       if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) {
+           return
+       }
+       def p = TestUtils.executeClientWithEnv(["-Cenvin=NOP", "-e", '"println(System.getenv(\'LMNOP\'))"'],
+                                              "LMNOP=1234")
+       assert p.text == """1234
+"""
+   }
+   
+   void testExec_envin_middle() {
+       if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) {
+           return
+       }
+       def p = TestUtils.executeClientWithEnv(["-Cenvin=RST", "-e", '"println(System.getenv(\'QRSTU\'))"'],
+                                              "QRSTU=1234")
+       assert p.text == """1234
+"""
+   }
+
+   void testExec_envin_all() {
+       if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) {
+           return
+       }
+       def p = TestUtils.executeClientWithEnv(["-Cenvin=*", "-e", '"println(System.getenv(\'VWXY\'))"'],
+                                              "VWXY=1234")
+       assert p.text == """1234
+"""
+   }
+
+   void testExec_envin_envnotexist() {
+       def p = TestUtils.executeClient(["-e", '"println(System.getenv(\'lkdfeidjifefeyn\')==null)"'])
+       assert p.text == """true
+"""
+   }
+
    
 }
