@@ -727,14 +727,15 @@ void usage() {
            "usage: groovyclient %s[options for groovyclient] [args/options for groovy]\n" \
            "options:\n"	\
 		   "  %sh,%shelp                        Usage information of groovyclient options\n" \
-		   "  %senv=<pattern>                   Pass the environment variables which name\n" \
+		   "  %senv,%senv-include=<pattern>     Pass the environment variables which name\n" \
            "                                    matches with the specified pattern. On the\n" \
            "                                    server process, those variables are set to\n" \
            "                                    or overwitten by the value which the client\n" \
            "                                    process holds.\n" \
-		   "  %senv_all                         Pass all environment vars\n" \
-		   "  %senv_exclude=<pattern>           Don't pass the environment variables which\n" \
+		   "  %senv-all                         Pass all environment vars\n" \
+		   "  %senv-exclude=<pattern>           Don't pass the environment variables which\n" \
 		   "                                    name matches with pattern\n" \
+		   , CLIENT_OPTION_PREFIX
 		   , CLIENT_OPTION_PREFIX
 		   , CLIENT_OPTION_PREFIX
 		   , CLIENT_OPTION_PREFIX
