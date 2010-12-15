@@ -70,18 +70,93 @@ while [ $# -gt 0 ]; do
 done
 
 #-------------------------------------------
-# Setup variables
+# Find groovy command
 #-------------------------------------------
 
-if [ "x$GROOVY_HOME" = "x" ]; then
-    echo "ERROR: Environment variable GROOVY_HOME must be set."
+if [ "x$GROOVY_HOME" != "x" ]; then
+    if $OS_CYGWIN; then
+        export GROOVY_HOME=`cygpath -u "$GROOVY_HOME"`
+    fi
+    GROOVY_BIN="$GROOVY_HOME/bin/groovy"
+    if [ ! -x "$GROOVY_BIN" ]; then
+        echo "ERROR: Not found a groovy command in GROOVY_HOME: $GROOVY_BIN"
+        exit 1
+    fi
+    echo "GROOVY: $GROOVY_BIN"
+elif which groovy >/dev/null 2>&1; then
+    GROOVY_BIN=groovy
+    echo "GROOVY: $(which groovy)"
+else
+    echo "ERROR: Not found a groovy command. Required either PATH having groovy command or GROOVY_HOME"
     exit 1
 fi
+
+#-------------------------------------------
+# Resolve GROOVYSERV_HOME
+#-------------------------------------------
+
+resolve_symlink() {
+    local TARGET=$1
+
+    # if target is symbolic link
+    if [ -L $TARGET ]; then
+        local ORIGINAL_FILEPATH=`readlink $TARGET`
+
+        # if original is specified as absolute path
+        if [ $(echo $ORIGINAL_FILEPATH | cut -c 1) == "/" ]; then
+            echo "$ORIGINAL_FILEPATH"
+        else
+            echo "$(dirname $TARGET)/$ORIGINAL_FILEPATH"
+        fi
+    else
+        echo "$TARGET"
+    fi
+}
+expand_path() {
+    local TARGET=$1
+    if [ -d "$TARGET" ]; then
+        echo $(cd $TARGET && pwd -P)
+    elif [ -f "$TARGET" ]; then
+        local TARGET_RESOLVED=$(resolve_symlink $TARGET)
+        local FILENAME=$(basename $TARGET_RESOLVED)
+        local DIR_EXPANDED="$(expand_path $(dirname $TARGET_RESOLVED))"
+        echo "$DIR_EXPANDED/$FILENAME"
+    else
+        echo "$TARGET"
+    fi
+}
+if [ ! -d "$GROOVYSERV_HOME" ]; then
+    GROOVYSERV_HOME="$(dirname $(dirname $(expand_path $0)))"
+
+    # for Homebrew in Mac OS X
+    if [ -d $GROOVYSERV_HOME/libexec ]; then
+        GROOVYSERV_HOME="$GROOVYSERV_HOME/libexec"
+    fi
+fi
+ls $GROOVYSERV_HOME/lib/groovyserv-*.jar >/dev/null 2>&1
+if [ ! $? -eq 0 ]; then
+    echo "ERROR: Not found a valid GROOVYSERV_HOME directory: $GROOVYSERV_HOME"
+    exit 1
+fi
+echo "GROOVYSERV_HOME: $GROOVYSERV_HOME"
+
+#-------------------------------------------
+# Find groovyclient command
+#-------------------------------------------
+
+GROOVYCLIENT_BIN="$GROOVYSERV_HOME/bin/groovyclient"
+if [ ! -x "$GROOVYCLIENT_BIN" ]; then
+    echo "ERROR: Not found a groovyclient command in GROOVYSERV_HOME: $GROOVYCLIENT_BIN"
+    exit 1
+fi
+
+#-------------------------------------------
+# Setup other variables
+#-------------------------------------------
 
 if $OS_CYGWIN; then
   USER_HOME=`cygpath -u "$USERPROFILE"`
   export JAVA_HOME=`cygpath -u "$JAVA_HOME"`
-  export GROOVY_HOME=`cygpath -u "$GROOVY_HOME"`
 fi
 
 GROOVYSERV_WORK_DIR=${USER_HOME:-$HOME}/.groovy/groovyserv
@@ -95,18 +170,25 @@ GROOVYSERV_OPTS="$GROOVYSERV_OPTS -Dgroovyserver.port=$PORT"
 GROOVYSERV_PID_FILE="$GROOVYSERV_WORK_DIR/pid-$PORT"
 GROOVYSERV_COOKIE_FILE="$GROOVYSERV_WORK_DIR/cookie"
 
-GROOVYCLIENT_CMD="${GROOVYSERV_HOME:-"`dirname $0`/.."}/bin/groovyclient"
-IS_SERVER_AVAILABLE="env GROOVYSERVER_PORT=$PORT $GROOVYCLIENT_CMD --without-invoking-server -e \"\""
+IS_SERVER_AVAILABLE="env GROOVYSERVER_PORT=$PORT $GROOVYCLIENT_BIN --without-invoking-server -e \"\""
 EXPIRED_PID_FILE="( cd \"$GROOVYSERV_WORK_DIR\" && find . -name pid-$PORT -mmin +1 )"
+
+export CLASSPATH="$CP:$GROOVYSERV_HOME/lib/*"
 
 #-------------------------------------------
 # Kill process if specified
 #-------------------------------------------
+
 if [ "$DO_KILL" != "" ]; then
     if [ -f "$GROOVYSERV_PID_FILE" ]; then
         EXISTED_PID=`cat "$GROOVYSERV_PID_FILE"`
-        kill -9 $EXISTED_PID
-        echo "Killed groovyserver of $EXISTED_PID($PORT)"
+        ps -p $EXISTED_PID >/dev/null 2>&1
+        if [ $? -eq 0 ]; then
+            kill -9 $EXISTED_PID
+            echo "Killed groovyserver of $EXISTED_PID($PORT)"
+        else
+            echo "Process of groovyserver of $EXISTED_PID($PORT) not found"
+        fi
         rm -f "$GROOVYSERV_PID_FILE"
         rm -f "$GROOVYSERV_COOKIE_FILE"
     else
@@ -143,22 +225,21 @@ fi
 # Invoke server
 #-------------------------------------------
 
-GROOVYSERV_HOME=${GROOVYSERV_HOME:-"`dirname $0`/.."}
-CP="$GROOVYSERV_HOME/lib/jna-3.2.2.jar"
-CP="$GROOVYSERV_HOME/lib/groovyserv-${project.version}.jar:$CP"
-export CLASSPATH=$CP:$CLASSPATH
-
-nohup "$GROOVY_HOME/bin/groovy" $GROOVYSERV_OPTS -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)" > /dev/null 2>&1 &
+nohup "$GROOVY_BIN" $GROOVYSERV_OPTS -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)" > /dev/null 2>&1 &
 
 #-------------------------------------------
 # Store PID
 #-------------------------------------------
 
+sleep 1
 PID=$!
-if ps -p $PID | grep $PID > /dev/null; then
+ps -p $PID | grep $PID > /dev/null
+if [ $? -eq 0 ]; then
     echo $PID > "$GROOVYSERV_PID_FILE"
 else
     echo "ERROR: Failed to store PID into file $GROOVYSERV_PID_FILE"
+    echo "Rerun for debug..."
+    "$GROOVY_BIN" $GROOVYSERV_OPTS -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)" &
     exit 1
 fi
 
@@ -167,7 +248,7 @@ fi
 #-------------------------------------------
 
 while true; do
-    echo -n "."
+    /bin/echo -n "."
     sleep 1
 
     # waiting until cookie filed is created
