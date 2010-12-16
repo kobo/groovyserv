@@ -29,18 +29,8 @@ struct header_t {
 };
 
 int open_socket(char* server_name, int server_port);
-BOOL mask_match(char* pattern, const char* str);
-BOOL masks_match(char** masks, char* str);
-void make_env_headers(buf* read_buf, char** env, char** inc_mask, char** exc_mask);
 void send_header(int fd, int argc, char** argv, char* cookie);
-void read_header(char* buf, struct header_t* header);
-char* read_line(int fd, char* buf, int size);
 int read_headers(int fd, struct header_t headers[]);
-char* find_header(struct header_t headers[], const char* key, int nhdrs);
-int split_socket_output(int soc, char* stream_identifier, int size);
-int send_to_server(int fd);
-void copy_stdin_to_soc(int fd);
-void invoke_thread(int fd);
 int start_session(int fd);
 
 #endif

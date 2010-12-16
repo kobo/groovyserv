@@ -114,7 +114,7 @@ int open_socket(char* server_name, int server_port)
 /*
  * return TRUE if the NAME part of str("NAME=VALUE") matches the pattern.
  */
-BOOL mask_match(char* pattern, const char* str)
+static BOOL mask_match(char* pattern, const char* str)
 {
     char* pos = strchr(str, '=');
 
@@ -135,7 +135,7 @@ BOOL mask_match(char* pattern, const char* str)
     return result;
 }
 
-BOOL masks_match(char** masks, char* str)
+static BOOL masks_match(char** masks, char* str)
 {
 	char** p;
 	for (p = masks; p-masks < MAX_MASK && *p != NULL; p++) {
@@ -146,12 +146,12 @@ BOOL masks_match(char** masks, char* str)
 	return FALSE;
 }
 
-void make_env_headers(buf* read_buf, char** env, char** inc_mask, char** exc_mask)
+static void make_env_headers(buf* read_buf, char** env, char** inc_mask, char** exc_mask)
 {
 	int i;
 	for (i = 1; env[i] != NULL; i++) {
-		if (masks_match(client_option.env_include_mask, env[i])) {
-			if (!masks_match(client_option.env_exclude_mask, env[i])) {
+		if (masks_match(client_option_values.env_include_mask, env[i])) {
+			if (!masks_match(client_option_values.env_exclude_mask, env[i])) {
 				buf_printf(read_buf, "%s: %s\n", HEADER_KEY_ENV, env[i]);
 			}
 		}
@@ -190,11 +190,11 @@ void send_header(int fd, int argc, char** argv, char* cookie)
     }
 
     // send envvars.
-    if (client_option.env_include_mask != NULL) {
+    if (client_option_values.env_include_mask != NULL) {
 		make_env_headers(&read_buf,
 						 environ,
-						 client_option.env_include_mask,
-						 client_option.env_exclude_mask);
+						 client_option_values.env_include_mask,
+						 client_option_values.env_exclude_mask);
     }
 
     char* cp = getenv("CLASSPATH");
@@ -216,7 +216,7 @@ void send_header(int fd, int argc, char** argv, char* cookie)
 /*
  * parse server response header.
  */
-void read_header(char* buf, struct header_t* header)
+static void read_header(char* buf, struct header_t* header)
 {
     //fprintf(stderr, "DEBUG: read_header: line: %s<LF> (size:%d)\n", buf, strlen(buf));
 
@@ -265,7 +265,7 @@ void read_header(char* buf, struct header_t* header)
     //fprintf(stderr, "DEBUG: read_header: parsed: \"%s\"(size:%d) => \"%s\"(size:%d)\n", header->key, strlen(header->key), header->value, strlen(header->value));
 }
 
-char* read_line(int fd, char* buf, int size)
+static char* read_line(int fd, char* buf, int size)
 {
      int i;
      for (i = 0; i < size; i++) {
@@ -329,7 +329,7 @@ int read_headers(int fd, struct header_t headers[])
 /*
  * find header value.
  */
-char* find_header(struct header_t headers[], const char* key, int nhdrs)
+static char* find_header(struct header_t headers[], const char* key, int nhdrs)
 {
     int i;
     for (i = 0; i < nhdrs; i++) {
@@ -343,7 +343,7 @@ char* find_header(struct header_t headers[], const char* key, int nhdrs)
 /*
  * Receive a chunk, and write it to stdout or stderr.
  */
-int split_socket_output(int soc, char* stream_identifier, int size)
+static int split_socket_output(int soc, char* stream_identifier, int size)
 {
     int output_fd;
     if (strcmp(stream_identifier, "out") == 0) {
@@ -382,7 +382,7 @@ int split_socket_output(int soc, char* stream_identifier, int size)
 /*
  * Copy data from stdin and send it to the server.
  */
-int send_to_server(int fd)
+static int send_to_server(int fd)
 {
     char read_buf[BUFFER_SIZE+1];
     int ret;
@@ -412,14 +412,14 @@ int send_to_server(int fd)
 
 #ifdef WINDOWS
 
-void copy_stdin_to_soc(int fd)
+static void copy_stdin_to_soc(int fd)
 {
     while (1) {
         send_to_server(fd);
     }
 }
 
-void invoke_thread(int fd)
+static void invoke_thread(int fd)
 {
     DWORD id = 1;
     HANDLE hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) copy_stdin_to_soc, (LPVOID)fd, 0, &id);

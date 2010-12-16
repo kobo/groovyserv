@@ -30,15 +30,10 @@ struct option_t {
     char* env_exclude_mask[MAX_MASK];
 };
 
-struct option_param_t {
-  char* name;
-  char* value;
-};
-
 enum OPTION_TYPE {
   OPT_WITHOUT_INVOCATION_SERVER,
   OPT_HELP,
-  OPT_ENV_INCLUDE,
+  OPT_ENV,
   OPT_ENV_ALL,
   OPT_ENV_EXCLUDE,
 };
@@ -49,11 +44,9 @@ struct option_info_t {
   BOOL take_value;
 };
 
-extern struct option_t client_option;
-extern struct option_info_t option_info[];
+extern struct option_t client_option_values;
 
 void usage();
-/* struct option_info_t* what_option(struct option_param_t* param); */
 void scan_options(struct option_t* option, int argc, char **argv);
 void print_client_options(struct option_t *opt);
 

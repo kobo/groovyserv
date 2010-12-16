@@ -23,21 +23,21 @@
 #include "option.h"
 #include "bool.h"
 
-struct option_t client_option = {
-    FALSE,
-    FALSE,
-    {}, // each array elements are expected to be filled with NULLs
-    {}, // each array elements are expected to be filled with NULLs
-};
-
 struct option_info_t option_info[] = {
     { "without-invoking-server", OPT_WITHOUT_INVOCATION_SERVER, FALSE },
-    { "env", OPT_ENV_INCLUDE, TRUE },
+    { "env", OPT_ENV, TRUE },
     { "env-all", OPT_ENV_ALL, FALSE },
     { "env-exclude", OPT_ENV_EXCLUDE, TRUE },
     { "help", OPT_HELP, FALSE },
     { "h", OPT_HELP, FALSE },
     { "", OPT_HELP, FALSE },
+};
+
+struct option_t client_option_values = {
+    FALSE,
+    FALSE,
+    {}, // each array elements are expected to be filled with NULLs
+    {}, // each array elements are expected to be filled with NULLs
 };
 
 static char *groovy_help_options[] = {
@@ -69,16 +69,15 @@ void usage()
 		   , CLIENT_OPTION_PREFIX
 		   , CLIENT_OPTION_PREFIX
 		   );
-
 }
 
-BOOL is_client_option(char* s)
+static BOOL is_client_option(char* s)
 {
     return strncmp(s, CLIENT_OPTION_PREFIX,
 				   strlen(CLIENT_OPTION_PREFIX)) == 0;
 }
 
-BOOL is_groovy_help_option(char* s)
+static BOOL is_groovy_help_option(char* s)
 {
     char** p;
     for (p = groovy_help_options;
@@ -90,7 +89,7 @@ BOOL is_groovy_help_option(char* s)
     return FALSE;
 }
 
-void set_mask_option(char ** env_mask, char* opt, char* value)
+static void set_mask_option(char ** env_mask, char* opt, char* value)
 {
 	char** p;
 	for (p = env_mask; p-env_mask < MAX_MASK && *p != NULL; p++) {
@@ -104,7 +103,7 @@ void set_mask_option(char ** env_mask, char* opt, char* value)
 	*p = value;
 }
 
-struct option_info_t* what_option(char* name)
+static struct option_info_t* what_option(char* name)
 {
 	int j = 0;
 	for (j=0; j<sizeof(option_info)/sizeof(struct option_info_t); j++) {
@@ -125,6 +124,7 @@ void scan_options(struct option_t* option, int argc, char **argv)
 	for (i = 1; i < argc; i++) {
 		if (strcmp(argv[i], "--without-invoking-server") == 0) {
 			option->without_invocation_server = TRUE;
+            argv[i] = NULL;
 			continue;
 		}
 
@@ -132,10 +132,10 @@ void scan_options(struct option_t* option, int argc, char **argv)
             option->help = TRUE;
             return;
         }
+
 		if (is_client_option(argv[i])) {
             char* name = argv[i]+strlen(CLIENT_OPTION_PREFIX);
             argv[i] = NULL;
-            
 			struct option_info_t* opt = what_option(name);
 
 			if (opt == NULL) {
@@ -164,7 +164,7 @@ void scan_options(struct option_t* option, int argc, char **argv)
 				usage();
 				exit(1);
 				break;
-			case OPT_ENV_INCLUDE:
+			case OPT_ENV:
                 assert(opt->take_value == TRUE);
 				set_mask_option(option->env_include_mask, name, value);
 				break;
@@ -180,7 +180,7 @@ void scan_options(struct option_t* option, int argc, char **argv)
 	}
 }
 
-void print_mask_option(char ** env_mask)
+static void print_mask_option(char ** env_mask)
 {
 	char** p;
 	for (p = env_mask; p-env_mask < MAX_MASK && *p != NULL; p++) {
@@ -199,14 +199,3 @@ void print_client_options(struct option_t *opt)
 	printf("}\n");
 }
 
-void remove_client_options(int argc, char** argv)
-{
-    int i;
-    for (i = 0; i < argc; i++) {
-        if (strcmp(argv[i], "--without-invoking-server") == 0
-            || strncmp(argv[i], CLIENT_OPTION_PREFIX,
-                       strlen(CLIENT_OPTION_PREFIX)) == 0) {
-            argv[i] = NULL;
-        }
-    }
-}

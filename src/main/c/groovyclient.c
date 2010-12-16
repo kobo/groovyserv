@@ -141,7 +141,7 @@ int connect_server(char* argv0)
     int failCount = 0;
     
     while ((fd = open_socket(DESTSERV, port)) == -1) {
-        if (client_option.without_invocation_server == TRUE) {
+        if (client_option_values.without_invocation_server == TRUE) {
             fprintf(stderr, "ERROR: groovyserver isn't running\n");
             exit(9);
         }
@@ -193,10 +193,10 @@ int main(int argc, char** argv)
     }
 #endif
 
-    scan_options(&client_option, argc, argv);
+    scan_options(&client_option_values, argc, argv);
 
 #ifdef DEBUG
-	print_client_options(&client_option);
+	print_client_options(&client_option_values);
 #endif
 	
     fd_soc = connect_server(argv[0]);
@@ -209,7 +209,7 @@ int main(int argc, char** argv)
     send_header(fd_soc, argc, argv, cookie);
     int status = start_session(fd_soc);
 
-    if (client_option.help) {
+    if (client_option_values.help) {
         usage();
         exit(0);
     }
