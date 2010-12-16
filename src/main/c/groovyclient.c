@@ -196,11 +196,9 @@ int main(int argc, char** argv)
     scan_options(&client_option, argc, argv);
 
 #ifdef DEBUG
-	print_options(&client_option);
+	print_client_options(&client_option);
 #endif
 	
-    remove_client_options(argc, argv);
-
     fd_soc = connect_server(argv[0]);
 
     signal(SIGINT, signal_handler); // using fd_soc in handler

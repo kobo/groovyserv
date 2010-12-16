@@ -53,16 +53,8 @@ extern struct option_t client_option;
 extern struct option_info_t option_info[];
 
 void usage();
-BOOL is_client_option(char* s);
-BOOL is_groovy_help_option(char* s);
-BOOL is_option_name_valid_char(char c);
-char* get_option_name_value(struct option_param_t* opt, char* arg);
-void set_mask_option(char ** env_mask, char* value);
-void option_formal_check(struct option_info_t* opt, struct option_param_t *param);
-struct option_info_t* what_option(struct option_param_t* param);
+/* struct option_info_t* what_option(struct option_param_t* param); */
 void scan_options(struct option_t* option, int argc, char **argv);
-void print_mask_option(char ** env_mask);
-void print_options(struct option_t *opt);
-void remove_client_options(int argc, char** argv);
+void print_client_options(struct option_t *opt);
 
 #endif
