@@ -20,11 +20,12 @@ package org.jggug.kobo.groovyserv
  * Replace JDK methods by MOP.
  * @author UEHARA Junji
  */
-class ReplaceMethods {
+class MethodReplacer {
 
-    public static void init() {
-        DebugUtils.verboseLog("ReplaceMethods.init()")
+    public static void replace() {
+        DebugUtils.verboseLog("MethodReplacer.replace()")
         System.metaClass.static.getenv = {String name ->
+            // Replace System.getenv() to platform native getenv(1) to skip cache.
             String result = PlatformMethods.getenv(name)
             DebugUtils.verboseLog("getenv(${name})=>$result")
             return result
@@ -32,4 +33,3 @@ class ReplaceMethods {
     }
 
 }
-
