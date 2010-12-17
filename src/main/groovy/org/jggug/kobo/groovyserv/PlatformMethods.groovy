@@ -38,7 +38,6 @@ class PlatformMethods {
     }
 
     /**
-     *
      * set the current working directory to dir.
      *
      * @param envVar 'NAME=VALUE' style environmet variable information.
