@@ -55,7 +55,7 @@ class TestUtils {
         return clientExecs + args
     }
 
-    /*
+    /**
      * Get a groovyclient command line which can invoke a groovycient instance with specified
      * environment variable(s).
      */
