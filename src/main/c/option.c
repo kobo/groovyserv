@@ -48,33 +48,33 @@ static char *groovy_help_options[] = {
 
 void usage()
 {
-    printf("\n"	
+    printf("\n"
            "usage: groovyclient %s[option for groovyclient] [args/options for groovy]\n" \
-           "options:\n"	\
-		   "  %sh,%shelp                       Usage information of groovyclient options\n" \
-		   "  %senv <pattern>                  Pass the environment variables which name\n" \
+           "options:\n" \
+           "  %sh,%shelp                       Usage information of groovyclient options\n" \
+           "  %senv <pattern>                  Pass the environment variables which name\n" \
            "                                   matches with the specified pattern. The values\n" \
            "                                   of matched variables on the client process are\n" \
            "                                   sent to the server process, and the values of\n"
            "                                   same name environment variable on the server\n" \
-           "                                   are set to or overwitten by the passed values. \n" \
-		   "  %senv-all                        Pass all environment variables\n" \
-		   "  %senv-exclude <pattern>          Don't pass the environment variables which\n" \
-		   "                                   name matches with specified pattern\n" \
-		   , CLIENT_OPTION_PREFIX
-		   , CLIENT_OPTION_PREFIX
-		   , CLIENT_OPTION_PREFIX
-		   , CLIENT_OPTION_PREFIX
-		   , CLIENT_OPTION_PREFIX
-		   , CLIENT_OPTION_PREFIX
-		   , CLIENT_OPTION_PREFIX
-		   );
+           "                                   are set to or overwitten by the passed values.\n" \
+           "  %senv-all                        Pass all environment variables\n" \
+           "  %senv-exclude <pattern>          Don't pass the environment variables which\n" \
+           "                                   name matches with specified pattern\n" \
+           , CLIENT_OPTION_PREFIX
+           , CLIENT_OPTION_PREFIX
+           , CLIENT_OPTION_PREFIX
+           , CLIENT_OPTION_PREFIX
+           , CLIENT_OPTION_PREFIX
+           , CLIENT_OPTION_PREFIX
+           , CLIENT_OPTION_PREFIX
+           );
 }
 
 static BOOL is_client_option(char* s)
 {
     return strncmp(s, CLIENT_OPTION_PREFIX,
-				   strlen(CLIENT_OPTION_PREFIX)) == 0;
+                   strlen(CLIENT_OPTION_PREFIX)) == 0;
 }
 
 static BOOL is_groovy_help_option(char* s)
@@ -91,58 +91,58 @@ static BOOL is_groovy_help_option(char* s)
 
 static void set_mask_option(char ** env_mask, char* opt, char* value)
 {
-	char** p;
-	for (p = env_mask; p-env_mask < MAX_MASK && *p != NULL; p++) {
-		;
-	}
-	if (p-env_mask == MAX_MASK) {
-		fprintf(stderr, "ERROR: too many option: %s %s\n", opt, value);
-		usage();
-		exit(1);
-	}
-	*p = value;
+    char** p;
+    for (p = env_mask; p-env_mask < MAX_MASK && *p != NULL; p++) {
+        ;
+    }
+    if (p-env_mask == MAX_MASK) {
+        fprintf(stderr, "ERROR: too many option: %s %s\n", opt, value);
+        usage();
+        exit(1);
+    }
+    *p = value;
 }
 
 static struct option_info_t* what_option(char* name)
 {
-	int j = 0;
-	for (j=0; j<sizeof(option_info)/sizeof(struct option_info_t); j++) {
+    int j = 0;
+    for (j=0; j<sizeof(option_info)/sizeof(struct option_info_t); j++) {
         if (strcmp(option_info[j].name, name) == 0) {
-			return &option_info[j];
-		}
-	}
-	return NULL;
+            return &option_info[j];
+        }
+    }
+    return NULL;
 }
 
 void scan_options(struct option_t* option, int argc, char **argv)
 {
-	int i;
+    int i;
     if (argc <= 1) {
             option->help = TRUE;
             return;
     }
-	for (i = 1; i < argc; i++) {
-		if (strcmp(argv[i], "--without-invoking-server") == 0) {
-			option->without_invocation_server = TRUE;
+    for (i = 1; i < argc; i++) {
+        if (strcmp(argv[i], "--without-invoking-server") == 0) {
+            option->without_invocation_server = TRUE;
             argv[i] = NULL;
-			continue;
-		}
+            continue;
+        }
 
         if (is_groovy_help_option(argv[i])) {
             option->help = TRUE;
             return;
         }
 
-		if (is_client_option(argv[i])) {
+        if (is_client_option(argv[i])) {
             char* name = argv[i]+strlen(CLIENT_OPTION_PREFIX);
             argv[i] = NULL;
-			struct option_info_t* opt = what_option(name);
+            struct option_info_t* opt = what_option(name);
 
-			if (opt == NULL) {
-				fprintf(stderr, "ERROR: unknown option %s\n", name);
-				usage();
-				exit(1);
-			}
+            if (opt == NULL) {
+                fprintf(stderr, "ERROR: unknown option %s\n", name);
+                usage();
+                exit(1);
+            }
 
             char* value = NULL;
             if (opt->take_value == TRUE) {
@@ -156,46 +156,46 @@ void scan_options(struct option_t* option, int argc, char **argv)
                 argv[i] = NULL;
             }
 
-			switch (opt->type) {
-			case OPT_WITHOUT_INVOCATION_SERVER:
-				option->without_invocation_server = TRUE;
-				break;
-			case OPT_HELP:
-				usage();
-				exit(1);
-				break;
-			case OPT_ENV:
+            switch (opt->type) {
+            case OPT_WITHOUT_INVOCATION_SERVER:
+                option->without_invocation_server = TRUE;
+                break;
+            case OPT_HELP:
+                usage();
+                exit(1);
+                break;
+            case OPT_ENV:
                 assert(opt->take_value == TRUE);
-				set_mask_option(option->env_include_mask, name, value);
-				break;
-			case OPT_ENV_ALL:
-				set_mask_option(option->env_include_mask, name, MATCH_ALL_PATTERN);
-				break;
-			case OPT_ENV_EXCLUDE:
+                set_mask_option(option->env_include_mask, name, value);
+                break;
+            case OPT_ENV_ALL:
+                set_mask_option(option->env_include_mask, name, MATCH_ALL_PATTERN);
+                break;
+            case OPT_ENV_EXCLUDE:
                 assert(opt->take_value == TRUE);
-				set_mask_option(option->env_exclude_mask, name, value);
-				break;
-			}
-		}
-	}
+                set_mask_option(option->env_exclude_mask, name, value);
+                break;
+            }
+        }
+    }
 }
 
 static void print_mask_option(char ** env_mask)
 {
-	char** p;
-	for (p = env_mask; p-env_mask < MAX_MASK && *p != NULL; p++) {
-		printf("%s ", *p);
-	}
+    char** p;
+    for (p = env_mask; p-env_mask < MAX_MASK && *p != NULL; p++) {
+        printf("%s ", *p);
+    }
 }
 
 void print_client_options(struct option_t *opt)
 {
-	printf("without_invocation_server = %d\n", opt->without_invocation_server);
-	printf("env_include_mask = { ");
-	print_mask_option(opt->env_include_mask);
-	printf("}\n");
-	printf("env_exclude_mask = { ");
-	print_mask_option(opt->env_exclude_mask);
-	printf("}\n");
+    printf("without_invocation_server = %d\n", opt->without_invocation_server);
+    printf("env_include_mask = { ");
+    print_mask_option(opt->env_include_mask);
+    printf("}\n");
+    printf("env_exclude_mask = { ");
+    print_mask_option(opt->env_exclude_mask);
+    printf("}\n");
 }
 

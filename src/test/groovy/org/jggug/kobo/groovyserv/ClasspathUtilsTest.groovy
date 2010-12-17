@@ -86,7 +86,7 @@ class ClasspathUtilsTest extends GroovyTestCase {
         System.properties["groovy.classpath"] = path1.join(File.pathSeparator)
 
         assert System.properties["groovy.classpath"] == path1.join(File.pathSeparator)
-        
+
         def path2 = ['', '', 'path3', '', 'path4', '', '', '']
         ClasspathUtils.addClasspath(path2.join(File.pathSeparator))
 

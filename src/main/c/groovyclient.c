@@ -96,7 +96,7 @@ void start_server(char* script_path, int port)
 }
 
 /*
- * read authentication cookie. 
+ * read authentication cookie.
  */
 void read_cookie(char* cookie, int size)
 {
@@ -139,7 +139,7 @@ int connect_server(char* argv0)
 
     int port = resolve_port();
     int failCount = 0;
-    
+
     while ((fd = open_socket(DESTSERV, port)) == -1) {
         if (client_option_values.without_invocation_server == TRUE) {
             fprintf(stderr, "ERROR: groovyserver isn't running\n");
@@ -196,9 +196,9 @@ int main(int argc, char** argv)
     scan_options(&client_option_values, argc, argv);
 
 #ifdef DEBUG
-	print_client_options(&client_option_values);
+    print_client_options(&client_option_values);
 #endif
-	
+
     fd_soc = connect_server(argv[0]);
 
     signal(SIGINT, signal_handler); // using fd_soc in handler

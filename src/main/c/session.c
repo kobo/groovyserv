@@ -118,44 +118,44 @@ static BOOL mask_match(char* pattern, const char* str)
 {
     char* pos = strchr(str, '=');
 
-	if (strcmp(pattern, MATCH_ALL_PATTERN) == 0) {
-		return TRUE;
-	}
+    if (strcmp(pattern, MATCH_ALL_PATTERN) == 0) {
+        return TRUE;
+    }
     if (pos == NULL) {
         printf("ERROR: environment variable %s format invalid\n", str);
         exit(1);
     }
-	*pos = '\0';
+    *pos = '\0';
     char* p = strstr(pattern, MATCH_ALL_PATTERN);
     if (p != NULL) {
-        *p = '\0';	/* treat "MASK*" as "MASK" */ // FIXME for wildcard matching.
+        *p = '\0';    /* treat "MASK*" as "MASK" */ // FIXME for wildcard matching.
     }
-	BOOL result = strstr(str, pattern) != NULL;
-	*pos = '='; // resume terminted NAME.
+    BOOL result = strstr(str, pattern) != NULL;
+    *pos = '='; // resume terminted NAME.
     return result;
 }
 
 static BOOL masks_match(char** masks, char* str)
 {
-	char** p;
-	for (p = masks; p-masks < MAX_MASK && *p != NULL; p++) {
-		if (mask_match(*p, str)) {
-			return TRUE;
-		}
-	}
-	return FALSE;
+    char** p;
+    for (p = masks; p-masks < MAX_MASK && *p != NULL; p++) {
+        if (mask_match(*p, str)) {
+            return TRUE;
+        }
+    }
+    return FALSE;
 }
 
 static void make_env_headers(buf* read_buf, char** env, char** inc_mask, char** exc_mask)
 {
-	int i;
-	for (i = 1; env[i] != NULL; i++) {
-		if (masks_match(client_option_values.env_include_mask, env[i])) {
-			if (!masks_match(client_option_values.env_exclude_mask, env[i])) {
-				buf_printf(read_buf, "%s: %s\n", HEADER_KEY_ENV, env[i]);
-			}
-		}
-	}
+    int i;
+    for (i = 1; env[i] != NULL; i++) {
+        if (masks_match(client_option_values.env_include_mask, env[i])) {
+            if (!masks_match(client_option_values.env_exclude_mask, env[i])) {
+                buf_printf(read_buf, "%s: %s\n", HEADER_KEY_ENV, env[i]);
+            }
+        }
+    }
 }
 
 /*
@@ -191,10 +191,10 @@ void send_header(int fd, int argc, char** argv, char* cookie)
 
     // send envvars.
     if (client_option_values.env_include_mask != NULL) {
-		make_env_headers(&read_buf,
-						 environ,
-						 client_option_values.env_include_mask,
-						 client_option_values.env_exclude_mask);
+        make_env_headers(&read_buf,
+                         environ,
+                         client_option_values.env_include_mask,
+                         client_option_values.env_exclude_mask);
     }
 
     char* cp = getenv("CLASSPATH");

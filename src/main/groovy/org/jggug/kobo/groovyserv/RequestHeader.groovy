@@ -41,7 +41,7 @@ package org.jggug.kobo.groovyserv
  *     <cwd> is current working directory.
  *     <arg1>,<arg2>.. are commandline arguments(optional).
  *     <env1>,<env2>.. are environment variable names which sent to the server(optional).
- *     <value1>,<valeu2>.. are environment variable values which sent to 
+ *     <value1>,<valeu2>.. are environment variable values which sent to
  *                         the server(optional).
  *     <classpath> is the value of environment variable CLASSPATH(optional).
  *     <cookie> is authentication value which certify client is the user who

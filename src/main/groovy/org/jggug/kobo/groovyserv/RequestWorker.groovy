@@ -41,7 +41,7 @@ class RequestWorker extends ThreadPoolExecutor {
     private boolean cancelledByClient
 
     RequestWorker(cookie, socket) {
-        // API: ThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue) 
+        // API: ThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue)
         super(THREAD_COUNT, THREAD_COUNT, 0, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>())
         this.id = "GroovyServ:RequestWorker:${socket.port}"
 
@@ -123,7 +123,7 @@ class RequestWorker extends ThreadPoolExecutor {
     }
 
     private closeSafety() {
-        // if stream handler is blocking to read from input stream, 
+        // if stream handler is blocking to read from input stream,
         // this closing makes socket error, then blocking in stream handler is cancelled.
         IOUtils.close(conn)
         conn = null
