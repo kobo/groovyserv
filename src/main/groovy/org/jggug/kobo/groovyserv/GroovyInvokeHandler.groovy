@@ -104,7 +104,6 @@ class GroovyInvokeHandler implements Runnable {
         DebugUtils.verboseLog("${id}: All sub threads joined")
     }
 
-
     private killAllSubThreadsIfExist() {
         def threads = getAllAliveSubThreads()
         if (!threads) {

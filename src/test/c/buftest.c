@@ -76,7 +76,6 @@ void test_offs_ncopy5() {
   buf_delete(&b);
 }
 
-
 /*
  * 0 1 2 3 4 5 6
  * ? ? a b c d \0
@@ -148,7 +147,6 @@ void test_copy2() {
   buf_delete(&b);
 }
 
-
 void test_ncopy() {
   buf b = buf_new(0, NULL);
   buf_nstrcopy(&b, "abcde", 6);
@@ -202,7 +200,6 @@ void test_buf_printf() {
   buf_delete(&b);
 }
 
-
 void test_buf_printf2() {
   buf b = buf_new(2, NULL);
   buf_printf(&b, "[%d, %02x]", 10, 10);
@@ -213,7 +210,6 @@ void test_buf_printf2() {
   assert(b.size == 21);
   buf_delete(&b);
 }
-
 
 void test_buf_strnlen() {
   assert(buf_strnlen("", 0) == 0);

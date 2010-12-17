@@ -270,7 +270,6 @@ options:
        assertEquals 0, p.exitValue()
    }
 
-
    void testEnv_keep_and_overwrite() {
        if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) { // TODO: not implement this feature on ruby client.
            return
