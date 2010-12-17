@@ -42,9 +42,6 @@ options:
 """
 
    void testUsage() {
-       if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) { // TODO: not implement this feature on ruby client.
-           return
-       }
        def p1 = TestUtils.executeClient(["-Ch"])
        assert p1.text.startsWith("\nusage:")
 
@@ -53,10 +50,6 @@ options:
    }
 
    void testUsage_merged() {
-       if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) { // TODO: not implement this feature on ruby client.
-           return
-       }
-
        def p0 = TestUtils.executeClient(["-Ch"])
        def clientHelpMessage = p0.text
 
@@ -74,9 +67,6 @@ options:
    }
 
    void testUsage_on_illegalloption() {
-       if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) { // TODO: not implement this feature on ruby client.
-           return
-       }
        def p0 = TestUtils.executeClient(["-Ch"])
        def clientHelpMessage = p0.text
 
@@ -88,9 +78,6 @@ options:
    }
 
    void testEnv_fullmatch() {
-       if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) { // TODO: not implement this feature on ruby client.
-           return
-       }
        def p = TestUtils.executeClientWithEnv(["-Cenv", "ABCDEF", "-e", '"print(System.getenv(\'ABCDEF\'))"'],
                                               ["ABCDEF=1234"])
        assert p.err.text == ""
@@ -99,9 +86,6 @@ options:
    }
 
    void testEnv_startsWith() {
-       if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) { // TODO: not implement this feature on ruby client.
-           return
-       }
        def p = TestUtils.executeClientWithEnv(["-Cenv", "GHI", "-e", '"print(System.getenv(\'GHIJK\'))"'],
                                               ["GHIJK=1234"])
        assert p.err.text == ""
@@ -110,9 +94,6 @@ options:
    }
 
    void testEnv_endsWith() {
-       if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) { // TODO: not implement this feature on ruby client.
-           return
-       }
        def p = TestUtils.executeClientWithEnv(["-Cenv", "NOP", "-e", '"print(System.getenv(\'LMNOP\'))"'],
                                               ["LMNOP=1234"])
        assert p.err.text == ""
@@ -121,9 +102,6 @@ options:
    }
 
    void testEnv_onMiddle() {
-       if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) { // TODO: not implement this feature on ruby client.
-           return
-       }
        def p = TestUtils.executeClientWithEnv(["-Cenv", "RST", "-e", '"print(System.getenv(\'QRSTU\'))"'],
                                               ["QRSTU=1234"])
        assert p.err.text == ""
@@ -132,9 +110,6 @@ options:
    }
 
    void testEnv_all() {
-       if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) { // TODO: not implement this feature on ruby client.
-           return
-       }
        def p = TestUtils.executeClientWithEnv(["-Cenv-all", "-e", '"print(System.getenv(\'VWXY\'))"'],
                                               ["VWXY=1234"])
        assert p.err.text == ""
@@ -150,9 +125,6 @@ options:
    }
 
    void testEnv_multivars_startsWith() {
-       if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) { // TODO: not implement this feature on ruby client.
-           return
-       }
        def p = TestUtils.executeClientWithEnv(["-Cenv", "A", "-e", '"print(System.getenv(\'A01\')+System.getenv(\'A02\'))"'],
                                               ["A01=1234", "A02=5678"])
        assert p.err.text == ""
@@ -161,9 +133,6 @@ options:
    }
 
    void testEnv_multivars_endWith() {
-       if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) { // TODO: not implement this feature on ruby client.
-           return
-       }
        def p = TestUtils.executeClientWithEnv(["-Cenv", "Z", "-e", '"print(System.getenv(\'AZ\')+System.getenv(\'BZ\'))"'],
                                               ["AZ=1234", "BZ=5678"])
        assert p.err.text == ""
@@ -172,9 +141,6 @@ options:
    }
 
    void testEnv_multivars_middle() {
-       if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) { // TODO: not implement this feature on ruby client.
-           return
-       }
        def p = TestUtils.executeClientWithEnv(["-Cenv", "X", "-e", '"print(System.getenv(\'AXZ\')+System.getenv(\'BXZ\'))"'],
                                               ["AXZ=1234", "BXZ=5678"])
        assert p.err.text == ""
@@ -183,9 +149,6 @@ options:
    }
 
    void testEnv_long_var_name() {
-       if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) { // TODO: not implement this feature on ruby client.
-           return
-       }
        def varname = 'X' * 100
        def varvalue = 'Y' * 100
        def p = TestUtils.executeClientWithEnv(["-Cenv", "$varname", "-e", '"print(System.getenv(\''+varname+'\'))"'],
@@ -196,9 +159,6 @@ options:
    }
 
    void testEnv_many_values() {
-       if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) { // TODO: not implement this feature on ruby client.
-           return
-       }
        def arg = []
        (1..10).eachWithIndex { it, idx ->
            arg += ["-Cenv", "_VAR$it" ]
@@ -210,9 +170,6 @@ options:
    }
 
    void testEnv_too_many_values() {
-       if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) { // TODO: not implement this feature on ruby client.
-           return
-       }
        def arg = []
        (1..11).eachWithIndex { it, idx ->
            arg += ["-Cenv", "_VAR$it" ]
@@ -224,9 +181,6 @@ options:
    }
 
    void testEnv_exclude() {
-       if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) { // TODO: not implement this feature on ruby client.
-           return
-       }
        def p = TestUtils.executeClientWithEnv(["-Cenv", "X", "-Cenv-exclude", "X01", "-e", '"print(System.getenv(\'X01\')+System.getenv(\'X02\'))"'],
                                               ["X01=1234", "X02=5678"])
        assert p.err.text == ""
@@ -235,9 +189,6 @@ options:
    }
 
    void testEnv_and_exclude() {
-       if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) { // TODO: not implement this feature on ruby client.
-           return
-       }
        def p = TestUtils.executeClientWithEnv(["-Cenv", "X03", "-Cenv-exclude", "X03", "-e", '"print(System.getenv(\'X03\'))"'],
                                               ["X03=1234"])
        assert p.err.text == ""
@@ -247,9 +198,6 @@ options:
    }
 
    void testEnv_all_and_exclude() {
-       if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) { // TODO: not implement this feature on ruby client.
-           return
-       }
        def p = TestUtils.executeClientWithEnv(["-Cenv-all", "-Cenv-exclude", "X04", "-e", '"print(System.getenv(\'X04\')+System.getenv(\'X05\'))"'],
                                               ["X04=1234", "X05=5678"])
        assert p.err.text == ""
@@ -258,9 +206,6 @@ options:
    }
 
    void testEnv_and_exclude_multivars() {
-       if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) { // TODO: not implement this feature on ruby client.
-           return
-       }
        def p = TestUtils.executeClientWithEnv(["-Cenv", "X", "-Cenv", "Y",
                                                "-Cenv-exclude", "XX",  "-Cenv-exclude", "YY",
                                                "-e", '"print(System.getenv(\'X07\')+System.getenv(\'Y07\')+System.getenv(\'XX\')+System.getenv(\'YY\'))"'],
@@ -271,9 +216,6 @@ options:
    }
 
    void testEnv_keep_and_overwrite() {
-       if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) { // TODO: not implement this feature on ruby client.
-           return
-       }
        def p1 = TestUtils.executeClientWithEnv(["-Cenv-all", "-e", '"print(System.getenv(\'Y01\'))"'], ["Y01=1234"])
        assert p1.err.text == ""
        assert p1.text == "1234"
@@ -299,10 +241,6 @@ options:
    }
 
    void testEnv_protect_and_overwrite() {
-       if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) { // TODO: not implement this feature on ruby client.
-           return
-       }
-
        // initialize
        def p1 = TestUtils.executeClientWithEnv(["-Cenv-all", "-e", '"print(System.getenv(\'Y04\')+System.getenv(\'Y05\'))"'],
                                                ["Y04=1234", "Y05=5678"])
@@ -320,9 +258,6 @@ options:
    }
 
    void testEnv_require_param() {
-       if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) { // TODO: not implement this feature on ruby client.
-           return
-       }
        def p = TestUtils.executeClient(['"print(System.getenv(\'X06\'))"', "-Cenv" ])
        assert p.err.text == "ERROR: option -Cenv require param\n"
        assert p.text.startsWith("\nusage:")
