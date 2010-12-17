@@ -129,11 +129,12 @@ void scan_options(struct option_t* option, int argc, char **argv)
 
         if (is_client_option(argv[i])) {
             char* name = argv[i]+strlen(CLIENT_OPTION_PREFIX);
+            char* argvi_copy = argv[i];
             argv[i] = NULL;
             struct option_info_t* opt = what_option(name);
 
             if (opt == NULL) {
-                fprintf(stderr, "ERROR: unknown option %s\n", name);
+                fprintf(stderr, "ERROR: unknown option %s\n", argvi_copy);
                 usage();
                 exit(1);
             }
@@ -141,7 +142,7 @@ void scan_options(struct option_t* option, int argc, char **argv)
             char* value = NULL;
             if (opt->take_value == TRUE) {
                 if (i >= argc-1) {
-                    fprintf(stderr, "ERROR: option %s require param\n", name);
+                    fprintf(stderr, "ERROR: option %s require param\n", argvi_copy);
                     usage();
                     exit(1);
                 }

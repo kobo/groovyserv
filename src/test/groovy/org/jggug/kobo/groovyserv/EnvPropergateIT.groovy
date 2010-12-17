@@ -83,7 +83,7 @@ options:
        def p = TestUtils.executeClient(["-Cxxx", "-e", '"println(System.getenv(\'PATH\'))"'])
        assert p.text == clientHelpMessage
 
-       assert p.err.text == "ERROR: unknown option xxx\n"
+       assert p.err.text == "ERROR: unknown option -Cxxx\n"
        assertEquals 1, p.exitValue()
    }
 
@@ -324,7 +324,7 @@ options:
            return
        }
        def p = TestUtils.executeClient(['"print(System.getenv(\'X06\'))"', "-Cenv" ])
-       assert p.err.text == "ERROR: option env require param\n"
+       assert p.err.text == "ERROR: option -Cenv require param\n"
        assert p.text.startsWith("\nusage:")
        assertEquals 1, p.exitValue()
    }

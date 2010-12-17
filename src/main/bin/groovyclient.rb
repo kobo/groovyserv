@@ -30,9 +30,159 @@ end
 COOKIE_FILE = HOME_DIR + "/.groovy/groovyserv/cookie"
 GROOVYSERVER_CMD = ENV.fetch("GROOVYSERV_HOME", File.dirname($0)+"/..") + "/bin/groovyserver"
 
+CLIENT_OPTION_PREFIX="-C"
+MATCH_ALL_PATTERN="*"
+
+#-------------------------------------------
+# Classes
+#-------------------------------------------
+
+class ClientOption
+  def initialize
+    @without_invoking_server
+    @help
+    @env_include_mask = []
+    @env_exclude_mask = []
+  end
+
+  attr_accessor :without_invoking_server, :help, :env_include_mask, :env_exclude_mask
+end
+
+class OptionInfo
+  attr_accessor :take_value
+  class OptionInfoWithoutInvokingServer < OptionInfo
+    def eval
+      $client_option.without_invoking_server = true
+    end
+  end
+  class OptionInfoEnv < OptionInfo
+    def eval(value)
+      $client_option.env_include_mask.push(value)
+    end
+  end
+  class OptionInfoEnvAll < OptionInfo
+    def eval
+      $client_option.env_include_mask.push(MATCH_ALL_PATTERN)
+    end
+  end
+  class OptionInfoEnvExclude < OptionInfo
+    def eval(value)
+      $client_option.env_exclude_mask.push(value)
+    end
+  end
+  class OptionInfoHelp < OptionInfo
+    def eval
+      usage()
+      exit(0)
+    end
+  end
+  class OptionInfoHelp < OptionInfo
+    def eval
+      usage()
+      exit(0)
+    end
+  end
+  class OptionInfoHelp < OptionInfo
+    def eval
+      usage()
+      exit(0)
+    end
+  end
+
+  def initialize(take_value)
+    @take_value = take_value
+  end
+
+  @@options = {
+    "without-invoking-server" => OptionInfoWithoutInvokingServer.new(false),
+    "env" => OptionInfoEnv.new(true),
+    "env-all" => OptionInfoEnvAll.new(false),
+    "env-exclude" => OptionInfoEnvExclude.new(true),
+    "help" => OptionInfoHelp.new(false),
+    "h" => OptionInfoHelp.new(false),
+    "" => OptionInfoHelp.new(false) }
+  def OptionInfo.options
+    @@options
+  end
+end
+  
+#-------------------------------------------
+# Global Vriables
+#-------------------------------------------
+
+$client_option = ClientOption.new()
+
 #-------------------------------------------
 # Functions
 #-------------------------------------------
+
+def usage()
+  printf("\n"+
+         "usage: groovyclient.rb %s[option for groovyclient] [args/options for groovy]\n"+
+         "options:\n"+
+         "  %sh,%shelp                       Usage information of groovyclient options\n"+
+         "  %senv <pattern>                  Pass the environment variables which name\n"+
+         "                                   matches with the specified pattern. The values\n"+
+         "                                   of matched variables on the client process are\n"+
+         "                                   sent to the server process, and the values of\n"+
+         "                                   same name environment variable on the server\n"+
+         "                                   are set to or overwitten by the passed values.\n"+
+         "  %senv-all                        Pass all environment variables\n"+
+         "  %senv-exclude <pattern>          Don't pass the environment variables which\n"+
+         "                                   name matches with specified pattern\n",
+         CLIENT_OPTION_PREFIX,
+         CLIENT_OPTION_PREFIX,
+         CLIENT_OPTION_PREFIX,
+         CLIENT_OPTION_PREFIX,
+         CLIENT_OPTION_PREFIX,
+         CLIENT_OPTION_PREFIX,
+         CLIENT_OPTION_PREFIX)
+end
+
+def is_groovy_help_option(s)
+  ["--help", "-help",  "-h"].include?(s)
+end
+
+def process_opt(opt, arg)
+  if opt == nil
+    puts "ERROR: unknown option #{item}"
+    usage()
+    exit(1)
+  end
+
+  if opt.take_value
+    if arg == []
+      puts "ERROR: option #{item} require param"
+      usage()
+      exit(1)
+    end
+    opt.eval(arg.shift)
+  else
+    opt.eval()
+  end
+end
+
+def process_opts(arg)
+  if arg == []
+    $client_option.help = true
+    return arg
+  end
+
+  result = []
+
+  while item = arg.shift do
+    if is_groovy_help_option(item)
+      $client_option.help = true
+    end
+    if item.start_with?(CLIENT_OPTION_PREFIX)
+      opt = OptionInfo.options[item[2..-1]]
+      process_opt(opt, arg)
+    else
+      result.push(item)
+    end
+  end
+  return result
+end
 
 def start_server()
   puts "starting server..."
@@ -43,8 +193,8 @@ def start_server()
   system(GROOVYSERVER_CMD, "-p", "#{DESTPORT}")
 end
 
-def session(socket)
-  send_command(socket)
+def session(socket, args)
+  send_command(socket, args)
   while true do
     IO.select([socket, $stdin]).each do |ins|
       if ins[0] == socket
@@ -56,14 +206,26 @@ def session(socket)
   end
 end
 
-def send_command(socket)
+def send_envvars(socket)
+  ENV.each{|key,value|
+    if $client_option.env_include_mask.any?{|item| key.match(item) } ||
+        $client_option.env_include_mask == MATCH_ALL_PATTERN
+      if !$client_option.env_exclude_mask.any?{|item| key.match(item) }
+        socket.puts "Env: #{key}=#{value}"
+      end
+    end
+  }
+end
+
+def send_command(socket, args)
   socket.puts "Cwd: #{current_dir}"
-  ARGV.each do |it|
+  args.each do |it|
     socket.puts "Arg: #{it}"
   end
   File.open(COOKIE_FILE) { |f|
     socket.puts "Cookie: #{f.read}"
   }
+  send_envvars(socket)
   if ENV['CLASSPATH']
     socket.puts "Cp: #{ENV['CLASSPATH']}"
   end
@@ -85,6 +247,7 @@ def handle_socket(socket)
     exit 1
   end
   if headers['Status']
+    usage() if $client_option.help
     exit headers['Status'].to_i
   end
   data = socket.read(headers['Size'].to_i)
@@ -127,7 +290,8 @@ end
 #-------------------------------------------
 
 # a mode to confirm server status
-need_starting_server = ARGV.delete("--without-invoking-server")
+
+args = process_opts(ARGV)
 
 failCount = 0
 begin
@@ -137,10 +301,14 @@ begin
       socket.close()
       exit 8
     }
-    session(socket)
+    session(socket, args)
+    if $client_option.help
+      usage()
+      exit(0)
+    end
   }
 rescue Errno::ECONNREFUSED
-  if need_starting_server
+  if $client_option.without_invoking_server
     puts "ERROR: groovyserver isn't running"
     exit 9
   end
