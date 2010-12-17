@@ -50,7 +50,7 @@ class GroovyInvokeHandler implements Runnable {
         DebugUtils.verboseLog("${id}: Thread started")
         try {
             CurrentDirHolder.instance.setDir(request.cwd)
-            setupEnvVars(request.envVars);
+            setupEnvVars(request.envVars)
             setupClasspath(request)
             invokeGroovy(request.args)
             awaitAllSubThreads()

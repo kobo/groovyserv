@@ -199,7 +199,7 @@ options:
        if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) { // TODO: not implement this feature on ruby client.
            return
        }
-       def arg = [];
+       def arg = []
        (1..10).eachWithIndex { it, idx ->
            arg += ["-Cenv", "_VAR$it" ]
        }
@@ -213,7 +213,7 @@ options:
        if (System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) { // TODO: not implement this feature on ruby client.
            return
        }
-       def arg = [];
+       def arg = []
        (1..11).eachWithIndex { it, idx ->
            arg += ["-Cenv", "_VAR$it" ]
        }

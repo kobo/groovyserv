@@ -51,8 +51,8 @@ class PlatformMethods {
             // putenv() keeps the reference to original string, so
             // when the JVM GC correct the area, envrironment lose the var
             // and getenv() can't find that var.
-            def (name, value) = envVar.split('=', 2);
-            CLibrary.INSTANCE.setenv(name, value, 1);
+            def (name, value) = envVar.split('=', 2)
+            CLibrary.INSTANCE.setenv(name, value, 1)
         }
     }
 
