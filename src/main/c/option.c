@@ -122,12 +122,6 @@ void scan_options(struct option_t* option, int argc, char **argv)
             return;
     }
     for (i = 1; i < argc; i++) {
-        if (strcmp(argv[i], "--without-invoking-server") == 0) {
-            option->without_invocation_server = TRUE;
-            argv[i] = NULL;
-            continue;
-        }
-
         if (is_groovy_help_option(argv[i])) {
             option->help = TRUE;
             return;

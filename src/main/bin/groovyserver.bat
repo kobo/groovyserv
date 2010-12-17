@@ -116,7 +116,7 @@ ping -n 2 127.0.0.1 > NUL
 
 :check
 rem if connecting to server is succeed, return successfully
-"%GROOVYSERV_HOME%"\bin\groovyclient --without-invoking-server -e "" > NUL 2>&1
+"%GROOVYSERV_HOME%"\bin\groovyclient -Cwithout-invoking-server -e "" > NUL 2>&1
 if not errorlevel 1 goto end
 goto loop2
 
