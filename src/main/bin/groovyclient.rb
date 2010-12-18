@@ -49,39 +49,47 @@ class ClientOption
 end
 
 class OptionInfo
+
   attr_accessor :take_value
+
   class OptionInfoWithoutInvokingServer < OptionInfo
     def eval
       $client_option.without_invoking_server = true
     end
   end
+
   class OptionInfoEnv < OptionInfo
     def eval(value)
       $client_option.env_include_mask.push(value)
     end
   end
+
   class OptionInfoEnvAll < OptionInfo
     def eval
       $client_option.env_all = true
     end
   end
+
   class OptionInfoEnvExclude < OptionInfo
     def eval(value)
       $client_option.env_exclude_mask.push(value)
     end
   end
+
   class OptionInfoHelp < OptionInfo
     def eval
       usage()
       exit(0)
     end
   end
+
   class OptionInfoKillServer < OptionInfo
     def eval
       system(GROOVYSERVER_CMD, "-k")
       exit(0)
     end
   end
+
   class OptionInfoRestartServer < OptionInfo
     def eval
       system(GROOVYSERVER_CMD, "-r")
@@ -105,9 +113,11 @@ class OptionInfo
     "kill-server" => OptionInfoKillServer.new(false),
     "r" => OptionInfoRestartServer.new(false),
     "restart-server" => OptionInfoRestartServer.new(false) }
+
   def OptionInfo.options
     @@options
   end
+
 end
   
 #-------------------------------------------
