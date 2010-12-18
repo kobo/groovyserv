@@ -66,19 +66,21 @@ options:
        assert p4.text.endsWith(clientHelpMessage)
    }
 
-   void testUsage_on_illegalloption() {
+   void testUsage_on_illegal_option() {
        def p0 = TestUtils.executeClient(["-Ch"])
        def clientHelpMessage = p0.text
-
-       def p = TestUtils.executeClient(["-Cxxx", "-e", '"println(System.getenv(\'PATH\'))"'])
-       assert p.text == clientHelpMessage
+       def p = TestUtils.executeClient(["-Cxxx",
+                                        "-e", '"println(System.getenv(\'PATH\'))"'])
+       def s = p.text
+       assert s == clientHelpMessage
 
        assert p.err.text == "ERROR: unknown option -Cxxx\n"
        assertEquals 1, p.exitValue()
    }
 
    void testEnv_fullmatch() {
-       def p = TestUtils.executeClientWithEnv(["-Cenv", "ABCDEF", "-e", '"print(System.getenv(\'ABCDEF\'))"'],
+       def p = TestUtils.executeClientWithEnv(["-Cenv", "ABCDEF",
+                                               "-e", '"print(System.getenv(\'ABCDEF\'))"'],
                                               ["ABCDEF=1234"])
        assert p.err.text == ""
        assert p.text == "1234"
@@ -86,7 +88,8 @@ options:
    }
 
    void testEnv_startsWith() {
-       def p = TestUtils.executeClientWithEnv(["-Cenv", "GHI", "-e", '"print(System.getenv(\'GHIJK\'))"'],
+       def p = TestUtils.executeClientWithEnv(["-Cenv", "GHI",
+                                               "-e", '"print(System.getenv(\'GHIJK\'))"'],
                                               ["GHIJK=1234"])
        assert p.err.text == ""
        assert p.text == "1234"
@@ -102,7 +105,8 @@ options:
    }
 
    void testEnv_onMiddle() {
-       def p = TestUtils.executeClientWithEnv(["-Cenv", "RST", "-e", '"print(System.getenv(\'QRSTU\'))"'],
+       def p = TestUtils.executeClientWithEnv(["-Cenv", "RST",
+                                               "-e", '"print(System.getenv(\'QRSTU\'))"'],
                                               ["QRSTU=1234"])
        assert p.err.text == ""
        assert p.text == "1234"
@@ -110,7 +114,8 @@ options:
    }
 
    void testEnv_all() {
-       def p = TestUtils.executeClientWithEnv(["-Cenv-all", "-e", '"print(System.getenv(\'VWXY\'))"'],
+       def p = TestUtils.executeClientWithEnv(["-Cenv-all",
+                                               "-e", '"print(System.getenv(\'VWXY\'))"'],
                                               ["VWXY=1234"])
        assert p.err.text == ""
        assert p.text == "1234"
@@ -125,7 +130,8 @@ options:
    }
 
    void testEnv_multivars_startsWith() {
-       def p = TestUtils.executeClientWithEnv(["-Cenv", "A", "-e", '"print(System.getenv(\'A01\')+System.getenv(\'A02\'))"'],
+       def p = TestUtils.executeClientWithEnv(["-Cenv", "A",
+                                               "-e", '"print(System.getenv(\'A01\')+System.getenv(\'A02\'))"'],
                                               ["A01=1234", "A02=5678"])
        assert p.err.text == ""
        assert p.text == "12345678"
@@ -133,7 +139,8 @@ options:
    }
 
    void testEnv_multivars_endWith() {
-       def p = TestUtils.executeClientWithEnv(["-Cenv", "Z", "-e", '"print(System.getenv(\'AZ\')+System.getenv(\'BZ\'))"'],
+       def p = TestUtils.executeClientWithEnv(["-Cenv", "Z",
+                                               "-e", '"print(System.getenv(\'AZ\')+System.getenv(\'BZ\'))"'],
                                               ["AZ=1234", "BZ=5678"])
        assert p.err.text == ""
        assert p.text == "12345678"
@@ -151,7 +158,8 @@ options:
    void testEnv_long_var_name() {
        def varname = 'X' * 100
        def varvalue = 'Y' * 100
-       def p = TestUtils.executeClientWithEnv(["-Cenv", "$varname", "-e", '"print(System.getenv(\''+varname+'\'))"'],
+       def p = TestUtils.executeClientWithEnv(["-Cenv", "$varname",
+                                               "-e", '"print(System.getenv(\''+varname+'\'))"'],
                                               ["$varname=$varvalue"])
        assert p.err.text == ""
        assert p.text == "$varvalue"
@@ -175,13 +183,22 @@ options:
            arg += ["-Cenv", "_VAR$it" ]
        }
        def p = TestUtils.executeClient([*arg, "-e", '"print(\'hello\')"'])
-       assert p.err.text == "ERROR: too many option: env _VAR11\n"
-       assert p.text.startsWith("\nusage:")
-       assertEquals 1, p.exitValue()
+       if (!System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) {
+           assert p.err.text == "ERROR: too many option: env _VAR11\n"
+           assert p.text.startsWith("\nusage:")
+           assertEquals 1, p.exitValue()
+       }
+       else {
+           // ruby client has no limitation about number of patterns.
+           assert p.text == "hello"
+           assert p.err.text == ""
+           assertEquals 0, p.exitValue()
+       }
    }
 
    void testEnv_exclude() {
-       def p = TestUtils.executeClientWithEnv(["-Cenv", "X", "-Cenv-exclude", "X01", "-e", '"print(System.getenv(\'X01\')+System.getenv(\'X02\'))"'],
+       def p = TestUtils.executeClientWithEnv(["-Cenv", "X", "-Cenv-exclude", "X01",
+                                               "-e", '"print(System.getenv(\'X01\')+System.getenv(\'X02\'))"'],
                                               ["X01=1234", "X02=5678"])
        assert p.err.text == ""
        assert p.text == "null5678"
@@ -189,7 +206,8 @@ options:
    }
 
    void testEnv_and_exclude() {
-       def p = TestUtils.executeClientWithEnv(["-Cenv", "X03", "-Cenv-exclude", "X03", "-e", '"print(System.getenv(\'X03\'))"'],
+       def p = TestUtils.executeClientWithEnv(["-Cenv", "X03", "-Cenv-exclude", "X03",
+                                               "-e", '"print(System.getenv(\'X03\'))"'],
                                               ["X03=1234"])
        assert p.err.text == ""
        assert p.text == "null"
@@ -198,7 +216,8 @@ options:
    }
 
    void testEnv_all_and_exclude() {
-       def p = TestUtils.executeClientWithEnv(["-Cenv-all", "-Cenv-exclude", "X04", "-e", '"print(System.getenv(\'X04\')+System.getenv(\'X05\'))"'],
+       def p = TestUtils.executeClientWithEnv(["-Cenv-all", "-Cenv-exclude", "X04",
+                                               "-e", '"print(System.getenv(\'X04\')+System.getenv(\'X05\'))"'],
                                               ["X04=1234", "X05=5678"])
        assert p.err.text == ""
        assert p.text == "null5678"
@@ -216,25 +235,29 @@ options:
    }
 
    void testEnv_keep_and_overwrite() {
-       def p1 = TestUtils.executeClientWithEnv(["-Cenv-all", "-e", '"print(System.getenv(\'Y01\'))"'], ["Y01=1234"])
+       def p1 = TestUtils.executeClientWithEnv(["-Cenv-all",
+                                                "-e", '"print(System.getenv(\'Y01\'))"'], ["Y01=1234"])
        assert p1.err.text == ""
        assert p1.text == "1234"
        assertEquals 0, p1.exitValue()
 
        // keep
-       def p2 = TestUtils.executeClient(["-Cenv-all", "-e", '"print(System.getenv(\'Y01\'))"'])
+       def p2 = TestUtils.executeClient(["-Cenv-all",
+                                         "-e", '"print(System.getenv(\'Y01\'))"'])
        assert p2.err.text == ""
        assert p2.text == "1234"
        assertEquals 0, p2.exitValue()
 
        // overwrite
-       def p3 = TestUtils.executeClientWithEnv(["-Cenv-all", "-e", '"print(System.getenv(\'Y01\'))"'], ["Y01=5678"])
+       def p3 = TestUtils.executeClientWithEnv(["-Cenv-all",
+                                                "-e", '"print(System.getenv(\'Y01\'))"'], ["Y01=5678"])
        assert p3.err.text == ""
        assert p3.text == "5678"
        assertEquals 0, p3.exitValue()
 
        // keep
-       def p4 = TestUtils.executeClient(["-Cenv-all", "-e", '"print(System.getenv(\'Y01\'))"'])
+       def p4 = TestUtils.executeClient(["-Cenv-all",
+                                         "-e", '"print(System.getenv(\'Y01\'))"'])
        assert p4.err.text == ""
        assert p4.text == "5678"
        assertEquals 0, p4.exitValue()
@@ -242,14 +265,16 @@ options:
 
    void testEnv_protect_and_overwrite() {
        // initialize
-       def p1 = TestUtils.executeClientWithEnv(["-Cenv-all", "-e", '"print(System.getenv(\'Y04\')+System.getenv(\'Y05\'))"'],
+       def p1 = TestUtils.executeClientWithEnv(["-Cenv-all",
+                                                "-e", '"print(System.getenv(\'Y04\')+System.getenv(\'Y05\'))"'],
                                                ["Y04=1234", "Y05=5678"])
        assert p1.err.text == ""
        assert p1.text == "12345678"
        assertEquals 0, p1.exitValue()
 
        // protect Y05 but replace Y04(1234->abcd)
-       def p2 = TestUtils.executeClientWithEnv(["-Cenv", "Y04", "-Cenv-exclude", "Y05", "-e", '"print(System.getenv(\'Y04\')+System.getenv(\'Y05\'))"'],
+       def p2 = TestUtils.executeClientWithEnv(["-Cenv", "Y04", "-Cenv-exclude", "Y05",
+                                                "-e", '"print(System.getenv(\'Y04\')+System.getenv(\'Y05\'))"'],
                                                ["Y04=abcd", "Y05=efgh"])
 
        assert p2.err.text == ""

@@ -31,7 +31,6 @@ COOKIE_FILE = HOME_DIR + "/.groovy/groovyserv/cookie"
 GROOVYSERVER_CMD = ENV.fetch("GROOVYSERV_HOME", File.dirname($0)+"/..") + "/bin/groovyserver"
 
 CLIENT_OPTION_PREFIX="-C"
-MATCH_ALL_PATTERN="*"
 
 #-------------------------------------------
 # Classes
@@ -41,11 +40,12 @@ class ClientOption
   def initialize
     @without_invoking_server
     @help
+    @env_all
     @env_include_mask = []
     @env_exclude_mask = []
   end
 
-  attr_accessor :without_invoking_server, :help, :env_include_mask, :env_exclude_mask
+  attr_accessor :without_invoking_server, :help, :env_all, :env_include_mask, :env_exclude_mask
 end
 
 class OptionInfo
@@ -62,7 +62,7 @@ class OptionInfo
   end
   class OptionInfoEnvAll < OptionInfo
     def eval
-      $client_option.env_include_mask.push(MATCH_ALL_PATTERN)
+      $client_option.env_all = true
     end
   end
   class OptionInfoEnvExclude < OptionInfo
@@ -143,16 +143,18 @@ def is_groovy_help_option(s)
   ["--help", "-help",  "-h"].include?(s)
 end
 
-def process_opt(opt, arg)
+def process_opt(item, arg)
+  opt = OptionInfo.options[item[2..-1]]
+
   if opt == nil
-    puts "ERROR: unknown option #{item}"
+    STDERR.puts "ERROR: unknown option #{item}"
     usage()
     exit(1)
   end
 
   if opt.take_value
     if arg == []
-      puts "ERROR: option #{item} require param"
+      STDERR.puts "ERROR: option #{item} require param"
       usage()
       exit(1)
     end
@@ -175,8 +177,7 @@ def process_opts(arg)
       $client_option.help = true
     end
     if item.start_with?(CLIENT_OPTION_PREFIX)
-      opt = OptionInfo.options[item[2..-1]]
-      process_opt(opt, arg)
+      process_opt(item, arg)
     else
       result.push(item)
     end
@@ -185,9 +186,9 @@ def process_opts(arg)
 end
 
 def start_server()
-  puts "starting server..."
+  STDERR.puts "starting server..."
   unless FileTest.executable? GROOVYSERVER_CMD
-    puts "ERROR: Command not found: #{GROOVYSERVER_CMD}"
+    STDERR.puts "ERROR: Command not found: #{GROOVYSERVER_CMD}"
     exit 1
   end
   system(GROOVYSERVER_CMD, "-p", "#{DESTPORT}")
@@ -208,9 +209,8 @@ end
 
 def send_envvars(socket)
   ENV.each{|key,value|
-    if $client_option.env_include_mask.any?{|item| key.match(item) } ||
-        $client_option.env_include_mask == MATCH_ALL_PATTERN
-      if !$client_option.env_exclude_mask.any?{|item| key.match(item) }
+    if $client_option.env_all || $client_option.env_include_mask.any?{|item| item.include?(key) }
+      if !$client_option.env_exclude_mask.any?{|item| item.include?(key) }
         socket.puts "Env: #{key}=#{value}"
       end
     end
@@ -309,11 +309,11 @@ begin
   }
 rescue Errno::ECONNREFUSED
   if $client_option.without_invoking_server
-    puts "ERROR: groovyserver isn't running"
+    STDERR.puts "ERROR: groovyserver isn't running"
     exit 9
   end
   if failCount >= 3
-    puts "ERROR: Failed to start up groovyserver: #{GROOVYSERVER_CMD}"
+    STDERR.puts "ERROR: Failed to start up groovyserver: #{GROOVYSERVER_CMD}"
     exit 1
   end
   start_server
@@ -324,8 +324,8 @@ rescue Errno::ECONNRESET, Errno::EPIPE
   # normally exit if reset by peer or broken pipe
   exit 0
 rescue => e
-  puts "ERROR: #{e.message}"
-  puts e.backtrace
+  STDERR.puts "ERROR: #{e.message}"
+  STDERR.puts e.backtrace
   exit 1
 end
 
