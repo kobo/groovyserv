@@ -79,15 +79,15 @@ if [ "x$GROOVY_HOME" != "x" ]; then
     fi
     GROOVY_BIN="$GROOVY_HOME/bin/groovy"
     if [ ! -x "$GROOVY_BIN" ]; then
-        echo "ERROR: Not found a groovy command in GROOVY_HOME: $GROOVY_BIN"
+        echo "ERROR: Not found a groovy command in GROOVY_HOME: $GROOVY_BIN" 1>&2
         exit 1
     fi
-    echo "GROOVY: $GROOVY_BIN"
+    echo "GROOVY: $GROOVY_BIN" 1>&2
 elif which groovy >/dev/null 2>&1; then
     GROOVY_BIN=groovy
-    echo "GROOVY: $(which groovy)"
+    echo "GROOVY: $(which groovy)" 1>&2
 else
-    echo "ERROR: Not found a groovy command. Required either PATH having groovy command or GROOVY_HOME"
+    echo "ERROR: Not found a groovy command. Required either PATH having groovy command or GROOVY_HOME" 1>&2
     exit 1
 fi
 
@@ -135,10 +135,10 @@ if [ ! -d "$GROOVYSERV_HOME" ]; then
 fi
 ls $GROOVYSERV_HOME/lib/groovyserv-*.jar >/dev/null 2>&1
 if [ ! $? -eq 0 ]; then
-    echo "ERROR: Not found a valid GROOVYSERV_HOME directory: $GROOVYSERV_HOME"
+    echo "ERROR: Not found a valid GROOVYSERV_HOME directory: $GROOVYSERV_HOME" 1>&2
     exit 1
 fi
-echo "GROOVYSERV_HOME: $GROOVYSERV_HOME"
+echo "GROOVYSERV_HOME: $GROOVYSERV_HOME" 1>&2
 
 #-------------------------------------------
 # Find groovyclient command
@@ -146,7 +146,7 @@ echo "GROOVYSERV_HOME: $GROOVYSERV_HOME"
 
 GROOVYCLIENT_BIN="$GROOVYSERV_HOME/bin/groovyclient"
 if [ ! -x "$GROOVYCLIENT_BIN" ]; then
-    echo "ERROR: Not found a groovyclient command in GROOVYSERV_HOME: $GROOVYCLIENT_BIN"
+    echo "ERROR: Not found a groovyclient command in GROOVYSERV_HOME: $GROOVYCLIENT_BIN" 1>&2
     exit 1
 fi
 
@@ -185,19 +185,19 @@ if [ "$DO_KILL" != "" ]; then
         ps -p $EXISTED_PID >/dev/null 2>&1
         if [ $? -eq 0 ]; then
             kill -9 $EXISTED_PID
-            echo "Killed groovyserver of $EXISTED_PID($PORT)"
+            echo "Killed groovyserver of $EXISTED_PID($PORT)" 1>&2
         else
-            echo "Process of groovyserver of $EXISTED_PID($PORT) not found"
+            echo "Process of groovyserver of $EXISTED_PID($PORT) not found" 1>&2
         fi
         rm -f "$GROOVYSERV_PID_FILE"
         rm -f "$GROOVYSERV_COOKIE_FILE"
     else
-        echo "PID file $GROOVYSERV_PID_FILE not found"
+        echo "PID file $GROOVYSERV_PID_FILE not found" 1>&2
     fi
     if [ "$DO_KILL" = "KILL_ONLY" ]; then
         exit 0
     fi
-    echo "Restarting groovyserver"
+    echo "Restarting groovyserver" 1>&2
 fi
 
 #-------------------------------------------
@@ -210,13 +210,13 @@ if [ -f "$GROOVYSERV_PID_FILE" ]; then
     # if connecting to server is succeed, return with warning message
     $IS_SERVER_AVAILABLE > /dev/null 2>&1
     if [ $? -eq 0 ]; then
-        echo "WARN: groovyserver is already running as $EXISTED_PID($PORT)"
+        echo "WARN: groovyserver is already running as $EXISTED_PID($PORT)" 1>&2
         exit 1
     fi
 
     # if PID file doesn't expired, terminate the sequence of invoking server
     if [ "`sh -c \"$EXPIRED_PID_FILE\"`" = "" ]; then
-        echo "WARN: Another process may be starting groovyserver."
+        echo "WARN: Another process may be starting groovyserver." 1>&2
         exit 1
     fi
 fi
@@ -237,8 +237,8 @@ ps -p $PID | grep $PID > /dev/null
 if [ $? -eq 0 ]; then
     echo $PID > "$GROOVYSERV_PID_FILE"
 else
-    echo "ERROR: Failed to store PID into file $GROOVYSERV_PID_FILE"
-    echo "Rerun for debug..."
+    echo "ERROR: Failed to store PID into file $GROOVYSERV_PID_FILE" 1>&2
+    echo "Rerun for debug..." 1>&2
     "$GROOVY_BIN" $GROOVYSERV_OPTS -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)" &
     exit 1
 fi
@@ -248,7 +248,7 @@ fi
 #-------------------------------------------
 
 while true; do
-    /bin/echo -n "."
+    /bin/echo -n "." 1>&2
     sleep 1
 
     # waiting until cookie filed is created
@@ -264,11 +264,11 @@ while true; do
 
     # if PID file was expired while to connect to server is failing, error
     if [ "`sh -c \"$EXPIRED_PID_FILE\"`" != "" ]; then
-        echo "ERROR: Timeout. Confirm if groovyserver $PID($PORT) is running."
+        echo "ERROR: Timeout. Confirm if groovyserver $PID($PORT) is running." 1>&2
         exit 1
     fi
 done
 
-echo
-echo "groovyserver $PID($PORT) is successfully started"
+echo  1>&2
+echo "groovyserver $PID($PORT) is successfully started" 1>&2
 
