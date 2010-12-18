@@ -76,15 +76,15 @@ class OptionInfo
       exit(0)
     end
   end
-  class OptionInfoHelp < OptionInfo
+  class OptionInfoKillServer < OptionInfo
     def eval
-      usage()
+      system(GROOVYSERVER_CMD, "-k")
       exit(0)
     end
   end
-  class OptionInfoHelp < OptionInfo
+  class OptionInfoRestartServer < OptionInfo
     def eval
-      usage()
+      system(GROOVYSERVER_CMD, "-r")
       exit(0)
     end
   end
@@ -100,7 +100,11 @@ class OptionInfo
     "env-exclude" => OptionInfoEnvExclude.new(true),
     "help" => OptionInfoHelp.new(false),
     "h" => OptionInfoHelp.new(false),
-    "" => OptionInfoHelp.new(false) }
+    "" => OptionInfoHelp.new(false),
+    "k" => OptionInfoKillServer.new(false),
+    "kill-server" => OptionInfoKillServer.new(false),
+    "r" => OptionInfoRestartServer.new(false),
+    "restart-server" => OptionInfoRestartServer.new(false) }
   def OptionInfo.options
     @@options
   end
@@ -129,7 +133,13 @@ def usage()
          "                                   are set to or overwitten by the passed values.\n"+
          "  %senv-all                        Pass all environment variables\n"+
          "  %senv-exclude <pattern>          Don't pass the environment variables which\n"+
-         "                                   name matches with specified pattern\n",
+         "                                   name matches with specified pattern\n"+
+         "  %sk,%skill-server                Kill groovyserver\n"+
+         "  %sr,%srestart-server             Restart groovyserver\n",
+         CLIENT_OPTION_PREFIX,
+         CLIENT_OPTION_PREFIX,
+         CLIENT_OPTION_PREFIX,
+         CLIENT_OPTION_PREFIX,
          CLIENT_OPTION_PREFIX,
          CLIENT_OPTION_PREFIX,
          CLIENT_OPTION_PREFIX,
