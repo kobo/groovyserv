@@ -35,11 +35,9 @@
 #include "option.h"
 #include "bool.h"
 #include "session.h"
+#include "config.h"
 
-#define DESTSERV "localhost"
-#define DESTPORT 1961
-
-char* scriptdir(char* result_dir, char* script_path)
+static char* scriptdir(char* result_dir, char* script_path)
 {
     // prepare work variable of script path
     int script_path_length = strlen(script_path);
@@ -63,11 +61,8 @@ char* scriptdir(char* result_dir, char* script_path)
     //fprintf(stderr, "DEBUG: scriptdir: %s, %d\n", result_dir, strlen(result_dir));
 }
 
-void start_server(char* script_path, int port)
+static char* groovyserver_cmdline(char* script_path, char* arg, int port)
 {
-    fprintf(stderr, "starting server...\n");
-    fflush(stderr);
-
     // resolve base directory
     char basedir_path[MAXPATHLEN];
     char* groovyserv_home = getenv("GROOVYSERV_HOME");
@@ -83,28 +78,48 @@ void start_server(char* script_path, int port)
     //fprintf(stderr, "DEBUG: basedir_path: %s, %d\n", basedir_path, strlen(basedir_path));
 
     // make command line to invoke groovyserver
-    char groovyserver_path[MAXPATHLEN];
+    static char cmdline[MAXPATHLEN];
 #ifdef WINDOWS
-    sprintf(groovyserver_path, "%sgroovyserver.bat -p %d", basedir_path, port);
+    sprintf(cmdline, "%sgroovyserver.bat %s -p %d %s", basedir_path, arg, port);
 #else
-    sprintf(groovyserver_path, "%sgroovyserver -p %d", basedir_path, port);
+    sprintf(cmdline, "%sgroovyserver %s -p %d", basedir_path, arg, port);
 #endif
-    //fprintf(stderr, "DEBUG: groovyserver_path: %s, %d\n", groovyserver_path, strlen(groovyserver_path));
+    //fprintf(stderr, "DEBUG: cmdline: %s, %d\n", cmdline, strlen(cmdline));
+    return cmdline;
+}
+
+void start_server(char* script_path, int port)
+{
+    fprintf(stderr, "starting server...\n");
+    fflush(stderr);
 
     // start groovyserver.
-    system(groovyserver_path);
+    char* cmdline = groovyserver_cmdline(script_path, "", port);
+    system(cmdline);
+}
+
+void kill_server(char* script_path, int port)
+{
+    char* cmdline = groovyserver_cmdline(script_path, "-k", port);
+    system(cmdline);
+}
+
+void restart_server(char* script_path, int port)
+{
+    char* cmdline = groovyserver_cmdline(script_path, "-r", port);
+    system(cmdline);
 }
 
 /*
  * read authentication cookie.
  */
-void read_cookie(char* cookie, int size)
+static void read_cookie(char* cookie, int size, int port)
 {
     char path[MAXPATHLEN];
 #ifdef WINDOWS
-    sprintf(path, "%s\\.groovy\\groovyserv\\cookie", getenv("USERPROFILE"));
+    sprintf(path, "%s\\.groovy\\groovyserv\\cookie-%d", getenv("USERPROFILE"), port);
 #else
-    sprintf(path, "%s/.groovy/groovyserv/cookie", getenv("HOME"));
+    sprintf(path, "%s/.groovy/groovyserv/cookie-%d", getenv("HOME"), port);
 #endif
     FILE* fp = fopen(path, "r");
     if (fp != NULL) {
@@ -120,28 +135,27 @@ void read_cookie(char* cookie, int size)
     }
 }
 
-int resolve_port()
+static int get_port()
 {
-    int port = DESTPORT;
+    int port = client_option.port;
     char* port_str = getenv("GROOVYSERVER_PORT");
     if (port_str != NULL) {
         if (sscanf(port_str, "%d", &port) != 1) {
-            fprintf(stderr, "ERROR: port format error\n");
+            fprintf(stderr, "ERROR: port number %s of GROOVYSERV_PORT error\n", port_str);
             exit(1);
         }
     }
     return port;
 }
 
-int connect_server(char* argv0)
+static int connect_server(char* argv0, int port)
 {
     int fd;
 
-    int port = resolve_port();
     int failCount = 0;
 
     while ((fd = open_socket(DESTSERV, port)) == -1) {
-        if (client_option_values.without_invocation_server == TRUE) {
+        if (client_option.without_invocation_server == TRUE) {
             fprintf(stderr, "ERROR: groovyserver isn't running\n");
             exit(9);
         }
@@ -193,23 +207,34 @@ int main(int argc, char** argv)
     }
 #endif
 
-    scan_options(&client_option_values, argc, argv);
+    scan_options(&client_option, argc, argv);
 
 #ifdef DEBUG
-    print_client_options(&client_option_values);
+    print_client_options(&client_option);
 #endif
 
-    fd_soc = connect_server(argv[0]);
+    int port = get_port();
+
+    if (client_option.kill) {
+        kill_server(argv[0], port);
+        exit(0);
+    }
+    else if (client_option.restart) {
+        restart_server(argv[0], port);
+        exit(0);
+    }
+
+    fd_soc = connect_server(argv[0], port);
 
     signal(SIGINT, signal_handler); // using fd_soc in handler
 
     char cookie[BUFFER_SIZE];
-    read_cookie(cookie, sizeof(cookie));
+    read_cookie(cookie, sizeof(cookie), port);
 
     send_header(fd_soc, argc, argv, cookie);
     int status = start_session(fd_soc);
 
-    if (client_option_values.help) {
+    if (client_option.help) {
         usage();
         exit(0);
     }

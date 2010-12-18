@@ -27,7 +27,7 @@ if RUBY_PLATFORM.downcase =~ /mswin(?!ce)|mingw|cygwin|bccwin/  # if windows
 else
   HOME_DIR = ENV['HOME']
 end
-COOKIE_FILE = HOME_DIR + "/.groovy/groovyserv/cookie"
+COOKIE_FILE_BASE = HOME_DIR + "/.groovy/groovyserv/cookie"
 GROOVYSERVER_CMD = ENV.fetch("GROOVYSERV_HOME", File.dirname($0)+"/..") + "/bin/groovyserver"
 
 CLIENT_OPTION_PREFIX="-C"
@@ -39,34 +39,30 @@ CLIENT_OPTION_PREFIX="-C"
 class ClientOption
   def initialize
     @without_invoking_server
-    @help
+    @port = DESTPORT
     @env_all
     @env_include_mask = []
     @env_exclude_mask = []
+    @help
   end
 
-  attr_accessor :without_invoking_server, :help, :env_all, :env_include_mask, :env_exclude_mask
+  attr_accessor :without_invoking_server, :port, :env_all, :env_include_mask, :env_exclude_mask, :help;
+
 end
 
 class OptionInfo
 
   attr_accessor :take_value
 
+  class OptionInfoPort < OptionInfo
+    def eval(value)
+      $client_option.port = value
+    end
+  end
+
   class OptionInfoWithoutInvokingServer < OptionInfo
     def eval
       $client_option.without_invoking_server = true
-    end
-  end
-
-  class OptionInfoEnv < OptionInfo
-    def eval(value)
-      $client_option.env_include_mask.push(value)
-    end
-  end
-
-  class OptionInfoEnvAll < OptionInfo
-    def eval
-      $client_option.env_all = true
     end
   end
 
@@ -85,15 +81,27 @@ class OptionInfo
 
   class OptionInfoKillServer < OptionInfo
     def eval
-      system(GROOVYSERVER_CMD, "-k")
+      system(GROOVYSERVER_CMD, "-k", "-p", $client_option.port.to_s)
       exit(0)
     end
   end
 
   class OptionInfoRestartServer < OptionInfo
     def eval
-      system(GROOVYSERVER_CMD, "-r")
+      system(GROOVYSERVER_CMD, "-r", "-p", $client_option.port.to_s)
       exit(0)
+    end
+  end
+
+  class OptionInfoEnv < OptionInfo
+    def eval(value)
+      $client_option.env_include_mask.push(value)
+    end
+  end
+
+  class OptionInfoEnvAll < OptionInfo
+    def eval
+      $client_option.env_all = true
     end
   end
 
@@ -103,16 +111,19 @@ class OptionInfo
 
   @@options = {
     "without-invoking-server" => OptionInfoWithoutInvokingServer.new(false),
+    "p" => OptionInfoPort.new(true),
+    "port" => OptionInfoPort.new(true),
+    "k" => OptionInfoKillServer.new(false),
+    "kill-server" => OptionInfoKillServer.new(false),
+    "r" => OptionInfoRestartServer.new(false),
+    "restart-server" => OptionInfoRestartServer.new(false),
     "env" => OptionInfoEnv.new(true),
     "env-all" => OptionInfoEnvAll.new(false),
     "env-exclude" => OptionInfoEnvExclude.new(true),
     "help" => OptionInfoHelp.new(false),
     "h" => OptionInfoHelp.new(false),
-    "" => OptionInfoHelp.new(false),
-    "k" => OptionInfoKillServer.new(false),
-    "kill-server" => OptionInfoKillServer.new(false),
-    "r" => OptionInfoRestartServer.new(false),
-    "restart-server" => OptionInfoRestartServer.new(false) }
+    "" => OptionInfoHelp.new(false)
+    }
 
   def OptionInfo.options
     @@options
@@ -131,10 +142,13 @@ $client_option = ClientOption.new()
 #-------------------------------------------
 
 def usage()
-  printf("\n"+
+  print(("\n"+
          "usage: groovyclient.rb %s[option for groovyclient] [args/options for groovy]\n"+
          "options:\n"+
          "  %sh,%shelp                       Usage information of groovyclient options\n"+
+         "  %sp,%sport <port>                Specify port number to connect to groovyserver\n"+
+         "  %sk,%skill-server                Kill groovyserver\n"+
+         "  %sr,%srestart-server             Restart groovyserver\n"+
          "  %senv <pattern>                  Pass the environment variables which name\n"+
          "                                   matches with the specified pattern. The values\n"+
          "                                   of matched variables on the client process are\n"+
@@ -144,19 +158,7 @@ def usage()
          "  %senv-all                        Pass all environment variables\n"+
          "  %senv-exclude <pattern>          Don't pass the environment variables which\n"+
          "                                   name matches with specified pattern\n"+
-         "  %sk,%skill-server                Kill groovyserver\n"+
-         "  %sr,%srestart-server             Restart groovyserver\n",
-         CLIENT_OPTION_PREFIX,
-         CLIENT_OPTION_PREFIX,
-         CLIENT_OPTION_PREFIX,
-         CLIENT_OPTION_PREFIX,
-         CLIENT_OPTION_PREFIX,
-         CLIENT_OPTION_PREFIX,
-         CLIENT_OPTION_PREFIX,
-         CLIENT_OPTION_PREFIX,
-         CLIENT_OPTION_PREFIX,
-         CLIENT_OPTION_PREFIX,
-         CLIENT_OPTION_PREFIX)
+         "").gsub("%s", CLIENT_OPTION_PREFIX))
 end
 
 def is_groovy_help_option(s)
@@ -211,7 +213,7 @@ def start_server()
     STDERR.puts "ERROR: Command not found: #{GROOVYSERVER_CMD}"
     exit 1
   end
-  system(GROOVYSERVER_CMD, "-p", "#{DESTPORT}")
+  system(GROOVYSERVER_CMD, "-p", $client_option.port.to_s)
 end
 
 def session(socket, args)
@@ -242,7 +244,7 @@ def send_command(socket, args)
   args.each do |it|
     socket.puts "Arg: #{it}"
   end
-  File.open(COOKIE_FILE) { |f|
+  File.open(COOKIE_FILE_BASE+"-"+$client_option.port.to_s) { |f|
     socket.puts "Cookie: #{f.read}"
   }
   send_envvars(socket)
@@ -315,7 +317,7 @@ args = process_opts(ARGV)
 
 failCount = 0
 begin
-  TCPSocket.open(DESTHOST, DESTPORT) { |socket|
+  TCPSocket.open(DESTHOST, $client_option.port) { |socket|
     Signal.trap(:INT) {
       send_interrupt(socket)
       socket.close()

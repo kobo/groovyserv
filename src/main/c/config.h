@@ -1,7 +1,7 @@
 /*
  * Copyright 2009-2010 the original author or authors.
  *
- * Licensed under the Apache License, Version 2.0 (the "License")
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -13,23 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jggug.kobo.groovyserv
 
+#ifndef _CONFIG_H
+#define _CONFIG_H
 
-/**
- * @author NAKANO Yasuharu
- */
-class FileUtils {
+#define DESTSERV "localhost"
+#define DESTPORT 1961
 
-    static final DATA_DIR = new File("${System.getProperty('user.home')}/.groovy/groovyserv")
-    static final LOG_FILE = new File(DATA_DIR, "groovyserver.log")
-    static final COOKIE_FILE = new File(DATA_DIR, "cookie-${GroovyServer.getPortNumber()}")
-
-    static initWorkDir() {
-        if (!DATA_DIR.isDirectory()) {
-            DATA_DIR.mkdirs()
-        }
-    }
-
-}
-
+#endif

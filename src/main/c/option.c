@@ -22,9 +22,16 @@
 
 #include "option.h"
 #include "bool.h"
+#include "config.h"
 
 struct option_info_t option_info[] = {
     { "without-invoking-server", OPT_WITHOUT_INVOCATION_SERVER, FALSE },
+    { "p", OPT_PORT, TRUE },
+    { "port", OPT_PORT, TRUE },
+    { "k", OPT_KILL_SERVER, FALSE },
+    { "kill-server", OPT_KILL_SERVER, FALSE },
+    { "r", OPT_RESTART_SERVER, FALSE },
+    { "restart-server", OPT_RESTART_SERVER, FALSE },
     { "env", OPT_ENV, TRUE },
     { "env-all", OPT_ENV_ALL, FALSE },
     { "env-exclude", OPT_ENV_EXCLUDE, TRUE },
@@ -33,11 +40,15 @@ struct option_info_t option_info[] = {
     { "", OPT_HELP, FALSE },
 };
 
-struct option_t client_option_values = {
+struct option_t client_option = {
+    FALSE,
+    DESTPORT,
+    FALSE,
     FALSE,
     FALSE,
     {}, // each array elements are expected to be filled with NULLs
     {}, // each array elements are expected to be filled with NULLs
+    FALSE,
 };
 
 static char *groovy_help_options[] = {
@@ -49,26 +60,27 @@ static char *groovy_help_options[] = {
 void usage()
 {
     printf("\n"
-           "usage: groovyclient %s[option for groovyclient] [args/options for groovy]\n" \
+           "usage: groovyclient.rb %s[option for groovyclient] [args/options for groovy]\n" \
            "options:\n" \
            "  %sh,%shelp                       Usage information of groovyclient options\n" \
+           "  %sp,%sport <port>                Specify port number to connect to groovyserver\n" \
+           "  %sk,%skill-server                Kill groovyserver\n" \
+           "  %sr,%srestart-server             Restart groovyserver\n" \
            "  %senv <pattern>                  Pass the environment variables which name\n" \
            "                                   matches with the specified pattern. The values\n" \
            "                                   of matched variables on the client process are\n" \
-           "                                   sent to the server process, and the values of\n"
+           "                                   sent to the server process, and the values of\n" \
            "                                   same name environment variable on the server\n" \
            "                                   are set to or overwitten by the passed values.\n" \
            "  %senv-all                        Pass all environment variables\n" \
            "  %senv-exclude <pattern>          Don't pass the environment variables which\n" \
            "                                   name matches with specified pattern\n" \
-           , CLIENT_OPTION_PREFIX
-           , CLIENT_OPTION_PREFIX
-           , CLIENT_OPTION_PREFIX
-           , CLIENT_OPTION_PREFIX
-           , CLIENT_OPTION_PREFIX
-           , CLIENT_OPTION_PREFIX
-           , CLIENT_OPTION_PREFIX
-           );
+           ""
+           , CLIENT_OPTION_PREFIX, CLIENT_OPTION_PREFIX, CLIENT_OPTION_PREFIX
+           , CLIENT_OPTION_PREFIX, CLIENT_OPTION_PREFIX, CLIENT_OPTION_PREFIX
+           , CLIENT_OPTION_PREFIX, CLIENT_OPTION_PREFIX, CLIENT_OPTION_PREFIX
+           , CLIENT_OPTION_PREFIX, CLIENT_OPTION_PREFIX, CLIENT_OPTION_PREFIX
+        );
 }
 
 static BOOL is_client_option(char* s)
@@ -155,21 +167,43 @@ void scan_options(struct option_t* option, int argc, char **argv)
             case OPT_WITHOUT_INVOCATION_SERVER:
                 option->without_invocation_server = TRUE;
                 break;
-            case OPT_HELP:
-                usage();
-                exit(1);
+            case OPT_PORT:
+                if (sscanf(value, "%d", &option->port) != 1) {
+                    fprintf(stderr, "ERROR: port number %s of option %s error\n", value, argvi_copy);
+                    exit(1);
+                }
+                break;
+            case OPT_KILL_SERVER:
+                if (option->restart) {
+                    fprintf(stderr, "ERROR: can't specify both of kill & restart\n");
+                    exit(1);
+                }
+                option->kill = TRUE;
+                break;
+            case OPT_RESTART_SERVER:
+                if (option->kill) {
+                    fprintf(stderr, "ERROR: can't specify both of kill & restart\n");
+                    exit(1);
+                }
+                option->restart = TRUE;
                 break;
             case OPT_ENV:
                 assert(opt->take_value == TRUE);
                 set_mask_option(option->env_include_mask, name, value);
                 break;
             case OPT_ENV_ALL:
-                set_mask_option(option->env_include_mask, name, MATCH_ALL_PATTERN);
+                option->env_all = TRUE;
                 break;
             case OPT_ENV_EXCLUDE:
                 assert(opt->take_value == TRUE);
                 set_mask_option(option->env_exclude_mask, name, value);
                 break;
+            case OPT_HELP:
+                usage();
+                exit(1);
+                break;
+            default:
+                assert(FALSE);
             }
         }
     }
