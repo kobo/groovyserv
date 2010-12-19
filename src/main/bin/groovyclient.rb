@@ -40,6 +40,7 @@ class ClientOption
   def initialize
     @without_invoking_server
     @port = DESTPORT
+    @quiet = false
     @env_all
     @env_include_mask = []
     @env_exclude_mask = []
@@ -93,6 +94,12 @@ class OptionInfo
     end
   end
 
+  class OptionInfoQuiet < OptionInfo
+    def eval(value)
+      $client_option.quiet = true
+    end
+  end
+
   class OptionInfoEnv < OptionInfo
     def eval(value)
       $client_option.env_include_mask.push(value)
@@ -117,6 +124,8 @@ class OptionInfo
     "kill-server" => OptionInfoKillServer.new(false),
     "r" => OptionInfoRestartServer.new(false),
     "restart-server" => OptionInfoRestartServer.new(false),
+    "q" => OptionInfoQuiet.new(false),
+    "quiet" => OptionInfoQuiet.new(false),
     "env" => OptionInfoEnv.new(true),
     "env-all" => OptionInfoEnvAll.new(false),
     "env-exclude" => OptionInfoEnvExclude.new(true),

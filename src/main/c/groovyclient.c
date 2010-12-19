@@ -88,26 +88,54 @@ static char* groovyserver_cmdline(char* script_path, char* arg, int port)
     return cmdline;
 }
 
+/*
 void start_server(char* script_path, int port)
 {
-    fprintf(stderr, "starting server...\n");
-    fflush(stderr);
-
+    char* opt = "";
     // start groovyserver.
-    char* cmdline = groovyserver_cmdline(script_path, "", port);
+    if (!client_option.quiet) {
+        fprintf(stderr, "Invoke server %s\n", cmdline);
+        fflush(stderr);
+    }
+    else {
+        opt = "-q"
+    }
+    char* cmdline = groovyserver_cmdline(script_path, opt, port);
     system(cmdline);
+}
+*/
+
+void invoke_server(char* script_path, int port, char* main_opt)
+{
+    char* opt = strdup(main_opt);
+    char* quiet_option = " -q";
+
+    if (client_option.quiet) {
+        opt = realloc(opt, strlen(opt)+strlen(quiet_option)+1); 
+        strcat(opt, quiet_option);
+    }
+    char* cmdline = groovyserver_cmdline(script_path, opt, port);
+    if (!client_option.quiet) {
+        fprintf(stderr, "Invoke server %s\n", cmdline);
+        fflush(stderr);
+    }
+    system(cmdline);
+    free(opt);
+}
+
+void start_server(char* script_path, int port)
+{
+    invoke_server(script_path, port, "");
 }
 
 void kill_server(char* script_path, int port)
 {
-    char* cmdline = groovyserver_cmdline(script_path, "-k", port);
-    system(cmdline);
+    invoke_server(script_path, port, "-k");
 }
 
 void restart_server(char* script_path, int port)
 {
-    char* cmdline = groovyserver_cmdline(script_path, "-r", port);
-    system(cmdline);
+    invoke_server(script_path, port, "-r");
 }
 
 /*
@@ -137,15 +165,21 @@ static void read_cookie(char* cookie, int size, int port)
 
 static int get_port()
 {
-    int port = client_option.port;
+    if (client_option.port != PORT_NOT_SPECIFIED) {
+        return client_option.port;
+    }
+
     char* port_str = getenv("GROOVYSERVER_PORT");
     if (port_str != NULL) {
+        int port;
         if (sscanf(port_str, "%d", &port) != 1) {
             fprintf(stderr, "ERROR: port number %s of GROOVYSERV_PORT error\n", port_str);
             exit(1);
         }
+        return port;
     }
-    return port;
+
+    return DESTPORT;
 }
 
 static int connect_server(char* argv0, int port)

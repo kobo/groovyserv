@@ -35,6 +35,8 @@ struct option_info_t option_info[] = {
     { "env", OPT_ENV, TRUE },
     { "env-all", OPT_ENV_ALL, FALSE },
     { "env-exclude", OPT_ENV_EXCLUDE, TRUE },
+    { "q", OPT_QUIET, FALSE },
+    { "quiet", OPT_QUIET, FALSE },
     { "help", OPT_HELP, FALSE },
     { "h", OPT_HELP, FALSE },
     { "", OPT_HELP, FALSE },
@@ -42,7 +44,8 @@ struct option_info_t option_info[] = {
 
 struct option_t client_option = {
     FALSE,
-    DESTPORT,
+    PORT_NOT_SPECIFIED, // if -Cp not specified.
+    FALSE,
     FALSE,
     FALSE,
     FALSE,
@@ -66,6 +69,7 @@ void usage()
            "  %sp,%sport <port>                Specify port number to connect to groovyserver\n" \
            "  %sk,%skill-server                Kill groovyserver\n" \
            "  %sr,%srestart-server             Restart groovyserver\n" \
+           "  %sq,%squiet                      Suppress statring messages\n" \
            "  %senv <pattern>                  Pass the environment variables which name\n" \
            "                                   matches with the specified pattern. The values\n" \
            "                                   of matched variables on the client process are\n" \
@@ -80,6 +84,7 @@ void usage()
            , CLIENT_OPTION_PREFIX, CLIENT_OPTION_PREFIX, CLIENT_OPTION_PREFIX
            , CLIENT_OPTION_PREFIX, CLIENT_OPTION_PREFIX, CLIENT_OPTION_PREFIX
            , CLIENT_OPTION_PREFIX, CLIENT_OPTION_PREFIX, CLIENT_OPTION_PREFIX
+           , CLIENT_OPTION_PREFIX, CLIENT_OPTION_PREFIX
         );
 }
 
@@ -186,6 +191,9 @@ void scan_options(struct option_t* option, int argc, char **argv)
                     exit(1);
                 }
                 option->restart = TRUE;
+                break;
+            case OPT_QUIET:
+                option->quiet = TRUE;
                 break;
             case OPT_ENV:
                 assert(opt->take_value == TRUE);

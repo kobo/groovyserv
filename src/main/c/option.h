@@ -21,12 +21,14 @@
 
 #define MAX_MASK 10
 #define CLIENT_OPTION_PREFIX "-C"
+#define PORT_NOT_SPECIFIED -1
 
 struct option_t {
     BOOL without_invocation_server;
     int port;
     BOOL kill;
     BOOL restart;
+    BOOL quiet;
     BOOL env_all;
     char* env_include_mask[MAX_MASK];
     char* env_exclude_mask[MAX_MASK];
@@ -38,6 +40,7 @@ enum OPTION_TYPE {
   OPT_PORT,
   OPT_KILL_SERVER,
   OPT_RESTART_SERVER,
+  OPT_QUIET,
   OPT_ENV,
   OPT_ENV_ALL,
   OPT_ENV_EXCLUDE,

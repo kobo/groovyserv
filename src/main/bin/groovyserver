@@ -44,6 +44,10 @@ while [ $# -gt 0 ]; do
             GROOVYSERV_OPTS="$GROOVYSERV_OPTS -Dgroovyserver.verbose=true"
             shift
             ;;
+        -q)
+            QUIET=true
+            shift
+            ;;
         -p)
             shift
             GROOVYSERVER_PORT=$1
@@ -61,6 +65,7 @@ while [ $# -gt 0 ]; do
             echo "Usage: `basename $0` [options]"
             echo "options:"
             echo "  -v       verbose output. print debugging information etc."
+            echo "  -q       quet mode. supress starting messages."
             echo "  -k       kill the running groovyserver"
             echo "  -r       restart groovyserver"
             echo "  -p port  specify the port for groovyserver"
@@ -82,10 +87,14 @@ if [ "x$GROOVY_HOME" != "x" ]; then
         echo "ERROR: Not found a groovy command in GROOVY_HOME: $GROOVY_BIN" 1>&2
         exit 1
     fi
-    echo "GROOVY: $GROOVY_BIN" 1>&2
+    if [ ! $QUIET ]; then
+        echo "GROOVY: $GROOVY_BIN" 1>&2
+    fi
 elif which groovy >/dev/null 2>&1; then
     GROOVY_BIN=groovy
-    echo "GROOVY: $(which groovy)" 1>&2
+    if [ ! $QUIET ]; then
+        echo "GROOVY: $(which groovy)" 1>&2
+    fi
 else
     echo "ERROR: Not found a groovy command. Required either PATH having groovy command or GROOVY_HOME" 1>&2
     exit 1
@@ -138,7 +147,9 @@ if [ ! $? -eq 0 ]; then
     echo "ERROR: Not found a valid GROOVYSERV_HOME directory: $GROOVYSERV_HOME" 1>&2
     exit 1
 fi
-echo "GROOVYSERV_HOME: $GROOVYSERV_HOME" 1>&2
+if [ ! $QUIET ]; then
+    echo "GROOVYSERV_HOME: $GROOVYSERV_HOME" 1>&2
+fi
 
 #-------------------------------------------
 # Find groovyclient command
@@ -247,8 +258,14 @@ fi
 # Wait for available
 #-------------------------------------------
 
+if [ ! $QUIET ]; then
+    /bin/echo -n "starting.." 1>&2
+fi
+
 while true; do
-    /bin/echo -n "." 1>&2
+    if [ ! $QUIET ]; then
+        /bin/echo -n "." 1>&2
+    fi
     sleep 1
 
     # waiting until cookie filed is created
@@ -269,6 +286,8 @@ while true; do
     fi
 done
 
-echo  1>&2
-echo "groovyserver $PID($PORT) is successfully started" 1>&2
+if [ ! $QUIET ]; then
+    echo  1>&2
+    echo "groovyserver $PID($PORT) is successfully started" 1>&2
+fi
 
