@@ -65,7 +65,7 @@ while [ $# -gt 0 ]; do
             echo "Usage: `basename $0` [options]"
             echo "options:"
             echo "  -v         verbose output. print debugging information etc"
-            echo "  -q         quet mode. supress starting messages"
+            echo "  -q         quiet mode. suppress starting messages"
             echo "  -k         kill the running groovyserver"
             echo "  -r         restart groovyserver"
             echo "  -p <port>  specify the port to listen"
