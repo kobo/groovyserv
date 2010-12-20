@@ -25,22 +25,6 @@ class EnvPropergateIT extends GroovyTestCase {
 
    static final String SEP = System.getProperty("line.separator")
 
-   static final String usageString = """\
-
-usage: groovyclient -C[option for groovyclient] [args/options for groovy]
-options:
-  -Ch,-Chelp                       Usage information of groovyclient options
-  -Cenv <pattern>                  Pass the environment variables which name
-                                   matches with the specified pattern. The values
-                                   of matched variables on the client process are
-                                   sent to the server process, and the values of
-                                   same name environment variable on the server
-                                   are set to or overwitten by the passed values.
-  -Cenv-all                        Pass all environment variables
-  -Cenv-exclude <pattern>          Don't pass the environment variables which
-                                   name matches with specified pattern
-"""
-
    void testUsage() {
        def p1 = TestUtils.executeClient(["-Ch"])
        assert p1.text.startsWith("\nusage:")
