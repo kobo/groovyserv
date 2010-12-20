@@ -61,118 +61,105 @@ class EnvPropergateIT extends GroovyTestCase {
    }
 
    void testUsage_on_illegal_option() {
-       if (com.sun.jna.Platform.isWindows()) { // TODO: fix this case
-           return
-       }
-
-       def clientHelpMessage;
-       TestUtils.executeClientOk(["-Ch"]) {
+       def clientHelpMessage
+       TestUtils.executeClient(["-Ch"]) {
            clientHelpMessage = it.text
        }
-       TestUtils.executeClient(["-Cxxx",
-                                "-e", '"println(System.getenv(\'PATH\'))"']) {
+
+       def p = TestUtils.executeClient(["-Cxxx",
+                                        "-e", '"println(System.getenv(\'PATH\'))"']) {
            assert clientHelpMessage == it.text
            assert it.err.text == "ERROR: unknown option -Cxxx\n"
-           assertEquals 1, it.exitValue()
        }
+       assert p.exitValue() == 1
    }
 
    void testEnv_fullmatch() {
-       TestUtils.executeClientWithEnv(["-Cenv", "ABCDEF",
-                                               "-e", '"print(System.getenv(\'ABCDEF\'))"'],
-                                              ["ABCDEF=1234"]) {
+       TestUtils.executeClientOkWithEnv(["-Cenv", "ABCDEF",
+                                         "-e", '"print(System.getenv(\'ABCDEF\'))"'],
+                                        ["ABCDEF=1234"]) {
            assert it.err.text == ""
            assert it.text == "1234"
-           assertEquals 0, it.exitValue()
        }
    }
 
    void testEnv_startsWith() {
-       TestUtils.executeClientWithEnv(["-Cenv", "GHI",
+       TestUtils.executeClientOkWithEnv(["-Cenv", "GHI",
                                        "-e", '"print(System.getenv(\'GHIJK\'))"'],
                                       ["GHIJK=1234"]) {
            
            assert it.err.text == ""
            assert it.text == "1234"
-           assertEquals 0, it.exitValue()
        }
    }
 
    void testEnv_endsWith() {
-       TestUtils.executeClientWithEnv(["-Cenv", "NOP", "-e", '"print(System.getenv(\'LMNOP\'))"'],
+       TestUtils.executeClientOkWithEnv(["-Cenv", "NOP", "-e", '"print(System.getenv(\'LMNOP\'))"'],
                                       ["LMNOP=1234"]) {
            assert it.err.text == ""
            assert it.text == "1234"
-           assertEquals 0, it.exitValue()
        }
    }
 
    void testEnv_onMiddle() {
-       TestUtils.executeClientWithEnv(["-Cenv", "RST",
+       TestUtils.executeClientOkWithEnv(["-Cenv", "RST",
                                        "-e", '"print(System.getenv(\'QRSTU\'))"'],
                                       ["QRSTU=1234"]) {
            assert it.err.text == ""
            assert it.text == "1234"
-           assertEquals 0, it.exitValue()
        }
    }
 
    void testEnv_all() {
-       TestUtils.executeClientWithEnv(["-Cenv-all",
+       TestUtils.executeClientOkWithEnv(["-Cenv-all",
                                        "-e", '"print(System.getenv(\'VWXY\'))"'],
                                       ["VWXY=1234"]) {
            assert it.err.text == ""
            assert it.text == "1234"
-           assertEquals 0, it.exitValue()
        }
    }
 
    void testEnv_not_exist_var() {
-       TestUtils.executeClient(["-e", '"print(System.getenv(\'lkdfeidjifefeyn\')==null)"']) {
+       TestUtils.executeClientOk(["-e", '"print(System.getenv(\'lkdfeidjifefeyn\')==null)"']) {
            assert it.err.text == ""
            assert it.text == "true"
-           assertEquals 0, it.exitValue()
        }
    }
 
    void testEnv_multivars_startsWith() {
-       TestUtils.executeClientWithEnv(["-Cenv", "A",
+       TestUtils.executeClientOkWithEnv(["-Cenv", "A",
                                        "-e", '"print(System.getenv(\'A01\')+System.getenv(\'A02\'))"'],
                                       ["A01=1234", "A02=5678"]) {
            assert it.err.text == ""
            assert it.text == "12345678"
-           assertEquals 0, it.exitValue()
        }
    }
 
    void testEnv_multivars_endWith() {
-       TestUtils.executeClientWithEnv(["-Cenv", "Z",
+       TestUtils.executeClientOkWithEnv(["-Cenv", "Z",
                                        "-e", '"print(System.getenv(\'AZ\')+System.getenv(\'BZ\'))"'],
                                       ["AZ=1234", "BZ=5678"]) {
            assert it.err.text == ""
            assert it.text == "12345678"
-           assertEquals 0, it.exitValue()
        }
    }
 
    void testEnv_multivars_middle() {
-       TestUtils.executeClientWithEnv(["-Cenv", "X", "-e", '"print(System.getenv(\'AXZ\')+System.getenv(\'BXZ\'))"'],
+       TestUtils.executeClientOkWithEnv(["-Cenv", "X", "-e", '"print(System.getenv(\'AXZ\')+System.getenv(\'BXZ\'))"'],
                                       ["AXZ=1234", "BXZ=5678"]) {
            assert it.err.text == ""
            assert it.text == "12345678"
-           assertEquals 0, it.exitValue()
        }
    }
 
    void testEnv_long_var_name() {
        def varname = 'X' * 100
        def varvalue = 'Y' * 100
-       TestUtils.executeClientWithEnv(["-Cenv", "$varname",
+       TestUtils.executeClientOkWithEnv(["-Cenv", "$varname",
                                        "-e", '"print(System.getenv(\''+varname+'\'))"'],
                                       ["$varname=$varvalue"]) {
            assert it.err.text == ""
            assert it.text == "$varvalue"
-           assertEquals 0, it.exitValue()
        }
    }
 
@@ -181,10 +168,9 @@ class EnvPropergateIT extends GroovyTestCase {
        (1..10).eachWithIndex { it, idx ->
            arg += ["-Cenv", "_VAR$it" ]
        }
-       TestUtils.executeClient([*arg, "-e", '"print(\'hello\')"']) {
+       TestUtils.executeClientOk([*arg, "-e", '"print(\'hello\')"']) {
            assert it.text == "hello"
            assert it.err.text == ""
-           assertEquals 0, it.exitValue()
        }
    }
 
@@ -193,121 +179,115 @@ class EnvPropergateIT extends GroovyTestCase {
        (1..11).eachWithIndex { it, idx ->
            arg += ["-Cenv", "_VAR$it" ]
        }
-       TestUtils.executeClient([*arg, "-e", '"print(\'hello\')"']) {
+       def expectedExitValue
+       def p = TestUtils.executeClient([*arg, "-e", '"print(\'hello\')"']) {
            if (!System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) {
                assert it.text.startsWith("\nusage:")
                assert it.err.text == "ERROR: too many option: env _VAR11" + SEP
-               assertEquals 1, it.exitValue()
+               expectedExitValue = 1
            }
            else {
                // ruby client has no limitation about number of patterns.
                assert it.text == "hello"
                assert it.err.text == ""
-               assertEquals 0, it.exitValue()
+               expectedExitValue = 0
+
            }
        }
+       assert p.exitValue() == expectedExitValue
    }
 
    void testEnv_exclude() {
-       TestUtils.executeClientWithEnv(["-Cenv", "X", "-Cenv-exclude", "X01",
+       TestUtils.executeClientOkWithEnv(["-Cenv", "X", "-Cenv-exclude", "X01",
                                        "-e", '"print(System.getenv(\'X01\')+System.getenv(\'X02\'))"'],
                                       ["X01=1234", "X02=5678"]) {
            assert it.text == "null5678"
            assert it.err.text == ""
-           assertEquals 0, it.exitValue()
        }
    }
 
    void testEnv_and_exclude() {
-       TestUtils.executeClientWithEnv(["-Cenv", "X03", "-Cenv-exclude", "X03",
+       TestUtils.executeClientOkWithEnv(["-Cenv", "X03", "-Cenv-exclude", "X03",
                                        "-e", '"print(System.getenv(\'X03\'))"'],
                                       ["X03=1234"]) {
            assert it.text == "null"
            assert it.err.text == ""
-           assertEquals 0, it.exitValue()
        }
    }
 
    void testEnv_all_and_exclude() {
-       TestUtils.executeClientWithEnv(["-Cenv-all", "-Cenv-exclude", "X04",
+       TestUtils.executeClientOkWithEnv(["-Cenv-all", "-Cenv-exclude", "X04",
                                        "-e", '"print(System.getenv(\'X04\')+System.getenv(\'X05\'))"'],
                                       ["X04=1234", "X05=5678"]) {
            assert it.text == "null5678"
            assert it.err.text == ""
-           assertEquals 0, it.exitValue()
        }
    }
 
    void testEnv_and_exclude_multivars() {
-       TestUtils.executeClientWithEnv(["-Cenv", "X", "-Cenv", "Y",
+       TestUtils.executeClientOkWithEnv(["-Cenv", "X", "-Cenv", "Y",
                                        "-Cenv-exclude", "XX",  "-Cenv-exclude", "YY",
                                        "-e", '"print(System.getenv(\'X07\')+System.getenv(\'Y07\')+System.getenv(\'XX\')+System.getenv(\'YY\'))"'],
                                       ["X07=1234", "Y07=5678", "XX=abcd", "YY=efgh"]) {
            assert it.text == "12345678nullnull"
            assert it.err.text == ""
-           assertEquals 0, it.exitValue()
        }
    }
 
    void testEnv_keep_and_overwrite() {
-       TestUtils.executeClientWithEnv(["-Cenv-all",
+       TestUtils.executeClientOkWithEnv(["-Cenv-all",
                                        "-e", '"print(System.getenv(\'Y01\'))"'], ["Y01=1234"]) {
            assert it.text == "1234"
            assert it.err.text == ""
-           assertEquals 0, it.exitValue()
        }
 
        // keep
-       TestUtils.executeClient(["-Cenv-all",
+       TestUtils.executeClientOk(["-Cenv-all",
                                 "-e", '"print(System.getenv(\'Y01\'))"']) {
            assert it.text == "1234"
            assert it.err.text == ""
-           assertEquals 0, it.exitValue()
        }
 
        // overwrite
-       TestUtils.executeClientWithEnv(["-Cenv-all",
+       TestUtils.executeClientOkWithEnv(["-Cenv-all",
                                        "-e", '"print(System.getenv(\'Y01\'))"'], ["Y01=5678"]) {
            assert it.text == "5678"
            assert it.err.text == ""
-           assertEquals 0, it.exitValue()
        }
 
        // keep
-       TestUtils.executeClient(["-Cenv-all",
+       TestUtils.executeClientOk(["-Cenv-all",
                                 "-e", '"print(System.getenv(\'Y01\'))"']) {
            assert it.text == "5678"
            assert it.err.text == ""
-           assertEquals 0, it.exitValue()
        }
    }
 
    void testEnv_protect_and_overwrite() {
        // initialize
-       TestUtils.executeClientWithEnv(["-Cenv-all",
+       TestUtils.executeClientOkWithEnv(["-Cenv-all",
                                        "-e", '"print(System.getenv(\'Y04\')+System.getenv(\'Y05\'))"'],
                                       ["Y04=1234", "Y05=5678"]) {
            assert it.text == "12345678"
            assert it.err.text == ""
-           assertEquals 0, it.exitValue()
        }
 
        // protect Y05 but replace Y04(1234->abcd)
-       TestUtils.executeClientWithEnv(["-Cenv", "Y04", "-Cenv-exclude", "Y05",
+       TestUtils.executeClientOkWithEnv(["-Cenv", "Y04", "-Cenv-exclude", "Y05",
                                        "-e", '"print(System.getenv(\'Y04\')+System.getenv(\'Y05\'))"'],
                                       ["Y04=abcd", "Y05=efgh"]) {
            assert it.text == "abcd5678"
            assert it.err.text == ""
-           assertEquals 0, it.exitValue()
        }
    }
 
    void testEnv_require_param() {
-       TestUtils.executeClient(['"print(System.getenv(\'X06\'))"', "-Cenv" ]) {
+       def p = TestUtils.executeClient(['"print(System.getenv(\'X06\'))"', "-Cenv" ]) {
            assert it.text.startsWith("\nusage:")
            assert it.err.text == "ERROR: option -Cenv require param" + SEP
-           assertEquals 1, it.exitValue()
        }
+       assert p.exitValue() == 1
+       
    }
 
 }

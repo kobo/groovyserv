@@ -42,6 +42,14 @@ class TestUtils {
         return p
     }
 
+    static executeClientOkWithEnv(args, env, closure = null) {
+        def p = executeClientWithEnv(args, env, closure)
+        if (p.exitValue() != 0) {
+            fail "ERROR: exitValue:${p.exitValue()}, in:[${p.in.text}], err:[${p.err.text}]"
+        }
+        return p
+    }
+
     static executeClientWithEnv(args, env, closure = null) {
         def command = getCommandWithEnv(args, env)
         def p = command.execute()
