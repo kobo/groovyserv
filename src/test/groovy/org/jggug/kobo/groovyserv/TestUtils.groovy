@@ -42,9 +42,10 @@ class TestUtils {
         return p
     }
 
-    static executeClientWithEnv(args, env) {
+    static executeClientWithEnv(args, env, closure = null) {
         def command = getCommandWithEnv(args, env)
         def p = command.execute()
+        if (closure) closure.call(p)
         p.waitFor()
         //println "${command.join(' ')} => ${p.exitValue()}"
         return p

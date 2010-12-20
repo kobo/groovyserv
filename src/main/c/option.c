@@ -63,19 +63,20 @@ static char *groovy_help_options[] = {
 void usage()
 {
     printf("\n"
-           "usage: groovyclient.rb %s[option for groovyclient] [args/options for groovy]\n" \
+           "usage: groovyclient %s[option for groovyclient] [args/options for groovy]\n" \
            "options:\n" \
            "  %sh,%shelp                       Usage information of groovyclient options\n" \
-           "  %sp,%sport <port>                Specify port number to connect to groovyserver\n" \
+           "  %sp,%sport <port>                Port number to connect to groovyserver\n" \
            "  %sk,%skill-server                Kill groovyserver\n" \
            "  %sr,%srestart-server             Restart groovyserver\n" \
            "  %sq,%squiet                      Suppress statring messages\n" \
            "  %senv <pattern>                  Pass the environment variables which name\n" \
-           "                                   matches with the specified pattern. The values\n" \
-           "                                   of matched variables on the client process are\n" \
-           "                                   sent to the server process, and the values of\n" \
-           "                                   same name environment variable on the server\n" \
-           "                                   are set to or overwitten by the passed values.\n" \
+           "                                   matches with the specified pattern. The\n" \
+           "                                   values of matched variables on the client\n" \
+           "                                   process are sent to the server process, and\n" \
+           "                                   the values of same name environment variable\n" \
+           "                                   on the server are set to or overwitten by\n" \
+           "                                   the passed values.\n" \
            "  %senv-all                        Pass all environment variables\n" \
            "  %senv-exclude <pattern>          Don't pass the environment variables which\n" \
            "                                   name matches with specified pattern\n" \

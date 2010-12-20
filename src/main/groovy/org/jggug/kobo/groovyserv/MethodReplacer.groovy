@@ -15,6 +15,7 @@
  */
 package org.jggug.kobo.groovyserv
 
+import com.sun.jna.Platform
 
 /**
  * Replace JDK methods by MOP.
@@ -22,13 +23,38 @@ package org.jggug.kobo.groovyserv
  */
 class MethodReplacer {
 
+    static def envVars = [:]
+
+    public static void putenv(String name, String value) {
+        DebugUtils.verboseLog("cache putenv(${name})to $value")
+        envVars[name] = value
+    }
+
+    static origGetenv = System.metaClass.getMetaMethod("getenv", [String] as Object[])
+
     public static void replace() {
         DebugUtils.verboseLog("MethodReplacer.replace()")
-        System.metaClass.static.getenv = {String name ->
-            // Replace System.getenv() to platform native getenv(1) to skip cache.
-            String result = PlatformMethods.getenv(name)
-            DebugUtils.verboseLog("getenv(${name})=>$result")
-            return result
+
+        if (Platform.isWindows()) {
+            System.metaClass.static.getenv = {String name ->
+                                              String result = envVars[name]
+                                              if (result == null) {
+                                                  result = origGetenv.doMethodInvoke(delegate, name)
+                                              }
+                                              DebugUtils.verboseLog("getenv(${name})=>$result")
+                                              return result;
+            }
+            
+        }
+        
+
+        if (!Platform.isWindows()) {
+            System.metaClass.static.getenv = {String name ->
+                                              // Replace System.getenv() to platform native getenv(1) to skip cache.
+                                              String result = PlatformMethods.getenv(name)
+                                              DebugUtils.verboseLog("getenv(${name})=>$result")
+                                              return result
+            }
         }
     }
 

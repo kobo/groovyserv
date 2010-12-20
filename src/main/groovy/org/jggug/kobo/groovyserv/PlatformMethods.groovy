@@ -45,6 +45,9 @@ class PlatformMethods {
     static putenv(String envVar) {
         if (Platform.isWindows()) {
             CLibrary.INSTANCE._putenv(envVar)
+            def (name, value) = envVar.split('=', 2)
+            MethodReplacer.putenv(name, value)
+//            Win32Library.INSTANCE.SetEnvironmentVariableW(name, value)
         }
         else {
             // You can't use putenv() in UNI*X here. Because

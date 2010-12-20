@@ -1,7 +1,7 @@
 /*
  * Copyright 2009-2010 the original author or authors.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ * Licensed under the Apache License, Version 2.0 (the "License")
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -13,17 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.jggug.kobo.groovyserv
 
-#ifndef _CONFIG_H
-#define _CONFIG_H
+import com.sun.jna.Library
+import com.sun.jna.Native
+import com.sun.jna.Platform
 
-#if defined(_MSC_VER) || defined(__MINGW32__)
-#define WINDOWS
-#else
-#define UNIX
-#endif
 
-#define DESTSERV "localhost"
-#define DESTPORT 1961
+/**
+ * @author UEHARA Junji
+ */
+interface Win32Library extends Library {
+    String libname = "Kernel32"
+    Win32Library INSTANCE = Native.loadLibrary(libname, Win32Library.class)
 
-#endif
+    boolean SetEnvironmentVariableW(String name, String value)
+}

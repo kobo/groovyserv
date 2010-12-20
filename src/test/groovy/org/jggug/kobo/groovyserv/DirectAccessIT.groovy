@@ -106,7 +106,7 @@ assert ins.read() == -1
         }
     }
 
-    void testEnvPassig() {
+    void testEnvPassing() {
         Random random = new Random(new Date().time)
         String envVarName = "__ENV"+random.nextInt()
         String envVarValue = "__VALUE"+random.nextInt()
