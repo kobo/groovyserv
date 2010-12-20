@@ -1,0 +1,293 @@
+#!/bin/sh
+#
+# Copyright 2009-2010 the original author or authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+#-------------------------------------------
+# OS specific support
+#-------------------------------------------
+
+OS_CYGWIN=false
+OS_MSYS=false
+OS_DARWIN=false
+case "`uname`" in
+  CYGWIN* )
+    OS_CYGWIN=true
+    ;;
+  Darwin* )
+    OS_DARWIN=true
+    ;;
+  MINGW* )
+    OS_MSYS=true
+    ;;
+esac
+
+#-------------------------------------------
+# Handle others options
+#-------------------------------------------
+
+while [ $# -gt 0 ]; do
+    case $1 in
+        -v)
+            GROOVYSERV_OPTS="$GROOVYSERV_OPTS -Dgroovyserver.verbose=true"
+            shift
+            ;;
+        -q)
+            QUIET=true
+            shift
+            ;;
+        -p)
+            shift
+            GROOVYSERVER_PORT=$1
+            shift
+            ;;
+        -k)
+            DO_KILL=KILL_ONLY
+            shift
+            ;;
+        -r)
+            DO_KILL=RESTART
+            shift
+            ;;
+        *)
+            echo "Usage: `basename $0` [options]"
+            echo "options:"
+            echo "  -v       verbose output. print debugging information etc"
+            echo "  -q       quet mode. supress starting messages"
+            echo "  -k       kill the running groovyserver"
+            echo "  -r       restart groovyserver"
+            echo "  -p port  specify the port for groovyserver"
+            exit 1
+            ;;
+    esac
+done
+
+#-------------------------------------------
+# Find groovy command
+#-------------------------------------------
+
+if [ "x$GROOVY_HOME" != "x" ]; then
+    if $OS_CYGWIN; then
+        export GROOVY_HOME=`cygpath -u "$GROOVY_HOME"`
+    fi
+    GROOVY_BIN="$GROOVY_HOME/bin/groovy"
+    if [ ! -x "$GROOVY_BIN" ]; then
+        echo "ERROR: Not found a groovy command in GROOVY_HOME: $GROOVY_BIN" 1>&2
+        exit 1
+    fi
+    if [ ! $QUIET ]; then
+        echo "GROOVY: $GROOVY_BIN" 1>&2
+    fi
+elif which groovy >/dev/null 2>&1; then
+    GROOVY_BIN=groovy
+    if [ ! $QUIET ]; then
+        echo "GROOVY: $(which groovy)" 1>&2
+    fi
+else
+    echo "ERROR: Not found a groovy command. Required either PATH having groovy command or GROOVY_HOME" 1>&2
+    exit 1
+fi
+
+#-------------------------------------------
+# Resolve GROOVYSERV_HOME
+#-------------------------------------------
+
+resolve_symlink() {
+    local TARGET=$1
+
+    # if target is symbolic link
+    if [ -L $TARGET ]; then
+        local ORIGINAL_FILEPATH=`readlink $TARGET`
+
+        # if original is specified as absolute path
+        if [ $(echo $ORIGINAL_FILEPATH | cut -c 1) == "/" ]; then
+            echo "$ORIGINAL_FILEPATH"
+        else
+            echo "$(dirname $TARGET)/$ORIGINAL_FILEPATH"
+        fi
+    else
+        echo "$TARGET"
+    fi
+}
+expand_path() {
+    local TARGET=$1
+    if [ -d "$TARGET" ]; then
+        echo $(cd $TARGET && pwd -P)
+    elif [ -f "$TARGET" ]; then
+        local TARGET_RESOLVED=$(resolve_symlink $TARGET)
+        local FILENAME=$(basename $TARGET_RESOLVED)
+        local DIR_EXPANDED="$(expand_path $(dirname $TARGET_RESOLVED))"
+        echo "$DIR_EXPANDED/$FILENAME"
+    else
+        echo "$TARGET"
+    fi
+}
+if [ ! -d "$GROOVYSERV_HOME" ]; then
+    GROOVYSERV_HOME="$(dirname $(dirname $(expand_path $0)))"
+
+    # for Homebrew in Mac OS X
+    if [ -d $GROOVYSERV_HOME/libexec ]; then
+        GROOVYSERV_HOME="$GROOVYSERV_HOME/libexec"
+    fi
+fi
+ls $GROOVYSERV_HOME/lib/groovyserv-*.jar >/dev/null 2>&1
+if [ ! $? -eq 0 ]; then
+    echo "ERROR: Not found a valid GROOVYSERV_HOME directory: $GROOVYSERV_HOME" 1>&2
+    exit 1
+fi
+if [ ! $QUIET ]; then
+    echo "GROOVYSERV_HOME: $GROOVYSERV_HOME" 1>&2
+fi
+
+#-------------------------------------------
+# Find groovyclient command
+#-------------------------------------------
+
+GROOVYCLIENT_BIN="$GROOVYSERV_HOME/bin/groovyclient"
+if [ ! -x "$GROOVYCLIENT_BIN" ]; then
+    echo "ERROR: Not found a groovyclient command in GROOVYSERV_HOME: $GROOVYCLIENT_BIN" 1>&2
+    exit 1
+fi
+
+#-------------------------------------------
+# Setup other variables
+#-------------------------------------------
+
+if $OS_CYGWIN; then
+  USER_HOME=`cygpath -u "$USERPROFILE"`
+  export JAVA_HOME=`cygpath -u "$JAVA_HOME"`
+fi
+
+GROOVYSERV_WORK_DIR=${USER_HOME:-$HOME}/.groovy/groovyserv
+if [ ! -d "$GROOVYSERV_WORK_DIR" ]; then
+    mkdir -p "$GROOVYSERV_WORK_DIR"
+fi
+
+PORT=${GROOVYSERVER_PORT:-1961}
+GROOVYSERV_OPTS="$GROOVYSERV_OPTS -Dgroovyserver.port=$PORT"
+
+GROOVYSERV_PID_FILE="$GROOVYSERV_WORK_DIR/pid-$PORT"
+GROOVYSERV_COOKIE_FILE="$GROOVYSERV_WORK_DIR/cookie-$PORT"
+
+IS_SERVER_AVAILABLE="env GROOVYSERVER_PORT=$PORT $GROOVYCLIENT_BIN -Cwithout-invoking-server -e \"\""
+EXPIRED_PID_FILE="( cd \"$GROOVYSERV_WORK_DIR\" && find . -name pid-$PORT -mmin +1 )"
+
+export CLASSPATH="$CP:$GROOVYSERV_HOME/lib/*"
+
+#-------------------------------------------
+# Kill process if specified
+#-------------------------------------------
+
+if [ "$DO_KILL" != "" ]; then
+    if [ -f "$GROOVYSERV_PID_FILE" ]; then
+        EXISTED_PID=`cat "$GROOVYSERV_PID_FILE"`
+        ps -p $EXISTED_PID >/dev/null 2>&1
+        if [ $? -eq 0 ]; then
+            kill -9 $EXISTED_PID
+            echo "Killed groovyserver of $EXISTED_PID($PORT)" 1>&2
+        else
+            echo "Process of groovyserver of $EXISTED_PID($PORT) not found" 1>&2
+        fi
+        rm -f "$GROOVYSERV_PID_FILE"
+        rm -f "$GROOVYSERV_COOKIE_FILE"
+    else
+        echo "PID file $GROOVYSERV_PID_FILE not found" 1>&2
+    fi
+    if [ "$DO_KILL" = "KILL_ONLY" ]; then
+        exit 0
+    fi
+    echo "Restarting groovyserver" 1>&2
+fi
+
+#-------------------------------------------
+# Check duplicated invoking
+#-------------------------------------------
+
+if [ -f "$GROOVYSERV_PID_FILE" ]; then
+    EXISTED_PID=`cat "$GROOVYSERV_PID_FILE"`
+
+    # if connecting to server is succeed, return with warning message
+    $IS_SERVER_AVAILABLE > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        echo "WARN: groovyserver is already running as $EXISTED_PID($PORT)" 1>&2
+        exit 1
+    fi
+
+    # if PID file doesn't expired, terminate the sequence of invoking server
+    if [ "`sh -c \"$EXPIRED_PID_FILE\"`" = "" ]; then
+        echo "WARN: Another process may be starting groovyserver." 1>&2
+        exit 1
+    fi
+fi
+
+#-------------------------------------------
+# Invoke server
+#-------------------------------------------
+
+nohup "$GROOVY_BIN" $GROOVYSERV_OPTS -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)" > /dev/null 2>&1 &
+
+#-------------------------------------------
+# Store PID
+#-------------------------------------------
+
+sleep 1
+PID=$!
+ps -p $PID | grep $PID > /dev/null
+if [ $? -eq 0 ]; then
+    echo $PID > "$GROOVYSERV_PID_FILE"
+else
+    echo "ERROR: Failed to store PID into file $GROOVYSERV_PID_FILE" 1>&2
+    echo "Rerun for debug..." 1>&2
+    "$GROOVY_BIN" $GROOVYSERV_OPTS -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)" &
+    exit 1
+fi
+
+#-------------------------------------------
+# Wait for available
+#-------------------------------------------
+
+if [ ! $QUIET ]; then
+    /bin/echo -n "starting.." 1>&2
+fi
+
+while true; do
+    if [ ! $QUIET ]; then
+        /bin/echo -n "." 1>&2
+    fi
+    sleep 1
+
+    # waiting until cookie filed is created
+    if [ ! -f "$GROOVYSERV_COOKIE_FILE" ]; then
+        continue
+    fi
+
+    # if connecting to server is succeed, return successfully
+    $IS_SERVER_AVAILABLE > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        break
+    fi
+
+    # if PID file was expired while to connect to server is failing, error
+    if [ "`sh -c \"$EXPIRED_PID_FILE\"`" != "" ]; then
+        echo "ERROR: Timeout. Confirm if groovyserver $PID($PORT) is running." 1>&2
+        exit 1
+    fi
+done
+
+if [ ! $QUIET ]; then
+    echo  1>&2
+    echo "groovyserver $PID($PORT) is successfully started" 1>&2
+fi
+
