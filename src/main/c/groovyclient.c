@@ -31,11 +31,25 @@
 #include <signal.h>
 #include <sys/stat.h>
 
+#include "config.h"
+
+#ifdef WINDOWS
+#include <windows.h>
+#include <winsock2.h>
+#include <process.h>
+#include <sys/fcntl.h>
+#else
+#include <sys/socket.h> // AF_INET
+#include <netinet/in.h> // sockaddr_in
+#include <netdb.h>      // gethostbyname
+#include <sys/uio.h>
+#include <sys/errno.h>
+#endif
+
 #include "buf.h"
 #include "option.h"
 #include "bool.h"
 #include "session.h"
-#include "config.h"
 
 static char* scriptdir(char* result_dir, char* script_path)
 {
@@ -236,7 +250,7 @@ int main(int argc, char** argv)
 
     // make standard output to binary mode.
     if (_setmode(_fileno(stdout), _O_BINARY) < 0) {
-        fprintf(stderr, "ERROR: setmode failed");
+        fprintf(stderr, "ERROR: setmode stdout failed");
         exit(1);
     }
 #endif
@@ -259,7 +273,6 @@ int main(int argc, char** argv)
     }
 
     fd_soc = connect_server(argv[0], port);
-
     signal(SIGINT, signal_handler); // using fd_soc in handler
 
     char cookie[BUFFER_SIZE];

@@ -24,7 +24,8 @@ import com.sun.jna.Platform
  * @author UEHARA Junji
  */
 interface CLibrary extends Library {
-    String libname = (Platform.isWindows() ? "msvcrt" : "c")
+//    String libname = (Platform.isWindows() ? "msvcrt" : "c")
+    String libname = (Platform.isWindows() ? "msvcrt20" : "c")
     CLibrary INSTANCE = Native.loadLibrary(libname, CLibrary.class)
 
     int chdir(String dir)

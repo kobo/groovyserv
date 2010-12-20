@@ -20,6 +20,8 @@
 #include <ctype.h>
 #include <assert.h>
 
+#include "config.h"
+
 #include <sys/types.h>  // netinet/in.h
 #ifdef WINDOWS
 #include <windows.h>
