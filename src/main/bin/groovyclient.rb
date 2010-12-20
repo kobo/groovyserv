@@ -47,7 +47,7 @@ class ClientOption
     @help
   end
 
-  attr_accessor :without_invoking_server, :port, :env_all, :env_include_mask, :env_exclude_mask, :help;
+  attr_accessor :without_invoking_server, :port, :env_all, :env_include_mask, :env_exclude_mask, :help
 
 end
 
