@@ -66,7 +66,7 @@ class EnvPropergateIT extends GroovyTestCase {
        }
 
        def clientHelpMessage;
-       TestUtils.executeClientOk(["-Ch"]) {
+       TestUtils.executeClient(["-Ch"]) {
            clientHelpMessage = it.text
        }
        TestUtils.executeClient(["-Cxxx",
