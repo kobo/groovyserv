@@ -47,7 +47,7 @@ class ClientOption
     @help
   end
 
-  attr_accessor :without_invoking_server, :port, :env_all, :env_include_mask, :env_exclude_mask, :help
+  attr_accessor :without_invoking_server, :port, :env_all, :env_include_mask, :env_exclude_mask, :help, :quiet
 
 end
 
@@ -217,12 +217,18 @@ def process_opts(arg)
 end
 
 def start_server()
-  STDERR.puts "starting server..."
+  if !$client_option.quiet
+    STDERR.printf "Invoke server %s\n", GROOVYSERVER_CMD
+  end
   unless FileTest.executable? GROOVYSERVER_CMD
     STDERR.puts "ERROR: Command not found: #{GROOVYSERVER_CMD}"
     exit 1
   end
-  system(GROOVYSERVER_CMD, "-p", $client_option.port.to_s)
+  if $client_option.quiet
+    system(GROOVYSERVER_CMD, "-p", $client_option.port.to_s, "-q")
+  else
+    system(GROOVYSERVER_CMD, "-p", $client_option.port.to_s)
+  end
 end
 
 def session(socket, args)
