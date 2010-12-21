@@ -69,7 +69,7 @@ class EnvPropergateIT extends GroovyTestCase {
        def p = TestUtils.executeClient(["-Cxxx",
                                         "-e", '"println(System.getenv(\'PATH\'))"']) {
            assert clientHelpMessage == it.text
-           assert it.err.text == "ERROR: unknown option -Cxxx\n"
+           assert it.err.text == "ERROR: unknown option -Cxxx" + SEP
        }
        assert p.exitValue() == 1
    }

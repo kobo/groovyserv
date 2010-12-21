@@ -259,7 +259,7 @@ fi
 #-------------------------------------------
 
 if [ ! $QUIET ]; then
-    /bin/echo -n "starting.." 1>&2
+    /bin/echo -n "starting." 1>&2
 fi
 
 while true; do
