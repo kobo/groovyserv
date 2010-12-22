@@ -24,6 +24,68 @@
       </div>
 
       <div id="content">
+        <div class="section" id="0.5">
+          <h2>Changes in version 0.5 (2010-12-22)</h2>
+          <pre>
+New Features:
+
+ - Now groovyclient can take -C prefix options which are interpreted
+   on groovyclient itself (don't pass to groovy command).
+
+ - '-Cr/-Ck' client option restart/stop groovyserver process(MacOS and
+   Linux only). By using these options you can control groovyserver
+   through groovyclient.
+
+ - With '-Cenv' option of groovyclient, we can pass the environment
+   variables which name matches with the specified pattern to the
+   groovyserver. The values of matched variables on the client process
+   are sent to the server process, and the values of same name
+   environment variable on the server are set to or overwitten by the
+   passed values. This feature is especially useful for IDEs' which
+   uses environment variables to pass configuration information with
+   invoking external command which is written groovy. Textmate is one
+   of those IDEs reportedly.
+
+ - Option '-Cenv-all' makes to pass all the variables which the client
+   process has. And option '-Cenv-exclude' excludes variables which
+   name matches with the specified pattern.
+
+ - You can specify port number easily by using -Cp/-Cport options and
+   handle multiple groovyserver instance distinguished by the port
+   number.
+
+Improvements:
+
+ - Groovyserver's starting messages are now emit to stderr, so use of
+   pipe or redirection is more useful with groovy scripting. Moreover
+   -Cq/-Cqiuet options suppresses starting message of groovyserver.
+
+ - Use prior GROOVY_HOME than PATH when finding a groovy command
+   in groovyserver invocation.[FIXME]
+
+ - Groovyserver now emit informative messages about groovyserv
+   installed directory and which groovy command are used. This is
+   useful for trouble shooting.
+
+ - GROOVYSERV_HOME which was resolved by new implementation when
+   resolving GROOVYCLIENT_CMD...[FIXME]
+
+Bug fixes:
+
+ - Groovyclient can't invoke groovyserver when GroovyServ is installed
+   on a directory which name includes white spaces(e.g. 'C:/Program
+   Files/...).
+
+ - On Linux, if the GroovyServ installed to the directory with
+   symbolic link, it didn't work. (because of Linux's which command
+   don't support -s option so we changed the implementation to do it
+   without -s.)
+
+ - In MacOS, progress showing mark displayed '-n' instead of '...'.
+          </pre>
+        </div>
+      </div>
+      <div id="content">
         <div class="section" id="0.4">
           <h2>Changes in version 0.4 (2010-08-06)</h2>
           <pre>

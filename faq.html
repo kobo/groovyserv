@@ -177,7 +177,7 @@
           </div>
           <div class="answer">
             <h3>A</h3>
-            <p>In Mac OS X, Linux and Cygwin environment, you can use groovyserver shell script with -r (restart) and -k (kill) options.
+            <p>In Mac OS X, Linux and Cygwin environment, you can use groovyserver shell script with -r (restart) and -k (kill) options. <b>In addition, from GroovyServ 0.5, you can also use -Cr, and -Ck options with groovyclient command.</b>
             In Windows, if you invoke directly groovyserver.bat or invoke groovyclient with a transparent server invocation which uses
             groovyserver.bat, groovyserver create a new minimum window for control the server. By closing the window you can stop the groovyserver.</p>
           </div>
@@ -199,12 +199,14 @@
           </div>
           <div class="answer">
             <h3>A</h3>
-            <p>Basically, yes.
-            But you will see OutOfMemoryError of PermGen if you use transitive dependencies.
-            I seem that a way to resolve transitive dependencies is different of resolving direct dependencies in Groovy.
-            ClassLoader for transitive dependencies is maybe higher than one for script.
-            So if you use a Grape with transitive dependencies, memory of PermGen will leak and finally OutOufMemoryError will occur.
-            As workaround, you can restart your groovyserver process, for example by "groovyserver -r" command.
+            <p class="removed">
+Basically, yes. But you will see OutOfMemoryError of PermGen if you use transitive dependencies. I seem that a way to resolve transitive dependencies is different of resolving direct dependencies in Groovy. ClassLoader for transitive dependencies is maybe higher than one for script. So if you use a Grape with transitive dependencies, memory of PermGen will leak and finally OutOufMemoryError will occur. As workaround, you can restart your groovyserver process, for example by "groovyserver -r" command. 
+            </p>
+            <p>Yes you can but you might see OutOfMemoryError of PermGen if you use transitive dependencies and invoke that script repeatedly.
+            It is probably comes from the way to resolve transitive dependencies is different of resolving direct dependencies in Groovy. You can avoid this error by specify SystemClassLoader to use:
+              <code>@GrabConfig(systemClassLoader=true)<br />
+@Grab("..")
+              </code>
             </p>
           </div>
         </div>
@@ -247,10 +249,10 @@
               <li>An executable file we built isn't appropriate to your environment. Please build it by yourself.
                   See <a href="README.html#build">"Build from source code" in README</a>.
               </li>
-              <li>JDK version of runtime might be different from it of build time.
+              <li><p class="removed">JDK version of runtime might be different from it of build time.
               Please confirm requirements and upgrade JDK which is a specified version.
               Or rebuild it by yourself.
-              See <a href="README.html#requirements">"Requirements" in README</a>.</li>
+              See <a href="README.html#requirements">"Requirements" in README</a>.</li></p>
             </ul>
           </div>
         </div>

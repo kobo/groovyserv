@@ -265,6 +265,24 @@ groovyserverが起動されます。起動されていない場合、起動の�
   されることはありません。
 
 ==========================
+groovyclientのオプション
+==========================
+
+groovyclientでは-Cで始まる以下の起動オプションが指定可能です。これらの
+オプションはGroovyclientで解釈され、groovyコマンドには渡されません。
+
+  -Ch,-Chelp               利用方法のメッセージの表示
+  -Cp,-Cport &lt;port&gt;        ポート番号を指定する
+  -Ck,-Ckill-server        groovyserverを停止する
+  -Cr,-Crestart-server     groovyserverを再起動する
+  -Cq,-Cquiet              groovyserver起動時のメッセージを表示しない
+  -Cenv &lt;pattern&gt;          &lt;pattern&gt;に変数名がマッチする環境変数の値を
+                           server側に転送する
+  -Cenv-all                すべての環境変数の値をserver側に転送する
+  -Cenv-exclude &lt;pattern&gt;  &lt;pattern&gt;に変数名がマッチする環境変数の値は
+                           server側への転送から除外する
+
+==========================
 groovyserverのオプション
 ==========================
 
@@ -346,11 +364,11 @@ GROOVYSERVER_PORTを設定するか、-pオプションを指定してくださ�
 
   &gt; groovyserver -p 1963
 
-クライアント側では-pオプションはgroovyコマンドで使用されているため、
-ポート指定には使えません。環境変数GROOVYSERVER_PORTでのみ指定可能です。
+クライアント側では環境変数GROOVYSERVER_PORT指定にくわえて-Cpオプション
+でポート番号を指定可能です。透過的起動を行う場合にはgroovyserverに-pオ
+プションが指定されて起動されます。
 
-  &gt; export GROOVYSERVER_PORT=1963
-  &gt; groovyclient -v
+  &gt; groovyclient -Cp 1963
 
 ==============
 ログファイル
