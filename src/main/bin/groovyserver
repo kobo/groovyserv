@@ -196,19 +196,27 @@ if [ "$DO_KILL" != "" ]; then
         ps -p $EXISTED_PID >/dev/null 2>&1
         if [ $? -eq 0 ]; then
             kill -9 $EXISTED_PID
-            echo "Killed groovyserver of $EXISTED_PID($PORT)" 1>&2
+            if [ ! $QUIET ]; then
+                echo "Killed groovyserver of $EXISTED_PID($PORT)" 1>&2
+            fi
         else
-            echo "Process of groovyserver of $EXISTED_PID($PORT) not found" 1>&2
+            if [ ! $QUIET ]; then
+                echo "Process of groovyserver of $EXISTED_PID($PORT) not found" 1>&2
+            fi
         fi
         rm -f "$GROOVYSERV_PID_FILE"
         rm -f "$GROOVYSERV_COOKIE_FILE"
     else
-        echo "PID file $GROOVYSERV_PID_FILE not found" 1>&2
+        if [ ! $QUIET ]; then
+            echo "PID file $GROOVYSERV_PID_FILE not found" 1>&2
+        fi
     fi
     if [ "$DO_KILL" = "KILL_ONLY" ]; then
         exit 0
     fi
-    echo "Restarting groovyserver" 1>&2
+    if [ ! $QUIET ]; then
+        echo "Restarting groovyserver" 1>&2
+    fi
 fi
 
 #-------------------------------------------
