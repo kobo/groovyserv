@@ -71,12 +71,8 @@ void usage()
            "  %sr,%srestart-server             Restart groovyserver\n" \
            "  %sq,%squiet                      Suppress statring messages\n" \
            "  %senv <pattern>                  Pass the environment variables which name\n" \
-           "                                   matches with the specified pattern. The\n" \
-           "                                   values of matched variables on the client\n" \
-           "                                   process are sent to the server process, and\n" \
-           "                                   the values of same name environment variable\n" \
-           "                                   on the server are set to or overwitten by\n" \
-           "                                   the passed values.\n" \
+           "                                   matches with the specified pattern to the\n" \
+           "                                   groovyserver.\n"
            "  %senv-all                        Pass all environment variables\n" \
            "  %senv-exclude <pattern>          Don't pass the environment variables which\n" \
            "                                   name matches with specified pattern\n" \
