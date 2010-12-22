@@ -32,23 +32,23 @@ New Features:
  - Now groovyclient can take -C prefix options which are interpreted
    on groovyclient itself (don't pass to groovy command).
 
- - '-Cr/-Ck' client option restart/stop groovyserver process(MacOS and
+ - '-Cr/-Ck' client options restart/stop groovyserver process(Mac OS X and
    Linux only). By using these options you can control groovyserver
    through groovyclient.
 
  - With '-Cenv' option of groovyclient, we can pass the environment
-   variables which name matches with the specified pattern to the
+   variables which name matches with the specified pattern to
    groovyserver. The values of matched variables on the client process
    are sent to the server process, and the values of same name
    environment variable on the server are set to or overwitten by the
    passed values. This feature is especially useful for IDEs' which
    uses environment variables to pass configuration information with
-   invoking external command which is written groovy. Textmate is one
+   invoking external command which is written Groovy. Textmate is one
    of those IDEs reportedly.
 
- - Option '-Cenv-all' makes to pass all the variables which the client
-   process has. And option '-Cenv-exclude' excludes variables which
-   name matches with the specified pattern.
+ - Option '-Cenv-all' makes to pass all environment variables of the client
+   process to groovyserver. And option '-Cenv-exclude' excludes variables
+   which name matches with the specified pattern.
 
  - You can specify port number easily by using -Cp/-Cport options and
    handle multiple groovyserver instance distinguished by the port
@@ -57,18 +57,18 @@ New Features:
 Improvements:
 
  - Groovyserver's starting messages are now emit to stderr, so use of
-   pipe or redirection is more useful with groovy scripting. Moreover
+   pipe or redirection is more useful with Groovy scripting. Moreover
    -Cq/-Cqiuet options suppresses starting message of groovyserver.
 
- - Use prior GROOVY_HOME than PATH when finding a groovy command
-   in groovyserver invocation.[FIXME]
-
- - Groovyserver now emit informative messages about groovyserv
+ - Groovyserver now emit informative messages about GroovyServ's
    installed directory and which groovy command are used. This is
    useful for trouble shooting.
 
- - GROOVYSERV_HOME which was resolved by new implementation when
-   resolving GROOVYCLIENT_CMD...[FIXME]
+ - [Only Linux/Mac OS X]Now GROOVY_HOME environment variable become
+   optional. Supported some ways to find a groovy command in the
+   following order: (1)from PATH environment variable. (2)as
+   GROOVY_HOME/bin/groovy. If not exists, a intent revealing message
+   is emitted to the console.
 
 Bug fixes:
 
@@ -81,7 +81,7 @@ Bug fixes:
    don't support -s option so we changed the implementation to do it
    without -s.)
 
- - In MacOS, progress showing mark displayed '-n' instead of '...'.
+ - In Mac OS X, progress showing mark displayed '-n .' instead of '...'.
           </pre>
         </div>
       </div>
