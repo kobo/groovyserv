@@ -82,20 +82,20 @@ class OptionInfo
 
   class OptionInfoKillServer < OptionInfo
     def eval
-      system(GROOVYSERVER_CMD, "-k", "-p", $client_option.port.to_s)
+      start_server(["-k"])
       exit(0)
     end
   end
 
   class OptionInfoRestartServer < OptionInfo
     def eval
-      system(GROOVYSERVER_CMD, "-r", "-p", $client_option.port.to_s)
+      start_server(["-r"])
       exit(0)
     end
   end
 
   class OptionInfoQuiet < OptionInfo
-    def eval(value)
+    def eval
       $client_option.quiet = true
     end
   end
@@ -139,7 +139,7 @@ class OptionInfo
   end
 
 end
-  
+
 #-------------------------------------------
 # Global Vriables
 #-------------------------------------------
@@ -216,7 +216,7 @@ def process_opts(arg)
   return result
 end
 
-def start_server()
+def start_server(arg)
   if !$client_option.quiet
     STDERR.printf "Invoke server %s\n", GROOVYSERVER_CMD
   end
@@ -225,10 +225,9 @@ def start_server()
     exit 1
   end
   if $client_option.quiet
-    system(GROOVYSERVER_CMD, "-p", $client_option.port.to_s, "-q")
-  else
-    system(GROOVYSERVER_CMD, "-p", $client_option.port.to_s)
+    arg << "-q"
   end
+  system(GROOVYSERVER_CMD, "-p", $client_option.port.to_s, *arg)
 end
 
 def session(socket, args)
@@ -353,7 +352,7 @@ rescue Errno::ECONNREFUSED
     STDERR.puts "ERROR: Failed to start up groovyserver: #{GROOVYSERVER_CMD}"
     exit 1
   end
-  start_server
+  start_server([])
   sleep 3
   failCount += 1
   retry
