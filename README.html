@@ -254,13 +254,8 @@ groovyclient options
   -Ck,-Ckill-server                Kill groovyserver
   -Cr,-Crestart-server             Restart groovyserver
   -Cq,-Cquiet                      Suppress statring messages
-  -Cenv <pattern>                  Pass the environment variables which name
-                                   matches with the specified pattern. The
-                                   values of matched variables on the client
-                                   process are sent to the server process, and
-                                   the values of same name environment variable
-                                   on the server are set to or overwitten by
-                                   the passed values.
+  -Cenv <substr>                   Pass the environment variables which name
+                                   includes specified pattern.
   -Cenv-all                        Pass all environment variables
   -Cenv-exclude <pattern>          Don't pass the environment variables which
                                    name matches with specified pattern
@@ -336,6 +331,60 @@ for groovyserver.bat in future.
 Incidentally, in the case of transparent invocation you can't supply
 options(e.g. -v) for groovyserver/.bat which to be invoked
 internally. If it is needed, please invoke groovyserver explicitly.
+
+=================================
+Environment Variable Propagation
+=================================
+
+From GroovyServ 0.5, you can pass any environment variables to the
+groovyserver.
+
+With '-Cenv' option of groovyclient, you can pass the environment
+variables which name includes the specified substring to
+groovyserver. The values of those variables on the client process are
+sent to the server process, and the values of same name environment
+variable on the server are set to or overwritten by the passed
+values. This feature is especially useful for IDEs' which uses
+environment variables to pass configuration information with invoking
+external command which is written Groovy. Textmate is one of those
+IDEs reportedly.
+
+When you specify option '-Cenv-all', all environment variables of the
+client process are sent to the groovyserver. And option
+'-Cenv-exclude' excludes variables which name includes specified
+substring.
+
+When you specify option "-Cenv PART_OF_ENVIRONMENT_VAR_NAME",
+the set of environment variables sent to the server are determined
+by following pseudo code:
+
+  allEnvironmentVariables.entrySet().collect{
+     it.name.contains("PART_OF_ENVIRONMENT_VAR_NAME"
+  }
+
+Consider combination of -Cenv-all, -Cenv-excludes, like:
+
+ -Cenv SUBSTRING
+ -Cenv-all
+ -Cenv-exclude EXCLUDE_SUBSTRING
+
+The result of following pseudo code are sent to the groovyserver:
+
+ allEnvironmentVariables.entrySet().collect {
+    if (( <-Cenv-all are specified?>
+          || it.name.contains(SUBSTRING))
+        && !(it.name.contains(EXCLUDE_SUBSTRING))) {
+      return true
+    }
+    else {
+      return false
+   }
+ }
+
+Note that those environment variables remain after client is
+finished. And of course environment variable are not 'MT Safe' on the
+the server, when multiple groovyclient instance invoked
+simultaneously, the value are overwritten by subsequent invocation.
 
 =============
 Port number
