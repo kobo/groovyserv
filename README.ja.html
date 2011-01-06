@@ -254,10 +254,10 @@ groovyserverが起動されます。起動されていない場合、起動の�
   され、それぞれの標準入力／出力／エラー出力に接続されます。
 
 * 環境変数について、groovyclientコマンドを実行したときの値ではなく､
-  groovyserverが実行されたときの値が使用されます。環境変数の変更を
-  groovyコマンドに影響を及ぼすようにするためには、groovyserverを再起動
-  する必要があります。ただし環境変数CLASSPATHの指定はクライアントサイド
-  のものが動的に設定されます(後述)。
+  groovyserverが実行されたときの値が使用されますが、-Cenv,-Cenv-allオプ
+  ションを指定することで、groovyclient起動時の環境変数の値をGroovyserv
+  側に反映させることもできます。ただし環境変数CLASSPATHの指定はクライア
+  ントサイドのものが動的に設定されます(後述)。
 
 * 前述のように、groovyclient実行時の環境変数CLASSPATH値、および-cpオプ
   ションで設定したクラスパス情報は動的にサーバ側のクラスパスに追加され
@@ -276,10 +276,10 @@ groovyclientでは-Cで始まる以下の起動オプションが指定可能で
   -Ck,-Ckill-server        groovyserverを停止する
   -Cr,-Crestart-server     groovyserverを再起動する
   -Cq,-Cquiet              groovyserver起動時のメッセージを表示しない
-  -Cenv &lt;pattern&gt;          &lt;pattern&gt;に変数名がマッチする環境変数の値を
+  -Cenv &lt;substr&gt;          &lt;substr&gt;を変数名に含む環境変数の値を
                            server側に転送する
   -Cenv-all                すべての環境変数の値をserver側に転送する
-  -Cenv-exclude &lt;pattern&gt;  &lt;pattern&gt;に変数名がマッチする環境変数の値は
+  -Cenv-exclude &lt;substr&gt;  &lt;substr&gt;を変数名に含む環境変数の値を
                            server側への転送から除外する
 
 ==========================
@@ -348,6 +348,54 @@ groovyserverの透過的な起動の際には、内部的にgroovyserver.batが�
 なお、透過的起動では、内部で起動するgroovyserver.batにオプション(例え
 ば-vオプション)を設定することはできません。必要な場合明示的な起動を行っ
 てください。
+
+============
+環境変数の伝搬
+============
+
+GroovyServ 0.5から、任意の環境変数をgroovyserverに渡すことができます。
+
+groovyclientの'-Cenv'オプションを使うことで、指定した部分文字列が名前に
+含まれている環境変数をgroovyserverに転送することができます。
+groovyclientプロセスにおけるこれらの変数の値はサーバプロセスに転送され、
+サーバ側での同じ名前の環境変数の値が設定もしくは上書きされます。この機
+能は、Groovyで書かれた外部コマンドを起動する際にパラメータを環境変数で
+受けわたすような仕様のIDE(Textmateなど)において特に有用とのことです。
+
+'-Cenv-all'オプションを指定すると、クライアントプロセスのすべての環境変
+数がサーバ側に渡されます。また'-Cenv-exclude'を使うことで、指定した部分
+文字列を変数名に含む環境変数を転送から除外することができます。
+
+"-Cenv PART_OF_ENVIRONMENT_VAR_NAME"という指定をした場合、以下のような
+疑似コードで転送される環境変数の集合が決定されます。
+
+  allEnvironmentVariables.entrySet().collect{
+     it.name.contains("PART_OF_ENVIRONMENT_VAR_NAME"
+  }
+
+-Cenv-all, -Cenv-excludesを組み合わせたときのルールについては、例えば:
+
+ -Cenv SUBSTRING
+ -Cenv-all
+ -Cenv-exclude EXCLUDE_SUBSTRING
+
+のとき、以下の疑似コードの結果がGroovyseverに送られます。
+
+ allEnvironmentVariables.entrySet().collect {
+    if (( <-Cenv-all are specified?>
+          || it.name.contains(SUBSTRING))
+        && !(it.name.contains(EXCLUDE_SUBSTRING))) {
+      return true
+    }
+    else {
+      return false
+   }
+ }
+
+設定された環境変数は、clientの終了後も値が残り続けることに留意下さい。
+また、プロセスにおける環境変数は「スレッドセーフ」ではなく、複数の
+groovyclientインスタンスが同時に起動された場合、環境変数の値は後に起動
+された実行によって上書きされます。
 
 ============
 ポート番号
