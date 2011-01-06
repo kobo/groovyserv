@@ -231,15 +231,12 @@ Restriction/Differences
  &gt; groovy -e "println System.getProperty('a')"
  abc
 
-* Environment variables at which the groovyclient started is not used
-  and those of groovyserver is invoked are used. If you want to apply
-  new environment variables to running groovyserver process, you must
-  restart the server.
-
-  &gt; groovyserver -r
-
-  But as an exception, the value of CLASSPATH variable of which the
-  groovyclient started is effective.
+* Basically environment variables at which the groovyclient started is
+  not used and those of groovyserver is invoked are used. But if you
+  specify -Cenv/-Cenv-all option you can reflect the values of
+  environment variables of client to the server. Meanwhile the value
+  of CLASSPATH variable of which the groovyclient started is
+  effective without specifying those options.
 
 * Values of Groovy's -cp option and CLASSPATH variable are passed to the
   server and added/overwrote to environment variables of the server
