@@ -231,12 +231,11 @@ Restriction/Differences
  &gt; groovy -e "println System.getProperty('a')"
  abc
 
-* Basically environment variables at which the groovyclient started is
-  not used and those of groovyserver is invoked are used. But if you
-  specify -Cenv/-Cenv-all option you can reflect the values of
-  environment variables of client to the server. Meanwhile the value
-  of CLASSPATH variable of which the groovyclient started is
-  effective without specifying those options.
+* Normally environment variables of when groovyserv was invoked are used
+  instead of those of groovyclient side. But if you specify -Cenv/-Cenv-all
+  option, you can reflect the values of environment variables of client
+  to the server. Whichever with or without those options, only the
+  CLASSPATH variable is always reflected to the server.
 
 * Values of Groovy's -cp option and CLASSPATH variable are passed to the
   server and added/overwrote to environment variables of the server
@@ -252,7 +251,7 @@ groovyclient options
   -Cr,-Crestart-server             Restart groovyserver
   -Cq,-Cquiet                      Suppress statring messages
   -Cenv <substr>                   Pass the environment variables which name
-                                   includes specified substr.
+                                   includes specified substr
   -Cenv-all                        Pass all environment variables
   -Cenv-exclude <pattern>          Don't pass the environment variables which
                                    name matches with specified pattern
