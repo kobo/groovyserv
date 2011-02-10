@@ -18,44 +18,41 @@ package org.jggug.kobo.groovyserv
 import com.sun.jna.Platform
 
 /**
- * Replace JDK methods by MOP.
+ * Utilities for handling environment variables.
+ *
  * @author UEHARA Junji
+ * @author NAKANO Yasuharu
  */
-class MethodReplacer {
+class MethodReplacer { // FIXME rename to EnvUtils
 
-    static def envVars = [:]
+    private static final envVars = [:]
+    private static final origGetenv = System.metaClass.getMetaMethod("getenv", [String] as Object[])
 
-    public static void putenv(String name, String value) {
-        DebugUtils.verboseLog("cache putenv(${name})to $value")
+    static void putenv(String name, String value) {
+        DebugUtils.verboseLog("cache putenv(${name}, ${value})")
         envVars[name] = value
     }
 
-    static origGetenv = System.metaClass.getMetaMethod("getenv", [String] as Object[])
-
-    public static void replace() {
-        DebugUtils.verboseLog("MethodReplacer.replace()")
-
+    static void replace() { // FIXME rename to replaceMethodOfGetenv
         if (Platform.isWindows()) {
-            System.metaClass.static.getenv = {String name ->
-                                              String result = envVars[name]
-                                              if (result == null) {
-                                                  result = origGetenv.doMethodInvoke(delegate, name)
-                                              }
-                                              DebugUtils.verboseLog("getenv(${name})=>$result")
-                                              return result;
-            }
-            
-        }
-        
-
-        if (!Platform.isWindows()) {
-            System.metaClass.static.getenv = {String name ->
-                                              // Replace System.getenv() to platform native getenv(1) to skip cache.
-                                              String result = PlatformMethods.getenv(name)
-                                              DebugUtils.verboseLog("getenv(${name})=>$result")
-                                              return result
+            System.metaClass.static.getenv = { String name ->
+                String value = envVars[name]
+                if (value == null) {
+                    origGetenv.doMethodInvoke(delegate, name)
+                }
+                DebugUtils.verboseLog("getenv(${name}) => $value")
+                return value
             }
         }
+        else {
+            System.metaClass.static.getenv = { String name ->
+                // Replace System.getenv() to platform native getenv(1) to skip cache.
+                String value = PlatformMethods.getenv(name)
+                DebugUtils.verboseLog("getenv(${name}) => $value")
+                return value
+            }
+        }
+        DebugUtils.verboseLog("System.getenv is replaced")
     }
 
 }
