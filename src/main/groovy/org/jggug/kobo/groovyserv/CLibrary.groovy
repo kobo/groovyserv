@@ -27,10 +27,14 @@ interface CLibrary extends Library {
     String libname = (Platform.isWindows() ? "msvcrt20" : "c")
     CLibrary INSTANCE = Native.loadLibrary(libname, CLibrary.class)
 
+    // for Linux and MacOSX
     int chdir(String dir)
-    int _chdir(String dir)
-    void putenv(String envVar)
-    void _putenv(String envVar)
     String getenv(String envVarName)
     int setenv(String envVarName, String envVarValue, int overwrite)
+
+    // for Windows
+    int _chdir(String dir)
+    void _putenv(String envVar)
+    // TODO writing comment about getenv for Windows
+
 }

@@ -41,7 +41,7 @@ class GroovyServer {
             setupRunningMode()
             startServer()
             setupCookie()
-            EnvironmentVariables.replaceSystemGetenv()
+            PlatformMethods.replaceSystemGetenv()
             handleRequest()
         }
         catch (GServException e) {
