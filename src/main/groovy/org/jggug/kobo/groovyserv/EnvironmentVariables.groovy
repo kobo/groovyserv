@@ -23,22 +23,22 @@ import com.sun.jna.Platform
  * @author UEHARA Junji
  * @author NAKANO Yasuharu
  */
-class MethodReplacer { // FIXME rename to EnvUtils
+class EnvironmentVariables {
 
     private static final envVars = [:]
     private static final origGetenv = System.metaClass.getMetaMethod("getenv", [String] as Object[])
 
-    static void putenv(String name, String value) {
-        DebugUtils.verboseLog("cache putenv(${name}, ${value})")
+    static void putenvAsCache(String name, String value) { // FIXME What's this? necessary? Is appropriate name putenvAsCache?
+        DebugUtils.verboseLog("putenvAsCache(${name}, ${value})")
         envVars[name] = value
     }
 
-    static void replace() { // FIXME rename to replaceMethodOfGetenv
+    static void replaceSystemGetenv() {
         if (Platform.isWindows()) {
             System.metaClass.static.getenv = { String name ->
                 String value = envVars[name]
                 if (value == null) {
-                    origGetenv.doMethodInvoke(delegate, name)
+                    value = origGetenv.doMethodInvoke(delegate, name)
                 }
                 DebugUtils.verboseLog("getenv(${name}) => $value")
                 return value

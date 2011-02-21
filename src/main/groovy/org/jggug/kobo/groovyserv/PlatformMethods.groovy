@@ -43,18 +43,16 @@ class PlatformMethods {
      * @param envVar 'NAME=VALUE' style environmet variable information.
      */
     static putenv(String envVar) {
+        def (name, value) = envVar.split('=', 2)
         if (Platform.isWindows()) {
             CLibrary.INSTANCE._putenv(envVar)
-            def (name, value) = envVar.split('=', 2)
-            MethodReplacer.putenv(name, value)
-//            Win32Library.INSTANCE.SetEnvironmentVariableW(name, value)
+            EnvironmentVariables.putenvAsCache(name, value)
         }
         else {
             // You can't use putenv() in UNI*X here. Because
             // putenv() keeps the reference to original string, so
             // when the JVM GC correct the area, envrironment lose the var
             // and getenv() can't find that var.
-            def (name, value) = envVar.split('=', 2)
             CLibrary.INSTANCE.setenv(name, value, 1)
         }
     }
