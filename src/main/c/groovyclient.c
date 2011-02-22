@@ -102,23 +102,6 @@ static char* groovyserver_cmdline(char* script_path, char* arg, int port)
     return cmdline;
 }
 
-/*
-void start_server(char* script_path, int port)
-{
-    char* opt = "";
-    // start groovyserver.
-    if (!client_option.quiet) {
-        fprintf(stderr, "Invoke server %s\n", cmdline);
-        fflush(stderr);
-    }
-    else {
-        opt = "-q"
-    }
-    char* cmdline = groovyserver_cmdline(script_path, opt, port);
-    system(cmdline);
-}
-*/
-
 void invoke_server(char* script_path, int port, char* main_opt)
 {
     char* opt = strdup(main_opt);
