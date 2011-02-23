@@ -58,7 +58,7 @@ class StreamResponseOutputStream extends OutputStream {
         writeLog(b, offset, length)
         // FIXME When System.exit to a sub thread which in infinte loop, following synchronized occures IllegalMonitorStateException.
         //synchronized(currentOutputStream) { // to keep independency of 'out' and 'err' on socket stream
-            byte[] header = RequestHeader.formatAsResponseHeader(streamId, length)
+            byte[] header = ClientProtocols.formatAsResponseHeader(streamId, length)
             currentOutputStream.write(header)
             currentOutputStream.write(b, offset, length)
         //}

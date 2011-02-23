@@ -77,7 +77,7 @@ package org.jggug.kobo.groovyserv
  * @author UEHARA Junji
  * @author NAKANO Yasuharu
  */
-class RequestHeader {
+class ClientProtocols {
 
     private final static String HEADER_CURRENT_WORKING_DIR = "Cwd"
     private final static String HEADER_ARG = "Arg"
@@ -87,6 +87,7 @@ class RequestHeader {
     private final static String HEADER_STREAM_ID = "Channel"
     private final static String HEADER_SIZE = "Size"
     private final static String HEADER_ENV = "Env"
+    private final static String LINE_SEPARATOR = "\n"
 
     /**
      * @throws InvalidRequestHeaderException
@@ -165,10 +166,10 @@ class RequestHeader {
         def buff = new StringBuilder()
         map.each { key, value ->
             if (key) {
-                buff << "$key: $value\n"
+                buff << "$key: $value" << LINE_SEPARATOR
             }
         }
-        buff << "\n"
+        buff << LINE_SEPARATOR
         buff.toString().bytes
     }
 

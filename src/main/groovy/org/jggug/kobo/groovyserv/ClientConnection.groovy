@@ -43,7 +43,7 @@ class ClientConnection implements Closeable {
      * @throws GServIOException
      */
     InvocationRequest openSession() {
-        RequestHeader.readInvocationRequest(this)
+        ClientProtocols.readInvocationRequest(this)
     }
 
     /**
@@ -51,7 +51,7 @@ class ClientConnection implements Closeable {
      * @throws GServIOException
      */
     StreamRequest readStreamRequest() {
-        RequestHeader.readStreamRequest(this)
+        ClientProtocols.readStreamRequest(this)
     }
 
     /**
@@ -88,7 +88,7 @@ class ClientConnection implements Closeable {
     void sendExit(int status) {
         try {
             socket.outputStream.with { // not to close yet
-                write(RequestHeader.formatAsExitHeader(status))
+                write(ClientProtocols.formatAsExitHeader(status))
                 flush()
             }
         } catch (IOException e) {
