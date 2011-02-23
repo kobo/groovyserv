@@ -16,25 +16,15 @@
 package org.jggug.kobo.groovyserv
 
 import com.sun.jna.Library
-import com.sun.jna.Native
-import com.sun.jna.Platform
-
 
 /**
+ * JNA interface for LibC on Linux and MacOSX.
+ *
  * @author UEHARA Junji
+ * @author NAKANO Yasuharu
  */
-interface CLibrary extends Library {
-    String libname = (Platform.isWindows() ? "msvcrt20" : "c")
-    CLibrary INSTANCE = Native.loadLibrary(libname, CLibrary.class)
-
-    // for Linux and MacOSX
+interface UnixLibC extends Library {
     int chdir(String dir)
-    String getenv(String envVarName)
     int setenv(String envVarName, String envVarValue, int overwrite)
-
-    // for Windows
-    int _chdir(String dir)
-    void _putenv(String envVar)
-    // TODO writing comment about getenv for Windows
-
 }
+
