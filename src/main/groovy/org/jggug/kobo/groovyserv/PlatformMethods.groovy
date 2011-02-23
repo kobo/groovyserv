@@ -48,7 +48,9 @@ class PlatformMethods {
      * @param envVar 'NAME=VALUE' style environment variable information.
      */
     static void putenv(String envVar) {
-        def (name, value) = envVar.split('=', 2)
+        def tokens = envVar.split('=', 2)
+        def name = tokens[0]
+        def value = (tokens.size() == 1) ? null : tokens[1]
         if (Platform.isWindows()) {
             CLibrary.INSTANCE._putenv(envVar)
             envCacheForWin[name] = value

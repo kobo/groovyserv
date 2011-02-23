@@ -25,10 +25,14 @@ class FileUtils {
     static final LOG_FILE = new File(DATA_DIR, "groovyserver.log")
     static final COOKIE_FILE = new File(DATA_DIR, "cookie-${GroovyServer.getPortNumber()}")
 
-    static initWorkDir() {
+    private static initWorkDir() {
         if (!DATA_DIR.isDirectory()) {
             DATA_DIR.mkdirs()
         }
+    }
+
+    static setUp() {
+        initWorkDir()
     }
 
 }

@@ -29,10 +29,10 @@ class GroovyInvokeHandler implements Runnable {
         this.request = request
     }
 
-    private void setupEnvVars(List<String> vars) {
-        vars.each {
-            DebugUtils.verboseLog("${id}: putenv(${it})")
-            PlatformMethods.putenv(it)
+    private void setupEnvVars(List<String> envVars) {
+        envVars.each { envVar ->
+            DebugUtils.verboseLog("${id}: putenv(${envVar})")
+            EnvironmentVariables.instance.put(envVar)
         }
     }
 

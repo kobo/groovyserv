@@ -35,13 +35,13 @@ class GroovyServer {
 
     void start() {
         try {
-            FileUtils.initWorkDir()
+            FileUtils.setUp()
+            EnvironmentVariables.setUp()
             setupStandardStreams()
             setupSecurityManager()
             setupRunningMode()
             startServer()
             setupCookie()
-            PlatformMethods.replaceSystemGetenv()
             handleRequest()
         }
         catch (GServException e) {
