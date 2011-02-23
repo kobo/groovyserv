@@ -35,10 +35,10 @@ class Cookie {
 
     void save() {
         try {
-            FileUtils.COOKIE_FILE.text = token
+            WorkFiles.COOKIE_FILE.text = token
             DebugUtils.verboseLog "Saved cookie: ${token}"
         } catch (IOException e) {
-            throw new GServIOException("I/O error: Cookie file cannot be written: ${FileUtils.COOKIE_FILE}", e)
+            throw new GServIOException("I/O error: Cookie file cannot be written: ${WorkFiles.COOKIE_FILE}", e)
         }
     }
 

@@ -73,7 +73,7 @@ class DebugUtils {
     }
 
     private static writeLog(formatted) {
-        FileUtils.LOG_FILE.withWriterAppend { out ->
+        WorkFiles.LOG_FILE.withWriterAppend { out ->
             out.println formatted
         }
     }

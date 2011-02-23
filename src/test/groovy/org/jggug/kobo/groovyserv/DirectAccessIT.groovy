@@ -32,7 +32,7 @@ class DirectAccessIT extends GroovyTestCase {
                 |Cwd: /tmp
                 |Arg: -e
                 |Arg: println("hello")
-                |Cookie: ${FileUtils.COOKIE_FILE.text}
+                |Cookie: ${WorkFiles.COOKIE_FILE.text}
                 |
                 |""".stripMargin()
 
@@ -57,7 +57,7 @@ class DirectAccessIT extends GroovyTestCase {
                     |Cwd: /tmp
                     |Arg: -e
                     |Arg: System.in.eachLine { line, index -> println(line * 2) }
-                    |Cookie: ${FileUtils.COOKIE_FILE.text}
+                    |Cookie: ${WorkFiles.COOKIE_FILE.text}
                     |
                     |""".stripMargin()
 
@@ -121,7 +121,7 @@ class DirectAccessIT extends GroovyTestCase {
                 |Arg: -e
                 |Arg: println System.getenv("$envVarName")
                 |Env: $envVarName=$envVarValue
-                |Cookie: ${FileUtils.COOKIE_FILE.text}
+                |Cookie: ${WorkFiles.COOKIE_FILE.text}
                 |
                 |""".stripMargin()
 

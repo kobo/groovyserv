@@ -35,7 +35,7 @@ class GroovyServer {
 
     void start() {
         try {
-            FileUtils.setUp()
+            WorkFiles.setUp()
             EnvironmentVariables.setUp()
             setupStandardStreams()
             setupSecurityManager()

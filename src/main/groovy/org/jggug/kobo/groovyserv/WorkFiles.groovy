@@ -19,7 +19,7 @@ package org.jggug.kobo.groovyserv
 /**
  * @author NAKANO Yasuharu
  */
-class FileUtils {
+class WorkFiles {
 
     static final DATA_DIR = new File("${System.getProperty('user.home')}/.groovy/groovyserv")
     static final LOG_FILE = new File(DATA_DIR, "groovyserver.log")
