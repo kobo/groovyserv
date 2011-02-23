@@ -88,17 +88,17 @@ class StreamRequestHandler implements Runnable {
 
     private static readLog(byte[] buff, int offset, int readSize, int sizeHeader) {
         DebugUtils.verboseLog """\
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-Client->Server {
-  id: in
-  size(header): ${sizeHeader}
-  size(actual): ${readSize}
-  thread group: ${Thread.currentThread().threadGroup.name}
-  body:
-${DebugUtils.dump(buff, offset, readSize)}
-}
-<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-"""
+            |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+            |Client->Server {
+            |  id: in
+            |  size(header): ${sizeHeader}
+            |  size(actual): ${readSize}
+            |  thread group: ${Thread.currentThread().threadGroup.name}
+            |  body:
+            |${DebugUtils.dump(buff, offset, readSize)}
+            |}
+            |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+            |""".stripMargin()
     }
 
 }

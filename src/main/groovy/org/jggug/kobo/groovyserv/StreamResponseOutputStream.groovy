@@ -66,16 +66,16 @@ class StreamResponseOutputStream extends OutputStream {
 
     private writeLog(byte[] b, int offset, int length) {
         DebugUtils.verboseLog """\
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-Server->Client {
-  id: ${streamId}
-  size(actual): ${length}
-  thread group: ${Thread.currentThread().threadGroup.name}
-  body:
-${DebugUtils.dump(b, offset, length)}
-}
-<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-"""
+            |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+            |Server->Client {
+            |  id: ${streamId}
+            |  size(actual): ${length}
+            |  thread group: ${Thread.currentThread().threadGroup.name}
+            |  body:
+            |${DebugUtils.dump(b, offset, length)}
+            |}
+            |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+            |""".stripMargin()
     }
 
     private OutputStream getCurrentOutputStream() {

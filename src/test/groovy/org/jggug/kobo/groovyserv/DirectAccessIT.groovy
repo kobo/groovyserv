@@ -23,117 +23,119 @@ import groovy.util.GroovyTestCase
  */
 class DirectAccessIT extends GroovyTestCase {
 
-    // output of "println" depends on "line.separator" system property
-    private static final String SEP = System.getProperty("line.separator")
+    // in response, output of "println" depends on "line.separator" system property
+    private static final String SERVER_SIDE_SEPARATOR = System.getProperty("line.separator")
 
     void testOnlyInvocationRequest() {
         new Socket("localhost", 1961).withStreams { ins, out ->
-// ------------------------
-out << """\
-Cwd: /tmp
-Arg: -e
-Arg: println("hello")
-Cookie: ${FileUtils.COOKIE_FILE.text}
+            out << """\
+                |Cwd: /tmp
+                |Arg: -e
+                |Arg: println("hello")
+                |Cookie: ${FileUtils.COOKIE_FILE.text}
+                |
+                |""".stripMargin()
 
-"""
-// ------------------------
-assert ins.text == """\
-Channel: out
-Size: 5
-
-helloChannel: out
-Size: ${SEP.size()}
-
-${SEP}Status: 0
-
-""".toString()
+            // The reason of using String.format is that stripMargin forcely converts all line separators to "\n".
+            assert ins.text == String.format("""\
+                |Channel: out
+                |Size: 5
+                |
+                |helloChannel: out
+                |Size: ${SERVER_SIDE_SEPARATOR.size()}
+                |
+                |%sStatus: 0
+                |
+                |""".stripMargin(), SERVER_SIDE_SEPARATOR)
         }
     }
 
     void testUsingStreamRequest() {
         use(TestUtils) { // for TestUtils.getAvailableText()
             new Socket("localhost", 1961).withStreams { ins, out ->
-// ------------------------
-out << """\
-Cwd: /tmp
-Arg: -e
-Arg: System.in.eachLine { line, index -> println(line * 2) }
-Cookie: ${FileUtils.COOKIE_FILE.text}
+                out << """\
+                    |Cwd: /tmp
+                    |Arg: -e
+                    |Arg: System.in.eachLine { line, index -> println(line * 2) }
+                    |Cookie: ${FileUtils.COOKIE_FILE.text}
+                    |
+                    |""".stripMargin()
 
-"""
-Thread.sleep(500)
-// ------------------------
-out << """\
-Size: ${SEP.size() + 1}
+                Thread.sleep(500)
 
-A${SEP}""".toString()
-Thread.sleep(500)
-// ------------------------
-assert ins.availableText == """\
-Channel: out
-Size: 2
+                out << String.format("""\
+                    |Size: ${SERVER_SIDE_SEPARATOR.size() + 1}
+                    |
+                    |A%s""".stripMargin(), SERVER_SIDE_SEPARATOR)
 
-AAChannel: out
-Size: ${SEP.size()}
+                Thread.sleep(500)
 
-${SEP}""".toString()
-Thread.sleep(500)
-// ------------------------
-out << """\
-Size: ${SEP.size() + 1}
+                assert ins.availableText == String.format("""\
+                    |Channel: out
+                    |Size: 2
+                    |
+                    |AAChannel: out
+                    |Size: ${SERVER_SIDE_SEPARATOR.size()}
+                    |
+                    |%s""".stripMargin(), SERVER_SIDE_SEPARATOR)
 
-B${SEP}""".toString()
-Thread.sleep(500)
-// ------------------------
-assert ins.availableText == """\
-Channel: out
-Size: 2
+                Thread.sleep(500)
 
-BBChannel: out
-Size: ${SEP.size()}
+                out << String.format("""\
+                    |Size: ${SERVER_SIDE_SEPARATOR.size() + 1}
+                    |
+                    |B%s""".stripMargin(), SERVER_SIDE_SEPARATOR)
 
-${SEP}""".toString()
-Thread.sleep(500)
-// ------------------------
-out << """\
-Size: -1
+                Thread.sleep(500)
 
-"""
-Thread.sleep(500)
-// ------------------------
-assert ins.read() == -1
+                assert ins.availableText == String.format("""\
+                    |Channel: out
+                    |Size: 2
+                    |
+                    |BBChannel: out
+                    |Size: ${SERVER_SIDE_SEPARATOR.size()}
+                    |
+                    |%s""".stripMargin(), SERVER_SIDE_SEPARATOR)
+
+                Thread.sleep(500)
+
+                out << """\
+                    |Size: -1
+                    |
+                    |""".stripMargin()
+
+                Thread.sleep(500)
+
+                assert ins.read() == -1
             }
         }
     }
 
     void testEnvPassing() {
         Random random = new Random(new Date().time)
-        String envVarName = "__ENV"+random.nextInt()
-        String envVarValue = "__VALUE"+random.nextInt()
+        String envVarName = "##ENV" + random.nextInt()
+        String envVarValue = "##VALUE" + random.nextInt()
         new Socket("localhost", 1961).withStreams { ins, out ->
-// ------------------------
-out << """\
-Cwd: /tmp
-Arg: -e
-Arg: println System.getenv("$envVarName")
-Env: $envVarName=$envVarValue
-Cookie: ${FileUtils.COOKIE_FILE.text}
+            out << """\
+                |Cwd: /tmp
+                |Arg: -e
+                |Arg: println System.getenv("$envVarName")
+                |Env: $envVarName=$envVarValue
+                |Cookie: ${FileUtils.COOKIE_FILE.text}
+                |
+                |""".stripMargin()
 
-"""
-// ------------------------
-assert ins.text == """\
-Channel: out
-Size: ${envVarValue.size()}
-
-${envVarValue}Channel: out
-Size: ${SEP.size()}
-
-${SEP}Status: 0
-
-""".toString()
-
+            assert ins.text == String.format("""\
+                |Channel: out
+                |Size: ${envVarValue.size()}
+                |
+                |${envVarValue}Channel: out
+                |Size: ${SERVER_SIDE_SEPARATOR.size()}
+                |
+                |%sStatus: 0
+                |
+                |""".stripMargin(), SERVER_SIDE_SEPARATOR)
         }
     }
-
 }
 
