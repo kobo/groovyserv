@@ -33,7 +33,7 @@ class StandardStreams {
         err: StreamResponseOutputStream.newErr()
     ]
 
-    static void init() {
+    static void setUp() {
         System.in  = ALTERNATES.ins
         System.out = new PrintStream(ALTERNATES.out) {
             void close() { /* do nothing */ }

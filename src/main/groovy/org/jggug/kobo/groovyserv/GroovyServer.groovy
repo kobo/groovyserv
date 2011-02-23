@@ -37,7 +37,7 @@ class GroovyServer {
         try {
             WorkFiles.setUp()
             EnvironmentVariables.setUp()
-            setupStandardStreams()
+            StandardStreams.setUp()
             setupSecurityManager()
             setupRunningMode()
             startServer()
@@ -52,10 +52,6 @@ class GroovyServer {
             DebugUtils.errorLog("Unexpected error: GroovyServer", e)
             System.exit(ExitStatus.UNEXPECTED_ERROR.code)
         }
-    }
-
-    private void setupStandardStreams() {
-        StandardStreams.init()
     }
 
     private void setupSecurityManager() {
