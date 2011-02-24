@@ -149,6 +149,7 @@
               <descriptors>
                 <descriptor>src/main/assembly/bin.xml</descriptor>
               </descriptors>
+              <ignoreDirFormatExtensions>false</ignoreDirFormatExtensions>
             </configuration>
           </execution>
           <execution>
