@@ -112,7 +112,7 @@
             </goals>
             <configuration>
               <source>
-                System.properties."trimmed.os.name" = System.properties."os.name".replaceAll(/ /, '').toLowerCase()
+                project.properties."trimmed.os.name" = System.properties."os.name".replaceAll(/ /, '').toLowerCase()
               </source>
             </configuration>
           </execution>
