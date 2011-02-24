@@ -52,6 +52,7 @@
       <includes>
         <include>groovyclient.rb</include>
       </includes>
+      <directoryMode>755</directoryMode>
       <fileMode>755</fileMode>
     </fileSet>
     <fileSet>
@@ -61,11 +62,14 @@
         <include>groovyclient</include>
         <include>groovyclient.exe</include>
       </includes>
+      <directoryMode>755</directoryMode>
       <fileMode>755</fileMode>
     </fileSet>
     <fileSet>
       <directory>target</directory>
       <outputDirectory>lib</outputDirectory>
+      <directoryMode>755</directoryMode>
+      <fileMode>644</fileMode>
       <includes>
         <include>groovyserv-*.jar</include>
       </includes>
