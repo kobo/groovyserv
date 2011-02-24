@@ -23,11 +23,11 @@ package org.jggug.kobo.groovyserv
 public enum ExitStatus {
 
     SUCCESS(0),
-    INTERRUPTED(-1),
-    INVALID_REQUEST(-2),
-    IO_ERROR(-3),
-    ILLEGAL_STATE(-4),
-    UNEXPECTED_ERROR(-9)
+    INTERRUPTED(1),
+    INVALID_REQUEST(2),
+    IO_ERROR(3),
+    ILLEGAL_STATE(4),
+    UNEXPECTED_ERROR(9)
 
     int code
 
