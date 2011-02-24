@@ -29,13 +29,6 @@ class GroovyInvokeHandler implements Runnable {
         this.request = request
     }
 
-    private void setupEnvVars(List<String> envVars) {
-        envVars.each { envVar ->
-            DebugUtils.verboseLog("${id}: putenv(${envVar})")
-            EnvironmentVariables.instance.put(envVar)
-        }
-    }
-
     /**
      * @throws GServExitException
      *              When user code called System.exit().
@@ -43,11 +36,14 @@ class GroovyInvokeHandler implements Runnable {
      * @throws InvalidRequestHeaderException
      *              When classpath option is invalid.
      *              Acutally this exception is wrapped by ExecutionException.
+     * @throws GServIllegalStateException
+     *              When changed current directory after set different directory by another session
      */
     @Override
     void run() {
         Thread.currentThread().name = id
         DebugUtils.verboseLog("${id}: Thread started")
+        boolean shouldResetCurrentDir = true
         try {
             CurrentDirHolder.instance.setDir(request.cwd)
             setupEnvVars(request.envVars)
@@ -58,15 +54,29 @@ class GroovyInvokeHandler implements Runnable {
         catch (InterruptedException e) {
             DebugUtils.verboseLog("${id}: Thread interrupted")
         }
+        catch (GServIllegalStateException e) {
+            shouldResetCurrentDir = false
+            throw e
+        }
         finally {
             killAllSubThreadsIfExist()
-            CurrentDirHolder.instance.reset()
+            if (shouldResetCurrentDir) {
+                // only if not throwing any exception
+                CurrentDirHolder.instance.reset()
+            }
             DebugUtils.verboseLog("${id}: Thread is dead")
         }
     }
 
     @Override
     String toString() { id }
+
+    private void setupEnvVars(List<String> envVars) {
+        envVars.each { envVar ->
+            DebugUtils.verboseLog("${id}: putenv(${envVar})")
+            EnvironmentVariables.instance.put(envVar)
+        }
+    }
 
     private setupClasspath(request) {
         ClasspathUtils.addClasspath(request.classpath)
