@@ -24,7 +24,7 @@ class CurrentDirHolder {
 
     private static final String ORIGINAL_USER_DIR = System.properties["user.dir"]
 
-    private currentDir
+    private volatile currentDir
 
     /**
      * @throws GServIllegalStateException
@@ -56,11 +56,11 @@ class CurrentDirHolder {
         currentDir = null
     }
 
-    private boolean isSetCurrentDir() {
+    private synchronized boolean isSetCurrentDir() {
         currentDir != null
     }
 
-    private boolean isChanged(newDir) {
+    private synchronized boolean isChanged(newDir) {
         currentDir != newDir
     }
 
