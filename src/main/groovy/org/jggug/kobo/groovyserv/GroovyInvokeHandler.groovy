@@ -78,17 +78,33 @@ class GroovyInvokeHandler implements Runnable {
         }
     }
 
+    final CLASSPATH_OPTIONS = ["-classpath", "-cp", "--classpath"]
+
     private setupClasspath(request) {
-        ClasspathUtils.addClasspath(request.classpath)
+        // parse classpath option's values from arguments.
+        // priority of specification of classpath: classpath option (-cp, -classpath) > CLASSPATH environment variable
+        def filteredArgs = []
+        def paths = [] as LinkedHashSet
         for (def it = request.args.iterator(); it.hasNext(); ) {
             String opt = it.next()
-            if (opt == "-cp") {
+            if (CLASSPATH_OPTIONS.contains(opt)) {
                 if (!it.hasNext()) {
                     throw new InvalidRequestHeaderException("${id}: Invalid classpath option: ${request.args}")
                 }
-                String classpath = it.next()
-                ClasspathUtils.addClasspath(classpath)
+                paths += it.next().split(File.pathSeparator) as List
+            } else {
+                filteredArgs << opt
             }
+        }
+
+        // via Cp header from CLASSPATH environment variable on client
+        if (request.classpath) {
+            paths += request.classpath.split(File.pathSeparator) as List
+        }
+
+        // replace classpath option in arguments
+        if (paths) {
+            request.args = filteredArgs << CLASSPATH_OPTIONS.first() << "\"${paths.join(File.pathSeparator)}\"" // for paths including white spaces
         }
     }
 
