@@ -112,7 +112,7 @@ resolve_symlink() {
         local ORIGINAL_FILEPATH=`readlink $TARGET`
 
         # if original is specified as absolute path
-        if [ $(echo $ORIGINAL_FILEPATH | cut -c 1) == "/" ]; then
+        if [ $(echo $ORIGINAL_FILEPATH | cut -c 1) = "/" ]; then
             echo "$ORIGINAL_FILEPATH"
         else
             echo "$(dirname $TARGET)/$ORIGINAL_FILEPATH"
