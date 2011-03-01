@@ -25,30 +25,36 @@ class ClasspathIT extends GroovyTestCase {
 
     static final String EOP = System.getProperty("path.separator")
 
-    void testAddedClasspathFromCilent_single() {
-        def command = TestUtils.getCommand(["-e", '"println(System.properties.\'groovy.classpath\')"']) as String[]
+    void testEnvironmentVariable() {
+        def command = TestUtils.getCommand(["-e", '"new EnvEcho().echo(\'hello\')"']) as String[]
         def env = System.env.collect { it.key + "=" + it.value }
-        env << "CLASSPATH=HOGE"
+        env << "CLASSPATH=${resolvePath('ForClasspathIT_env.jar')}"
         def p = Runtime.runtime.exec(command, env as String[])
         p.waitFor()
         assert p.err.text == ""
-        def result = p.text
-        assert result.contains(System.properties.'user.dir')
-        assert result.contains("HOGE")
+        assert p.text.contains("Env:hello")
     }
 
-    void testAddedClasspathFromCilent_multiple() {
-        def command = TestUtils.getCommand(["-e", '"println(System.properties.\'groovy.classpath\')"']) as String[]
+    void testArguments() {
+        def command = TestUtils.getCommand(["--classpath", resolvePath("ForClasspathIT_arg.jar"), "-e", '"new ArgEcho().echo(\'hello\')"']) as String[]
+        def p = Runtime.runtime.exec(command)
+        p.waitFor()
+        assert p.err.text == ""
+        assert p.text.contains("Arg:hello")
+    }
+
+    void testArguments_withEnvironmentVariables_usingArgIsHigherPriorityThanEnv() {
+        def command = TestUtils.getCommand(["--classpath", resolvePath("ForClasspathIT_arg.jar"), "-e", '"new ArgEcho().echo(\'hello\')"']) as String[]
         def env = System.env.collect { it.key + "=" + it.value }
-        env << "CLASSPATH=HOGE${EOP}FOO${EOP}BAR"
+        env << "CLASSPATH=${resolvePath('ForClasspathIT_env.jar')}"
         def p = Runtime.runtime.exec(command, env as String[])
         p.waitFor()
         assert p.err.text == ""
-        def result = p.text
-        assert result.contains(System.properties.'user.dir')
-        assert result.contains("HOGE")
-        assert result.contains("FOO")
-        assert result.contains("BAR")
+        assert p.text.contains("Arg:hello")
+    }
+
+    private resolvePath(jarFileName) {
+        "${System.properties.'user.dir'}/src/test/resources/${jarFileName}"
     }
 
 }

@@ -26,20 +26,11 @@ class CurrentDirHolderTest extends GroovyTestCase {
 
     void setUp() {
         holder.reset()
-
-        originalClasspath = System.properties["groovy.classpath"]
-        System.properties.remove("groovy.classpath")
-
         workDir = File.createTempFile("groovyserv-", "-dummy").parent
     }
 
     void tearDown() {
         holder.reset()
-        if (originalClasspath) {
-            System.properties["groovy.classpath"] = originalClasspath
-        } else {
-            System.properties.remove("groovy.classpath")
-        }
     }
 
     void testSet_notSetYet() {
@@ -73,13 +64,11 @@ class CurrentDirHolderTest extends GroovyTestCase {
     private void assertCurrentDir(dir) {
         assert holder.currentDir == dir
         assert System.properties['user.dir'] == dir
-        assert System.properties["groovy.classpath"] == dir
     }
 
     private void assertReset(dir) {
         assert holder.currentDir == null
         assert System.properties['user.dir'] == CurrentDirHolder.ORIGINAL_USER_DIR
-        assert System.properties["groovy.classpath"] == dir // this is not reset in current implementation
     }
 
 }

@@ -40,7 +40,6 @@ class CurrentDirHolder {
         }
         System.properties['user.dir'] = newDir
         PlatformMethods.chdir(newDir)
-        ClasspathUtils.addClasspath(newDir)
         currentDir = newDir
     }
 
@@ -50,9 +49,6 @@ class CurrentDirHolder {
         }
         System.properties['user.dir'] = ORIGINAL_USER_DIR
         PlatformMethods.chdir(ORIGINAL_USER_DIR)
-        // TODO removing from classpath. it's difficult because system property "groovy.classpath"
-        // is shared some threads and we cannot see which thread added a entry to "groovy.classpath".
-        //ClasspathUtils.removeClasspath(newDir)
         currentDir = null
     }
 

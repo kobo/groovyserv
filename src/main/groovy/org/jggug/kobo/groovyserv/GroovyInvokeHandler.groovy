@@ -21,6 +21,8 @@ package org.jggug.kobo.groovyserv
  */
 class GroovyInvokeHandler implements Runnable {
 
+    final CLASSPATH_OPTIONS = ["--classpath", "-cp", "-classpath"]
+
     private String id
     private InvocationRequest request
 
@@ -78,13 +80,15 @@ class GroovyInvokeHandler implements Runnable {
         }
     }
 
-    final CLASSPATH_OPTIONS = ["-classpath", "-cp", "--classpath"]
-
+    /**
+     * Setting a classpath using the -cp or -classpath option means not to use the global classpath.
+     * GroovyServ behaves then the same as the java interpreter and Groovy.
+     */
     private setupClasspath(request) {
-        // parse classpath option's values from arguments.
-        // priority of specification of classpath: classpath option (-cp, -classpath) > CLASSPATH environment variable
-        def filteredArgs = []
         def paths = [] as LinkedHashSet
+
+        // parse classpath option's values from arguments.
+        def filteredArgs = [] // args except options about classpath
         for (def it = request.args.iterator(); it.hasNext(); ) {
             String opt = it.next()
             if (CLASSPATH_OPTIONS.contains(opt)) {
@@ -97,15 +101,17 @@ class GroovyInvokeHandler implements Runnable {
             }
         }
 
-        // via Cp header from CLASSPATH environment variable on client
-        if (request.classpath) {
-            paths += request.classpath.split(File.pathSeparator) as List
+        // if no classpath option, using Cp header from CLASSPATH environment variable on client.
+        if (paths.empty && request.classpath) {
+            paths = request.classpath.split(File.pathSeparator) as List
         }
 
+        // CWD must be always the last entry of classpath
+        paths << request.cwd
+
         // replace classpath option in arguments
-        if (paths) {
-            request.args = filteredArgs << CLASSPATH_OPTIONS.first() << "\"${paths.join(File.pathSeparator)}\"" // for paths including white spaces
-        }
+        // quotes are necessary in case of including white spaces at paths
+        request.args = [CLASSPATH_OPTIONS.first(), "\"${paths.join(File.pathSeparator)}\"", *filteredArgs]
     }
 
     private invokeGroovy(args) {
