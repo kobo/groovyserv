@@ -108,7 +108,7 @@ class GroovyInvokeHandler implements Runnable {
         }
 
         // CWD must be always the last entry of classpath
-        paths << request.cwd
+        paths << "."
 
         // replace classpath option in arguments
         // quotes are necessary in case of including white spaces at paths
