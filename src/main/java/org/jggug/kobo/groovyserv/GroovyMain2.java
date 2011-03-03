@@ -298,6 +298,8 @@ public class GroovyMain2 {
         main.args = args;
 
         // for GroovyServ: classpath is given by GroovyInvokeHandler
+        // TODO On general groovy, should "groovy.classpath" property be merged
+        //      or ignored when specifing classpath arguments? Ignoring it now.
         main.conf.setClasspath(line.getOptionValue("classpath"));
 
         return main.run();
