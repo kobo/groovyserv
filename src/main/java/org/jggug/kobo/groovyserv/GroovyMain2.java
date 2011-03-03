@@ -297,6 +297,9 @@ public class GroovyMain2 {
         }
         main.args = args;
 
+        // for GroovyServ: classpath is given by GroovyInvokeHandler
+        main.conf.setClasspath(line.getOptionValue("classpath"));
+
         return main.run();
     }
 

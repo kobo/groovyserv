@@ -15,11 +15,14 @@
  */
 package org.jggug.kobo.groovyserv
 
+import org.codehaus.groovy.tools.GroovyStarter
 
 /**
  * @author NAKANO Yasuharu
  */
 class GroovyInvokeHandler implements Runnable {
+
+    final CLASSPATH_OPTIONS = ["--classpath", "-cp", "-classpath"]
 
     private String id
     private InvocationRequest request
@@ -47,7 +50,7 @@ class GroovyInvokeHandler implements Runnable {
         try {
             CurrentDirHolder.instance.setDir(request.cwd)
             setupEnvVars(request.envVars)
-            setupClasspath(request)
+            completeClasspathArg(request)
             invokeGroovy(request.args)
             awaitAllSubThreads()
         }
@@ -78,18 +81,38 @@ class GroovyInvokeHandler implements Runnable {
         }
     }
 
-    private setupClasspath(request) {
-        ClasspathUtils.addClasspath(request.classpath)
+    /**
+     * Setting a classpath using the -cp or -classpath option means not to use the global classpath.
+     * GroovyServ behaves then the same as the java interpreter and Groovy.
+     */
+    private completeClasspathArg(request) {
+        def paths = [] as LinkedHashSet
+
+        // parse classpath option's values from arguments.
+        def filteredArgs = [] // args except options about classpath
         for (def it = request.args.iterator(); it.hasNext(); ) {
             String opt = it.next()
-            if (opt == "-cp") {
+            if (CLASSPATH_OPTIONS.contains(opt)) {
                 if (!it.hasNext()) {
                     throw new InvalidRequestHeaderException("${id}: Invalid classpath option: ${request.args}")
                 }
-                String classpath = it.next()
-                ClasspathUtils.addClasspath(classpath)
+                paths += it.next().split(File.pathSeparator) as List
+            } else {
+                filteredArgs << opt
             }
         }
+
+        // if no classpath option, using Cp header from CLASSPATH environment variable on client.
+        if (paths.empty && request.classpath) {
+            paths = request.classpath.split(File.pathSeparator) as List
+        }
+
+        // CWD must be always the last entry of classpath
+        paths << request.cwd
+
+        // replace classpath option in arguments
+        // quotes are necessary in case of including white spaces at paths
+        request.args = [CLASSPATH_OPTIONS.first(), "\"${paths.join(File.pathSeparator)}\"", *filteredArgs]
     }
 
     private invokeGroovy(args) {
@@ -122,7 +145,7 @@ class GroovyInvokeHandler implements Runnable {
         threads.each { thread ->
             thread.stop() // FORCELY
         }
-        DebugUtils.verboseLog("${id}: All sub thread stopped forcely")
+        DebugUtils.verboseLog("${id}: All sub threads stopped forcely")
     }
 
     private getAllAliveSubThreads() {
