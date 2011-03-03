@@ -38,39 +38,39 @@ class GroovyInvokeHandlerTest extends GroovyTestCase {
         handler = new GroovyInvokeHandler(request)
     }
 
-    void testSetupClasspath_withEnv_withLongOptClasspath() {
-        handler.setupClasspath(request)
+    void testCompleteClasspathArg_withEnv_withLongOptClasspath() {
+        handler.completeClasspathArg(request)
         assert request.args == ['--classpath', "\"CP6${PSEP}CP7${PSEP}CP8:CWD\"", '-e', 'println("hello")']
     }
 
-    void testSetupClasspath_withEnv_withShortOptCp() {
+    void testCompleteClasspathArg_withEnv_withShortOptCp() {
         request.args = ['-cp', "CP6${PSEP}CP7${PSEP}CP8", '-e', 'println("hello")']
-        handler.setupClasspath(request)
+        handler.completeClasspathArg(request)
         assert request.args == ['--classpath', "\"CP6${PSEP}CP7${PSEP}CP8:CWD\"", '-e', 'println("hello")']
     }
 
-    void testSetupClasspath_withEnv_withShortOptClasspath() {
+    void testCompleteClasspathArg_withEnv_withShortOptClasspath() {
         request.args = ['-classpath', "CP6${PSEP}CP7${PSEP}CP8", '-e', 'println("hello")']
-        handler.setupClasspath(request)
+        handler.completeClasspathArg(request)
         assert request.args == ['--classpath', "\"CP6${PSEP}CP7${PSEP}CP8:CWD\"", '-e', 'println("hello")']
     }
 
-    void testSetupClasspath_noEnv_withLongOptClasspath() {
+    void testCompleteClasspathArg_noEnv_withLongOptClasspath() {
         request.classpath = null
-        handler.setupClasspath(request)
+        handler.completeClasspathArg(request)
         assert request.args == ['--classpath', "\"CP6${PSEP}CP7${PSEP}CP8:CWD\"", '-e', 'println("hello")']
     }
 
-    void testSetupClasspath_withEnv_noOptOfClasspath() {
+    void testCompleteClasspathArg_withEnv_noOptOfClasspath() {
         request.args = ['-e', 'println("hello")']
-        handler.setupClasspath(request)
+        handler.completeClasspathArg(request)
         assert request.args == ['--classpath', "\"CP1${PSEP}CP2${PSEP}CP3:CWD\"", '-e', 'println("hello")']
     }
 
-    void testSetupClasspath_noEnv_noOptOfClasspath() {
+    void testCompleteClasspathArg_noEnv_noOptOfClasspath() {
         request.classpath = null
         request.args = ['-e', 'println("hello")']
-        handler.setupClasspath(request)
+        handler.completeClasspathArg(request)
         assert request.args == ['--classpath', "\"CWD\"", '-e', 'println("hello")']
     }
 

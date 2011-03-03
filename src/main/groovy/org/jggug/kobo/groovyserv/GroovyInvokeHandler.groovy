@@ -15,6 +15,7 @@
  */
 package org.jggug.kobo.groovyserv
 
+import org.codehaus.groovy.tools.GroovyStarter
 
 /**
  * @author NAKANO Yasuharu
@@ -49,7 +50,7 @@ class GroovyInvokeHandler implements Runnable {
         try {
             CurrentDirHolder.instance.setDir(request.cwd)
             setupEnvVars(request.envVars)
-            setupClasspath(request)
+            completeClasspathArg(request)
             invokeGroovy(request.args)
             awaitAllSubThreads()
         }
@@ -84,7 +85,7 @@ class GroovyInvokeHandler implements Runnable {
      * Setting a classpath using the -cp or -classpath option means not to use the global classpath.
      * GroovyServ behaves then the same as the java interpreter and Groovy.
      */
-    private setupClasspath(request) {
+    private completeClasspathArg(request) {
         def paths = [] as LinkedHashSet
 
         // parse classpath option's values from arguments.
@@ -144,7 +145,7 @@ class GroovyInvokeHandler implements Runnable {
         threads.each { thread ->
             thread.stop() // FORCELY
         }
-        DebugUtils.verboseLog("${id}: All sub thread stopped forcely")
+        DebugUtils.verboseLog("${id}: All sub threads stopped forcely")
     }
 
     private getAllAliveSubThreads() {
