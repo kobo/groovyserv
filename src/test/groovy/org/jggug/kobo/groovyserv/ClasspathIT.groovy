@@ -53,6 +53,14 @@ class ClasspathIT extends GroovyTestCase {
         assert p.text.contains("Arg:hello")
     }
 
+    void testVolatileOfClasspath() {
+        def command = TestUtils.getCommand(["-e", '"new ArgEcho().echo(\'hello\')"']) as String[]
+        def p = Runtime.runtime.exec(command)
+        p.waitFor()
+        assert p.text == ""
+        assert p.err.text.contains("org.codehaus.groovy.control.MultipleCompilationErrorsException")
+    }
+
     private resolvePath(jarFileName) {
         "${System.properties.'user.dir'}/src/test/resources/${jarFileName}"
     }
