@@ -22,7 +22,7 @@ package org.jggug.kobo.groovyserv
 class WorkFiles {
 
     static final DATA_DIR = new File("${System.getProperty('user.home')}/.groovy/groovyserv")
-    static final LOG_FILE = new File(DATA_DIR, "groovyserver.log")
+    static final LOG_FILE = new File(DATA_DIR, "groovyserver-${GroovyServer.getPortNumber()}.log")
     static final COOKIE_FILE = new File(DATA_DIR, "cookie-${GroovyServer.getPortNumber()}")
 
     private static initWorkDir() {
