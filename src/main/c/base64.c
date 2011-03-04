@@ -17,13 +17,13 @@
 #include <string.h>
 #include "base64.h"
 
-void base64_encode(char* encoded, char* original)
+void base64_encode(char* encoded, unsigned char* original)
 {
-    char *w = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-    unsigned char *buff;
+    char* w = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    unsigned char buff[1024] = { 0 };
     int i = 0, x = 0, l = 0;
 
-    buff = (char *)malloc((strlen(original) * 4 / 3 + 3) & ~0x03 + 1);
+    memset(encoded, 0, sizeof(encoded));
 
     for (; *original; original++) {
         x = x << 8 | *original;
@@ -40,6 +40,5 @@ void base64_encode(char* encoded, char* original)
     }
 
     strcpy(encoded, buff);
-    free(buff);
 }
 

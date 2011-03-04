@@ -17,6 +17,6 @@
 #ifndef _BASE64_H
 #define _BASE64_H
 
-void base64_encode(char* encoded, char* original);
+void base64_encode(char* encoded, unsigned char* original);
 
 #endif
