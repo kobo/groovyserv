@@ -41,6 +41,7 @@
 #include <signal.h>
 #include <sys/stat.h>
 
+#include "base64.h"
 #include "buf.h"
 #include "option.h"
 #include "bool.h"
@@ -178,9 +179,11 @@ void send_header(int fd, int argc, char** argv, char* cookie)
     buf_printf(&read_buf, "%s: %s\n", HEADER_KEY_COOKIE, cookie);
 
     // send command line arguments.
+    char encoded[MAXPATHLEN];
     for (i = 1; i < argc; i++) {
         if (argv[i] != NULL) {
-            buf_printf(&read_buf, "%s: %s\n", HEADER_KEY_ARG, argv[i]);
+            base64_encode(encoded, argv[i]);
+            buf_printf(&read_buf, "%s: %s\n", HEADER_KEY_ARG, encoded);
         }
     }
 

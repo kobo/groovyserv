@@ -307,7 +307,7 @@
                 <configuration>
                   <tasks>
                     <exec executable="gcc" failonerror="true">
-                      <arg line="-g -o target/groovyclient src/main/c/groovyclient.c src/main/c/buf.c src/main/c/option.c src/main/c/session.c" />
+                      <arg line="-g -o target/groovyclient src/main/c/groovyclient.c src/main/c/buf.c src/main/c/option.c src/main/c/session.c src/main/c/base64.c" />
                     </exec>
                   </tasks>
                 </configuration>
@@ -372,7 +372,7 @@
                 <configuration>
                   <tasks>
                     <exec executable="gcc-3" failonerror="true">
-                      <arg line="-mno-cygwin -g -o target/groovyclient src/main/c/groovyclient.c src/main/c/buf.c src/main/c/option.c src/main/c/session.c -lws2_32" />
+                      <arg line="-mno-cygwin -g -o target/groovyclient src/main/c/groovyclient.c src/main/c/buf.c src/main/c/option.c src/main/c/session.c src/main/c/base64.c -lws2_32" />
                     </exec>
                   </tasks>
                 </configuration>

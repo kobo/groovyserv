@@ -55,7 +55,7 @@ import static java.util.concurrent.TimeUnit.*
     static readLines(InputStream ins) {
         def lines = []
         def line
-        while ((line = readLine(ins)) != "") {
+        while ((line = readLine(ins)) != "") { // because in request, an empty line means the end of header part
             lines << line
         }
         return lines

@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 require 'socket'
+require 'base64'
 
 #-------------------------------------------
 # Constants
@@ -132,7 +133,7 @@ class OptionInfo
     "help" => OptionInfoHelp.new(false),
     "h" => OptionInfoHelp.new(false),
     "" => OptionInfoHelp.new(false)
-    }
+  }
 
   def OptionInfo.options
     @@options
@@ -255,8 +256,8 @@ end
 
 def send_command(socket, args)
   socket.puts "Cwd: #{current_dir}"
-  args.each do |it|
-    socket.puts "Arg: #{it}"
+  args.each do |arg|
+    socket.puts "Arg: #{Base64.encode64(arg.toutf8)}"
   end
   File.open(COOKIE_FILE_BASE+"-"+$client_option.port.to_s) { |f|
     socket.puts "Cookie: #{f.read}"
