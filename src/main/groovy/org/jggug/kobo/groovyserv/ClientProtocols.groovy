@@ -122,7 +122,7 @@ class ClientProtocols {
     }
 
     private static Map<String, List<String>> readHeaders(ClientConnection conn) {
-        def id = "RequestHeader:${conn.socket.port}"
+        def id = "ClientProtocols:${conn.socket.port}"
         def ins = conn.socket.inputStream // raw strem
         return parseHeaders(id, ins)
     }
