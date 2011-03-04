@@ -257,7 +257,7 @@ end
 def send_command(socket, args)
   socket.puts "Cwd: #{current_dir}"
   args.each do |arg|
-    socket.puts "Arg: #{Base64.encode64(arg.toutf8)}"
+    socket.puts "Arg: #{Base64.encode64(arg)}" # using default encoding
   end
   File.open(COOKIE_FILE_BASE+"-"+$client_option.port.to_s) { |f|
     socket.puts "Cookie: #{f.read}"

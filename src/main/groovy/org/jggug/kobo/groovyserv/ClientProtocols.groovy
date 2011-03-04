@@ -99,7 +99,7 @@ class ClientProtocols {
             port: conn.socket.port,
             cwd: headers[HEADER_CURRENT_WORKING_DIR][0],
             classpath: headers[HEADER_CP]?.getAt(0),
-            args: headers[HEADER_ARG].collect{ new String(it.decodeBase64(), "UTF-8") },
+            args: headers[HEADER_ARG].collect{ new String(it.decodeBase64()) }, // using default encoding
             clientCookie: headers[HEADER_COOKIE]?.getAt(0),
             serverCookie: conn.cookie,
             envVars: headers[HEADER_ENV]
