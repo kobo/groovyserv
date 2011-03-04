@@ -40,6 +40,9 @@ class DebugUtils {
     static verboseLog(message, Throwable e = null) {
         if (!isVerboseMode()) return
 
+        // lazy formatting message
+        message = (message instanceof Closure) ? message.call() : message
+
         // added prefix for each line
         def formatted = {
             def sw = new StringWriter()

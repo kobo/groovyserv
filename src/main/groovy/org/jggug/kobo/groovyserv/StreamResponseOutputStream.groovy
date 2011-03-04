@@ -55,7 +55,7 @@ class StreamResponseOutputStream extends OutputStream {
 
     @Override
     public void write(byte[] b, int offset, int length) {
-        writeLog(b, offset, length)
+        writeVerboseLog(b, offset, length)
         // FIXME When System.exit to a sub thread which in infinte loop, following synchronized occures IllegalMonitorStateException.
         //synchronized(currentOutputStream) { // to keep independency of 'out' and 'err' on socket stream
             byte[] header = ClientProtocols.formatAsResponseHeader(streamId, length)
@@ -64,8 +64,8 @@ class StreamResponseOutputStream extends OutputStream {
         //}
     }
 
-    private writeLog(byte[] b, int offset, int length) {
-        DebugUtils.verboseLog """\
+    private writeVerboseLog(byte[] b, int offset, int length) {
+        DebugUtils.verboseLog { """\
             |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
             |Server->Client {
             |  id: ${streamId}
@@ -76,6 +76,7 @@ class StreamResponseOutputStream extends OutputStream {
             |}
             |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
             |""".stripMargin()
+        }
     }
 
     private OutputStream getCurrentOutputStream() {
