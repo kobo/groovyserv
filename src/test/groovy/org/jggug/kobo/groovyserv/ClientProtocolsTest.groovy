@@ -25,8 +25,8 @@ class ClientProtocolsTest extends GroovyTestCase {
         def ins = new ByteArrayInputStream("""\
 Cwd: /tmp/cwd
 Cp: /tmp/cp1:/tmp/cp2
-Arg: -e
-Arg: "pritln('hello')"
+Arg: argument_1
+Arg: argument_2
 Cookie: DUMMY_COOKIE
 """.bytes)
         // exercise
@@ -34,7 +34,7 @@ Cookie: DUMMY_COOKIE
         // verify
         assert headers.Cwd == ['/tmp/cwd']
         assert headers.Cp == ['/tmp/cp1:/tmp/cp2']
-        assert headers.Arg == ['-e', '''"pritln('hello')"''']
+        assert headers.Arg == ['argument_1', 'argument_2']
         assert headers.Cookie == ['DUMMY_COOKIE']
         assert headers.size() == 4
     }

@@ -30,8 +30,8 @@ class DirectAccessIT extends GroovyTestCase {
         new Socket("localhost", 1961).withStreams { ins, out ->
             out << """\
                 |Cwd: /tmp
-                |Arg: -e
-                |Arg: println("hello")
+                |Arg: ${encodeBase64('-e')}
+                |Arg: ${encodeBase64('println("hello")')}
                 |Cookie: ${WorkFiles.COOKIE_FILE.text}
                 |
                 |""".stripMargin()
@@ -55,8 +55,8 @@ class DirectAccessIT extends GroovyTestCase {
             new Socket("localhost", 1961).withStreams { ins, out ->
                 out << """\
                     |Cwd: /tmp
-                    |Arg: -e
-                    |Arg: System.in.eachLine { line, index -> println(line * 2) }
+                    |Arg: ${encodeBase64('-e')}
+                    |Arg: ${encodeBase64('System.in.eachLine { line, index -> println(line * 2) }')}
                     |Cookie: ${WorkFiles.COOKIE_FILE.text}
                     |
                     |""".stripMargin()
@@ -118,8 +118,8 @@ class DirectAccessIT extends GroovyTestCase {
         new Socket("localhost", 1961).withStreams { ins, out ->
             out << """\
                 |Cwd: /tmp
-                |Arg: -e
-                |Arg: println System.getenv("$envVarName")
+                |Arg: ${encodeBase64('-e')}
+                |Arg: ${encodeBase64("""println System.getenv("$envVarName")""")}
                 |Env: $envVarName=$envVarValue
                 |Cookie: ${WorkFiles.COOKIE_FILE.text}
                 |
@@ -136,6 +136,10 @@ class DirectAccessIT extends GroovyTestCase {
                 |
                 |""".stripMargin(), SERVER_SIDE_SEPARATOR)
         }
+    }
+
+    private String encodeBase64(String arg) {
+        arg.bytes.encodeBase64()
     }
 }
 
