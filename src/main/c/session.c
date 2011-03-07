@@ -182,6 +182,7 @@ void send_header(int fd, int argc, char** argv, char* cookie)
     char encoded[MAXPATHLEN];
     for (i = 1; i < argc; i++) {
         if (argv[i] != NULL) {
+            memset(encoded, 0, sizeof(encoded));
             base64_encode(encoded, argv[i]);
             buf_printf(&read_buf, "%s: %s\n", HEADER_KEY_ARG, encoded);
         }

@@ -17,28 +17,40 @@
 #include <string.h>
 #include "base64.h"
 
+const int MASK_6BITS = 0x3f;
+const char * const BASE64_DICT = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
 void base64_encode(char* encoded, unsigned char* original)
 {
-    char* w = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-    unsigned char buff[1024] = { 0 };
-    int i = 0, x = 0, l = 0;
+    int encoded_idx = 0;
+    int work_buff = 0, wb_available_length = 0; // working buffer to handle characters as bit
+    int dict_index;
 
-    memset(encoded, 0, sizeof(encoded));
+    // encoding
+    while (*original != 0) {
+        // append a next character to working buffer
+        work_buff <<= 8;
+        work_buff |= *original;
+        wb_available_length += 8;
 
-    for (; *original; original++) {
-        x = x << 8 | *original;
-        for (l += 8; l >= 6; l -= 6) {
-            buff[i++] = w[(x >> (l - 6)) & 0x3f];
+        // consuming working buffer
+        for (; wb_available_length >= 6; wb_available_length -= 6) {
+            // upper 6 bits of working buffer
+            dict_index = (work_buff >> (wb_available_length - 6)) & MASK_6BITS;
+
+            // conv to a character
+            encoded[encoded_idx++] = BASE64_DICT[dict_index];
         }
+        original++;
     }
-    if (l > 0) {
-        x <<= 6 - l;
-        buff[i++] = w[x & 0x3f];
-    }
-    for (; i % 4;) {
-        buff[i++] = '=';
+    if (wb_available_length > 0) {
+        work_buff <<= (6 - wb_available_length);
+        encoded[encoded_idx++] = BASE64_DICT[work_buff & MASK_6BITS];
     }
 
-    strcpy(encoded, buff);
+    // padding as a couple of 4 digits
+    while (encoded_idx % 4 > 0) {
+        encoded[encoded_idx++] = '=';
+    }
 }
 
