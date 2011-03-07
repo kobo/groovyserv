@@ -257,7 +257,9 @@ end
 def send_command(socket, args)
   socket.puts "Cwd: #{current_dir}"
   args.each do |arg|
-    socket.puts "Arg: #{Base64.encode64(arg)}" # using default encoding
+    # why using gsub? because Base64.encode64 happens to break lines automatically.
+    # TODO using default encoding.
+    socket.puts "Arg: #{Base64.encode64(arg).gsub(/\s/, '')}"
   end
   File.open(COOKIE_FILE_BASE+"-"+$client_option.port.to_s) { |f|
     socket.puts "Cookie: #{f.read}"
