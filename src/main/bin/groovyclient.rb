@@ -246,8 +246,8 @@ end
 
 def send_envvars(socket)
   ENV.each{|key,value|
-    if $client_option.env_all || $client_option.env_include_mask.any?{|item| item.include?(key) }
-      if !$client_option.env_exclude_mask.any?{|item| item.include?(key) }
+    if $client_option.env_all || $client_option.env_include_mask.any?{|item| key.include?(item) }
+      if !$client_option.env_exclude_mask.any?{|item| key.include?(item) }
         socket.puts "Env: #{key}=#{value}"
       end
     end
