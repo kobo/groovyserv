@@ -145,7 +145,7 @@ static BOOL masks_match(char** masks, char* str)
 static void make_env_headers(buf* read_buf, char** env, char** inc_mask, char** exc_mask)
 {
     int i;
-    for (i = 1; env[i] != NULL; i++) {
+    for (i = 0; env[i] != NULL; i++) {
         if (client_option.env_all || masks_match(client_option.env_include_mask, env[i])) {
             if (!masks_match(client_option.env_exclude_mask, env[i])) {
                 buf_printf(read_buf, "%s: %s\n", HEADER_KEY_ENV, env[i]);
