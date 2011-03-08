@@ -23,8 +23,6 @@ import groovy.util.GroovyTestCase
 */
 class EnvPropergateIT extends GroovyTestCase {
 
-    static final String SEP = System.getProperty("line.separator")
-
     void testUsage() {
         TestUtils.executeClient(["-Ch"]) {
             assert it.text.startsWith("\nusage:")
@@ -69,7 +67,7 @@ class EnvPropergateIT extends GroovyTestCase {
        def p = TestUtils.executeClient(["-Cxxx",
                                         "-e", '"println(System.getenv(\'PATH\'))"']) {
            assert clientHelpMessage == it.text
-           assert it.err.text == "ERROR: unknown option -Cxxx" + SEP
+           assert it.err.text.startsWith("ERROR: unknown option -Cxxx")
        }
        assert p.exitValue() == 1
    }
@@ -183,7 +181,7 @@ class EnvPropergateIT extends GroovyTestCase {
        def p = TestUtils.executeClient([*arg, "-e", '"print(\'hello\')"']) {
            if (!System.getProperty('groovyservClientExecutable')?.endsWith('.rb')) {
                assert it.text.startsWith("\nusage:")
-               assert it.err.text == "ERROR: too many option: env _VAR11" + SEP
+               assert it.err.text.startsWith("ERROR: too many option: env _VAR11")
                expectedExitValue = 1
            }
            else {
@@ -284,7 +282,7 @@ class EnvPropergateIT extends GroovyTestCase {
    void testEnv_require_param() {
        def p = TestUtils.executeClient(['"print(System.getenv(\'X06\'))"', "-Cenv" ]) {
            assert it.text.startsWith("\nusage:")
-           assert it.err.text == "ERROR: option -Cenv require param" + SEP
+           assert it.err.text.startsWith("ERROR: option -Cenv require param")
        }
        assert p.exitValue() == 1
        
