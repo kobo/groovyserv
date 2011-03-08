@@ -23,24 +23,18 @@ import groovy.util.GroovyTestCase
  */
 class MultilineArgsIT extends GroovyTestCase {
 
-    static final String SEP = System.getProperty("line.separator")
-
     void testMultilineArgs() {
         def script = """\
-            |println("start")
-            |println '''line1
+            |print('start:')
+            |print('''line1
             |line2
-            |line3'''
-            |println("end")
-            |""".stripMargin()
+            |line3''')
+            |print(':end')""".stripMargin()
         assertEquals(
-            """start
-              |line1
+            """start:line1
               |line2
-              |line3
-              |end
-              |""".stripMargin(), 
-            TestUtils.executeClientOk(["-e", "$script"]).text
+              |line3:end""".stripMargin(),
+            TestUtils.executeClientOk(["-e", "\"$script\""]).text
         )
     }
 
