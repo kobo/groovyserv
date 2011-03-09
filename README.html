@@ -27,9 +27,9 @@
         <div class="section">
           <h2>README</h2>
           <pre>
-==============
+============
 Introduction
-==============
+============
 
 GroovyServ makes startup time quicker, by pre-invoking groovy as a TCP/IP
 server. If you know gnuserv(gnudoit)/emacsserver/emacsclient, this is like that.
@@ -48,9 +48,9 @@ measured invocation in Groovy 1.7 on Windows XP (Core(TM) 2 Duo 2GHz).
   Groovy(native exe)  0.90 (sec)
   GroovyServ          0.10 (sec)
 
-<span id="requirements">==============</span>
+<span id="requirements">============</span>
 Requirements
-==============
+============
 
 GroovyServ is developed for following environment/OS. Please report if it
 runs on the others.
@@ -69,16 +69,16 @@ Version of Groovy is following:
 
   - Groovy 1.7 or later
 
-==========
+========
 Language
-==========
+========
 
 The Server is written in Java with JNA(Java Native Access).  There are
 two types of clients, one is written in C and another is written in Ruby.
 
-==========
+========
 Security
-==========
+========
 
 GroovyServ has a possibility to run any groovy script from client.
 So server-client connection is limited to the connection from the same
@@ -88,9 +88,9 @@ and the file mode set to 0400. But in Windows environment, it is not
 effective. So appropriately protect access to the file in Windows if
 needed.
 
-=============================
+===========================
 Install from binary package
-=============================
+===========================
 
 Download and expand GroovyServ distribution package
 
@@ -119,9 +119,9 @@ for a few seconds to startup.
   starting server..
   Groovy Version: 1.7.3 JVM: 1.6.0_20
 
-<span id="build">========================</span>
+<span id="build">======================</span>
 Build from source code
-========================
+======================
 
 Download and expand GroovyServ source package groovyserv-0.5-src.zip
 to any directory. For example:
@@ -158,9 +158,9 @@ If some tests fail, you can try as follows:
 To build it in Windows, you need Cygwin and gcc.
 You must install them before trying to build.
 
-<span id="environmentVariables">=======================</span>
+<span id="environmentVariables">=====================</span>
 Environment variables
-=======================
+=====================
 
 GroovyServ uses the following environment variables in runtime.
 
@@ -191,9 +191,9 @@ GroovyServ uses the following environment variables in runtime.
 
     It's used to specify the port number for server or client.
 
-============
+==========
 How to use
-============
+==========
 
 You can use 'groovyclient' command as a replacement of 'groovy'
 command.  If the server is not running, it starts automatically. You
@@ -204,9 +204,9 @@ can also invoke the serverexplicitly.
 About groovyserver command options refer to "groovyserver options"
 section.
 
-=========================
+=======================
 Restriction/Differences
-=========================
+=======================
 
 * You can't concurrently use different current directory on a server.
   If you execute the following,
@@ -241,9 +241,9 @@ Restriction/Differences
   server and added/overwrote to environment variables of the server
   process. But it is only to add, never to remove.
 
-======================
-groovyclient options
-======================
+=====================
+groovyclient's option
+=====================
 
   -Ch,-Chelp                       Usage information of groovyclient options
   -Cp,-Cport <port>                Port number to connect to groovyserver
@@ -256,9 +256,9 @@ groovyclient options
   -Cenv-exclude <pattern>          Don't pass the environment variables which
                                    name matches with specified pattern
 
-======================
-groovyserver options
-======================
+=====================
+groovyserver's option
+=====================
 
 Options are as follows:
 
@@ -267,9 +267,9 @@ Options are as follows:
   -r        restart groovyserver (groovyserver.bat cannot use this)
   -p &lt;port&gt; specify the port that connected from groovyclient
 
-==================================
+=============================
 Stop and restart groovyserver
-==================================
+=============================
 
 There are two ways for invoke groovyserver. First one is, called
 explicit server invocation, using bash shell script 'groovyserver' or
@@ -328,9 +328,9 @@ Incidentally, in the case of transparent invocation you can't supply
 options(e.g. -v) for groovyserver/.bat which to be invoked
 internally. If it is needed, please invoke groovyserver explicitly.
 
-=================================
+================================
 Environment Variable Propagation
-=================================
+================================
 
 From GroovyServ 0.5, you can pass any environment variables to the
 groovyserver.
@@ -382,9 +382,9 @@ finished. And of course environment variable are not 'MT Safe' on the
 the server, when multiple groovyclient instance invoked
 simultaneously, the value are overwritten by subsequent invocation.
 
-=============
+===========
 Port number
-=============
+===========
 
 In groovyserver, to change the port number, you can use
 GROOVYSERVER_PORT environment variable or -p option. The -p option is
@@ -405,17 +405,17 @@ GROOVYSERVER_PORT, you can spcify portnumber by -Cp option.
 In transparent groovyserver invocation, port number is supplied to the
 server with -p option.
 
-==========
+========
 Log file
-==========
+========
 
 The output from groovyserver are logged to:
 
   ~/.groovy/groovyserv/groovyserver.log
 
-======
-tips
-======
+====
+Tips
+====
 
 Following aliases might be useful.
 
