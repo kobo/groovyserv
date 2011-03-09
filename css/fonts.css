@@ -48,7 +48,8 @@ table{
 }
 
 pre,code,kbd,samp,tt{
-  font-family:monospace;
+  font-family: 'ＭＳ ゴシック', 'MS Gothic', 'Osaka-等幅', 'Osaka-Mono', monospace;
+  _font-family: monospace;
   *font-size:108%;
   line-height:100%;
 }
