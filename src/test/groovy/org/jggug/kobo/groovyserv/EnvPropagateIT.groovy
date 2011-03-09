@@ -21,7 +21,7 @@ import groovy.util.GroovyTestCase
 * Tests for the {@code groovyclient}.
 * Before running this, you must start groovyserver.
 */
-class EnvPropergateIT extends GroovyTestCase {
+class EnvPropagationIT extends GroovyTestCase {
 
     void testUsage() {
         TestUtils.executeClient(["-Ch"]) {
