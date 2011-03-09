@@ -89,6 +89,11 @@
     </pluginRepository>
   </pluginRepositories>
   <build>
+    <resources>
+      <resource>
+        <directory>src/main/groovy</directory>
+      </resource>
+    </resources>
     <plugins>
       <plugin>
         <groupId>org.codehaus.gmaven</groupId>
@@ -101,7 +106,6 @@
           <execution>
             <id>compile-groovy</id>
             <goals>
-              <goal>compile</goal>
               <goal>testCompile</goal>
             </goals>
           </execution>
@@ -167,41 +171,6 @@
             </configuration>
           </execution>
         </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-resources-plugin</artifactId>
-        <version>2.4.3</version>
-        <executions>
-          <execution>
-            <id>copy-resources</id>
-            <phase>compile</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${basedir}/target/classes</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>src/main/groovy</directory>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>2.3.1</version>
-        <configuration>
-          <includes>
-            <include>**/GroovyMain2.class</include>
-            <include>**/NoExitSecurityManager2.class</include>
-            <include>**/SystemExitException.class</include>
-            <include>**/*.groovy</include>
-          </includes>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
