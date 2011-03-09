@@ -24,6 +24,32 @@
       </div>
 
       <div id="content">
+        <div class="section" id="0.6">
+          <h2>Changes in version 0.6 (2011-03-10)</h2>
+          <pre>
+Improvements:
+
+- Supported for a multiline command argument.
+- Changed file name of all working files (e.g. log, cookie and pid) which has a port number as suffix.
+- Tearing down the user-specified classpath at the end of each script invocation.
+- Made exit status use positive number (because, for example, "-1" happened to be displayed like "255").
+- Supported to build by Maven3.
+
+Bug Fixes:
+
+- Fixed #16: CWD is accidentally ovewritten by another session.
+    <a href="https://github.com/kobo/groovyserv/issues/closed#issue/16">https://github.com/kobo/groovyserv/issues/closed#issue/16</a>
+- Fixed #17, #18: Wrong file privileges in *Nix distribution.
+    <a href="https://github.com/kobo/groovyserv/issues/closed#issue/17">https://github.com/kobo/groovyserv/issues/closed#issue/17</a>
+    <a href="https://github.com/kobo/groovyserv/issues/closed#issue/18">https://github.com/kobo/groovyserv/issues/closed#issue/18</a>
+- Fixed #19: GROOVYSERV_HOME resolution fails when binaries are symbolic links when using SH.
+    <a href="https://github.com/kobo/groovyserv/issues/closed#issue/19">https://github.com/kobo/groovyserv/issues/closed#issue/19</a>
+- Fixed #21: wrong check for -Cenv, -Cenv-exclude in groovyclient.rb.
+    <a href="https://github.com/kobo/groovyserv/issues/closed#issue/21">https://github.com/kobo/groovyserv/issues/closed#issue/21</a>
+- Fixed #22: the first environment variable is sometimes not passed to server.
+    <a href="https://github.com/kobo/groovyserv/issues/closed#issue/22">https://github.com/kobo/groovyserv/issues/closed#issue/22</a>
+          </pre>
+        </div>
         <div class="section" id="0.5">
           <h2>Changes in version 0.5 (2010-12-22)</h2>
           <pre>
@@ -76,8 +102,6 @@ Bug fixes:
  - In Mac OS X, progress showing mark displayed '-n .' instead of '...'.
           </pre>
         </div>
-      </div>
-      <div id="content">
         <div class="section" id="0.4">
           <h2>Changes in version 0.4 (2010-08-06)</h2>
           <pre>
