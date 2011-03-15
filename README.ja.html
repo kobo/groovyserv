@@ -73,7 +73,7 @@ GroovyServを使うことで、Groovyコマンドの起動時間を短縮し、�
 
 JDKのバージョンは以下のとおりです。
 
-  - JDK 6u20以降 (Mac OS X)
+  - JDK 6u24以降 (Mac OS X)
   - JDK 6u21以降 (Windows, Linux)
 
 Groovyのバージョンは以下のとおりです。
@@ -84,9 +84,9 @@ Groovyのバージョンは以下のとおりです。
 言語と構成
 ==========
 
-サーバサイドはJava、クライアントはC言語クライアントおよびRubyのクライア
-ントが現在動作しています。サーバサイドではJNA(Java Native Access)を使用
-しています。使用するコマンドは以下の通りです。
+サーバサイドはJavaとGroovy、クライアントはC言語クライアントおよびRubyの
+クライアントが現在動作しています。サーバサイドではJNA(Java Native Access)
+を使用しています。使用するコマンドは以下の通りです。
 
   groovyserver     GroovyServサーバを起動するコマンド(UNIX/Cygwin用シェルスクリプト)
   groovyserver.bat GroovyServサーバを起動するコマンド(Windows用)
@@ -100,9 +100,9 @@ Groovyのバージョンは以下のとおりです。
 GroovyServサーバへの接続は、localhostからのみに制限されており、他のマシ
 ンからはgroovyclientコマンドを使って接続することはできません。また、同
 マシン上でもgroovyserverを起動したユーザーと同じユーザが実行した
-groovyclient の接続しか受け付けないように制約をかけています。なお、この
-制約は、サーバが実行後とに生成する秘密のクッキー情報
-~/.groovy/groovyserv/cookieファイルの内容を自ユーザのみが読み出せること
+groovyclient の接続しか受け付けないように制約をかけています。
+なお、この制約は、サーバが実行ごとに生成する秘密のクッキー情報ファイル
+~/.groovy/groovyserv/cookie-&lt;port&gt;の内容を自ユーザのみが読み出せること
 に依存しています。このファイルのアクセス制限を、UNIX環境ではowner以外か
 らは読めないように設定(chmod 0400)していますが、Windows環境ではこの設定
 が機能しないため、必要に応じて他のユーザから読み出せないように設定して
@@ -112,44 +112,47 @@ groovyclient の接続しか受け付けないように制約をかけていま�
 バイナリパッケージからのインストール
 ====================================
 
-バイナリパッケージgroovyserv-0.5-&lt;OS&gt;-&lt;arch&gt;-bin.zipを適当なフォルダ
+バイナリパッケージgroovyserv-0.6-&lt;OS&gt;-&lt;arch&gt;-bin.zipを適当なフォルダ
 に展開します。例えば、~/optに展開するとします。
 
-  &gt; mkdir ~/opt
-  &gt; cd ~/opt
-  &gt; unzip groovyserv-0.5-win32-bin.zip
+  $ mkdir ~/opt
+  $ cd ~/opt
+  $ unzip groovyserv-0.6-macosx-bin.zip
 
-上記により~/opt/groovyserv-0.5が展開されます。次に環境変数PATHに上記フォ
+上記により~/opt/groovyserv-0.6が展開されます。次に環境変数PATHに上記フォ
 ルダ配下のbinを追加します。仮に、~/opt/groovyservに展開した場合、以下の
 ように設定します(bashなどの環境変数設定)。
 
-  export PATH=~/opt/groovyserv-0.5/bin:$PATH
+  export PATH=~/opt/groovyserv-0.6/bin:$PATH
 
 設定は以上です。groovyclientを実行するとgroovyserverが起動します。
 
-  &gt; groovyclient -v
-  starting server..
-  Groovy Version: 1.7.3 JVM: 1.6.0_20
+  $ groovyclient -v
+  Invoke server 'groovyserver' -p 1961
+  GROOVY: /xxx/bin/groovy
+  GROOVYSERV_HOME: /xxx/groovyserv-0.6
+  starting....
+  groovyserver 27726(1961) is successfully started
+  Groovy Version: 1.7.6 JVM: 1.6.0_24
 
 ========================
 ソースコードからのビルド
 ========================
 
-まず、GroovyServのソースコード配布パッケージ
-groovyserv-0.5-src.zipを展開します。
+まず、GroovyServのソースコード配布パッケージgroovyserv-0.6-src.zipを展開します。
 
-  &gt; mkdir -p ~/opt/src
-  &gt; cd ~/opt/src
-  &gt; unzip groovyserv-0.5-src.zip
+  $ mkdir -p ~/opt/src
+  $ cd ~/opt/src
+  $ unzip groovyserv-0.6-src.zip
 
-Maven2を使ってコンパイルします。
+Mavenを使ってコンパイルします。v0.6からはMaven3が推奨です。
 
-  &gt; cd ~/opt/src/groovyserv-0.5/
-  &gt; mvn clean verify
+  $ cd ~/opt/src/groovyserv-0.6/
+  $ mvn clean verify
 
 コンパイルした結果、バイナリパッケージが
 
-  ~/opt/src/groovyserv-0.5/target/groovyserv-0.5-&lt;OS&gt;-&lt;arch&gt;-bin.zip
+  ~/opt/src/groovyserv-0.6/target/groovyserv-0.6-&lt;OS&gt;-&lt;arch&gt;-bin.zip
 
 という形式で作成されますので、これをバイナリパッケージからのインストー
 ルの場合と同じようにインストールしてください。テストで失敗する場合は以
@@ -157,17 +160,17 @@ Maven2を使ってコンパイルします。
 
   文字エンコードをUTF-8に設定する:
 
-    &gt; export _JAVA_OPTIONS=-Dfile.encoding=UTF-8
+    $ export _JAVA_OPTIONS=-Dfile.encoding=UTF-8
 
   結合テストをスキップする:
 
-    &gt; mvn clean package
+    $ mvn clean package
 
   すべてのテストをスキップする:
 
-    &gt; mvn -Dmaven.test.skip=true clean package
+    $ mvn -Dmaven.test.skip=true clean package
 
-Windows上でビルドするためにはCygwinとgccが必要です。
+Windows上でビルドするためにはgccが必要です(Cygwin上でのビルドを推奨)。
 ビルドを実行する前にインストールしてください。
 
 ========
@@ -190,17 +193,27 @@ GroovyServは、実行時に以下の環境変数を使用します。
 
   JAVA_HOME
 
-    groovyを実行するために必要です。
+    Groovyを実行するために必要です。
     通常はGroovyのインストール作業の一貫で設定されています。
 
-  GROOVY_HOME
+  GROOVY_HOME (LinuxまたはMac OS X:オプション、Windows:必須)
 
     groovyコマンドのパスを特定するために使用します。
-    通常はGroovyのインストール作業の一貫で設定されています。
+    LinuxまたはMac OS Xの場合は、groovyコマンドが環境変数PATHに設定され
+    ている場合は必要ありません。
+
+  GROOVYSERV_HOME (LinuxまたはMac OS X:オプション、Windows:未使用)
+
+    GroovyServが利用するライブラリのパスや、groovyserverでの起動状態
+    チェックに必要なgroovyclientコマンドのパスを特定するために使用します。
+    実行時に動的に解決されるため、通常は指定する必要はありません。
+    現状のWindowsのBATファイルでは、実行時に内部的に利用するだけであり、
+    環境変数としてあらかじめ設定することはできません。
 
   GROOVYSERVER_PORT (オプション)
 
     サーバやクライアントでポート番号を指定する場合に使用します。
+    コマンド引数で代替することもできます。
 
 ======
 使い方
@@ -213,11 +226,12 @@ groovyserverが起動されます。起動されていない場合、起動の�
 
 明示的にgroovyserverを起動しておくこともできます。
 
-  &gt; groovyserver
+  $ groovyserver
 
-起動オプションに-vを指定すると詳細メッセージが表示されます。
+起動オプションに-vを指定するとログファイルに詳細メッセージが出力されま
+す。起動トラブルなどの解析に便利です。
 
-  &gt; groovyserver -v
+  $ groovyserver -v
 
 その他の起動オプションについては後述します。
 
@@ -225,52 +239,42 @@ groovyserverが起動されます。起動されていない場合、起動の�
 制限・機能の違い
 ================
 
-* 異なるカレントディレクトリを同時に使うことはできません。たとえば、パ
-  イプでつないで２つのgroovyclientコマンドを実行し、それぞれが異なるカ
-  レントディレクトリであるように実行することはできません。
-
-   &gt;  groovyclient -e "..."   | (cd /tmp; groovyclient -e "......")
-
-  この場合、以下の例外が発生します。
-
-    org.jggug.kobo.groovyserv.GroovyServerException: Can't change current
-    directory because of another session running on different dir: ....
-
-  複数のコンソールから実行した場合で、それぞれのコンソールで異なるカレ
-  ントディレクトリで実行した場合も同じです。同時に実行中になることがな
-  ければ、異なるカレントディレクトリであっても、複数のコンソールから利
-  用しても問題ありません。
+* 異なるカレントディレクトリを同時に使うことはできません。複数のコン
+  ソールから実行した場合で、それぞれのコンソールで異なるカレントディ
+  レクトリで実行した場合も同じです。同時に実行中になることがなければ、
+  異なるカレントディレクトリであっても、複数のコンソールから利用して
+  も問題ありません。
 
   必要であれば別ポートで複数のGroovyServサーバを起動することもできます。
+  別のサーバプロセスであれば、同時に異なるカレントディレクトリに対して
+  処理を実行することができます。
 
-* 静的変数はgroovyプログラム間の実行で共有されます。たとえば、システム
+* 静的変数はGroovyプログラム間の実行で共有されます。たとえば、システム
   プロパティが共有されます。
 
-  &gt; groovyclient -e "System.setProperty('a','abc')"
-  &gt; groovyclient -e "println System.getProperty('a')"
-  abc
+    $ groovyclient -e "System.setProperty('a','abc')"
+    $ groovyclient -e "println System.getProperty('a')"
+    abc
 
-  ただし、System.out/System.in/System.errはそれぞれのセッション毎に区別
-  され、それぞれの標準入力／出力／エラー出力に接続されます。
+  ただし、System.out／System.in／System.errはそれぞれのセッション毎に
+  区別され、それぞれの標準入力／出力／エラー出力に接続されます。
 
-* 環境変数について、groovyclientコマンドを実行したときの値ではなく､
-  groovyserverが実行されたときの値が使用されますが、-Cenv,-Cenv-allオプ
-  ションを指定することで、groovyclient起動時の環境変数の値をGroovyserv
-  側に反映させることもできます。ただし環境変数CLASSPATHの指定は、これら
-  のオプションを指定しなくてもクライアントサイドのものが動的に設定され
-  ます(後述)。
+* 環境変数は、通常、groovyclientコマンドを実行したときの値ではなく､
+  groovyserverが起動されたときの値が使用されます。しかし、-Cenv、
+  -Cenv-allオプションを指定することで、groovyclient実行時の環境変数の
+  値をgroovyserver側に反映させることもできます。
 
-* 前述のように、groovyclient実行時の環境変数CLASSPATH値、および-cpオプ
-  ションで設定したクラスパス情報は動的にサーバ側のクラスパスに追加され
-  ます。ただし、このような動的なクラスパス情報は追加のみがなされ、削除
-  されることはありません。
+  ただし環境変数CLASSPATHについては、これらのオプションを指定しなくて
+  も、毎回実行ごとにクライアント側の値が動的にサーバ側に反映されます。
+  このクラスパスはセッションごとにクリアされて次回の実行に影響すること
+  はありません。
 
 ========================
 groovyclientのオプション
 ========================
 
 groovyclientでは-Cで始まる以下の起動オプションが指定可能です。これらの
-オプションはGroovyclientで解釈され、groovyコマンドには渡されません。
+オプションはgroovyclientで解釈され、groovyコマンドには渡されません。
 
   -Ch,-Chelp               利用方法のメッセージの表示
   -Cp,-Cport &lt;port&gt;        ポート番号を指定する
@@ -287,137 +291,141 @@ groovyclientでは-Cで始まる以下の起動オプションが指定可能で
 groovyserverのオプション
 ========================
 
-groovyserverの起動オプションは以下のとおり。
+groovyserverの起動オプションは以下の通りです。
 
-   -v        冗長表示。デバッグ情報などを表示します
-   -k        起動しているgroovyserverを終了します ※groovyserver.batでは使えません。
-   -r        起動しているgroovyserverを再起動します(停止+起動) ※groovyserver.batでは使えません。
+   -v        冗長出力。デバッグ情報などをログファイルに出力します
+   -k        起動中のgroovyserverを終了します (groovyserver.batでは使えません)
+   -r        起動中のgroovyserverを再起動します (groovyserver.batでは使えません)
    -p &lt;port&gt; groovyserverがクライアントとの通信に使用するポート番号を指定します
 
-==========================
-groovyserverの終了と再起動
-==========================
+========================
+groovyserverの起動と停止
+========================
 
-groovyserverの起動方法には、Bashのシェルスクリプトであるgroovyserver、
-もしくはバッチファイルであるgroovyserver.batを用いて明示的に起動する方
-法と、groovyclientから透過的にバックグラウンドで起動する方法の２つがあ
-ります。
+groovyserverの起動方法には、groovyserverまたはgroovyserver.batを使って
+明示的に起動する方法と、groovyclientから透過的にバックグラウンドで起動
+する方法があります。
 
-groovyserverを明示的に起動するためのコマンドは以下の通りです
+groovyserverを明示的に起動するためのコマンドは以下の通りです。
 
- - シェルスクリプトgroovyserver    (MacOS X, Linux, Cygwin)
- - バッチファイルgrovyserver.bat   (Windows(Cygwin不要))
+ - groovyserver      (Mac OS X, Linux, Windows(Cygwin))
+ - groovyserver.bat  (Windows(Cygwinなし))
 
 これらが利用可能な環境を以下に整理します。
 
+                  | Windows    | Windows    | Mac OS X,
+                  | Cygwin     | Cygwinなし | Linux
+------------------+------------+------------+-----------
+groovyserver      | OK         | N/A        | OK
+------------------+------------+------------+-----------
+groovyserver.bat  | OK         | OK         | N/A
+------------------+------------+------------+-----------
 
-                          | Windows      | Windows      | MacOS X,
-                          | Cygwin       | nocygwin     | Linux
---------------------------+--------------+--------------+-----------
-groovyserver              | OK           |   N/A        | N/A
---------------------------+--------------+--------------+-----------
-groovyserver.bat          | OK           |   OK         | N/A
---------------------------+--------------+--------------+-----------
-
-                           N/A ... 利用不可
-                           OK ... 利用可
+                   N/A ... 利用不可
+                   OK  ... 利用可
 
 バッチファイル版groovyserver.batでは、技術的な理由により、-rオプション
-と-kオプションは利用できません。そのため、コマンドラインからは
+と-kオプションは利用できません。このため、コマンドラインからは
 groovyserverの終了と再起動を行うことができません。その代わり、起動した
 groovyserverは別ウィンドウで最小化されて実行されるため、Windowsの操作で
-ウィンドウを閉じることで終了することができます。その後、groovyclientを
-実行することでgroovyserverの再起動を行うことができます。
+ウィンドウを閉じることでgroovyserverを終了することができます。その後、
+groovyclientを実行することで、全体としてgroovyserverの再起動が可能です。
 
 注意が必要なのは、Cygwin環境下でも、groovyclient.exeを経由した
 groovyserverの透過的な起動の際には、内部的にgroovyserver.batが使用され
 るということです。このため、Cygwin環境下では以下のような状況となります。
 
- - シェルスクリプト版groovyserverで明示的に起動する場合、同じくシェルス
+ - シェルスクリプト版groovyserverで明示的に起動した場合、同じくシェルス
    クリプト版groovyserverを-k,-rオプションを指定して実行することで、
-   groovyserverの終了と再起動を行うことができる。
+   起動中のgroovyserverの終了と再起動を行うことができる。
 
- - バッチファイル版groovyserver.batで明示的に起動する場合、
+ - バッチファイル版groovyserver.batで明示的に起動した場合、groovyserver
+   の終了は、ウィンドウを閉じることで行う。
+
+ - groovyclient.exeを通じてgroovyserver.batの透過的起動を行った場合、
    groovyserverの終了は、ウィンドウを閉じることで行う。
 
- - groovyclient.exeを通じてgroovyserverの透過的な起動を行う場合、
-   groovyserverの終了は、ウィンドウを閉じることで行う。
+ややこしいですが、将来的には、バッチファイル版でも-r,-kオプションの実装
+ができるように検討しています。
 
-ややこしいですが、将来的には、バッチファイル版でも-r,-kオプションを実装
-したいと思っています。
-
-なお、透過的起動では、内部で起動するgroovyserver.batにオプション(例え
-ば-vオプション)を設定することはできません。必要な場合明示的な起動を行っ
-てください。
+なお、シェルスクリプト版とバッチファイル版を問わず、透過的起動では、内部
+で起動するサーバにオプション(例えば-vオプション)を設定することはできませ
+ん。デフォルト以外のオプションが必要な場合は、明示的な起動を行ってくださ
+い。
 
 ==============
 環境変数の伝搬
 ==============
 
-GroovyServ 0.5から、任意の環境変数をgroovyserverに渡すことができます。
-
-groovyclientの'-Cenv'オプションを使うことで、指定した部分文字列が名前に
+groovyclientの-Cenvオプションを使うことで、指定した部分文字列が名前に
 含まれている環境変数をgroovyserverに転送することができます。
-groovyclientプロセスにおけるこれらの変数の値はサーバプロセスに転送され、
-サーバ側での同じ名前の環境変数の値が設定もしくは上書きされます。この機
-能は、Groovyで書かれた外部コマンドを起動する際にパラメータを環境変数で
-受けわたすような仕様のIDE(Textmateなど)において特に有用とのことです。
+groovyclientプロセスにおけるこれらの環境変数の値はサーバプロセスに転送
+され、サーバプロセス上の同名の環境変数の値が上書きされます。この機能は
+Groovyで書かれた外部コマンドを起動する際にパラメータを環境変数で受けわ
+たすような仕様の既存ツール(IDE、TextMateなど)において特に有用です。
 
-'-Cenv-all'オプションを指定すると、クライアントプロセスのすべての環境変
-数がサーバ側に渡されます。また'-Cenv-exclude'を使うことで、指定した部分
-文字列を変数名に含む環境変数を転送から除外することができます。
+-Cenv-allオプションを指定すると、groovyclientプロセスのすべての環境変
+数がサーバ側に渡されます。また-Cenv-excludeを併用することで、指定した
+部分文字列を変数名に含む環境変数を転送から除外することができます。
 
-"-Cenv PART_OF_ENVIRONMENT_VAR_NAME"という指定をした場合、以下のような
-疑似コードで転送される環境変数の集合が決定されます。
+例えば、
 
-  allEnvironmentVariables.entrySet().collect{
-     it.name.contains("PART_OF_ENVIRONMENT_VAR_NAME"
+  -Cenv SUBSTRING
+
+という指定をした場合、転送される環境変数の集合は以下のような疑似コード
+で決定されます。
+
+  allEnvironmentVariables.entrySet().findAll {
+    it.name.contains("SUBSTRING")
   }
 
--Cenv-all, -Cenv-excludesを組み合わせたときのルールについては、例えば:
+-Cenv／-Cenv-all／-Cenv-excludeを組み合わせたときのルールについては、
+例えば、
 
- -Cenv SUBSTRING
- -Cenv-all
- -Cenv-exclude EXCLUDE_SUBSTRING
+  -Cenv SUBSTRING
+  -Cenv-all
+  -Cenv-exclude EXCLUDE_SUBSTRING
 
-のとき、以下の疑似コードの結果がGroovyseverに送られます。
+のとき、以下の疑似コードの結果がgroovyserverプロセスに送られることに
+なります。
 
- allEnvironmentVariables.entrySet().collect {
-    if (( <-Cenv-all are specified?>
-          || it.name.contains(SUBSTRING))
-        && !(it.name.contains(EXCLUDE_SUBSTRING))) {
-      return true
+  allEnvironmentVariables.entrySet().findAll {
+    if (isSpecifiedEnvAll || it.name.contains("SUBSTRING")) {
+      if (!it.name.contains("EXCLUDE_SUBSTRING")) {
+        return true
+      }
     }
-    else {
-      return false
-   }
- }
+    return false
+  }
 
-設定された環境変数は、clientの終了後も値が残り続けることに留意下さい。
-また、プロセスにおける環境変数は「スレッドセーフ」ではなく、複数の
-groovyclientインスタンスが同時に起動された場合、環境変数の値は後に起動
-された実行によって上書きされます。
+groovyserverプロセスに設定された環境変数は、groovyclientの終了後も値
+が残り続けることに注意してください。また、groovyserverプロセスにおけ
+る環境変数の操作はスレッドセーフではありません。複数のgroovyclientが
+同時に実行された場合、環境変数の値は後に起動されたgroovyclientによっ
+て上書きされるため、予期せぬ結果となる可能性があります。
 
 ==========
 ポート番号
 ==========
 
-サーバが通信に使用するポート番号を変更するには、環境変数
-GROOVYSERVER_PORTを設定するか、-pオプションを指定してください。
-環境変数と-pオプション両方が指定された場合、-pオプションの値が優先されます。
+groovyserverとgroovyclientが通信するTCPポートとして、デフォルトでは、
+1961番ポートを使用します。サーバが通信に使用するポート番号を変更する
+には、環境変数GROOVYSERVER_PORTを設定するか、-pオプションを指定して
+ください。環境変数と-pオプション両方が指定された場合は、-pオプション
+の値が優先されます。
 
-  &gt; export GROOVYSERVER_PORT=1963
-  &gt; groovyserver
+  $ export GROOVYSERVER_PORT=1963
+  $ groovyserver
 
 または
 
-  &gt; groovyserver -p 1963
+  $ groovyserver -p 1963
 
 クライアント側では環境変数GROOVYSERVER_PORT指定にくわえて-Cpオプション
 でポート番号を指定可能です。透過的起動を行う場合にはgroovyserverに-pオ
 プションが指定されて起動されます。
 
-  &gt; groovyclient -Cp 1963
+  $ groovyclient -Cp 1963 -e '...'
 
 ============
 ログファイル
@@ -425,13 +433,13 @@ GROOVYSERVER_PORTを設定するか、-pオプションを指定してくださ�
 
 groovyserverのログは以下のファイルに出力されます。
 
-  ~/.groovy/groovyserv/groovyserver.log
+  ~/.groovy/groovyserv/groovyserver-&lt;port&gt;.log
 
 ====
 Tips
 ====
 
-groovyコマンドを実行するとgroovyclientコマンドが呼び出されるように、以
+groovyコマンドを実行すると代わりにgroovyclientが呼び出されるように、以
 下のようにエイリアス(別名)指定を行っておくと便利です。以下はbash用のエ
 イリアスの設定です。
 

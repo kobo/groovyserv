@@ -62,7 +62,7 @@ runs on the others.
 
 Version of JDK is following:
 
-  - JDK 6u20 or later (Mac OS X)
+  - JDK 6u24 or later (Mac OS X)
   - JDK 6u21 or later (Windows, Linux)
 
 Version of Groovy is following:
@@ -73,8 +73,9 @@ Version of Groovy is following:
 Language
 ========
 
-The Server is written in Java with JNA(Java Native Access).  There are
-two types of clients, one is written in C and another is written in Ruby.
+The Server is written in Java and Groovy with JNA(Java Native Access).
+There are two types of clients, one is written in C and another is
+written in Ruby.
 
 ========
 Security
@@ -83,7 +84,8 @@ Security
 GroovyServ has a possibility to run any groovy script from client.
 So server-client connection is limited to the connection from the same
 machine (localhost). And the connection is authenticated by simple
-cookie mechanism. The cookie file is stored at ~/.groovy/groovyserv/cookie
+cookie mechanism.
+The cookie file is stored at ~/.groovy/groovyserv/cookie-&lt;port&gt;
 and the file mode set to 0400. But in Windows environment, it is not
 effective. So appropriately protect access to the file in Windows if
 needed.
@@ -92,70 +94,67 @@ needed.
 Install from binary package
 ===========================
 
-Download and expand GroovyServ distribution package
+Download and expand GroovyServ distribution package, e.g.
+groovyserv-0.6-macosx-bin.zip to any directory.
 
-  groovyserv-0.5-win32-bin.zip
+  $ mkdir ~/opt
+  $ cd ~/opt
+  $ unzip groovyserv-0.6-macosx-bin.zip
 
-or
-
-  groovyserv-0.5-MacOSX-x86_64-bin.zip
-
-to any directory. For example:
-
-  &gt; mkdir ~/opt
-  &gt; cd ~/opt
-  &gt; unzip groovyserv-0.5-win32-bin.zip
-
-and add bin directory to PATH environment variable.
+And add bin directory to PATH environment variable.
 For example in bash/bourne shell:
 
-  export PATH=~/opt/groovyserv-0.5/bin:$PATH
+  export PATH=~/opt/groovyserv-0.6/bin:$PATH
 
 That's all for preparing. When you invoke groovyclient, groovyserver
 automatically starts in background. At first, you might have to wait
 for a few seconds to startup.
 
-  &gt; groovyclient -v
-  starting server..
-  Groovy Version: 1.7.3 JVM: 1.6.0_20
+  $ groovyclient -v
+  Invoke server 'groovyserver' -p 1961
+  GROOVY: /xxx/bin/groovy
+  GROOVYSERV_HOME: /xxx/groovyserv-0.6
+  starting....
+  groovyserver 27726(1961) is successfully started
+  Groovy Version: 1.7.6 JVM: 1.6.0_24
 
 <span id="build">======================</span>
 Build from source code
 ======================
 
-Download and expand GroovyServ source package groovyserv-0.5-src.zip
+Download and expand GroovyServ source package groovyserv-0.6-src.zip
 to any directory. For example:
 
-  &gt; mkdir -p ~/opt/src
-  &gt; cd ~/opt/src
-  &gt; unzip groovyserv-0.5-src.zip
+  $ mkdir -p ~/opt/src
+  $ cd ~/opt/src
+  $ unzip groovyserv-0.6-src.zip
 
-Build with Maven2 as follows:
+Build with Maven as follows (recommended Maven3.x since v0.6):
 
-  &gt; cd ~/opt/src/groovyserv-0.5/
-  &gt; mvn clean verify
+  $ cd ~/opt/src/groovyserv-0.6/
+  $ mvn clean verify
 
 Then some zip files will be generated. According to "Install from
 binary package", install the bin package.
 
-  ~/opt/src/groovyserv-0.5/target/groovyserv-0.5-&lt;OS&gt;-&lt;arch&gt;-bin.zip
+  ~/opt/src/groovyserv-0.6/target/groovyserv-0.6-&lt;OS&gt;-&lt;arch&gt;-bin.zip
 
 If some tests fail, you can try as follows:
 
   with UTF-8 encoding:
 
-    &gt; export _JAVA_OPTIONS=-Dfile.encoding=UTF-8
-    &gt; mvn clean verify
+    $ export _JAVA_OPTIONS=-Dfile.encoding=UTF-8
+    $ mvn clean verify
 
   skip integration tests:
 
-    &gt; mvn clean package
+    $ mvn clean package
 
   skip all tests:
 
-    &gt; mvn -Dmaven.test.skip=true clean package
+    $ mvn -Dmaven.test.skip=true clean package
 
-To build it in Windows, you need Cygwin and gcc.
+To build it in Windows, you need gcc (recommended on Cygwin).
 You must install them before trying to build.
 
 <span id="environmentVariables">=====================</span>
@@ -164,44 +163,62 @@ Environment variables
 
 GroovyServ uses the following environment variables in runtime.
 
-  HOME (only in Linux or Mac OS X)
+  HOME (only on Linux or Mac OS X)
 
     It's used to decide ~/.groovy/groovyserv directory path which is
-    used for logging, storing cookie and PID. It's set by default in
-    unix-like OS.
+    used for logging, storing a cookie and a PID. It's set by default
+    on unix-like OS.
 
-  USERPROFILE (only in Windows)
+  USERPROFILE (only on Windows)
 
     It's used to decide ~\.groovy\groovyserv directory path which is
-    used for logging, storing cookie and PID. It's set by default in
-    Windows. If server process is invoked by groovyserver.bat, PID
+    used for logging, storing a cookie and a PID. It's set by default
+    on Windows. If server process is invoked by groovyserver.bat, PID
     file doesn't exist.
 
   JAVA_HOME
 
-    It's used by Groovy.
-    Generally, it has been already set through installing Groovy.
+    It's used by Groovy. Generally, it has been already set through
+    installing Groovy.
 
-  GROOVY_HOME
+  GROOVY_HOME (on Linux or Mac OS X: optional, on Windows: required)
 
-    It's used to specify groovy command path.
-    Generally, it has been already set through installing Groovy.
+    It's used to specify groovy command path. On Linux or Mac OS X,
+    if you've set groovy command into PATH environment variable,
+    you don't need it.
+
+  GROOVYSERV_HOME (on Linux or Mac OS X: optional, on Windows: unused)
+
+    It's used to specify libraries' path and groovyclient command path
+    which is used to check a running status by groovyserver command.
+    it's dynamically resolved at runtime, so you, at a general use,
+    don't have to specify it.
+    The current batch file for Windows, however, don't use the environment
+    variable. The variable of which name is same is internally used just
+    in batch script.
 
   GROOVYSERVER_PORT (optional)
 
     It's used to specify the port number for server or client.
+    Alternately, you can specify the port as a command option.
 
 ==========
 How to use
 ==========
 
-You can use 'groovyclient' command as a replacement of 'groovy'
-command.  If the server is not running, it starts automatically. You
-can also invoke the serverexplicitly.
+You can use "groovyclient" command instead of "groovy" command.
+If the server is not running yet, it automatically starts.
 
-  &gt; groovyserver
+You can also invoke the server explicitly:
 
-About groovyserver command options refer to "groovyserver options"
+  $ groovyserver
+
+With -v option, the verbose messages are written into a log file.
+it's useful to analyze a problem about invoking server.
+
+  $ groovyserver -v
+
+About groovyserver command options, refer to "groovyserver's option"
 section.
 
 =======================
@@ -209,219 +226,213 @@ Restriction/Differences
 =======================
 
 * You can't concurrently use different current directory on a server.
-  If you execute the following,
-
-  &gt; groovyclient ... | (cd /tmp; groovyclient ... )
-
-  the following exception will be occurred:
-
-    org.jggug.kobo.groovyserv.GroovyServException: Can't change current
-    directory because of another session running on different dir: ...
-
   It also meets conditions if you invoke groovyclient simultaneously
   from two or more consoles. But if the running periods of each
   groovyclient are not overlapping, it can run without exception.
 
-  If needed, you can run multiple groovy servers for separated ports.
+  If needed, you can simultaneously run multiple groovyservers with
+  different ports.
 
-* A static variable is shared among groovy program executions.
+* A static variable is shared among Groovy program invocations.
   For instance, the system properties are shared.
 
- &gt; groovy -e "System.setProperty('a','abc')"
- &gt; groovy -e "println System.getProperty('a')"
- abc
+    $ groovyclient -e "System.setProperty('a','abc')"
+    $ groovyclient -e "println System.getProperty('a')"
+    abc
 
-* Normally environment variables of when groovyserv was invoked are used
-  instead of those of groovyclient side. But if you specify -Cenv/-Cenv-all
-  option, you can reflect the values of environment variables of client
-  to the server. Whichever with or without those options, only the
-  CLASSPATH variable is always reflected to the server.
+  However, System.out, System.in and System.err are rightly used
+  which are individually prepared for each invocation.
 
-* Values of Groovy's -cp option and CLASSPATH variable are passed to the
-  server and added/overwrote to environment variables of the server
-  process. But it is only to add, never to remove.
+* Normally, environment variables of when groovyserver was invoked
+  are used instead of those of groovyclient side. But if you specify
+  -Cenv/-Cenv-all option, you can reflect the values of environment
+  variables of client to the server.
+
+  Only the CLASSPATH environment variable, however, whichever with or
+  without those options, is always reflected to the server. The values
+  are cleared at the end of each client invocation. It doesn't affect
+  to next invocation.
 
 =====================
 groovyclient's option
 =====================
 
-  -Ch,-Chelp                       Usage information of groovyclient options
-  -Cp,-Cport <port>                Port number to connect to groovyserver
-  -Ck,-Ckill-server                Kill groovyserver
-  -Cr,-Crestart-server             Restart groovyserver
-  -Cq,-Cquiet                      Suppress statring messages
-  -Cenv <substr>                   Pass the environment variables which name
+groovyclient's options start with "-C". Those options are analyzed
+and consumed by groovyclient, and aren't passed to groovy command.
+
+  -Ch,-Chelp                       usage information of groovyclient options
+  -Cp,-Cport &lt;port&gt;                Port number to connect to groovyserver
+  -Ck,-Ckill-server                kill groovyserver
+  -Cr,-Crestart-server             restart groovyserver
+  -Cq,-Cquiet                      suppress statring messages
+  -Cenv &lt;substr&gt;                   pass the environment variables of which name
                                    includes specified substr
-  -Cenv-all                        Pass all environment variables
-  -Cenv-exclude <pattern>          Don't pass the environment variables which
-                                   name matches with specified pattern
+  -Cenv-all                        pass all environment variables
+  -Cenv-exclude &lt;substr&gt;           don't pass the environment variables of which
+                                   name includes with specified substr
 
 =====================
 groovyserver's option
 =====================
 
-Options are as follows:
+groovyserver's options are as follows:
 
-  -v        verbose output. print debugging information etc.
+  -v        verbose output. write debugging information etc to the log file
   -k        kill the running groovyserver (groovyserver.bat cannot use this)
   -r        restart groovyserver (groovyserver.bat cannot use this)
   -p &lt;port&gt; specify the port that connected from groovyclient
 
-=============================
-Stop and restart groovyserver
-=============================
+===========================
+Start and stop groovyserver
+===========================
 
-There are two ways for invoke groovyserver. First one is, called
-explicit server invocation, using bash shell script 'groovyserver' or
-use batch file 'groovyserver.bat'.  Second one is, called transparent
-server invocation, the groovyclient which detects groovyserver not
-running, invokes groovyserver backgrond automatically.
+There are two ways to invoke groovyserver; the one is, called "explicit
+server invocation", the way of using "groovyserver" or "groovyserver.bat".
+The another is, called "transparent server invocation",the way of just
+using groovyclient. If groovyserver hasn't run yet, groovyclient
+automatically invokes groovyserver at the background.
 
 The commands for explicit server invocation are:
 
- - Bash shell script 'groovyserver' (for MacOS X, Linux, Cygwin)
- - batch file 'grovyserver.bat'     (For Windows without Cygwin)
+ - groovyserver      (for Mac OS X, Linux, Windows with Cygwin)
+ - groovyserver.bat  (for Windows without Cygwin)
 
-Following shows the availability of those commands:
+Following table shows the availability of those commands:
 
+                  | Windows    | Windows    | Mac OS X,
+                  | w/ Cygwin  | w/o Cygwin | Linux
+------------------+------------+------------+-----------
+groovyserver      | OK         | N/A        | OK
+------------------+------------+------------+-----------
+groovyserver.bat  | OK         | OK         | N/A
+------------------+------------+------------+-----------
 
-                          | Windows      | Windows      | MacOS X,
-                          | Cygwin       | nocygwin     | Linux
---------------------------+--------------+--------------+-----------
-groovyserver              | OK           |   N/A        | N/A
---------------------------+--------------+--------------+-----------
-groovyserver.bat          | OK           |   OK         | N/A
---------------------------+--------------+--------------+-----------
+                   N/A ... Not available
+                   OK  ... Available
 
-                           N/A ... Not Available
-                           OK ...  Available
+groovyserver.bat doesn't support -r and -k options for technical
+reasons. So, on the command line, You can neither stop nor restart
+the groovyserver started by groovyserver.bat. Instead, a minimized
+window is shown when groovyserver is started by groovyserver.bat.
+You can stop the groovyserver by closing the window. As a result,
+then you can restart groovyserver by invoking groovyclient as
+transparent server invocation.
 
-Batch file version groovyserver.bat don't support -r and -k options
-because of technical reasons. So you can't neither stop nor restart
-groovyserver from command line. Instead, when invoke groovyserver
-through groovyserver.bat it appeals as a minimized window, so you can
-stop it by closing the window. After that you can restart groovyserver
-transparently through groovyclient.
+On Cygwin, groovyclient internally uses groovyserver.bat for
+transparent server invocation. Therefore, the behavior on Cygwin
+is as follows:
 
-It's to be noted that even under Cygwin environment, groovyclient uses
-'groovyserver.bat' internally rather than 'groovyserver' shell script
-at transparent invocation.
+- In the case of groovyserver explicitly invoked by groovyserver shell
+  script, you can stop or restart the server by invoking groovyserver
+  shell script with -k or -r options.
 
-Under Cygwin, therefore, the situation is as follows:
+- In the case of groovyserver explicitly invoked by groovyserver.bat
+  (bat file), you can stop the server by closing the window of the
+  groovyserver.
 
- - When invoke groovyserver explicitly with groovyserver shell
-   script, you can use the same groovyserver shell script with -r or
-   -k option to restart or stop the groovyserver.
+- In the case of groovyserver transparently invoked by groovyclient.exe,
+  you can stop the server by closing the window of the groovyserver.
 
- - When invoke groovyserver explicitly with groovyserver.bat batch
-   file, you can stop the groovyserver by closing the window which
-   opened by the groovyserver.bat.
+It seems be confusing enough. So, we are considering to support -r and
+-k options of groovyserver.bat.
 
- - If invoke groovyserver transparently through groovyclient.exe, you
-   can stop the groovyserver by closing the window which opened by the
-   groovyserver.bat.
+In transparent server invocation, you cannot supply options(e.g. -v)
+for groovyserver or groovyserver.bat which is invoked internally by
+groovyclient. If you need, explicitly invoke groovyserver with options.
 
-It might be confusing so we would like to implement -r and -k options
-for groovyserver.bat in future.
+===================================
+Propagation of environment variable
+===================================
 
-Incidentally, in the case of transparent invocation you can't supply
-options(e.g. -v) for groovyserver/.bat which to be invoked
-internally. If it is needed, please invoke groovyserver explicitly.
+With -Cenv option of groovyclient, you can pass environment variables
+of which name includes the specified substring to groovyserver. The
+values of those variables on the client process are sent to the server
+process, and the values of same environment variables on the server are
+set to or overwritten by the passed values. This feature is especially
+useful for tools (e.g. IDE, TextMate) which invoke an external command
+written by Groovy, and which uses environment variables to pass
+parameters to the command.
 
-================================
-Environment Variable Propagation
-================================
+When you specify the option -Cenv-all, all environment variables of the
+groovyclient process are sent to the groovyserver. Additionally with the
+option -Cenv-exclude, the variables of which name includes specified
+substring are excluded.
 
-From GroovyServ 0.5, you can pass any environment variables to the
-groovyserver.
+If you specify option:
 
-With '-Cenv' option of groovyclient, you can pass the environment
-variables which name includes the specified substring to
-groovyserver. The values of those variables on the client process are
-sent to the server process, and the values of same name environment
-variable on the server are set to or overwritten by the passed
-values. This feature is especially useful for IDEs' which uses
-environment variables to pass configuration information with invoking
-external command which is written Groovy. Textmate is one of those
-IDEs reportedly.
+  -Cenv SUBSTRING
 
-When you specify option '-Cenv-all', all environment variables of the
-client process are sent to the groovyserver. And option
-'-Cenv-exclude' excludes variables which name includes specified
-substring.
-
-When you specify option "-Cenv PART_OF_ENVIRONMENT_VAR_NAME",
 the set of environment variables sent to the server are determined
-by following pseudo code:
+by the following pseudo code:
 
-  allEnvironmentVariables.entrySet().collect{
-     it.name.contains("PART_OF_ENVIRONMENT_VAR_NAME"
+  allEnvironmentVariables.entrySet().findAll {
+    it.name.contains("SUBSTRING")
   }
 
-Consider combination of -Cenv-all, -Cenv-excludes, like:
+Consider the combination of Cenv, -Cenv-all and -Cenv-exclude, like:
 
- -Cenv SUBSTRING
- -Cenv-all
- -Cenv-exclude EXCLUDE_SUBSTRING
+  -Cenv SUBSTRING
+  -Cenv-all
+  -Cenv-exclude EXCLUDE_SUBSTRING
 
-The result of following pseudo code are sent to the groovyserver:
+The result of the following pseudo code are sent to the groovyserver:
 
- allEnvironmentVariables.entrySet().collect {
-    if (( <-Cenv-all are specified?>
-          || it.name.contains(SUBSTRING))
-        && !(it.name.contains(EXCLUDE_SUBSTRING))) {
-      return true
+  allEnvironmentVariables.entrySet().findAll {
+    if (isSpecifiedEnvAll || it.name.contains("SUBSTRING")) {
+      if (!it.name.contains("EXCLUDE_SUBSTRING")) {
+        return true
+      }
     }
-    else {
-      return false
-   }
- }
+    return false
+  }
 
-Note that those environment variables remain after client is
-finished. And of course environment variable are not 'MT Safe' on the
-the server, when multiple groovyclient instance invoked
-simultaneously, the value are overwritten by subsequent invocation.
+Note that the environment variables which is set to the groovyserver
+remain after the groovyclient terminates. And modifying an environment
+variable on a server are not thread-safe. So when multiple groovyclient
+instances are invoked simultaneously, a variable which one of them needs
+might be overwritten by another groovyclient subsequently invoked.
 
 ===========
 Port number
 ===========
 
-In groovyserver, to change the port number, you can use
-GROOVYSERVER_PORT environment variable or -p option. The -p option is
-treated more prior than GROOVYSERVER_PORT environment variable.
+As a default, TCP port number which is used for communication between a
+groovyserver and a groovyclient is 1961. To change a port number used by
+a groovyserver, you can use GROOVYSERVER_PORT environment variable or -p
+option. The -p option is used more prior than GROOVYSERVER_PORT environment
+variable.
 
-  &gt; export GROOVYSERVER_PORT=1963
-  &gt; groovyserver
+  $ export GROOVYSERVER_PORT=1963
+  $ groovyserver
 
 or
 
-  &gt; groovyserver -p 1963
+  $ groovyserver -p 1963
 
-In groovyclient, in Addition to the way using environment variable
-GROOVYSERVER_PORT, you can spcify portnumber by -Cp option.
+On the other hand, for a groovyclient, you can use -Cp option instead
+of -p which is used by Groovy and GROOVYSERVER_PORT environment variable.
+At the "transparent server invocation", the port number is also supplied
+to the server with -p option.
 
-  &gt; groovyclient -Cp
-
-In transparent groovyserver invocation, port number is supplied to the
-server with -p option.
+  $ groovyclient -Cp 1963 -e '...'
 
 ========
 Log file
 ========
 
-The output from groovyserver are logged to:
+The output from groovyserver is written to the following file:
 
-  ~/.groovy/groovyserv/groovyserver.log
+  ~/.groovy/groovyserv/groovyserver-&lt;port&gt;.log
 
 ====
 Tips
 ====
 
-Following aliases might be useful.
+Following aliases might be useful. For bash:
 
   alias groovy=groovyclient
 
-For windows environment:
+For Windows:
 
   doskey groovy=groovyclient $*
           </pre>
