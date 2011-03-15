@@ -88,12 +88,12 @@ if [ "x$GROOVY_HOME" != "x" ]; then
         exit 1
     fi
     if [ ! $QUIET ]; then
-        echo "GROOVY: $GROOVY_BIN" 1>&2
+        echo "Groovy command path: $GROOVY_BIN (found at GROOVY_HOME)" 1>&2
     fi
 elif which groovy >/dev/null 2>&1; then
     GROOVY_BIN=groovy
     if [ ! $QUIET ]; then
-        echo "GROOVY: $(which groovy)" 1>&2
+        echo "Groovy command path: $(which groovy) (found at PATH)" 1>&2
     fi
 else
     echo "ERROR: Not found a groovy command. Required either PATH having groovy command or GROOVY_HOME" 1>&2
@@ -148,7 +148,7 @@ if [ ! $? -eq 0 ]; then
     exit 1
 fi
 if [ ! $QUIET ]; then
-    echo "GROOVYSERV_HOME: $GROOVYSERV_HOME" 1>&2
+    echo "GroovyServ home directory: $GROOVYSERV_HOME" 1>&2
 fi
 
 #-------------------------------------------
@@ -271,7 +271,7 @@ fi
 #-------------------------------------------
 
 if [ ! $QUIET ]; then
-    /bin/echo -n "starting." 1>&2
+    /bin/echo -n "Starting." 1>&2
 fi
 
 while true; do

@@ -112,7 +112,7 @@ rem  Wait for available
 rem -------------------------------------------
 
 if NOT "%OPT_QUIET%" == "1" (
-  SET /P X=starting.< NUL 1>&2
+  SET /P X=Starting.< NUL 1>&2
 )
 
 goto check

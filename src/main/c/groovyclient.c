@@ -113,7 +113,7 @@ void invoke_server(char* script_path, int port, char* main_opt)
     }
     char* cmdline = groovyserver_cmdline(script_path, opt, port);
     if (!client_option.quiet) {
-        fprintf(stderr, "Invoke server %s\n", cmdline);
+        fprintf(stderr, "Invoking server: %s\n", cmdline);
         fflush(stderr);
     }
     system(cmdline);
