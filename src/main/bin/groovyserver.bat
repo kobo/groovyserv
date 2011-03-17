@@ -55,7 +55,7 @@ if "%1" == "" (
     echo   -q       suppress starting messages
     echo  ^(-k       unsupported in groovyserver.bat^)
     echo  ^(-r       unsupported in groovyserver.bat^)
-    echo   -p port  specify the port to listen"
+    echo   -p port  specify the port to listen
 
     goto end
 )
