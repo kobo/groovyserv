@@ -94,7 +94,7 @@
           </div>
           <div class="answer">
             <h3>A</h3>
-            <p>No, there aren't.</p>
+            <p>Under investigation now.</p>
           </div>
         </div>
         <div class="section" id="q5">
@@ -129,7 +129,7 @@
           <div class="answer">
             <h3>A</h3>
             <p>It is a original proprietary protocol. To know the sequence of the protocol,
-            please read comments in RequestHeader.groovy or groovyclient.rb for details.</p>
+            please read comments in ClientProtocols.groovy or groovyclient.rb for details.</p>
           </div>
         </div>
         <div class="section" id="q8">
@@ -165,8 +165,8 @@
           <div class="answer">
             <h3>A</h3>
             <ul>
-              <li>$HOME/.groovy/groovyserver/groovyserver.log (Linux, Mac OS X)</li>
-              <li>%USERPROFILE%/.groovy/groovyserver/groovyserver.log (Windows)</li>
+              <li>$HOME/.groovy/groovyserver/groovyserver-&lt;port&gt;.log (Linux, Mac OS X)</li>
+              <li>%USERPROFILE%/.groovy/groovyserver/groovyserver-&lt;port&gt;.log (Windows)</li>
             </ul>
           </div>
         </div>
@@ -200,13 +200,11 @@
           <div class="answer">
             <h3>A</h3>
             <p class="removed">
-Basically, yes. But you will see OutOfMemoryError of PermGen if you use transitive dependencies. I seem that a way to resolve transitive dependencies is different of resolving direct dependencies in Groovy. ClassLoader for transitive dependencies is maybe higher than one for script. So if you use a Grape with transitive dependencies, memory of PermGen will leak and finally OutOufMemoryError will occur. As workaround, you can restart your groovyserver process, for example by "groovyserver -r" command. 
+Basically, yes. But you will see OutOfMemoryError of PermGen if you use transitive dependencies. I seem that a way to resolve transitive dependencies is different of resolving direct dependencies in Groovy. ClassLoader for transitive dependencies is maybe higher than one for script. So if you use a Grape with transitive dependencies, memory of PermGen will leak and finally OutOufMemoryError will occur. As workaround, you can restart your groovyserver process, for example by "groovyserver -r" command.
             </p>
             <p>Yes you can but you might see OutOfMemoryError of PermGen if you use transitive dependencies and invoke that script repeatedly.
             It is probably comes from the way to resolve transitive dependencies is different of resolving direct dependencies in Groovy. You can avoid this error by specify SystemClassLoader to use:
-              <code>@GrabConfig(systemClassLoader=true)<br />
-@Grab("..")
-              </code>
+              <code>@GrabConfig(systemClassLoader=true)<br />@Grab("..")</code>
             </p>
           </div>
         </div>
