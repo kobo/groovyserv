@@ -49,13 +49,14 @@ if "%1" == "" (
     echo ERROR: groovyserver.bat does not support %1.
     goto end
 ) else (
-    echo Usage: groovyserver.bat [options]
+    echo usage: groovyserver.bat [options]
     echo options:
-    echo   -v       verbose output. print debugging information etc.
-    echo   -q       quiet mode. suppress starting messages
+    echo   -v       verbose output to the log file
+    echo   -q       suppress starting messages
     echo  ^(-k       unsupported in groovyserver.bat^)
     echo  ^(-r       unsupported in groovyserver.bat^)
-    echo   -p port  specify the port for groovyserver
+    echo   -p port  specify the port to listen"
+
     goto end
 )
 shift

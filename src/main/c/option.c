@@ -65,17 +65,16 @@ void usage()
     printf("\n"
            "usage: groovyclient %s[option for groovyclient] [args/options for groovy]\n" \
            "options:\n" \
-           "  %sh,%shelp                       Usage information of groovyclient options\n" \
-           "  %sp,%sport <port>                Port number to connect to groovyserver\n" \
-           "  %sk,%skill-server                Kill groovyserver\n" \
-           "  %sr,%srestart-server             Restart groovyserver\n" \
-           "  %sq,%squiet                      Suppress statring messages\n" \
-           "  %senv <pattern>                  Pass the environment variables which name\n" \
-           "                                   matches with the specified pattern to the\n" \
-           "                                   groovyserver.\n"
-           "  %senv-all                        Pass all environment variables\n" \
-           "  %senv-exclude <pattern>          Don't pass the environment variables which\n" \
-           "                                   name matches with specified pattern\n" \
+           "  %sh,%shelp                       show this usage\n" \
+           "  %sp,%sport <port>                specify the port to connect to groovyserver\n" \
+           "  %sk,%skill-server                kill the running groovyserver\n" \
+           "  %sr,%srestart-server             restart the running groovyserver\n" \
+           "  %sq,%squiet                      suppress statring messages\n" \
+           "  %senv <substr>                   pass environment variables of which a name\n" \
+           "                                   includes specified substr\n" \
+           "  %senv-all                        pass all environment variables\n" \
+           "  %senv-exclude <substr>           don't pass environment variables of which a\n" \
+           "                                   name includes specified substr\n" \
            ""
            , CLIENT_OPTION_PREFIX, CLIENT_OPTION_PREFIX, CLIENT_OPTION_PREFIX
            , CLIENT_OPTION_PREFIX, CLIENT_OPTION_PREFIX, CLIENT_OPTION_PREFIX
