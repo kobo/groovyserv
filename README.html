@@ -194,7 +194,7 @@ GroovyServ uses the following environment variables in runtime.
     it's dynamically resolved at runtime, so you, at a general use,
     don't have to specify it.
     The current batch file for Windows, however, don't use the environment
-    variable. The variable of which name is same is internally used just
+    variable. The variable of which a name is same is internally used just
     in batch script.
 
   GROOVYSERVER_PORT (optional)
@@ -260,16 +260,16 @@ groovyclient's option
 groovyclient's options start with "-C". Those options are analyzed
 and consumed by groovyclient, and aren't passed to groovy command.
 
-  -Ch,-Chelp                       usage information of groovyclient options
-  -Cp,-Cport &lt;port&gt;                Port number to connect to groovyserver
-  -Ck,-Ckill-server                kill groovyserver
-  -Cr,-Crestart-server             restart groovyserver
+  -Ch,-Chelp                       show this usage
+  -Cp,-Cport &lt;port&gt;                specify the port to connect to groovyserver
+  -Ck,-Ckill-server                kill the running groovyserver
+  -Cr,-Crestart-server             restart the running groovyserver
   -Cq,-Cquiet                      suppress statring messages
-  -Cenv &lt;substr&gt;                   pass the environment variables of which name
+  -Cenv &lt;substr&gt;                   pass environment variables of which a name
                                    includes specified substr
   -Cenv-all                        pass all environment variables
-  -Cenv-exclude &lt;substr&gt;           don't pass the environment variables of which
-                                   name includes with specified substr
+  -Cenv-exclude &lt;substr&gt;           don't pass environment variables of which a
+                                   name includes specified substr
 
 =====================
 groovyserver's option
@@ -277,10 +277,11 @@ groovyserver's option
 
 groovyserver's options are as follows:
 
-  -v        verbose output. write debugging information etc to the log file
-  -k        kill the running groovyserver (groovyserver.bat cannot use this)
-  -r        restart groovyserver (groovyserver.bat cannot use this)
-  -p &lt;port&gt; specify the port that connected from groovyclient
+  -v         verbose output to the log file
+  -q         suppress starting messages
+  -k         kill the running groovyserver (groovyserver.bat cannot use this)
+  -r         restart the running groovyserver (groovyserver.bat cannot use this)
+  -p &lt;port&gt;  specify the port to listen
 
 ===========================
 Start and stop groovyserver
@@ -345,7 +346,7 @@ Propagation of environment variable
 ===================================
 
 With -Cenv option of groovyclient, you can pass environment variables
-of which name includes the specified substring to groovyserver. The
+of which a name includes the specified substring to groovyserver. The
 values of those variables on the client process are sent to the server
 process, and the values of same environment variables on the server are
 set to or overwritten by the passed values. This feature is especially
@@ -355,7 +356,7 @@ parameters to the command.
 
 When you specify the option -Cenv-all, all environment variables of the
 groovyclient process are sent to the groovyserver. Additionally with the
-option -Cenv-exclude, the variables of which name includes specified
+option -Cenv-exclude, the variables of which a name includes specified
 substring are excluded.
 
 If you specify option:
