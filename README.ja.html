@@ -128,12 +128,12 @@ groovyclient の接続しか受け付けないように制約をかけていま�
 設定は以上です。groovyclientを実行するとgroovyserverが起動します。
 
   $ groovyclient -v
-  Invoke server 'groovyserver' -p 1961
-  GROOVY: /xxx/bin/groovy
-  GROOVYSERV_HOME: /xxx/groovyserv-0.6
-  starting....
-  groovyserver 27726(1961) is successfully started
-  Groovy Version: 1.7.6 JVM: 1.6.0_24
+  Invoking server: '/xxx/groovyserv-0.6/bin/groovyserver' -p 1961
+  Groovy command path: /xxx/bin/groovy
+  GroovyServ home directory: /xxx/groovyserv-0.6
+  Starting....
+  groovyserver 18977(1961) is successfully started
+  Groovy Version: 1.7.8 JVM: 1.6.0_24
 
 ========================
 ソースコードからのビルド
@@ -201,14 +201,6 @@ GroovyServは、実行時に以下の環境変数を使用します。
     groovyコマンドのパスを特定するために使用します。
     LinuxまたはMac OS Xの場合は、groovyコマンドが環境変数PATHに設定され
     ている場合は必要ありません。
-
-  GROOVYSERV_HOME (LinuxまたはMac OS X:オプション、Windows:未使用)
-
-    GroovyServが利用するライブラリのパスや、groovyserverでの起動状態
-    チェックに必要なgroovyclientコマンドのパスを特定するために使用します。
-    実行時に動的に解決されるため、通常は指定する必要はありません。
-    現状のWindowsのBATファイルでは、実行時に内部的に利用するだけであり、
-    環境変数としてあらかじめ設定することはできません。
 
   GROOVYSERVER_PORT (オプション)
 

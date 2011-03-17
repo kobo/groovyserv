@@ -111,12 +111,12 @@ automatically starts in background. At first, you might have to wait
 for a few seconds to startup.
 
   $ groovyclient -v
-  Invoke server 'groovyserver' -p 1961
-  GROOVY: /xxx/bin/groovy
-  GROOVYSERV_HOME: /xxx/groovyserv-0.6
-  starting....
-  groovyserver 27726(1961) is successfully started
-  Groovy Version: 1.7.6 JVM: 1.6.0_24
+  Invoking server: '/xxx/groovyserv-0.6/bin/groovyserver' -p 1961
+  Groovy command path: /xxx/bin/groovy
+  GroovyServ home directory: /xxx/groovyserv-0.6
+  Starting....
+  groovyserver 18977(1961) is successfully started
+  Groovy Version: 1.7.8 JVM: 1.6.0_24
 
 <span id="build">======================</span>
 Build from source code
@@ -186,16 +186,6 @@ GroovyServ uses the following environment variables in runtime.
     It's used to specify groovy command path. On Linux or Mac OS X,
     if you've set groovy command into PATH environment variable,
     you don't need it.
-
-  GROOVYSERV_HOME (on Linux or Mac OS X: optional, on Windows: unused)
-
-    It's used to specify libraries' path and groovyclient command path
-    which is used to check a running status by groovyserver command.
-    it's dynamically resolved at runtime, so you, at a general use,
-    don't have to specify it.
-    The current batch file for Windows, however, don't use the environment
-    variable. The variable of which a name is same is internally used just
-    in batch script.
 
   GROOVYSERVER_PORT (optional)
 
