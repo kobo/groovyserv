@@ -29,11 +29,21 @@
           <pre>
 Improvements:
 
-- Supported for a multiline command argument.
-- Changed file name of all working files (e.g. log, cookie and pid) which has a port number as suffix.
-- Tearing down the user-specified classpath at the end of each script invocation.
-- Made exit status use positive number (because, for example, "-1" happened to be displayed like "255").
-- Supported to build by Maven3.
+- Supported for a multiline command argument. You can use an
+  argument including newlines, by quoting the string with
+  tripple-quotations appropriately.
+- Changed a log file name to include a port number as suffix.
+  So, all work files (e.g. log, cookie and pid) were fully
+  separated for each ports. Multiple instances of GroovyServ
+  can be run simultaneously on separate ports.
+- Classpath never conflict. The user-specified classpath tears
+  down at the end of each script invocation. (At the previous
+  versions, a classpath could be added but couldn't be removed
+  after the invocation).
+- Using a positive number as exit status code which is defined
+  by GroovyServ as a constant. If your script depends on the
+  return code from GroovyServ, you might need fix it.
+- Maven3.x support.
 
 Bug Fixes:
 
