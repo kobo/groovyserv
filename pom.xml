@@ -21,7 +21,7 @@
   <groupId>org.jggug.kobo</groupId>
   <artifactId>groovyserv</artifactId>
   <name>GroovyServ</name>
-  <version>0.6</version>
+  <version>0.7-SNAPSHOT</version>
   <description>Groovy's startup acceralator.</description>
   <url>http://kobo.github.com/groovyserv/</url>
   <licenses>
