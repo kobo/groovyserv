@@ -92,18 +92,29 @@ class ClientProtocols {
      * @throws GServIOException
      */
     static InvocationRequest readInvocationRequest(ClientConnection conn) {
+        def id = "ClientProtocols:${conn.socket.port}"
         Map<String, List<String>> headers = readHeaders(conn)
         def request = new InvocationRequest(
             port: conn.socket.port,
             cwd: headers[HEADER_CURRENT_WORKING_DIR][0],
             classpath: headers[HEADER_CP]?.getAt(0),
-            args: headers[HEADER_ARG].collect{ new String(it.decodeBase64()) }, // using default encoding
+            args: decodeArgs(id, headers[HEADER_ARG]),
             clientCookie: headers[HEADER_COOKIE]?.getAt(0),
             serverCookie: conn.cookie,
             envVars: headers[HEADER_ENV]
         )
         request.check()
         return request
+    }
+
+    private static List<String> decodeArgs(id, encoded) {
+        encoded.collect {
+            try {
+                new String(it.decodeBase64()) // using default encoding
+            } catch (RuntimeException e) {
+                throw new InvalidRequestHeaderException("${id}: Found invalid arguments: ${it}", e)
+            }
+        }
     }
 
     /**

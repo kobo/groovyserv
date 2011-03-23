@@ -84,7 +84,11 @@ class GroovyServer {
             DebugUtils.verboseLog "Accepted socket: ${socket}"
 
             // this socket will be closed under a responsibility of RequestWorker
-            new RequestWorker(cookie, socket).start()
+            try {
+                new RequestWorker(cookie, socket).start()
+            } catch (e) {
+                DebugUtils.errorLog("Failed to invoke RequestWorker: ${socket}", e)
+            }
         }
     }
 
