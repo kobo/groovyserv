@@ -96,7 +96,7 @@ class ClientProtocols {
         Map<String, List<String>> headers = readHeaders(conn)
         def request = new InvocationRequest(
             port: conn.socket.port,
-            cwd: headers[HEADER_CURRENT_WORKING_DIR][0],
+            cwd: headers[HEADER_CURRENT_WORKING_DIR]?.getAt(0),
             classpath: headers[HEADER_CP]?.getAt(0),
             args: decodeArgs(id, headers[HEADER_ARG]),
             clientCookie: headers[HEADER_COOKIE]?.getAt(0),
