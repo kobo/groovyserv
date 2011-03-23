@@ -179,12 +179,17 @@ void send_header(int fd, int argc, char** argv, char* cookie)
     buf_printf(&read_buf, "%s: %s\n", HEADER_KEY_COOKIE, cookie);
 
     // send command line arguments.
-    char encoded[MAXPATHLEN];
+    char* encoded;
     for (i = 1; i < argc; i++) {
         if (argv[i] != NULL) {
-            memset(encoded, 0, sizeof(encoded));
-            base64_encode(encoded, argv[i]);
+            encoded = malloc(sizeof(argv[i]) * 1.5); // base64 encoded data is less 1.5 times as much as raw data
+            if (encoded == NULL) {
+                perror("ERROR: failed to malloc");
+                exit(1);
+            }
+            base64_encode(encoded, (unsigned char*) argv[i]);
             buf_printf(&read_buf, "%s: %s\n", HEADER_KEY_ARG, encoded);
+            free(encoded);
         }
     }
 

@@ -52,5 +52,8 @@ void base64_encode(char* encoded, unsigned char* original)
     while (encoded_idx % 4 > 0) {
         encoded[encoded_idx++] = '=';
     }
+
+    // terminate
+    encoded[encoded_idx++] = '\0';
 }
 
