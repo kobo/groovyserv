@@ -28,7 +28,7 @@ class PlatformMethods {
     private static final LIBC
     static {
         if (Platform.isWindows()) {
-            LIBC = Native.loadLibrary("msvcrt20", WindowsLibC.class)
+            LIBC = Native.loadLibrary("msvcrt", WindowsLibC.class)
         } else {
             LIBC = Native.loadLibrary("c", UnixLibC.class)
         }
