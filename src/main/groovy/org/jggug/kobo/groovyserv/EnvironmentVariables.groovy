@@ -41,7 +41,7 @@ class EnvironmentVariables {
         System.metaClass.static.getenv = { String envVarName ->
             String value = cache[envVarName]
             if (value == null) {
-                value = origGetenv.doMethodInvoke(System, name)
+                value = origGetenv.doMethodInvoke(System, envVarName)
             }
             DebugUtils.verboseLog("getenv(${envVarName}) => $value")
             return value

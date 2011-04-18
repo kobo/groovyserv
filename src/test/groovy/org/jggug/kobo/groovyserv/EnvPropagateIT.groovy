@@ -285,7 +285,13 @@ class EnvPropagationIT extends GroovyTestCase {
            assert it.err.text.startsWith("ERROR: option -Cenv require param")
        }
        assert p.exitValue() == 1
-       
+   }
+
+   void testEnv_accessableToOriginalEnvironmentOnServerSides() {
+       TestUtils.executeClientOk(["-e", '"print(System.getenv(\'PWD\'))"']) {
+           assert it.text != "null"
+           assert it.err.text == ""
+       }
    }
 
 }
