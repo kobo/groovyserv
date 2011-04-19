@@ -71,7 +71,7 @@ class GroovyServer {
         int port = getPortNumber()
         serverSocket = new ServerSocket(port)
         DebugUtils.infoLog "Server started with port: ${port}"
-        DebugUtils.infoLog "Basic classpath: ${System.getenv('CLASSPATH')}"
+        DebugUtils.infoLog "Default classpath: ${System.getenv('CLASSPATH')}"
     }
 
     private void handleRequest() {
