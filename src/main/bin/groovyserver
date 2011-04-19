@@ -79,12 +79,12 @@ done
 #-------------------------------------------
 
 error_log() {
-    local MESSAGE=$1
+    local MESSAGE="$1"
     /bin/echo "$MESSAGE" 1>&2
 }
 
 info_log() {
-    local MESSAGE=$1
+    local MESSAGE="$1"
     if [ ! $QUIET ]; then
         /bin/echo "$MESSAGE" 1>&2
     fi
