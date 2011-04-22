@@ -27,122 +27,34 @@ IS_WINDOWS = RUBY_PLATFORM.downcase =~ /mswin(?!ce)|mingw|cygwin|bccwin/
 HOME_DIR = IS_WINDOWS ? ENV['USERPROFILE'] : ENV['HOME']
 COOKIE_FILE_BASE = HOME_DIR + "/.groovy/groovyserv/cookie"
 GROOVYSERVER_CMD = File.expand_path(ENV.fetch("GROOVYSERV_HOME", File.dirname($0)+"/..") + "/bin/groovyserver")
-
-CLIENT_OPTION_PREFIX="-C"
+CLIENT_OPTION_PREFIX = "-C"
 
 #-------------------------------------------
 # Classes
 #-------------------------------------------
 
-class ClientOption
+class Options
+  attr_reader :client, :server
   def initialize
-    @without_invoking_server
-    @port = DESTPORT
-    @quiet = false
-    @env_all
-    @env_include_mask = []
-    @env_exclude_mask = []
-    @help
+    @client = {
+      :without_invoking_server => false,
+      :port => DESTPORT,
+      :quiet => false,
+      :env_all => false,
+      :env_include_mask => [],
+      :env_exclude_mask => [],
+      :help => false,
+      :groovyserver_opt => [],
+    }
+    @server = []
   end
-
-  attr_accessor :without_invoking_server, :port, :env_all, :env_include_mask, :env_exclude_mask, :help, :quiet
-
-end
-
-class OptionInfo
-
-  attr_accessor :take_value
-
-  class OptionInfoPort < OptionInfo
-    def eval(value)
-      $client_option.port = value
-    end
-  end
-
-  class OptionInfoWithoutInvokingServer < OptionInfo
-    def eval
-      $client_option.without_invoking_server = true
-    end
-  end
-
-  class OptionInfoEnvExclude < OptionInfo
-    def eval(value)
-      $client_option.env_exclude_mask.push(value)
-    end
-  end
-
-  class OptionInfoHelp < OptionInfo
-    def eval
-      usage()
-      exit 0
-    end
-  end
-
-  class OptionInfoKillServer < OptionInfo
-    def eval
-      start_server(["-k"])
-      exit 0
-    end
-  end
-
-  class OptionInfoRestartServer < OptionInfo
-    def eval
-      start_server(["-r"])
-      exit 0
-    end
-  end
-
-  class OptionInfoQuiet < OptionInfo
-    def eval
-      $client_option.quiet = true
-    end
-  end
-
-  class OptionInfoEnv < OptionInfo
-    def eval(value)
-      $client_option.env_include_mask.push(value)
-    end
-  end
-
-  class OptionInfoEnvAll < OptionInfo
-    def eval
-      $client_option.env_all = true
-    end
-  end
-
-  def initialize(take_value)
-    @take_value = take_value
-  end
-
-  @@options = {
-    "without-invoking-server" => OptionInfoWithoutInvokingServer.new(false),
-    "p" => OptionInfoPort.new(true),
-    "port" => OptionInfoPort.new(true),
-    "k" => OptionInfoKillServer.new(false),
-    "kill-server" => OptionInfoKillServer.new(false),
-    "r" => OptionInfoRestartServer.new(false),
-    "restart-server" => OptionInfoRestartServer.new(false),
-    "q" => OptionInfoQuiet.new(false),
-    "quiet" => OptionInfoQuiet.new(false),
-    "env" => OptionInfoEnv.new(true),
-    "env-all" => OptionInfoEnvAll.new(false),
-    "env-exclude" => OptionInfoEnvExclude.new(true),
-    "help" => OptionInfoHelp.new(false),
-    "h" => OptionInfoHelp.new(false),
-    "" => OptionInfoHelp.new(false)
-  }
-
-  def OptionInfo.options
-    @@options
-  end
-
 end
 
 #-------------------------------------------
-# Global Vriables
+# Global variables
 #-------------------------------------------
 
-$client_option = ClientOption.new()
+$options = nil    # FIXME shouldn't use global variables
 
 #-------------------------------------------
 # Functions
@@ -165,64 +77,18 @@ def usage()
          "").gsub("%s", CLIENT_OPTION_PREFIX))
 end
 
-def is_groovy_help_option(s)
-  ["--help", "-help",  "-h"].include?(s)
-end
-
-def process_opt(item, arg)
-  opt = OptionInfo.options[item[2..-1]]
-
-  if opt == nil
-    STDERR.puts "ERROR: unknown option #{item}"
-    usage()
-    exit(1)
-  end
-
-  if opt.take_value
-    if arg == []
-      STDERR.puts "ERROR: option #{item} require param"
-      usage()
-      exit(1)
-    end
-    opt.eval(arg.shift)
-  else
-    opt.eval()
-  end
-end
-
-def process_opts(arg)
-  if arg == []
-    $client_option.help = true
-    return arg
-  end
-
-  result = []
-
-  while item = arg.shift do
-    if is_groovy_help_option(item)
-      $client_option.help = true
-    end
-    if item.start_with?(CLIENT_OPTION_PREFIX)
-      process_opt(item, arg)
-    else
-      result.push(item)
-    end
-  end
-  return result
-end
-
 def start_server(arg)
   unless FileTest.executable? GROOVYSERVER_CMD
     STDERR.puts "ERROR: Command not found: #{GROOVYSERVER_CMD}"
     exit 1
   end
-  if $client_option.quiet
+  if $options.client[:quiet]
     arg << "-q"
   else
-    command_str = "'#{GROOVYSERVER_CMD}' -p #{$client_option.port.to_s} #{arg.join}"
+    command_str = "'#{GROOVYSERVER_CMD}' -p #{$options.client[:port]} #{arg.join}"
     STDERR.printf "Invoking server: %s\n", command_str
   end
-  system(GROOVYSERVER_CMD, "-p", $client_option.port.to_s, *arg)
+  system(GROOVYSERVER_CMD, "-p", $options.client[:port].to_s, *arg)
 end
 
 def session(socket, args)
@@ -240,8 +106,8 @@ end
 
 def send_envvars(socket)
   ENV.each{|key,value|
-    if $client_option.env_all || $client_option.env_include_mask.any?{|item| key.include?(item) }
-      if !$client_option.env_exclude_mask.any?{|item| key.include?(item) }
+    if $options.client[:env_all] || $options.client[:env_include_mask].any?{|item| key.include?(item) }
+      if !$options.client[:env_exclude_mask].any?{|item| key.include?(item) }
         socket.puts "Env: #{key}=#{value}"
       end
     end
@@ -255,7 +121,7 @@ def send_command(socket, args)
     # TODO using default encoding.
     socket.puts "Arg: #{Base64.encode64(arg).gsub(/\s/, '')}"
   end
-  File.open(COOKIE_FILE_BASE+"-"+$client_option.port.to_s) { |f|
+  File.open(COOKIE_FILE_BASE + "-" + $options.client[:port].to_s) { |f|
     socket.puts "Cookie: #{f.read}"
   }
   send_envvars(socket)
@@ -280,7 +146,7 @@ def handle_socket(socket)
     exit 1
   end
   if headers['Status']
-    usage() if $client_option.help
+    usage() if $options.client[:help]
     exit headers['Status'].to_i
   end
   data = socket.read(headers['Size'].to_i)
@@ -322,29 +188,83 @@ def read_headers(socket)
   headers
 end
 
+def parse_option(args)
+  options = Options.new
+  args.each_with_index do |arg, i|
+    case arg
+    when "-Cwithout-invoking-server"
+      options.client[:without_invoking_server] = true
+    when "-Cp", "-Cport"
+      port = args.delete_at(i + 1)
+      unless port =~ /^[0-9]+$/
+        raise "Invalid port number #{port} for #{arg}"
+      end
+      options.client[:port] = port
+    when "-Ck" , "-Ckill-server"
+      options.client[:groovyserver_opt] << "-k"
+    when "-Cr", "-Crestart-server"
+      options.client[:groovyserver_opt] << "-r"
+    when "-Cq", "-Cquiet"
+      options.client[:groovyserver_opt] << "-q"
+      options.client[:quiet] = true
+    when "-Cenv-all"
+      options.client[:env_all] = true
+    when "-Cenv"
+      val = args.delete_at(i + 1)
+      unless val
+        raise "Invalid mask string #{val} for #{arg}"
+      end
+      options.client[:env_include_mask] << val
+    when "-Cenv-exclude"
+      val = args.delete_at(i + 1)
+      unless val
+        raise "Invalid mask string #{val} for #{arg}"
+      end
+      options.client[:env_exclude_mask] << val
+    when "-Ch", "-Chelp"
+      options.client[:help] = true
+    when "--help", "-help", "-h"
+      options.client[:help] = true
+      options.server << arg
+    else
+      options.server << arg
+    end
+  end
+  options
+end
+
 #-------------------------------------------
 # Main
 #-------------------------------------------
 
-# a mode to confirm server status
+begin
+  $options = parse_option(ARGV)
+rescue => e
+  STDERR.puts "ERROR: #{e.message}"
+  exit 1
+end
+#puts "Original ARGV: #{ARGV.inspect}"
+#puts "Parsed options: #{$options.inspect}"
 
-args = process_opts(ARGV)
+unless $options.client[:groovyserver_opt].empty?
+  start_server($options.client[:groovyserver_opt].uniq)
+end
 
 failCount = 0
 begin
-  TCPSocket.open(DESTHOST, $client_option.port) { |socket|
+  TCPSocket.open(DESTHOST, $options.client[:port]) { |socket|
     Signal.trap(:INT) {
       send_interrupt(socket)
       exit 8
     }
-    session(socket, args)
-    if $client_option.help
+    session(socket, $options.server)
+    if $options.client[:help]
       usage()
       exit 0
     end
   }
 rescue Errno::ECONNREFUSED
-  if $client_option.without_invoking_server
+  if $options.client[:without_invoking_server]
     STDERR.puts "ERROR: groovyserver isn't running"
     exit 9
   end
