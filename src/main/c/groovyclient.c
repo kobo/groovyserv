@@ -94,9 +94,9 @@ static char* groovyserver_cmdline(char* script_path, char* arg, int port)
     // make command line to invoke groovyserver
     static char cmdline[MAXPATHLEN];
 #ifdef WINDOWS
-    sprintf(cmdline, "\"%sgroovyserver.bat\" %s -p %d", basedir_path, arg, port);
+    sprintf(cmdline, "\"%sgroovyserver.bat\" -p %d %s", basedir_path, port, arg);
 #else
-    sprintf(cmdline, "'%sgroovyserver' %s -p %d", basedir_path, arg, port);
+    sprintf(cmdline, "'%sgroovyserver' -p %d %s", basedir_path, port, arg);
 #endif
     //fprintf(stderr, "DEBUG: cmdline: %s, %d\n", cmdline, strlen(cmdline));
     return cmdline;
