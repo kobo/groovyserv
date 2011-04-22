@@ -29,7 +29,7 @@ else
   HOME_DIR = ENV['HOME']
 end
 COOKIE_FILE_BASE = HOME_DIR + "/.groovy/groovyserv/cookie"
-GROOVYSERVER_CMD = ENV.fetch("GROOVYSERV_HOME", File.dirname($0)+"/..") + "/bin/groovyserver"
+GROOVYSERVER_CMD = File.expand_path(ENV.fetch("GROOVYSERV_HOME", File.dirname($0)+"/..") + "/bin/groovyserver")
 
 CLIENT_OPTION_PREFIX="-C"
 
@@ -215,15 +215,15 @@ def process_opts(arg)
 end
 
 def start_server(arg)
-  if !$client_option.quiet
-    STDERR.printf "Invoke server %s\n", GROOVYSERVER_CMD
-  end
   unless FileTest.executable? GROOVYSERVER_CMD
     STDERR.puts "ERROR: Command not found: #{GROOVYSERVER_CMD}"
     exit 1
   end
   if $client_option.quiet
     arg << "-q"
+  else
+    command_str = "'#{GROOVYSERVER_CMD}' -p #{$client_option.port.to_s} #{arg.join}"
+    STDERR.printf "Invoking server: %s\n", command_str
   end
   system(GROOVYSERVER_CMD, "-p", $client_option.port.to_s, *arg)
 end
