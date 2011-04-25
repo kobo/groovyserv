@@ -74,7 +74,7 @@ class EnvPropagationIT extends GroovyTestCase {
 
    void testEnv_fullmatch() {
        TestUtils.executeClientOkWithEnv(["-Cenv", "ABCDEF",
-                                         "-e", '"print(System.getenv(\'ABCDEF\'))"'],
+                                         "-e", '"print(System.getenv()[\'ABCDEF\'])"'],
                                         ["ABCDEF=1234"]) {
            assert it.err.text == ""
            assert it.text == "1234"
