@@ -24,6 +24,7 @@ class EnvironmentVariables {
 
     private final cache = [:]
     private final origGetenv = System.metaClass.getMetaMethod("getenv", [String] as Object[])
+    private final origGetenvAll = System.metaClass.getMetaMethod("getenv", null)
 
     /**
      * Initialize something necessary.
@@ -36,15 +37,19 @@ class EnvironmentVariables {
      * Replace System.getenv by the platform native method.
      */
     private void replaceSystemGetenv() {
-        // adding the appropriate MOP method only for the current platform
-        // to avovid overhead at each call of System.getenv()
-        System.metaClass.static.getenv = { String envVarName ->
+        System.metaClass.'static'.getenv = { String envVarName ->
             String value = cache[envVarName]
             if (value == null) {
                 value = origGetenv.doMethodInvoke(System, envVarName)
             }
             DebugUtils.verboseLog("getenv(${envVarName}) => $value")
             return value
+        }
+        System.metaClass.'static'.getenv = { ->
+            def envMap = new HashMap(origGetenvAll.doMethodInvoke(System))
+            envMap.putAll(cache) // overwritten by cache entries
+            DebugUtils.verboseLog("getenv() => $envMap")
+            return envMap
         }
         DebugUtils.verboseLog("System.getenv is replaced")
     }
