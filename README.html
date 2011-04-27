@@ -57,6 +57,7 @@ runs on the others.
 
   - Windows XP + Cygwin 1.7.x
   - Windows XP without Cygwin
+  - Windows 7(64bit) without Cygwin
   - Mac OS X 10.5/6 (Intel Mac)
   - Ubuntu Linux 9.10
 
@@ -95,49 +96,51 @@ Install from binary package
 ===========================
 
 Download and expand GroovyServ distribution package, e.g.
-groovyserv-0.6-macosx-bin.zip to any directory.
+groovyserv-0.7-macosx-bin.zip to any directory.
 
   $ mkdir ~/opt
   $ cd ~/opt
-  $ unzip groovyserv-0.6-macosx-bin.zip
+  $ unzip groovyserv-0.7-macosx-bin.zip
 
 And add bin directory to PATH environment variable.
 For example in bash/bourne shell:
 
-  export PATH=~/opt/groovyserv-0.6/bin:$PATH
+  export PATH=~/opt/groovyserv-0.7/bin:$PATH
 
 That's all for preparing. When you invoke groovyclient, groovyserver
 automatically starts in background. At first, you might have to wait
 for a few seconds to startup.
 
   $ groovyclient -v
-  Invoking server: '/xxx/groovyserv-0.6/bin/groovyserver' -p 1961
-  Groovy command path: /xxx/bin/groovy
-  GroovyServ home directory: /xxx/groovyserv-0.6
+  Invoking server: '/xxx/groovyserv-0.7/bin/groovyserver' -p 1961
+  Groovy command path: /xxx/bin/groovy (found at PATH)
+  GroovyServ home directory: /xxx/groovyserv-0.7
+  Original classpath: (none)
+  GroovyServ default classpath: /xxx/lib/*
   Starting....
-  groovyserver 18977(1961) is successfully started
-  Groovy Version: 1.7.8 JVM: 1.6.0_24
+  groovyserver 30341(1961) is successfully started
+  Groovy Version: 1.7.10 JVM: 1.6.0_24
 
 <span id="build">======================</span>
 Build from source code
 ======================
 
-Download and expand GroovyServ source package groovyserv-0.6-src.zip
+Download and expand GroovyServ source package groovyserv-0.7-src.zip
 to any directory. For example:
 
   $ mkdir -p ~/opt/src
   $ cd ~/opt/src
-  $ unzip groovyserv-0.6-src.zip
+  $ unzip groovyserv-0.7-src.zip
 
 Build with Maven as follows (recommended Maven3.x since v0.6):
 
-  $ cd ~/opt/src/groovyserv-0.6/
+  $ cd ~/opt/src/groovyserv-0.7/
   $ mvn clean verify
 
 Then some zip files will be generated. According to "Install from
 binary package", install the bin package.
 
-  ~/opt/src/groovyserv-0.6/target/groovyserv-0.6-&lt;OS&gt;-&lt;arch&gt;-bin.zip
+  ~/opt/src/groovyserv-0.7/target/groovyserv-0.7-&lt;OS&gt;-&lt;arch&gt;-bin.zip
 
 If some tests fail, you can try as follows:
 
@@ -154,7 +157,7 @@ If some tests fail, you can try as follows:
 
     $ mvn -Dmaven.test.skip=true clean package
 
-To build it in Windows, you need gcc (recommended on Cygwin).
+To build it in Windows, you need gcc and MinGW (recommended on Cygwin).
 You must install them before trying to build.
 
 <span id="environmentVariables">=====================</span>
@@ -191,6 +194,22 @@ GroovyServ uses the following environment variables in runtime.
 
     It's used to specify the port number for server or client.
     Alternately, you can specify the port as a command option.
+
+  CLASSPATH (optional)
+
+    CLASSPATH environment variable on where groovyserver starts up
+    composes the environment variable of the groovyserver process,
+    with Jars of GroovyServ. It's used as "default classpath" and
+    affects invocations of every script.
+
+    CLASSPATH environment variable on where groovyclient is invoked
+    is transferred to the groovyserver and is dynamically set to
+    the compiler's configuration of the script. (CLASSPATH environment
+    variable of groovyserver is never modified.) The temporary classpath
+    doesn't affect the next script invocation because it's reset on the
+    tear-down phase of each script invocation.  When searching a class,
+    groovyserver's CLASSPATH environment variable is used priorly.
+    The above behavior is quite same as groovyclient's -cp option.
 
 ==========
 How to use

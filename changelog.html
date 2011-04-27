@@ -24,6 +24,32 @@
       </div>
 
       <div id="content">
+        <div class="section" id="0.7">
+          <h2>Changes in version 0.7 (2011-04-27)</h2>
+          <pre>
+Improvements:
+
+- You can see CLASSPATH information of a groovyserver at start-up
+  messages (Mac OS X and Linux only).
+- Experimentally, the "-server" of JVM option was added to a groovyserver.
+  Hotspot may improve the performance of an execution of a script.
+
+Bug Fixes:
+
+- Fixed #14: groovyclient -Cenv -e "println System.env.HI" don't work expectedly
+    <a href="https://github.com/kobo/groovyserv/issues/14">https://github.com/kobo/groovyserv/issues/14</a>
+- Fixed #23: buffer over flow of encoding arguments as base64 in groovyclient of C
+    <a href="https://github.com/kobo/groovyserv/issues/23">https://github.com/kobo/groovyserv/issues/23</a>
+- Fixed #24: groovyserver process wrongly exits on failing decoding of base64
+    <a href="https://github.com/kobo/groovyserv/issues/24">https://github.com/kobo/groovyserv/issues/24</a>
+- Fixed #25: native groovyclient of v0.6 cannot be invoked with Windows 7 64bits
+    <a href="https://github.com/kobo/groovyserv/issues/25">https://github.com/kobo/groovyserv/issues/25</a>
+- Fixed #26: groovyserver(sh) doesn't take over CLASSPATH environment variable
+    <a href="https://github.com/kobo/groovyserv/issues/26">https://github.com/kobo/groovyserv/issues/26</a>
+- Fixed #27: cannot access original environment variables of groovyserver
+    <a href="https://github.com/kobo/groovyserv/issues/27">https://github.com/kobo/groovyserv/issues/27</a>
+          </pre>
+        </div>
         <div class="section" id="0.6">
           <h2>Changes in version 0.6 (2011-03-18)</h2>
           <pre>

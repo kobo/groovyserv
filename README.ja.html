@@ -68,6 +68,7 @@ GroovyServを使うことで、Groovyコマンドの起動時間を短縮し、�
 
   - Windows XP + Cygwin 1.7.x
   - Windows XP (Cygwin無し)
+  - Windows 7 64bit (Cygwin無し)
   - Mac OS X 10.5/6 (Intel Mac)
   - Ubuntu Linux 9.10
 
@@ -112,47 +113,49 @@ groovyclient の接続しか受け付けないように制約をかけていま�
 バイナリパッケージからのインストール
 ====================================
 
-バイナリパッケージgroovyserv-0.6-&lt;OS&gt;-&lt;arch&gt;-bin.zipを適当なフォルダ
+バイナリパッケージgroovyserv-0.7-&lt;OS&gt;-&lt;arch&gt;-bin.zipを適当なフォルダ
 に展開します。例えば、~/optに展開するとします。
 
   $ mkdir ~/opt
   $ cd ~/opt
-  $ unzip groovyserv-0.6-macosx-bin.zip
+  $ unzip groovyserv-0.7-macosx-bin.zip
 
-上記により~/opt/groovyserv-0.6が展開されます。次に環境変数PATHに上記フォ
+上記により~/opt/groovyserv-0.7が展開されます。次に環境変数PATHに上記フォ
 ルダ配下のbinを追加します。仮に、~/opt/groovyservに展開した場合、以下の
 ように設定します(bashなどの環境変数設定)。
 
-  export PATH=~/opt/groovyserv-0.6/bin:$PATH
+  export PATH=~/opt/groovyserv-0.7/bin:$PATH
 
 設定は以上です。groovyclientを実行するとgroovyserverが起動します。
 
   $ groovyclient -v
-  Invoking server: '/xxx/groovyserv-0.6/bin/groovyserver' -p 1961
-  Groovy command path: /xxx/bin/groovy
-  GroovyServ home directory: /xxx/groovyserv-0.6
+  Invoking server: '/xxx/groovyserv-0.7/bin/groovyserver' -p 1961
+  Groovy command path: /xxx/bin/groovy (found at PATH)
+  GroovyServ home directory: /xxx/groovyserv-0.7
+  Original classpath: (none)
+  GroovyServ default classpath: /xxx/lib/*
   Starting....
-  groovyserver 18977(1961) is successfully started
-  Groovy Version: 1.7.8 JVM: 1.6.0_24
+  groovyserver 30341(1961) is successfully started
+  Groovy Version: 1.7.10 JVM: 1.6.0_24
 
 ========================
 ソースコードからのビルド
 ========================
 
-まず、GroovyServのソースコード配布パッケージgroovyserv-0.6-src.zipを展開します。
+まず、GroovyServのソースコード配布パッケージgroovyserv-0.7-src.zipを展開します。
 
   $ mkdir -p ~/opt/src
   $ cd ~/opt/src
-  $ unzip groovyserv-0.6-src.zip
+  $ unzip groovyserv-0.7-src.zip
 
 Mavenを使ってコンパイルします。v0.6からはMaven3が推奨です。
 
-  $ cd ~/opt/src/groovyserv-0.6/
+  $ cd ~/opt/src/groovyserv-0.7/
   $ mvn clean verify
 
 コンパイルした結果、バイナリパッケージが
 
-  ~/opt/src/groovyserv-0.6/target/groovyserv-0.6-&lt;OS&gt;-&lt;arch&gt;-bin.zip
+  ~/opt/src/groovyserv-0.7/target/groovyserv-0.7-&lt;OS&gt;-&lt;arch&gt;-bin.zip
 
 という形式で作成されますので、これをバイナリパッケージからのインストー
 ルの場合と同じようにインストールしてください。テストで失敗する場合は以
@@ -170,7 +173,7 @@ Mavenを使ってコンパイルします。v0.6からはMaven3が推奨です�
 
     $ mvn -Dmaven.test.skip=true clean package
 
-Windows上でビルドするためにはgccが必要です(Cygwin上でのビルドを推奨)。
+Windows上でビルドするためにはgccとMinGWが必要です(Cygwin上でのビルドを推奨)。
 ビルドを実行する前にインストールしてください。
 
 ========
@@ -206,6 +209,21 @@ GroovyServは、実行時に以下の環境変数を使用します。
 
     サーバやクライアントでポート番号を指定する場合に使用します。
     コマンド引数で代替することもできます。
+
+  CLASSPATH (オプション)
+
+    groovyserverを起動したときの環境変数CLASSPATHは、そのままgroovyserver
+    プロセスに引き継がれて、GroovyServとして必要なクラスパスが追加された
+    ものがデフォルトクラスパスとして使われます。これは全てのスクリプト処理
+    に影響します。
+
+    groovyclientを起動したときの環境変数CLASSPATHは、毎回groovyserverへと
+    転送され、サーバ上のスクリプトのコンパイル設定に動的に反映されます。
+    (サーバ側の環境変数CLASSPATHに追加設定されるわけではない。)
+    このクラスパスはセッションごとにクリアされるため、次回のスクリプトの
+    実行に影響することはありません。スクリプト実行におけるクラスパスの探索
+    では、groovyserver上の環境変数CLASSPATHが優先的に探索されます。
+    なおこれらの振る舞いはgroovyclientの-cpオプションと全く同一です。
 
 ======
 使い方
@@ -258,8 +276,8 @@ groovyserverが起動されます。起動されていない場合、起動の�
 
   ただし環境変数CLASSPATHについては、これらのオプションを指定しなくて
   も、毎回実行ごとにクライアント側の値が動的にサーバ側に反映されます。
-  このクラスパスはセッションごとにクリアされて次回の実行に影響すること
-  はありません。
+  このクラスパスはセッションごとにクリアされて次回のスクリプトの実行に
+  影響することはありません。
 
 ========================
 groovyclientのオプション
