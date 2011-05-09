@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Welcome! &mdash; GroovyServ v0.7 documentation</title>
+    <title>Search &mdash; GroovyServ v0.7 documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
@@ -22,7 +22,13 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="GroovyServ v0.7 documentation" href="#" /> 
+    <script type="text/javascript" src="_static/searchtools.js"></script>
+    <link rel="top" title="GroovyServ v0.7 documentation" href="index.html" />
+  <script type="text/javascript">
+    jQuery(function() { Search.loadIndex("searchindex.js"); });
+  </script>
+   
+
   </head>
   <body>
 <div class="container">
@@ -39,38 +45,29 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="welcome">
-<h1>Welcome!<a class="headerlink" href="#welcome" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
-<p><strong>GroovyServ makes Groovy&#8217;s startup time much faster, by pre-invoking Groovy as a server.</strong></p>
-<p>In software development with script languages, it&#8217;s very important that repeat velocity of &#8220;try-and-run&#8221; is fast enough.
-It is too long to wait for start-up of Groovy even for 1 second.
-GroovyServ reduces startup time of the JVM and Groovy significantly.
-It&#8217;s of course dependent on environments, but in most case, it is <em>10 to 20 times faster than regular Groovy</em>.</p>
-<p>See also <a class="reference internal" href="readme.html#ref-readme"><em>README</em></a> (<a class="reference internal" href="readme_ja.html#ref-readme-ja"><em>Japanese</em></a>) and <a class="reference internal" href="screencast.html#ref-screencast"><em>Screencast</em></a>.</p>
-</div>
-<div class="section" id="feature">
-<h2>Feature<a class="headerlink" href="#feature" title="Permalink to this headline">¶</a></h2>
-<p>GroovyServ supports following features:</p>
-<ul class="simple">
-<li>Faster invocation of Groovy script (about 10 times much).</li>
-<li>Transparent server invocation. If a server is not running when a client is invoked, the client invokes a server in background.</li>
-<li>Connect System.in/out/err through a socket stream.</li>
-<li>Simultaneous execution of scripts. See <a class="reference internal" href="faq.html#ref-faq-simultaneous"><em>FAQ</em></a>.</li>
-<li>Trap a call of System.exit() and send the exit status to the client.</li>
-<li>Signal handling on client side (e.g. Ctrl-C for termination).</li>
-<li>Change current working directory as appropriately as possible. See <a class="reference internal" href="faq.html#ref-faq-cwd"><em>FAQ</em></a>.</li>
-<li>Propagation of a CLASSPATH environment variable.</li>
-<li>C(native binary) and Ruby client, which can start up quickly.</li>
-<li>Available without Cygwin in Windows.</li>
-<li>Show a window to stop server process only in Windows.</li>
-<li>Propagation of environment variables from a client to a server.</li>
-<li>Automatic resolution of a &#8220;groovy&#8221; command path and GROOVYSERV_HOME (except on Windows).</li>
-</ul>
-</div>
-</div>
-
+  <h1 id="search-documentation">Search</h1>
+  <div id="fallback" class="admonition warning">
+  <script type="text/javascript">$('#fallback').hide();</script>
+  <p>
+    Please activate JavaScript to enable the search
+    functionality.
+  </p>
+  </div>
+  <p>
+    From here you can search these documents. Enter your search
+    words into the box below and click "search". Note that the search
+    function will automatically search for all of the words. Pages
+    containing fewer words won't appear in the result list.
+  </p>
+  <form action="" method="get">
+    <input type="text" name="q" value="" />
+    <input type="submit" value="search" />
+    <span id="search-progress" style="padding-left: 10px"></span>
+  </form>
+  
+  <div id="search-results">
+  
+  </div>
 
           </div>
         </div>
@@ -108,28 +105,6 @@ It&#8217;s of course dependent on environments, but in most case, it is <em>10 t
     </li>
   </ul>
 </div>
-  <h3>Contents of This Page</h3>
-  <ul>
-<li><a class="reference internal" href="#">Welcome!</a><ul>
-<li><a class="reference internal" href="#overview">Overview</a></li>
-<li><a class="reference internal" href="#feature">Feature</a></li>
-</ul>
-</li>
-</ul>
-
-<div id="searchbox" style="display: none">
-  <h3>Quick search</h3>
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" size="18" />
-      <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

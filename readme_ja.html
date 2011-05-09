@@ -1,0 +1,531 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>はじめにお読みください &mdash; GroovyServ v0.7 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.7',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="GroovyServ v0.7 documentation" href="index.html" /> 
+  </head>
+  <body>
+<div class="container">
+  <div class="header">
+    <img class="logo" src="_static/images/logo.png" alt="GroovyServ" />
+    <div class="project">
+      by <a href="http://github.com/kobo">kobo</a> project
+    </div>
+  </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="ref-readme-ja">
+<span id="id1"></span><h1>はじめにお読みください<a class="headerlink" href="#ref-readme-ja" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id2">
+<h2>はじめに<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>GroovyServは、Groovy処理系をサーバとして動作させることでgroovyコマンド
+の起動を見た目上高速化するものです。groovyclientコマンドはTCP/IP 通信
+を使ってすでに起動しているGroovyランタイムと通信し、結果を出力します。
+もし、Emacsのgnuserv(gnudoit)やemacsserver/emacsclientをご存知であれば
+理解が早いでしょう。</p>
+<p>Groovyスクリプトを開発する場合、起動速度がとても重要です。Groovyは動的
+言語であるため、コンパイル時にあらかじめチェックできないエラーについて、
+実行して初めて判明する場合が多いからです。そのため、実行を繰り返しなが
+ら開発をしていくことになります。たとえその起動が1..2秒しかかからなくて
+も、体感としてはとても大きく感じられるのではないでしょうか。</p>
+<p>GroovyServを使うことで、Groovyコマンドの起動時間を短縮し、さくさくと開
+発を進めていくことができます。以下は、Windows XP Core(TM) 2 Duo 2GHz の
+マシンにおけるGroovy 1.7.0の起動時間の参考値です(3回測定した平均値)。</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="62%" />
+<col width="38%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">バイナリ</th>
+<th class="head">結果(sec)</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>Groovy(非native版)</td>
+<td>2.32</td>
+</tr>
+<tr><td>Groovy(native版)</td>
+<td>0.90</td>
+</tr>
+<tr><td>GroovyServ</td>
+<td>0.10</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p>非native版と比べると約20倍程度、起動が高速化しています。</p>
+<p>向上の度合いは実際にはケースバイケースですが、native版があるということ
+と、JQS(Java Quick Start)の存在により、Windows環境は比較的Groovyの実行
+は迅速で差が少なく(といっても10倍はありますが)、UNIX環境の方が差が大
+きくなる傾向はあるようです。</p>
+</div>
+<div class="section" id="id3">
+<h2>動作環境<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>動作確認を行っているOSは以下のとおりです。他の環境で動作した場合レポート
+をいただけますと幸いです。</p>
+<blockquote>
+<div><ul class="simple">
+<li>Windows XP + Cygwin 1.7.x</li>
+<li>Windows XP (Cygwin無し)</li>
+<li>Windows 7 64bit (Cygwin無し)</li>
+<li>Mac OS X 10.5/6 (Intel Mac)</li>
+<li>Ubuntu Linux 9.10</li>
+</ul>
+</div></blockquote>
+<p>JDKのバージョンは以下のとおりです。</p>
+<blockquote>
+<div><ul class="simple">
+<li>JDK 6u24以降 (Mac OS X)</li>
+<li>JDK 6u21以降 (Windows, Linux)</li>
+</ul>
+</div></blockquote>
+<p>Groovyのバージョンは以下のとおりです。</p>
+<blockquote>
+<div><ul class="simple">
+<li>Groovy 1.7以降</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="id4">
+<h2>実装言語<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p>サーバサイドはJavaとGroovy、クライアントはC言語クライアントおよびRubyの
+クライアントが現在動作しています。また、サーバサイドではJNA(Java Native Access)
+を使用しています。</p>
+</div>
+<div class="section" id="id5">
+<h2>セキュリティ<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<p>GroovyServサーバへの接続は、localhostからのみに制限されており、他のマシ
+ンからはgroovyclientコマンドを使って接続することはできません。また、同
+マシン上でもgroovyserverを起動したユーザーと同じユーザが実行した
+groovyclient の接続しか受け付けないように制約をかけています。
+なお、この制約は、サーバが実行ごとに生成する秘密のクッキー情報ファイル
+~/.groovy/groovyserv/cookie-&lt;port&gt;の内容を自ユーザのみが読み出せること
+に依存しています。このファイルのアクセス制限を、UNIX環境ではowner以外か
+らは読めないように設定(chmod 0400)していますが、Windows環境ではこの設定
+が機能しないため、必要に応じて他のユーザから読み出せないように設定して
+ください。</p>
+</div>
+<div class="section" id="id6">
+<h2>バイナリパッケージからのインストール<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<p>バイナリパッケージgroovyserv-0.7-&lt;OS&gt;-&lt;arch&gt;-bin.zipを適当なフォルダ
+に展開します。例えば、~/optに展開するとします。:</p>
+<div class="highlight-python"><pre>$ mkdir ~/opt
+$ cd ~/opt
+$ unzip groovyserv-0.7-macosx-bin.zip</pre>
+</div>
+<p>上記により~/opt/groovyserv-0.7が展開されます。次に環境変数PATHに上記フォ
+ルダ配下のbinを追加します。仮に、~/opt/groovyservに展開した場合、以下の
+ように設定します(bashなどの環境変数設定)。:</p>
+<div class="highlight-python"><pre>export PATH=~/opt/groovyserv-0.7/bin:$PATH</pre>
+</div>
+<p>設定は以上です。groovyclientを実行するとgroovyserverが起動します。:</p>
+<div class="highlight-python"><pre>$ groovyclient -v
+Invoking server: '/xxx/groovyserv-0.7/bin/groovyserver' -p 1961
+Groovy command path: /xxx/bin/groovy (found at PATH)
+GroovyServ home directory: /xxx/groovyserv-0.7
+Original classpath: (none)
+GroovyServ default classpath: /xxx/lib/*
+Starting....
+groovyserver 30341(1961) is successfully started
+Groovy Version: 1.7.10 JVM: 1.6.0_24</pre>
+</div>
+</div>
+<div class="section" id="id7">
+<h2>ソースコードからのビルド<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<p>まず、GroovyServのソースコード配布パッケージgroovyserv-0.7-src.zipを展開します。:</p>
+<div class="highlight-python"><pre>$ mkdir -p ~/opt/src
+$ cd ~/opt/src
+$ unzip groovyserv-0.7-src.zip</pre>
+</div>
+<p>Mavenを使ってコンパイルします。v0.6からはMaven3が推奨です。:</p>
+<div class="highlight-python"><pre>$ cd ~/opt/src/groovyserv-0.7/
+$ mvn clean verify</pre>
+</div>
+<p>コンパイルした結果、バイナリパッケージが:</p>
+<div class="highlight-python"><pre>~/opt/src/groovyserv-0.7/target/groovyserv-0.7-&lt;OS&gt;-&lt;arch&gt;-bin.zip</pre>
+</div>
+<p>という形式で作成されますので、これをバイナリパッケージからのインストー
+ルの場合と同じようにインストールしてください。テストで失敗する場合は以
+下をお試しください。</p>
+<blockquote>
+<div><p>文字エンコードをUTF-8に設定する:</p>
+<div class="highlight-python"><pre>$ export _JAVA_OPTIONS=-Dfile.encoding=UTF-8</pre>
+</div>
+<p>結合テストをスキップする:</p>
+<div class="highlight-python"><pre>$ mvn clean package</pre>
+</div>
+<p>すべてのテストをスキップする:</p>
+<div class="highlight-python"><pre>$ mvn -Dmaven.test.skip=true clean package</pre>
+</div>
+</div></blockquote>
+<p>Windows上でビルドするためにはgccとMinGWが必要です(Cygwin上でのビルドを推奨)。
+ビルドを実行する前にインストールしてください。</p>
+</div>
+<div class="section" id="id8">
+<h2>環境変数<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<p>GroovyServは、実行時に以下の環境変数を使用します。</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>HOME (LinuxまたはMac OS Xの場合のみ)</dt>
+<dd>クッキーやPID、ログファイルを格納する~/.groovy/groovyserv ディレ
+クトリを決定するために使用します。Unix系のOSであれば標準で設定され
+ています。</dd>
+<dt>USERPROFILE (Windowsの場合のみ)</dt>
+<dd>クッキーやPID、ログファイルを格納する~/.groovy/groovyserv ディレ
+クトリを決定するために使用します。Windows標準で設定されています。
+BATファイルで起動された場合は、PIDファイルは作成されません。</dd>
+<dt>JAVA_HOME</dt>
+<dd>Groovyを実行するために必要です。
+通常はGroovyのインストール作業の一貫で設定されています。</dd>
+<dt>GROOVY_HOME (LinuxまたはMac OS X:オプション、Windows:必須)</dt>
+<dd>groovyコマンドのパスを特定するために使用します。
+LinuxまたはMac OS Xの場合は、groovyコマンドが環境変数PATHに設定され
+ている場合は必要ありません。</dd>
+<dt>GROOVYSERVER_PORT (オプション)</dt>
+<dd>サーバやクライアントでポート番号を指定する場合に使用します。
+コマンド引数で代替することもできます。</dd>
+<dt>CLASSPATH (オプション)</dt>
+<dd><p class="first">groovyserverを起動したときの環境変数CLASSPATHは、そのままgroovyserver
+プロセスに引き継がれて、GroovyServとして必要なクラスパスが追加された
+ものがデフォルトクラスパスとして使われます。これは全てのスクリプト処理
+に影響します。</p>
+<p class="last">groovyclientを起動したときの環境変数CLASSPATHは、毎回groovyserverへと
+転送され、サーバ上のスクリプトのコンパイル設定に動的に反映されます。
+(サーバ側の環境変数CLASSPATHに追加設定されるわけではない。)
+このクラスパスはセッションごとにクリアされるため、次回のスクリプトの
+実行に影響することはありません。スクリプト実行におけるクラスパスの探索
+では、groovyserver上の環境変数CLASSPATHが優先的に探索されます。
+なおこれらの振る舞いはgroovyclientの-cpオプションと全く同一です。</p>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+<div class="section" id="id9">
+<h2>使い方<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
+<p>groovyコマンドの代わりにgroovyclientコマンドを実行します。groovyclient
+を実行したとき、groovyserverが起動されていなければ、バックグラウンドで
+groovyserverが起動されます。起動されていない場合、起動のために数秒の待
+ち時間の後、サーバが起動し、実行が行われます。</p>
+<p>明示的にgroovyserverを起動しておくこともできます。:</p>
+<div class="highlight-python"><pre>$ groovyserver</pre>
+</div>
+<p>起動オプションに-vを指定するとログファイルに詳細メッセージが出力されま
+す。起動トラブルなどの解析に便利です。:</p>
+<div class="highlight-python"><pre>$ groovyserver -v</pre>
+</div>
+<p>その他の起動オプションについては後述します。</p>
+</div>
+<div class="section" id="id10">
+<h2>制限・機能の違い<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p class="first">異なるカレントディレクトリを同時に使うことはできません。複数のコン
+ソールから実行した場合で、それぞれのコンソールで異なるカレントディ
+レクトリで実行した場合も同じです。同時に実行中になることがなければ、
+異なるカレントディレクトリであっても、複数のコンソールから利用して
+も問題ありません。</p>
+<p>必要であれば別ポートで複数のGroovyServサーバを起動することもできます。
+別のサーバプロセスであれば、同時に異なるカレントディレクトリに対して
+処理を実行することができます。</p>
+</li>
+<li><p class="first">静的変数はGroovyプログラム間の実行で共有されます。たとえば、システム
+プロパティが共有されます。:</p>
+<div class="highlight-python"><pre>$ groovyclient -e "System.setProperty('a','abc')"
+$ groovyclient -e "println System.getProperty('a')"
+abc</pre>
+</div>
+<p>ただし、System.out／System.in／System.errはそれぞれのセッション毎に
+区別され、それぞれの標準入力／出力／エラー出力に接続されます。</p>
+</li>
+<li><p class="first">環境変数は、通常、groovyclientコマンドを実行したときの値ではなく､
+groovyserverが起動されたときの値が使用されます。しかし、-Cenv、
+-Cenv-allオプションを指定することで、groovyclient実行時の環境変数の
+値をgroovyserver側に反映させることもできます。</p>
+<p>ただし環境変数CLASSPATHについては、これらのオプションを指定しなくて
+も、毎回実行ごとにクライアント側の値が動的にサーバ側に反映されます。
+このクラスパスはセッションごとにクリアされて次回のスクリプトの実行に
+影響することはありません。</p>
+</li>
+</ul>
+</div>
+<div class="section" id="groovyclient">
+<h2>groovyclientのオプション<a class="headerlink" href="#groovyclient" title="Permalink to this headline">¶</a></h2>
+<p>groovyclientでは-Cで始まる以下の起動オプションが指定可能です。これらの
+オプションはgroovyclientで解釈され、groovyコマンドには渡されません。:</p>
+<div class="highlight-python"><pre>-Ch,-Chelp               このメッセージを表示する
+-Cp,-Cport &lt;port&gt;        接続するgroovyserverのポート番号を指定する
+-Ck,-Ckill-server        起動中のgroovyserverを停止する
+-Cr,-Crestart-server     起動中のgroovyserverを再起動する
+-Cq,-Cquiet              起動時のメッセージを表示しない
+-Cenv &lt;substr&gt;           substrを変数名に含む環境変数をサーバに転送する
+-Cenv-all                すべての環境変数の値をサーバに転送する
+-Cenv-exclude &lt;substr&gt;   substrを変数名に含む環境変数をサーバへの転送から除外する</pre>
+</div>
+</div>
+<div class="section" id="groovyserver">
+<h2>groovyserverのオプション<a class="headerlink" href="#groovyserver" title="Permalink to this headline">¶</a></h2>
+<p>groovyserverの起動オプションは以下の通りです。:</p>
+<div class="highlight-python"><pre>-v         デバッグ情報などをログファイルに出力する
+-q         起動時のメッセージを表示しない
+-k         起動中のgroovyserverを終了する (groovyserver.batでは使えません)
+-r         起動中のgroovyserverを再起動する (groovyserver.batでは使えません)
+-p &lt;port&gt;  LISTENするポート番号を指定する</pre>
+</div>
+</div>
+<div class="section" id="id11">
+<h2>groovyserverの起動と停止<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h2>
+<p>groovyserverの起動方法には、groovyserverまたはgroovyserver.batを使って
+明示的に起動する方法と、groovyclientから透過的にバックグラウンドで起動
+する方法があります。</p>
+<p>groovyserverを明示的に起動するためのコマンドは以下の通りです。</p>
+<blockquote>
+<div><ul class="simple">
+<li>groovyserver      (Mac OS X, Linux, Windows(Cygwin))</li>
+<li>groovyserver.bat  (Windows(Cygwinなし))</li>
+</ul>
+</div></blockquote>
+<p>これらが利用可能な環境を以下に整理します。(OK: 利用可, N/A: 利用不可)</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="25%" />
+<col width="25%" />
+<col width="27%" />
+<col width="22%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Script</th>
+<th class="head">Windows Cygwin版</th>
+<th class="head">Windows Cygwinなし</th>
+<th class="head">Mac OS X, Linux</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>groovyserver</td>
+<td>OK</td>
+<td>N/A</td>
+<td>OK</td>
+</tr>
+<tr><td>groovyserver.bat</td>
+<td>OK</td>
+<td>OK</td>
+<td>N/A</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p>バッチファイル版groovyserver.batでは、技術的な理由により、-rオプション
+と-kオプションは利用できません。このため、コマンドラインからは
+groovyserverの終了と再起動を行うことができません。その代わり、起動した
+groovyserverは別ウィンドウで最小化されて実行されるため、Windowsの操作で
+ウィンドウを閉じることでgroovyserverを終了することができます。その後、
+groovyclientを実行することで、全体としてgroovyserverの再起動が可能です。</p>
+<p>注意が必要なのは、Cygwin環境下でも、groovyclient.exeを経由した
+groovyserverの透過的な起動の際には、内部的にgroovyserver.batが使用され
+るということです。このため、Cygwin環境下では以下のような状況となります。</p>
+<blockquote>
+<div><ul class="simple">
+<li>シェルスクリプト版groovyserverで明示的に起動した場合、同じくシェルス
+クリプト版groovyserverを-k,-rオプションを指定して実行することで、
+起動中のgroovyserverの終了と再起動を行うことができる。</li>
+<li>バッチファイル版groovyserver.batで明示的に起動した場合、groovyserver
+の終了は、ウィンドウを閉じることで行う。</li>
+<li>groovyclient.exeを通じてgroovyserver.batの透過的起動を行った場合、
+groovyserverの終了は、ウィンドウを閉じることで行う。</li>
+</ul>
+</div></blockquote>
+<p>ややこしいですが、将来的には、バッチファイル版でも-r,-kオプションの実装
+ができるように検討しています。</p>
+<p>なお、シェルスクリプト版とバッチファイル版を問わず、透過的起動では、内部
+で起動するサーバにオプション(例えば-vオプション)を設定することはできませ
+ん。デフォルト以外のオプションが必要な場合は、明示的な起動を行ってくださ
+い。</p>
+</div>
+<div class="section" id="id12">
+<h2>環境変数の伝搬<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h2>
+<p>groovyclientの-Cenvオプションを使うことで、指定した部分文字列が名前に
+含まれている環境変数をgroovyserverに転送することができます。
+groovyclientプロセスにおけるこれらの環境変数の値はサーバプロセスに転送
+され、サーバプロセス上の同名の環境変数の値が上書きされます。この機能は
+Groovyで書かれた外部コマンドを起動する際にパラメータを環境変数で受けわ
+たすような仕様の既存ツール(IDE、TextMateなど)において特に有用です。</p>
+<p>-Cenv-allオプションを指定すると、groovyclientプロセスのすべての環境変
+数がサーバ側に渡されます。また-Cenv-excludeを併用することで、指定した
+部分文字列を変数名に含む環境変数を転送から除外することができます。</p>
+<p>例えば、:</p>
+<div class="highlight-python"><pre>-Cenv SUBSTRING</pre>
+</div>
+<p>という指定をした場合、転送される環境変数の集合は以下のような疑似コード
+で決定されます。:</p>
+<div class="highlight-python"><pre>allEnvironmentVariables.entrySet().findAll {
+  it.name.contains("SUBSTRING")
+}</pre>
+</div>
+<p>-Cenv／-Cenv-all／-Cenv-excludeを組み合わせたときのルールについては、
+例えば、:</p>
+<div class="highlight-python"><pre>-Cenv SUBSTRING
+-Cenv-all
+-Cenv-exclude EXCLUDE_SUBSTRING</pre>
+</div>
+<p>のとき、以下の疑似コードの結果がgroovyserverプロセスに送られることに
+なります。:</p>
+<div class="highlight-python"><pre>allEnvironmentVariables.entrySet().findAll {
+  if (isSpecifiedEnvAll || it.name.contains("SUBSTRING")) {
+    if (!it.name.contains("EXCLUDE_SUBSTRING")) {
+      return true
+    }
+  }
+  return false
+}</pre>
+</div>
+<p>groovyserverプロセスに設定された環境変数は、groovyclientの終了後も値
+が残り続けることに注意してください。また、groovyserverプロセスにおけ
+る環境変数の操作はスレッドセーフではありません。複数のgroovyclientが
+同時に実行された場合、環境変数の値は後に起動されたgroovyclientによっ
+て上書きされるため、予期せぬ結果となる可能性があります。</p>
+</div>
+<div class="section" id="id13">
+<h2>ポート番号<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h2>
+<p>groovyserverとgroovyclientが通信するTCPポートとして、デフォルトでは、
+1961番ポートを使用します。サーバが通信に使用するポート番号を変更する
+には、環境変数GROOVYSERVER_PORTを設定するか、-pオプションを指定して
+ください。環境変数と-pオプション両方が指定された場合は、-pオプション
+の値が優先されます。:</p>
+<div class="highlight-python"><pre>$ export GROOVYSERVER_PORT=1963
+$ groovyserver</pre>
+</div>
+<p>または:</p>
+<div class="highlight-python"><pre>$ groovyserver -p 1963</pre>
+</div>
+<p>クライアント側では環境変数GROOVYSERVER_PORT指定にくわえて-Cpオプション
+でポート番号を指定可能です。透過的起動を行う場合にはgroovyserverに-pオ
+プションが指定されて起動されます。:</p>
+<div class="highlight-python"><pre>$ groovyclient -Cp 1963 -e '...'</pre>
+</div>
+</div>
+<div class="section" id="id14">
+<h2>ログファイル<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h2>
+<p>groovyserverのログは以下のファイルに出力されます。:</p>
+<div class="highlight-python"><pre>~/.groovy/groovyserv/groovyserver-&lt;port&gt;.log</pre>
+</div>
+</div>
+<div class="section" id="tips">
+<h2>Tips<a class="headerlink" href="#tips" title="Permalink to this headline">¶</a></h2>
+<p>groovyコマンドを実行すると代わりにgroovyclientが呼び出されるように、以
+下のようにエイリアス(別名)指定を行っておくと便利です。以下はbash用のエ
+イリアスの設定です。:</p>
+<div class="highlight-python"><pre>alias groovy=groovyclient</pre>
+</div>
+<p>Windowsではdoskeyコマンドで以下のように設定することができます。:</p>
+<div class="highlight-python"><pre>doskey groovy=groovyclient $*</pre>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><div class="toctree-wrapper compound globaltoc">
+  <h3><a href="sitemenu.html">Site Menu</a></h3>
+  <ul>
+    <li class="toctree-l1"><a class="reference internal" href="index.html">Top</a></li>
+    <li class="toctree-l1"><a class="reference internal" href="document.html">Documentation</a>
+      <ul>
+        <li class="toctree-l2"><a class="reference internal" href="document.html#get-started">Get Started</a>
+          <ul>
+            <li class="toctree-l3"><a class="reference internal" href="readme.html">README(English)</a></li>
+            <li class="toctree-l3"><a class="reference internal" href="readme_ja.html">README(Japanese)</a></li>
+            <li class="toctree-l3"><a class="reference internal" href="screencast.html">Screencast</a></li>
+          </ul>
+        </li>
+        <li class="toctree-l2"><a class="reference internal" href="document.html#reference">Reference</a>
+          <ul>
+            <li class="toctree-l3"><a class="reference internal" href="changelog.html">Change Log</a></li>
+            <li class="toctree-l3"><a class="reference internal" href="faq.html">FAQ</a></li>
+            <li class="toctree-l3"><a class="reference internal" href="license.html">License</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li class="toctree-l1"><a class="reference internal" href="download.html">Download</a></li>
+    <li class="toctree-l1"><a class="reference internal" href="community.html">Community</a>
+      <ul>
+        <li class="toctree-l2"><a class="reference internal" href="community.html#mailing-list-google-group">Mailing List (Google Group)</a></li>
+        <li class="toctree-l2"><a class="reference internal" href="community.html#source-code-github">Source Code (GitHub)</a></li>
+        <li class="toctree-l2"><a class="reference internal" href="community.html#issues-github">Issues (GitHub)</a></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+  <h3>Contents of This Page</h3>
+  <ul>
+<li><a class="reference internal" href="#">はじめにお読みください</a><ul>
+<li><a class="reference internal" href="#id2">はじめに</a></li>
+<li><a class="reference internal" href="#id3">動作環境</a></li>
+<li><a class="reference internal" href="#id4">実装言語</a></li>
+<li><a class="reference internal" href="#id5">セキュリティ</a></li>
+<li><a class="reference internal" href="#id6">バイナリパッケージからのインストール</a></li>
+<li><a class="reference internal" href="#id7">ソースコードからのビルド</a></li>
+<li><a class="reference internal" href="#id8">環境変数</a></li>
+<li><a class="reference internal" href="#id9">使い方</a></li>
+<li><a class="reference internal" href="#id10">制限・機能の違い</a></li>
+<li><a class="reference internal" href="#groovyclient">groovyclientのオプション</a></li>
+<li><a class="reference internal" href="#groovyserver">groovyserverのオプション</a></li>
+<li><a class="reference internal" href="#id11">groovyserverの起動と停止</a></li>
+<li><a class="reference internal" href="#id12">環境変数の伝搬</a></li>
+<li><a class="reference internal" href="#id13">ポート番号</a></li>
+<li><a class="reference internal" href="#id14">ログファイル</a></li>
+<li><a class="reference internal" href="#tips">Tips</a></li>
+</ul>
+</li>
+</ul>
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+</div>
+
+  </body>
+</html>

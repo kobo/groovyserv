@@ -1,0 +1,75 @@
+@charset "UTF-8";
+/*
+Copyright (c) 2009, Yahoo! Inc. All rights reserved.
+Code licensed under the BSD License:
+http://developer.yahoo.net/yui/license.txt
+version: 2.8.0r4
+*/
+
+/*******************************************
+ 基本サイズ: 13px
+ 
+ 表示したいサイズ  指定する値
+ 10px   77% 
+ 11px 	85% 
+ 12px 	93%
+ 13px 	100%
+ 14px 	108%
+ 15px 	116%
+ 16px 	123.1%
+ 17px 	131% 
+ 18px 	138.5%
+ 19px 	146.5%
+ 20px 	153.9%
+ 21px 	161.6%
+ 22px 	167%
+ 23px 	174%
+ 24px 	182%
+ 25px 	189%
+ 26px 	197%
+
+ #font-sizeをパーセントで表す理由として、pxやptなどで指定するとIE6,7で拡大、縮小ができないため。
+
+********************************************/
+
+body{
+  font:13px/1.231 "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro", "メイリオ", Meiryo, "ＭＳ Ｐゴシック", "MS P Gothic", sans-serif;
+  *font-size:small;
+  *font:x-small;
+}
+
+select,input,button,textarea,button{
+  font:99% arial,helvetica,clean,sans-serif;
+}
+
+table{
+  font-size:inherit;
+  font:100%;
+}
+
+pre,code,kbd,samp,tt{
+  font-family: 'ＭＳ ゴシック', 'MS Gothic', 'Osaka-等幅', 'Osaka-Mono', monospace;
+  _font-family: monospace;
+  *font-size:108%;
+  line-height:100%;
+}
+
+.text10 { font-size:77%; }
+.text11 { font-size:85%; }
+.text12 { font-size:93%; }
+.text13 { font-size:100%; }
+.text14 { font-size:108%; }
+.text15 { font-size:116%; }
+.text16 { font-size:123.1%; }
+.text17 { font-size:131%; }
+.text18 { font-size:138.5%; }
+.text19 { font-size:146.5%; }
+.text20 { font-size:153.9%; }
+.text21 { font-size:161.6%; }
+.text22 { font-size:167%; }
+.text23 { font-size:174%; }
+.text24 { font-size:182%; }
+.text25 { font-size:189%; }
+.text26 { font-size:197%; }
+
+
