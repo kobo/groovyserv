@@ -8,7 +8,7 @@ Get Started
 .. toctree::
    :maxdepth: 1
 
-   readme
+   readme_en
    readme_ja
    screencast
 
