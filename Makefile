@@ -5,7 +5,7 @@
 SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
 PAPER         =
-BUILDDIR      = ..
+BUILDDIR      = ./build
 
 # Internal variables.
 PAPEROPT_a4     = -D latex_paper_size=a4
@@ -34,13 +34,7 @@ help:
 	@echo "  doctest    to run all doctests embedded in the documentation (if enabled)"
 
 clean:
-	-rm -rf $(BUILDDIR)/*.html
-	-rm -rf $(BUILDDIR)/objects.inv
-	-rm -rf $(BUILDDIR)/searchindex.js
-	-rm -rf $(BUILDDIR)/.buildinfo
-	-rm -rf $(BUILDDIR)/_sources
-	-rm -rf $(BUILDDIR)/_static
-	-rm -rf $(BUILDDIR)/doctrees
+	-rm -rf $(BUILDDIR)
 
 html:
 #	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html

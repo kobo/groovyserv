@@ -10,3 +10,4 @@ work
 *~
 bin/groovyclient
 *.pickle
+build
