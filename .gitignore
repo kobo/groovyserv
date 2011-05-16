@@ -9,5 +9,5 @@ work
 *.bak
 *~
 bin/groovyclient
-*.pickle
 build
+doctrees
