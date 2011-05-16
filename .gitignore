@@ -9,3 +9,5 @@ work
 *.bak
 *~
 bin/groovyclient
+build
+doctrees
