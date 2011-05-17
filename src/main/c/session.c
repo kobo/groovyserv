@@ -182,7 +182,7 @@ void send_header(int fd, int argc, char** argv, char* cookie)
     char *encoded_ptr, *encoded_work;
     for (i = 1; i < argc; i++) {
         if (argv[i] != NULL) {
-            encoded_ptr = malloc(strlen(argv[i]) * 1.5); // base64 encoded data is less 1.5 times as much as raw data
+            encoded_ptr = calloc(strlen(argv[i]) * 2, sizeof(char)); // base64 encoded data is less 2 times as much as raw data
             if (encoded_ptr == NULL) {
                 perror("ERROR: failed to malloc");
                 exit(1);
