@@ -23,11 +23,8 @@ require 'base64'
 
 DESTHOST = "localhost" # for security
 DESTPORT = ENV.fetch("GROOVYSERVER_PORT", 1961)
-if RUBY_PLATFORM.downcase =~ /mswin(?!ce)|mingw|cygwin|bccwin/  # if windows
-  HOME_DIR = ENV['USERPROFILE']
-else
-  HOME_DIR = ENV['HOME']
-end
+IS_WINDOWS = RUBY_PLATFORM.downcase =~ /mswin(?!ce)|mingw|cygwin|bccwin/
+HOME_DIR = IS_WINDOWS ? ENV['USERPROFILE'] : ENV['HOME']
 COOKIE_FILE_BASE = HOME_DIR + "/.groovy/groovyserv/cookie"
 GROOVYSERVER_CMD = File.expand_path(ENV.fetch("GROOVYSERV_HOME", File.dirname($0)+"/..") + "/bin/groovyserver")
 
@@ -269,11 +266,11 @@ def send_command(socket, args)
 end
 
 def current_dir()
-  pwd = Dir::pwd
-  if pwd =~ /cygdrive/ # for cygwin
-    pwd.gsub("/cygdrive/", "").gsub(/^([a-zA-Z])/) { "#{$1}:" }
+  if IS_WINDOWS
+    # native path expression including a drive letter is needed.
+    `cmd.exe /c cd` # FIXME it's ugly...
   else
-    pwd
+    Dir::pwd
   end
 end
 
