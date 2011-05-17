@@ -268,7 +268,7 @@ end
 def current_dir()
   if IS_WINDOWS
     # native path expression including a drive letter is needed.
-    `cmd.exe /c cd` # FIXME it's ugly...
+    `cmd.exe /c cd`.strip # FIXME it's ugly...
   else
     Dir::pwd
   end
