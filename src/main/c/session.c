@@ -426,7 +426,7 @@ static void copy_stdin_to_soc(int fd)
 static void invoke_thread(int fd)
 {
     DWORD id = 1;
-    HANDLE hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) copy_stdin_to_soc, (LPVOID)fd, 0, &id);
+    CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) copy_stdin_to_soc, (LPVOID)fd, 0, &id);
 }
 
 int start_session(int fd)
