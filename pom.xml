@@ -276,7 +276,7 @@
                 <configuration>
                   <tasks>
                     <exec executable="gcc" failonerror="true">
-                      <arg line="-g -o target/groovyclient src/main/c/groovyclient.c src/main/c/buf.c src/main/c/option.c src/main/c/session.c src/main/c/base64.c" />
+                      <arg line="-Wall -g -o target/groovyclient src/main/c/groovyclient.c src/main/c/buf.c src/main/c/option.c src/main/c/session.c src/main/c/base64.c" />
                     </exec>
                   </tasks>
                 </configuration>

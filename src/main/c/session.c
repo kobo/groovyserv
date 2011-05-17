@@ -104,7 +104,7 @@ int open_socket(char* server_name, int server_port)
     }
 #else
     if (connect(fd, (struct sockaddr *)&server, sizeof(server)) < 0) {
-        if (errno = ECONNREFUSED) {
+        if (errno == ECONNREFUSED) {
             return -1;
         }
         perror("ERROR: connect");
@@ -228,7 +228,7 @@ static void read_header(char* buf, struct header_t* header)
     // key
     char* p = strtok(buf, " :");
     if (p == NULL) {
-        fprintf(stderr, "ERROR: key is NULL\n", p);
+        fprintf(stderr, "ERROR: key is NULL\n");
         exit(1);
     }
     if (strlen(p) > MAX_HEADER_KEY_LEN) {
@@ -303,7 +303,6 @@ static char* read_line(int fd, char* buf, int size)
 int read_headers(int fd, struct header_t headers[])
 {
     char read_buf[BUFFER_SIZE];
-    int result = 0;
     char *p;
     int pos = 0;
     while (1) {

@@ -51,7 +51,7 @@
 #include "bool.h"
 #include "session.h"
 
-static char* scriptdir(char* result_dir, char* script_path)
+static void scriptdir(char* result_dir, char* script_path)
 {
     // prepare work variable of script path
     int script_path_length = strlen(script_path);
