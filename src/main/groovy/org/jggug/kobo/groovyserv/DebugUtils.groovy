@@ -129,7 +129,7 @@ class DebugUtils {
     private static toDisplayAscii(b) {
         if (b) {
             char c = (char) b
-            return (c.isLetterOrDigit() ? c : "?")
+            return (c ==~ /\p{Print}/) ? c : "?"
         }
         return ""
     }
