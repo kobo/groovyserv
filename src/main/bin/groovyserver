@@ -159,7 +159,7 @@ fi
 # Resolve GROOVYSERV_HOME
 #-------------------------------------------
 
-if [ "$GROOVYSERV_HOME" == "" ]; then
+if [ "$GROOVYSERV_HOME" = "" ]; then
     GROOVYSERV_HOME="$(dirname $(dirname $(expand_path $0)))"
 
     # for Homebrew in Mac OS X
