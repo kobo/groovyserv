@@ -166,6 +166,8 @@ if [ "$GROOVYSERV_HOME" == "" ]; then
     if [ -d $GROOVYSERV_HOME/libexec ]; then
         GROOVYSERV_HOME="$GROOVYSERV_HOME/libexec"
     fi
+else
+    GROOVYSERV_HOME=`expand_path "$GROOVYSERV_HOME"`
 fi
 ls $GROOVYSERV_HOME/lib/groovyserv-*.jar >/dev/null 2>&1
 if [ ! $? -eq 0 ]; then
