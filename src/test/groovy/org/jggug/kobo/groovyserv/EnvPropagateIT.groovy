@@ -53,16 +53,16 @@ class EnvPropagationIT extends GroovyTestCase {
            "-Cenv", "(testEnv_singleOption:KEY1)",
            "-Cenv", "(testEnv_multiOptions:KEY3)",
            "-e", '''"""
-               |assert System.getenv("HOGE(testEnv_singleOption:KEY1)FOO") == "111"      // part match
-               |assert System.getenv("HOGE(testEnv_singleOption:KEY1)") == "222"         // startsWith
-               |assert System.getenv("(testEnv_singleOption:KEY1)FOO") == "333"          // endsWith
-               |assert System.getenv("(testEnv_singleOption:KEY1)") == "444"             // full match
-               |assert System.getenv("(testEnv_singleOption:key)") == null               // not match: capital sensitive
-               |assert System.getenv("(testEnv_singleOption)ABC") == null                // not match: not including a key
-               |assert System.getenv("(testEnv_singleOption:KEY1)" + "_"*100) == "v"*100 // a long name is OK
-               |assert System.getenv("(testEnv_multiOptions:KEY2)") == null              // not match
-               |assert System.getenv("(testEnv_multiOptions:KEY3)") == "999"             // matched second option
-               |print("OK")
+               |assert System.getenv('HOGE(testEnv_singleOption:KEY1)FOO') == '111'      // part match
+               |assert System.getenv('HOGE(testEnv_singleOption:KEY1)') == '222'         // startsWith
+               |assert System.getenv('(testEnv_singleOption:KEY1)FOO') == '333'          // endsWith
+               |assert System.getenv('(testEnv_singleOption:KEY1)') == '444'             // full match
+               |assert System.getenv('(testEnv_singleOption:key)') == null               // not match: capital sensitive
+               |assert System.getenv('(testEnv_singleOption)ABC') == null                // not match: not including a key
+               |assert System.getenv('(testEnv_singleOption:KEY1)' + '_'*100) == 'v'*100 // a long name is OK
+               |assert System.getenv('(testEnv_multiOptions:KEY2)') == null              // not match
+               |assert System.getenv('(testEnv_multiOptions:KEY3)') == '999'             // matched second option
+               |print('OK')
                |"""'''.stripMargin()
        ])
    }
@@ -80,14 +80,14 @@ class EnvPropagationIT extends GroovyTestCase {
        ], [
            "-Cenv-all",
            "-e", '''"""
-               |assert System.getenv("HOGE(testEnvAll:KEY)FOO") == "111"
-               |assert System.getenv("HOGE(testEnvAll:KEY)") == "222"
-               |assert System.getenv("(testEnvAll:KEY)FOO") == "333"
-               |assert System.getenv("(testEnvAll:KEY)") == "444"
-               |assert System.getenv("(testEnvAll:key)") == "555"
-               |assert System.getenv("(testEnvAll)ABC") == "666"
-               |assert System.getenv("(testEnvAll:KEY)" + "_"*100) == "v"*100 // a long name is OK
-               |print("OK")
+               |assert System.getenv('HOGE(testEnvAll:KEY)FOO') == '111'
+               |assert System.getenv('HOGE(testEnvAll:KEY)') == '222'
+               |assert System.getenv('(testEnvAll:KEY)FOO') == '333'
+               |assert System.getenv('(testEnvAll:KEY)') == '444'
+               |assert System.getenv('(testEnvAll:key)') == '555'
+               |assert System.getenv('(testEnvAll)ABC') == '666'
+               |assert System.getenv('(testEnvAll:KEY)' + '_'*100) == 'v'*100 // a long name is OK
+               |print('OK')
                |"""'''.stripMargin()
        ])
    }
@@ -109,16 +109,16 @@ class EnvPropagationIT extends GroovyTestCase {
            "-Cenv-exclude", "EXCLUDE1",
            "-Cenv-exclude", "EXCLUDE3",
            "-e", '''"""
-               |assert System.getenv("EXCLUDE1(testEnv_withEnvExclude:KEY)") == null     // matched to env but excluded
-               |assert System.getenv("(testEnv_withEnvExclude:KEY)EXCLUDE1") == null     // matched to env but excluded
-               |assert System.getenv("HOGEEXCLUDE1(testEnv_withEnvExclude:KEY)") == null // matched to env but excluded
-               |assert System.getenv("HOGE(testEnv_withEnvExclude:KEY)FOO") == "444"
-               |assert System.getenv("(testEnv_withEnvExclude:KEY)") == "555"
-               |assert System.getenv("(testEnv_withEnvExclude)ABC") == null              // not match to env
-               |assert System.getenv("(testEnv_withEnvExclude:KEY)EXCLUDE1") == null     // matched to env but excluded
-               |assert System.getenv("(testEnv_withEnvExclude:KEY)EXCLUDE2") == "888"
-               |assert System.getenv("(testEnv_withEnvExclude:KEY)EXCLUDE3") == null     // matched to env but excluded
-               |print("OK")
+               |assert System.getenv('EXCLUDE1(testEnv_withEnvExclude:KEY)') == null     // matched to env but excluded
+               |assert System.getenv('(testEnv_withEnvExclude:KEY)EXCLUDE1') == null     // matched to env but excluded
+               |assert System.getenv('HOGEEXCLUDE1(testEnv_withEnvExclude:KEY)') == null // matched to env but excluded
+               |assert System.getenv('HOGE(testEnv_withEnvExclude:KEY)FOO') == '444'
+               |assert System.getenv('(testEnv_withEnvExclude:KEY)') == '555'
+               |assert System.getenv('(testEnv_withEnvExclude)ABC') == null              // not match to env
+               |assert System.getenv('(testEnv_withEnvExclude:KEY)EXCLUDE1') == null     // matched to env but excluded
+               |assert System.getenv('(testEnv_withEnvExclude:KEY)EXCLUDE2') == '888'
+               |assert System.getenv('(testEnv_withEnvExclude:KEY)EXCLUDE3') == null     // matched to env but excluded
+               |print('OK')
                |"""'''.stripMargin()
        ])
    }
@@ -137,14 +137,14 @@ class EnvPropagationIT extends GroovyTestCase {
            "-Cenv-all",
            "-Cenv-exclude", "EXCLUDE",
            "-e", '''"""
-               |assert System.getenv("EXCLUDE(testEnvAll_withEnvExclude:KEY)") == null     // excluded
-               |assert System.getenv("(testEnvAll_withEnvExclude:KEY)EXCLUDE") == null     // excluded
-               |assert System.getenv("HOGEEXCLUDE(testEnvAll_withEnvExclude:KEY)") == null // excluded
-               |assert System.getenv("HOGE(testEnvAll_withEnvExclude:KEY)FOO") == "444"
-               |assert System.getenv("(testEnvAll_withEnvExclude:KEY)") == "555"
-               |assert System.getenv("(testEnvAll_withEnvExclude)EXCLUDE") == null         // excluded
-               |assert System.getenv("(testEnvAll_withEnvExclude)ABC") == "777"
-               |print("OK")
+               |assert System.getenv('EXCLUDE(testEnvAll_withEnvExclude:KEY)') == null     // excluded
+               |assert System.getenv('(testEnvAll_withEnvExclude:KEY)EXCLUDE') == null     // excluded
+               |assert System.getenv('HOGEEXCLUDE(testEnvAll_withEnvExclude:KEY)') == null // excluded
+               |assert System.getenv('HOGE(testEnvAll_withEnvExclude:KEY)FOO') == '444'
+               |assert System.getenv('(testEnvAll_withEnvExclude:KEY)') == '555'
+               |assert System.getenv('(testEnvAll_withEnvExclude)EXCLUDE') == null         // excluded
+               |assert System.getenv('(testEnvAll_withEnvExclude)ABC') == '777'
+               |print('OK')
                |"""'''.stripMargin()
        ])
    }
@@ -156,9 +156,9 @@ class EnvPropagationIT extends GroovyTestCase {
        ], [
            "-Cenv-all",
            "-e", '''"""
-               |assert System.getenv("(testKeepOnServer:KEY1)") == "111"
-               |assert System.getenv("(testKeepOnServer:KEY2)") == "222"
-               |print("OK")
+               |assert System.getenv('(testKeepOnServer:KEY1)') == '111'
+               |assert System.getenv('(testKeepOnServer:KEY2)') == '222'
+               |print('OK')
                |"""'''.stripMargin()
        ])
 
@@ -168,9 +168,9 @@ class EnvPropagationIT extends GroovyTestCase {
        ], [
            "-Cenv-all",
            "-e", '''"""
-               |assert System.getenv("(testKeepOnServer:KEY1)") == "XYZ" // override
-               |assert System.getenv("(testKeepOnServer:KEY2)") == "222" // keep
-               |print("OK")
+               |assert System.getenv('(testKeepOnServer:KEY1)') == 'XYZ' // override
+               |assert System.getenv('(testKeepOnServer:KEY2)') == '222' // keep
+               |print('OK')
                |"""'''.stripMargin()
        ])
    }
