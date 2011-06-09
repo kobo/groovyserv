@@ -84,7 +84,13 @@ static char* groovyserver_cmdline(char* script_path, char* arg, int port)
         scriptdir(basedir_path, script_path);
     } else {
 #ifdef WINDOWS
-        sprintf(basedir_path, "%s\\bin\\", groovyserv_home);
+        // If the path is on cygwin, scriptdir is used instead of GROOVYSERV_HOME.
+        if (*groovyserv_home == '/') {
+            fprintf(stderr, "WARN: Using the directory path of groovyclient instead of the invalid GROOVYSERV_HOME which isn't a path format on Windows: %s\n", groovyserv_home);
+            scriptdir(basedir_path, script_path);
+        } else {
+            sprintf(basedir_path, "%s\\bin\\", groovyserv_home);
+        }
 #else
         sprintf(basedir_path, "%s/bin/", groovyserv_home);
 #endif
