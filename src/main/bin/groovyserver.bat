@@ -91,8 +91,10 @@ if defined GROOVY_HOME (
 @rem Resolve GROOVYSERV_HOME
 @rem ----------------------------------------
 
-set GROOVYSERV_HOME=%DIRNAME%..\
-if not exist "%GROOVYSERV_HOME%lib\groovyserv-*.jar" (
+if not defined GROOVYSERV_HOME (
+    set GROOVYSERV_HOME=%DIRNAME%..
+)
+if not exist "%GROOVYSERV_HOME%\lib\groovyserv-*.jar" (
     echo ERROR: Not found a valid GROOVYSERV_HOME directory: "%GROOVYSERV_HOME%" >&2
     goto end
 )
@@ -102,7 +104,7 @@ call :info_log GroovyServ home directory: "%GROOVYSERV_HOME%"
 @rem Find groovyclient command
 @rem ----------------------------------------
 
-set GROOVYCLIENT_BIN=%GROOVYSERV_HOME%bin\groovyclient.exe
+set GROOVYCLIENT_BIN=%GROOVYSERV_HOME%\bin\groovyclient.exe
 if not exist "%GROOVYCLIENT_BIN%" (
     echo ERROR: Not found a groovyclient command in GROOVYSERV_HOME: "%GROOVYCLIENT_BIN%" >&2
     goto end
@@ -138,10 +140,10 @@ set GROOVYSERV_COOKIE_FILE=%GROOVYSERV_WORK_DIR%cookie-%GROOVYSERVER_PORT%
 
 if defined CLASSPATH (
     call :info_log Original classpath: %CLASSPATH%
-    set CLASSPATH=%CLASSPATH%;%GROOVYSERV_HOME%lib\*
+    set CLASSPATH=%CLASSPATH%;%GROOVYSERV_HOME%\lib\*
 ) else (
     call :info_log Original classpath: ^(none^)
-    set CLASSPATH=%GROOVYSERV_HOME%lib\*
+    set CLASSPATH=%GROOVYSERV_HOME%\lib\*
 )
 call :info_log GroovyServ default classpath: "%CLASSPATH%"
 
