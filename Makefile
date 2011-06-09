@@ -15,41 +15,35 @@ endif
 RM = rm -f
 SRCDIR = src/main/c
 DESTDIR = target
-OBJS =  $(DESTDIR)/groovyclient.o \
-		$(DESTDIR)/buf.o \
-		$(DESTDIR)/option.o \
-		$(DESTDIR)/session.o \
-		$(DESTDIR)/base64.o
+OBJS =  groovyclient.o \
+		buf.o \
+		option.o \
+		session.o \
+		base64.o
 
 #
 # Rules
 #
 
+.PHONY: clean
+
 groovyclient : $(OBJS)
-	$(CC) $(CFLAGS) -o $(DESTDIR)/$@ $(OBJS) $(LDFLAGS)
+	cd $(DESTDIR); $(CC) $(CFLAGS) -o $@ $(OBJS) $(LDFLAGS)
 
-$(DESTDIR)/groovyclient.o : $(SRCDIR)/groovyclient.c $(SRCDIR)/*.h
-	$(CC) $(CFLAGS) -o $@ -c $<
+groovyclient.o : $(SRCDIR)/groovyclient.c $(SRCDIR)/*.h
+	$(CC) $(CFLAGS) -o $(DESTDIR)/$@ -c $<
 
-$(DESTDIR)/buf.o :  $(SRCDIR)/buf.c $(SRCDIR)/*.h
-	$(CC) $(CFLAGS) -o $@ -c $<
+buf.o :  $(SRCDIR)/buf.c $(SRCDIR)/*.h
+	$(CC) $(CFLAGS) -o $(DESTDIR)/$@ -c $<
 
-$(DESTDIR)/option.o : $(SRCDIR)/option.c $(SRCDIR)/*.h
-	$(CC) $(CFLAGS) -o $@ -c $<
+option.o : $(SRCDIR)/option.c $(SRCDIR)/*.h
+	$(CC) $(CFLAGS) -o $(DESTDIR)/$@ -c $<
 
-$(DESTDIR)/session.o : $(SRCDIR)/session.c $(SRCDIR)/*.h
-	$(CC) $(CFLAGS) -o $@ -c $<
+session.o : $(SRCDIR)/session.c $(SRCDIR)/*.h
+	$(CC) $(CFLAGS) -o $(DESTDIR)/$@ -c $<
 
-$(DESTDIR)/base64.o : $(SRCDIR)/base64.c $(SRCDIR)/*.h
-	$(CC) $(CFLAGS) -o $@ -c $<
-
-#
-# Helper
-#
-
-.PHONY: all clean
-
-all: groovyclient
+base64.o : $(SRCDIR)/base64.c $(SRCDIR)/*.h
+	$(CC) $(CFLAGS) -o $(DESTDIR)/$@ -c $<
 
 clean:
 	$(RM) $(DESTDIR)/*.o $(DESTDIR)/groovyclient
