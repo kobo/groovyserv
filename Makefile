@@ -44,7 +44,7 @@ OBJS =  $(DESTDIR)/groovyclient.o \
 
 .PHONY: clean
 
-groovyclient:: $(OBJS)
+groovyclient: $(OBJS)
 	$(CC) $(CFLAGS) -o $(DESTDIR)/$@ $(OBJS) $(LDFLAGS)
 
 $(DESTDIR)/groovyclient.o: $(SRCDIR)/groovyclient.c $(SRCDIR)/*.h
