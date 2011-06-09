@@ -194,8 +194,7 @@
             </goals>
             <configuration>
               <tasks>
-                <exec executable="make" failonerror="true">
-                </exec>
+                <exec executable="make" failonerror="true" />
               </tasks>
             </configuration>
           </execution>
