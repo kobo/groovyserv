@@ -184,6 +184,25 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>compile-gcc</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <tasks>
+                <exec executable="make" failonerror="true">
+                </exec>
+              </tasks>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>2.5</version>
         <configuration>
@@ -268,20 +287,6 @@
             <artifactId>maven-antrun-plugin</artifactId>
             <executions>
               <execution>
-                <id>compile-gcc</id>
-                <phase>compile</phase>
-                <goals>
-                  <goal>run</goal>
-                </goals>
-                <configuration>
-                  <tasks>
-                    <exec executable="gcc" failonerror="true">
-                      <arg line="-Wall -g -o target/groovyclient src/main/c/groovyclient.c src/main/c/buf.c src/main/c/option.c src/main/c/session.c src/main/c/base64.c" />
-                    </exec>
-                  </tasks>
-                </configuration>
-              </execution>
-              <execution>
                 <id>start-groovyserver</id>
                 <phase>pre-integration-test</phase>
                 <goals>
@@ -332,20 +337,6 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-antrun-plugin</artifactId>
             <executions>
-              <execution>
-                <id>compile-gcc</id>
-                <phase>compile</phase>
-                <goals>
-                  <goal>run</goal>
-                </goals>
-                <configuration>
-                  <tasks>
-                    <exec executable="gcc-3" failonerror="true">
-                      <arg line="-Wall -mno-cygwin -g -o target/groovyclient src/main/c/groovyclient.c src/main/c/buf.c src/main/c/option.c src/main/c/session.c src/main/c/base64.c -lws2_32" />
-                    </exec>
-                  </tasks>
-                </configuration>
-              </execution>
               <execution>
                 <id>start-groovyserver</id>
                 <phase>pre-integration-test</phase>

@@ -242,12 +242,12 @@ static void read_header(char* buf, struct header_t* header)
         if (p[i] == CANCEL) {
             exit(0);
         }
-        if (isspace(p[i])) {
+        if (isspace((unsigned char) p[i])) {
             // if invoked "groovyclient" without arguments, it should works
             // as error message command and print usage by delegated groovy command
             return;
         }
-        if (!isalnum(p[i])) {
+        if (!isalnum((unsigned char) p[i])) {
             fprintf(stderr, "ERROR: key \"%s\" is invalid: %x\n", p, p[i]);
             exit(1);
         }
@@ -260,7 +260,7 @@ static void read_header(char* buf, struct header_t* header)
         fprintf(stderr, "ERROR: value of key \"%s\" is NULL: %s\n", header->key, p);
         exit(1);
     }
-    while (isspace(*p)) { // ignore spaces
+    while (isspace((unsigned char) *p)) { // ignore spaces
         p++;
     }
     if (strlen(p) > MAX_HEADER_VALUE_LEN) {
