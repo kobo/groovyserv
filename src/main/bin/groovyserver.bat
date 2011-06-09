@@ -288,6 +288,7 @@ exit /B 0
 @rem environment variable which name is the first argument will be modified
 :expand_path
     set gs_tmp_value=%~2
+    @rem TODO checking a first char need to apply each entry of CLASSPATH
     if "%gs_tmp_value:~0,1%" == "/" (
         for /f "delims=" %%z in ('cygpath.exe --windows --path "%~2"') do (
             set %1=%%z
