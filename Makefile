@@ -29,6 +29,7 @@ else
 endif
 
 RM = rm -f
+MKDIR = mkdir -p
 SRCDIR = src/main/c
 DESTDIR = target
 OBJS =  $(DESTDIR)/groovyclient.o \
@@ -43,22 +44,21 @@ OBJS =  $(DESTDIR)/groovyclient.o \
 
 .PHONY: clean
 
-groovyclient : $(OBJS)
+groovyclient:: $(OBJS)
 	$(CC) $(CFLAGS) -o $(DESTDIR)/$@ $(OBJS) $(LDFLAGS)
 
-$(DESTDIR)/groovyclient.o : $(SRCDIR)/groovyclient.c $(SRCDIR)/*.h
-	$(CC) $(CFLAGS) -o $@ -c $<
+$(DESTDIR)/groovyclient.o: $(SRCDIR)/groovyclient.c $(SRCDIR)/*.h
 
-$(DESTDIR)/buf.o :  $(SRCDIR)/buf.c $(SRCDIR)/*.h
-	$(CC) $(CFLAGS) -o $@ -c $<
+$(DESTDIR)/buf.o: $(SRCDIR)/buf.c $(SRCDIR)/*.h
 
-$(DESTDIR)/option.o : $(SRCDIR)/option.c $(SRCDIR)/*.h
-	$(CC) $(CFLAGS) -o $@ -c $<
+$(DESTDIR)/option.o: $(SRCDIR)/option.c $(SRCDIR)/*.h
 
-$(DESTDIR)/session.o : $(SRCDIR)/session.c $(SRCDIR)/*.h
-	$(CC) $(CFLAGS) -o $@ -c $<
+$(DESTDIR)/session.o: $(SRCDIR)/session.c $(SRCDIR)/*.h
 
-$(DESTDIR)/base64.o : $(SRCDIR)/base64.c $(SRCDIR)/*.h
+$(DESTDIR)/base64.o: $(SRCDIR)/base64.c $(SRCDIR)/*.h
+
+$(DESTDIR)/%.o: $(SRCDIR)/%.c $(SRCDIR)/*.h
+	@$(MKDIR) $(DESTDIR)
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 clean:
