@@ -200,7 +200,6 @@ if defined DEBUG (
 call :info_log_without_linebreak Starting
 :loop_wait_for_available
     call :info_log_without_linebreak .
-    call :sleep_1sec
 
     @rem if connecting to server is succeed, return successfully
     call :is_server_available
@@ -239,13 +238,6 @@ exit /B
 setlocal
     @rem trickey way to echo without newline
     if not "%OPT_QUIET%" == "YES" SET /P X=%*< NUL 1>&2
-endlocal
-exit /B
-
-:sleep_1sec
-setlocal
-    @rem trickey way to wait one second
-    ping -n 2 127.0.0.1 > NUL
 endlocal
 exit /B
 
