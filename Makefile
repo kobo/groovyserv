@@ -4,11 +4,11 @@
 
 ifeq ($(OS), Windows_NT)
 	CC = gcc-3
-	CFLAGS = -mno-cygwin -Wall -g -O2
+	CFLAGS = -mno-cygwin -Wall -g
 	LDFLAGS = -lws2_32
 else
 	CC = gcc
-	CFLAGS = -Wall -g -O2
+	CFLAGS = -Wall -g
 	LDFLAGS =
 endif
 
