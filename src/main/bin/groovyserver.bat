@@ -27,15 +27,6 @@ set DIRNAME=%~dp0
 if "%DIRNAME%" == "" set DIRNAME=.\
 
 @rem ----------------------------------------
-@rem Support for Cygwin
-@rem ----------------------------------------
-
-call :expand_path JAVA_HOME "%JAVA_HOME%"
-call :expand_path GROOVY_HOME "%GROOVY_HOME%"
-call :expand_path GROOVYSERV_HOME "%GROOVYSERV_HOME%"
-call :expand_path CLASSPATH "%CLASSPATH%"
-
-@rem ----------------------------------------
 @rem Parse arguments
 @rem ----------------------------------------
 
@@ -72,6 +63,15 @@ call :expand_path CLASSPATH "%CLASSPATH%"
     shift
 goto loop_args
 :break_loop_args
+
+@rem ----------------------------------------
+@rem Support for Cygwin
+@rem ----------------------------------------
+
+call :expand_path JAVA_HOME "%JAVA_HOME%"
+call :expand_path GROOVY_HOME "%GROOVY_HOME%"
+call :expand_path GROOVYSERV_HOME "%GROOVYSERV_HOME%"
+call :expand_path CLASSPATH "%CLASSPATH%"
 
 @rem ----------------------------------------
 @rem Find groovy command
