@@ -27,6 +27,15 @@ set DIRNAME=%~dp0
 if "%DIRNAME%" == "" set DIRNAME=.\
 
 @rem ----------------------------------------
+@rem Support for Cygwin
+@rem ----------------------------------------
+
+call :expand_path JAVA_HOME "%JAVA_HOME%"
+call :expand_path GROOVY_HOME "%GROOVY_HOME%"
+call :expand_path GROOVYSERV_HOME "%GROOVYSERV_HOME%"
+call :expand_path CLASSPATH "%CLASSPATH%"
+
+@rem ----------------------------------------
 @rem Parse arguments
 @rem ----------------------------------------
 
@@ -274,5 +283,18 @@ exit /B
 
 @rem ERRORLEVEL will be modified
 :reset_errorlevel
+exit /B 0
+
+@rem environment variable which name is the first argument will be modified
+:expand_path
+    set gs_tmp_value=%~2
+    if "%gs_tmp_value:~0,1%" == "/" (
+        for /f "delims=" %%z in ('cygpath.exe --windows --path "%~2"') do (
+            set %1=%%z
+            call :info_log Expand path:
+            call :info_log   -  %1="%gs_tmp_value%"
+            call :info_log   +  %1="%%z"
+        )
+    )
 exit /B 0
 
