@@ -2,8 +2,16 @@
 # Variables
 #
 
-CC = gcc
-CFLAGS = -Wall -g -O2
+ifeq ($(OS), Windows_NT)
+	CC = gcc-3
+	CFLAGS = -mno-cygwin -Wall -g -O2
+	LDFLAGS = -lws2_32
+else
+	CC = gcc
+	CFLAGS = -Wall -g -O2
+	LDFLAGS =
+endif
+
 RM = rm -f
 SRCDIR = src/main/c
 DESTDIR = target
@@ -13,13 +21,12 @@ OBJS =  $(DESTDIR)/groovyclient.o \
 		$(DESTDIR)/session.o \
 		$(DESTDIR)/base64.o
 
-
 #
 # Rules
 #
 
 groovyclient : $(OBJS)
-	$(CC) -o $(DESTDIR)/$@ $(OBJS)
+	$(CC) $(CFLAGS) -o $(DESTDIR)/$@ $(OBJS) $(LDFLAGS)
 
 $(DESTDIR)/groovyclient.o : $(SRCDIR)/groovyclient.c $(SRCDIR)/*.h
 	$(CC) $(CFLAGS) -o $@ -c $<
