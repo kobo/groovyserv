@@ -24,7 +24,7 @@ setlocal
 @rem ----------------------------------------
 
 set DIRNAME=%~dp0
-if "%DIRNAME%" == "" set DIRNAME=.\
+if "%DIRNAME%" == "" set DIRNAME=.
 
 @rem ----------------------------------------
 @rem Parse arguments
@@ -92,7 +92,7 @@ if defined GROOVY_HOME (
 @rem ----------------------------------------
 
 if not defined GROOVYSERV_HOME (
-    set GROOVYSERV_HOME=%DIRNAME%..
+    set GROOVYSERV_HOME=%DIRNAME%\..
 )
 if not exist "%GROOVYSERV_HOME%\lib\groovyserv-*.jar" (
     echo ERROR: Not found a valid GROOVYSERV_HOME directory: "%GROOVYSERV_HOME%" >&2
@@ -114,7 +114,7 @@ if not exist "%GROOVYCLIENT_BIN%" (
 @rem GroovyServ's work directory
 @rem ----------------------------------------
 
-set GROOVYSERV_WORK_DIR=%USERPROFILE%\.groovy\groovyserv\
+set GROOVYSERV_WORK_DIR=%USERPROFILE%\.groovy\groovyserv
 if not exist "%GROOVYSERV_WORK_DIR%" (
     mkdir "%GROOVYSERV_WORK_DIR%"
 )
@@ -132,7 +132,7 @@ if defined GROOVYSERV_OPTS (
 ) else (
     set GROOVYSERV_OPTS=-Dgroovyserver.port=%GROOVYSERVER_PORT%
 )
-set GROOVYSERV_COOKIE_FILE=%GROOVYSERV_WORK_DIR%cookie-%GROOVYSERVER_PORT%
+set GROOVYSERV_COOKIE_FILE=%GROOVYSERV_WORK_DIR\%cookie-%GROOVYSERVER_PORT%
 
 @rem ----------------------------------------
 @rem Setup classpath
