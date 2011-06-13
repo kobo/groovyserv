@@ -302,7 +302,7 @@ static char* read_line(int fd, char* buf, int size)
 /*
  * read server response headers.
  */
-int read_headers(int fd, struct header_t headers[])
+static int read_headers(int fd, struct header_t headers[])
 {
     char read_buf[BUFFER_SIZE];
     char *p;
@@ -335,10 +335,10 @@ int read_headers(int fd, struct header_t headers[])
 /*
  * find header value.
  */
-static char* find_header(struct header_t headers[], const char* key, int nhdrs)
+static char* find_header(struct header_t headers[], const char* key, int header_size)
 {
     int i;
-    for (i = 0; i < nhdrs; i++) {
+    for (i = 0; i < header_size; i++) {
         if (strcmp(headers[i].key, key) == 0) {
             return headers[i].value;
         }
@@ -349,8 +349,9 @@ static char* find_header(struct header_t headers[], const char* key, int nhdrs)
 /*
  * Receive a chunk, and write it to stdout or stderr.
  */
-static int split_socket_output(int soc, char* stream_identifier, int size)
+static int write_local_stream(int soc, char* stream_identifier, int size)
 {
+    // select output stream
     int output_fd;
     if (strcmp(stream_identifier, "out") == 0) {
         output_fd = fileno(stdout);
@@ -363,6 +364,7 @@ static int split_socket_output(int soc, char* stream_identifier, int size)
         exit(1);
     }
 
+    // FIXME
     static char* read_buf = NULL;
     static int read_buf_size = 0;
     if (read_buf == NULL) {
@@ -417,7 +419,6 @@ static int send_to_server(int fd)
 }
 
 #ifdef WINDOWS
-
 static void copy_stdin_to_soc(int fd)
 {
     while (1) {
@@ -430,16 +431,59 @@ static void invoke_thread(int fd)
     DWORD id = 1;
     CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) copy_stdin_to_soc, (LPVOID)fd, 0, &id);
 }
+#endif
 
+/*
+ * asynchronus input (select) with the stdin and the socket connection
+ * to the server. copy input data from stdin to server, and
+ * copy received data from the server to stdout/stderr.
+ * destination of output is stdout or stderr are distinguished by
+ * stream identifier(sid) header is 'out' or 'err'.
+ */
 int start_session(int fd)
 {
     struct header_t headers[MAX_HEADER];
+
+#ifdef WINDOWS
     invoke_thread(fd);
+#else
+    fd_set read_set;
+    int ret;
+    int stdin_closed = 0;
+#endif
+
     while (1) {
+#ifdef UNIX
+        // initialize the set of file descriptor
+        FD_ZERO(&read_set);
+
+        // watch stdin of client and socket.
+        FD_SET(0, &read_set);
+        FD_SET(fd, &read_set);
+
+        if ((ret = select(FD_SETSIZE, &read_set, (fd_set*)NULL, (fd_set*)NULL, NULL)) == -1) {
+            perror("ERROR: select failure");
+            exit(1);
+        }
+        if (ret == 0) {
+            fprintf(stderr, "ERROR: timeout?\n");
+            continue;
+        }
+
+        // detect changed descriptor
+        if (!stdin_closed && FD_ISSET(0, &read_set)) { // stdin
+            stdin_closed = send_to_server(fd);
+        }
+        if (FD_ISSET(fd, &read_set) == false){ // socket
+            continue;
+        }
+#endif
+
         int size = read_headers(fd, headers);
         if (size == 0) {
             return 0; // as normal exit if header size 0
         }
+
         // Process exit
         char* status = find_header(headers, HEADER_KEY_STATUS, size);
         if (status != NULL) {
@@ -458,76 +502,8 @@ int start_session(int fd)
             fprintf(stderr, "ERROR: required header %s not found\n", HEADER_KEY_SIZE);
             return 1;
         }
-        if (split_socket_output(fd, sid, atoi(chunk_size)) == EOF) {
+        if (write_local_stream(fd, sid, atoi(chunk_size)) == EOF) {
             return 0;
         }
     }
 }
-
-#else
-
-/*
- * asynchronus input (select) with the stdin and the socket connection
- * to the server. copy input data from stdin to server, and
- * copy received data from the server to stdout/stderr.
- * destination of output is stdout or stderr are distinguished by
- * stream identifier(sid) header is 'out' or 'err'.
- */
-int start_session(int fd)
-{
-    struct header_t headers[MAX_HEADER];
-    fd_set read_set;
-    int ret;
-    int stdin_closed = 0;
-    while (1) {
-        // initialize the set of file descriptor
-        FD_ZERO(&read_set);
-
-        // watch stdin of client and socket.
-        FD_SET(0, &read_set);
-        FD_SET(fd, &read_set);
-        if ((ret = select(FD_SETSIZE, &read_set, (fd_set*)NULL, (fd_set*)NULL, NULL)) == -1) {
-            perror("ERROR: select failure");
-            exit(1);
-        }
-        if (ret == 0) {
-            fprintf(stderr, "ERROR: timeout?\n");
-            continue;
-        }
-
-        // detect changed descriptor
-        if (!stdin_closed && FD_ISSET(0, &read_set)) { // stdin
-            stdin_closed = send_to_server(fd);
-        }
-        if (FD_ISSET(fd, &read_set)){ // socket
-            int size = read_headers(fd, headers);
-            if (size == 0) {
-                return 0; // as normal exit if header size 0
-            }
-
-            // Process exit
-            char* status = find_header(headers, HEADER_KEY_STATUS, size);
-            if (status != NULL) {
-                int stat = atoi(status);
-                return stat;
-            }
-
-            // Dispatch data from server to stdout/err.
-            char* sid = find_header(headers, HEADER_KEY_CHANNEL, size);
-            if (sid == NULL) {
-                fprintf(stderr, "ERROR: required header %s not found\n", HEADER_KEY_CHANNEL);
-                return 1;
-            }
-
-            char* chunk_size = find_header(headers, HEADER_KEY_SIZE, size);
-            if (chunk_size == NULL) {
-                fprintf(stderr, "ERROR: required header %s not found\n", HEADER_KEY_SIZE);
-                return 1;
-            }
-            if (split_socket_output(fd, sid, atoi(chunk_size)) == EOF) {
-                return 0;
-            }
-        }
-    }
-}
-#endif

@@ -56,7 +56,6 @@ struct option_t client_option = {
 
 static char *groovy_help_options[] = {
     "--help",
-    "-help",
     "-h"
 };
 

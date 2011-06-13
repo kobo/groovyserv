@@ -30,7 +30,6 @@ struct header_t {
 
 int open_socket(char* server_name, int server_port);
 void send_header(int fd, int argc, char** argv, char* cookie);
-int read_headers(int fd, struct header_t headers[]);
 int start_session(int fd);
 
 #endif
