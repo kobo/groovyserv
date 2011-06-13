@@ -349,7 +349,7 @@ static char* find_header(struct header_t headers[], const char* key, int header_
 /*
  * Receive a chunk, and write it to stdout or stderr.
  */
-static int write_local_stream(int soc, char* stream_identifier, int size)
+static int receive_from_server(int socket, char* stream_identifier, int size)
 {
     // select output stream
     int output_fd;
@@ -364,26 +364,14 @@ static int write_local_stream(int soc, char* stream_identifier, int size)
         exit(1);
     }
 
-    // FIXME
-    static char* read_buf = NULL;
-    static int read_buf_size = 0;
-    if (read_buf == NULL) {
-        read_buf = malloc(BUFFER_SIZE);
-        read_buf_size = size;
+    // copy to stream
+    char read_buf[BUFFER_SIZE];
+    int remained_size = size;
+    int ret;
+    while ((ret = recv(socket, read_buf, min(remained_size, BUFFER_SIZE), 0)) > 0) {
+        write(output_fd, read_buf, ret);
+        remained_size -= ret;
     }
-    if (read_buf_size < size) {
-        while (read_buf_size < size) {
-            read_buf_size *= 2;
-        }
-        read_buf = realloc(read_buf, read_buf_size);
-    }
-#ifdef WINDOWS
-    int ret = recv(soc, read_buf, size, 0);
-    assert(ret == size);
-#else
-    read(soc, read_buf, size);
-#endif
-    write(output_fd, read_buf, size);
     return 0;
 }
 
@@ -419,7 +407,7 @@ static int send_to_server(int fd)
 }
 
 #ifdef WINDOWS
-static void copy_stdin_to_soc(int fd)
+static void copy_stdin_to_socket(int fd)
 {
     while (1) {
         send_to_server(fd);
@@ -429,7 +417,7 @@ static void copy_stdin_to_soc(int fd)
 static void invoke_thread(int fd)
 {
     DWORD id = 1;
-    CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) copy_stdin_to_soc, (LPVOID)fd, 0, &id);
+    CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) copy_stdin_to_socket, (LPVOID)fd, 0, &id);
 }
 #endif
 
@@ -474,7 +462,7 @@ int start_session(int fd)
         if (!stdin_closed && FD_ISSET(0, &read_set)) { // stdin
             stdin_closed = send_to_server(fd);
         }
-        if (FD_ISSET(fd, &read_set) == false){ // socket
+        if (FD_ISSET(fd, &read_set) == FALSE){ // socket
             continue;
         }
 #endif
@@ -502,7 +490,7 @@ int start_session(int fd)
             fprintf(stderr, "ERROR: required header %s not found\n", HEADER_KEY_SIZE);
             return 1;
         }
-        if (write_local_stream(fd, sid, atoi(chunk_size)) == EOF) {
+        if (receive_from_server(fd, sid, atoi(chunk_size)) == EOF) {
             return 0;
         }
     }
