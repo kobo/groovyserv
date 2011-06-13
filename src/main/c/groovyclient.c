@@ -23,13 +23,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
-#include <assert.h>
 
 #include <sys/param.h>
 #include <unistd.h>
 #include <signal.h>
-#include <sys/stat.h>
 
 #include "config.h"
 
@@ -38,17 +35,9 @@
 #include <winsock2.h>
 #include <process.h>
 #include <sys/fcntl.h>
-#else
-#include <sys/socket.h> // AF_INET
-#include <netinet/in.h> // sockaddr_in
-#include <netdb.h>      // gethostbyname
-#include <sys/uio.h>
-#include <sys/errno.h>
 #endif
 
-#include "buf.h"
 #include "option.h"
-#include "bool.h"
 #include "session.h"
 
 static void scriptdir(char* result_dir, char* script_path)
