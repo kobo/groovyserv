@@ -250,7 +250,6 @@ int main(int argc, char** argv)
     }
     else if (client_option.restart) {
         restart_server(argv[0], port);
-        exit(0);
     }
 
     fd_soc = connect_server(argv[0], port);
