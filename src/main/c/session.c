@@ -346,8 +346,7 @@ static char* find_header(struct header_t headers[], const char* key, int header_
     return NULL;
 }
 
-static int min(int a, int b)
-{
+static int min_int(int a,int b) {
     return (a < b) ? a : b;
 }
 
@@ -373,7 +372,7 @@ static int receive_from_server(int socket, char* stream_identifier, int size)
     char read_buf[BUFFER_SIZE];
     int remained_size = size;
     int ret;
-    while ((ret = recv(socket, read_buf, min(remained_size, BUFFER_SIZE), 0)) > 0) {
+    while ((ret = recv(socket, read_buf, min_int(remained_size, BUFFER_SIZE), 0)) > 0) {
         write(output_fd, read_buf, ret);
         remained_size -= ret;
     }
