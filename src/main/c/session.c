@@ -346,6 +346,11 @@ static char* find_header(struct header_t headers[], const char* key, int header_
     return NULL;
 }
 
+static int min(int a, int b)
+{
+    return (a < b) ? a : b;
+}
+
 /*
  * Receive a chunk, and write it to stdout or stderr.
  */
