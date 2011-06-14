@@ -79,13 +79,14 @@ task prepareBin(type:Copy, dependsOn:['jar', 'compileC']) {
     }
     into('bin') {
         from "src/main/bin"
-        from "$buildDir/groovyclient"
+        from "$buildDir/groovyclient"     // ignored if not exists
+        from "$buildDir/groovyclient.exe" // ignored if not exists
     }
 
     // to use later
     binDir = "${destinationDir}/bin"
-    groovyclientExecutable = "${binDir}/groovyclient"
-    groovyserverExecutable = "${binDir}/groovyserver"
+    groovyclientBasePath = convertMixedPath(file("${binDir}/groovyclient"))
+    groovyserverPath = convertMixedPath(file("${binDir}/groovyserver"))
 
     // add execute permission
     doLast {
@@ -125,18 +126,21 @@ task unitTest(type:Test) {
 }
 
 // integrationTest tasks
-integrationTestType = [CUnix:'', CWin:'.exe', Ruby:'.rb']
-integrationTestType.each { suffix, extension ->
-    task "integrationTest${suffix}"(type:Test) {
+integrationTestTargets = new IntegrationTestTargetFactory(prepareBin.groovyclientBasePath).createTargets([
+    [id:'CUnix', extension:'NOTFOUND'],
+    [id:'CWin', extension:'.exe'],
+    [id:'Ruby', extension:'.rb', invoker:'ruby'],
+])
+integrationTestTargets.each { target ->
+    task "${target.taskName}"(type:Test) {
         dependsOn 'prepareBin'
         include '**/*IT.class'
 
         // check file existence
-        groovyclientExecutable = prepareBin.groovyclientExecutable + extension
-        onlyIf { file(groovyclientExecutable).exists() }
+        onlyIf { file(target.groovyclientPath).exists() }
 
         // prop for TestUtils
-        systemProperties 'groovyservClientExecutable': groovyclientExecutable
+        systemProperties 'groovyservClientExecutable': target.executableExpression
 
         doFirst {
             if (isFirstIntegrationTest()) {
@@ -151,7 +155,7 @@ integrationTestType.each { suffix, extension ->
     }
 }
 task integrationTest {
-    dependsOn 'prepareBin', integrationTestType.collect{ "integrationTest${it.key}" }
+    dependsOn 'prepareBin', integrationTestTargets*.taskName
 }
 
 task wrapper(type: Wrapper) {
@@ -164,12 +168,12 @@ task wrapper(type: Wrapper) {
 
 def startGroovyserver() {
     println ">> Starting groovyserver..."
-    executeCommand(prepareBin.groovyserverExecutable, ['-r', '-v'])
+    executeCommand("sh", ['-c', "${prepareBin.groovyserverPath} -r -v"])
 }
 
 def shutdownGroovyServer() {
     println ">> Shutdowning groovyserver..."
-    executeCommand(prepareBin.groovyserverExecutable, ['-k'])
+    executeCommand("sh", ['-c', "${prepareBin.groovyserverPath} -k"])
 }
 
 def getOsSuffix() {
@@ -179,24 +183,58 @@ def getOsSuffix() {
 }
 
 def executeCommand(command, arguments) {
+    println ">> Executing command..."
+    println "\$ $command ${arguments.join(' ')}"
     new ByteArrayOutputStream().withStream { os ->
         def result = exec {
             executable = command
             args = arguments
             standardOutput = os
         }
-        def outputAsString = os.toString()
-        println outputAsString
+        println os.toString()
     }
 }
 
 def isFirstIntegrationTest() {
     def allIntTestTasks = gradle.taskGraph.allTasks.findAll{ it.name =~ /^integrationTest.+/ }
-    return allIntTestTasks.every { !it.state.executed }
+    return allIntTestTasks.findAll{ !it.state.skipped }.every { !it.state.executed }
 }
 
 def isLastIntegrationTest() {
     def allIntTestTasks = gradle.taskGraph.allTasks.findAll{ it.name =~ /^integrationTest.+/ }
     return allIntTestTasks.every { it.state.executed || it.state.executing }
+}
+
+def convertMixedPath(File file) {
+    file.canonicalPath.replaceAll('\\\\', '/')
+}
+
+class IntegrationTestTargetFactory {
+    def clientBasePath
+    def IntegrationTestTargetFactory(path) {
+        clientBasePath = path
+    }
+    def createTargets(list) {
+        list.collect { map ->
+            map.clientBasePath = clientBasePath
+            map as IntegrationTestTarget
+        }
+    }
+}
+
+class IntegrationTestTarget {
+    def id
+    def extension = ''
+    def invoker
+    def clientBasePath
+    def getGroovyclientPath() {
+        clientBasePath + extension
+    }
+    def getExecutableExpression() {
+        (invoker ? "$invoker " : '') + getGroovyclientPath()
+    }
+    def getTaskName() {
+        "integrationTest" + id
+    }
 }
 
