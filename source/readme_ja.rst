@@ -6,48 +6,37 @@
 はじめに
 --------
 
-GroovyServは、Groovy処理系をサーバとして動作させることでgroovyコマンド
-の起動を見た目上高速化するものです。groovyclientコマンドはTCP/IP 通信
-を使ってすでに起動しているGroovyランタイムと通信し、結果を出力します。
-もし、Emacsのgnuserv(gnudoit)やemacsserver/emacsclientをご存知であれば
-理解が早いでしょう。
+GroovyServは、Groovy処理系をサーバとして動作させることでgroovyコマンドの起動を見た目上高速化するものです。
+groovyclientコマンドはTCP/IP 通信を使ってすでに起動しているGroovyランタイムと通信し、結果を出力します。
+もし、Emacsのgnuserv(gnudoit)やemacsserver/emacsclientをご存知であれば理解が早いでしょう。
 
-Groovyスクリプトを開発する場合、起動速度がとても重要です。Groovyは動的
-言語であるため、コンパイル時にあらかじめチェックできないエラーについて、
-実行して初めて判明する場合が多いからです。そのため、実行を繰り返しなが
-ら開発をしていくことになります。たとえその起動が1..2秒しかかからなくて
-も、体感としてはとても大きく感じられるのではないでしょうか。
+Groovyスクリプトを開発する場合、起動速度がとても重要です。
+Groovyは動的言語であるため、コンパイル時にあらかじめチェックできないエラーについて、実行して初めて判明する場合が多いからです。
+そのため、実行を繰り返しながら開発をしていくことになります。
+たとえその起動が1..2秒しかかからなくても、体感としてはとても大きく感じられるのではないでしょうか。
 
-GroovyServを使うことで、Groovyコマンドの起動時間を短縮し、さくさくと開
-発を進めていくことができます。以下は、Windows XP Core(TM) 2 Duo 2GHz の
-マシンにおけるGroovy 1.7.0の起動時間の参考値です(3回測定した平均値)。
+GroovyServを使うことで、Groovyコマンドの起動時間を短縮し、さくさくと開発を進めていくことができます。
+以下は、Windows XP Core(TM) 2 Duo 2.53GHzのマシンにおけるGroovy 1.8.0の起動時間の参考値です(5回測定した平均値)。
 
     ==================  ===========
-    バイナリ            結果(sec)
+    コマンド            結果(sec)
     ==================  ===========
-    Groovy(非native版)  2.32
-    Groovy(native版)    0.90
-    GroovyServ          0.10
+    Groovy              1.1058
+    GroovyServ          0.0412
     ==================  ===========
-
-非native版と比べると約20倍程度、起動が高速化しています。
-
-向上の度合いは実際にはケースバイケースですが、native版があるということ
-と、JQS(Java Quick Start)の存在により、Windows環境は比較的Groovyの実行
-は迅速で差が少なく(といっても10倍はありますが)、UNIX環境の方が差が大
-きくなる傾向はあるようです。
 
 動作環境
 --------
 
-動作確認を行っているOSは以下のとおりです。他の環境で動作した場合レポート
-をいただけますと幸いです。
+動作確認を行っているOSは以下のとおりです。他の環境で動作した場合レポートをいただけますと幸いです。
 
-  - Windows XP + Cygwin 1.7.x
-  - Windows XP (Cygwin無し)
-  - Windows 7 64bit (Cygwin無し)
   - Mac OS X 10.5/6 (Intel Mac)
   - Ubuntu Linux 9.10
+  - Ubuntu Linux 10.04
+  - Windows XP + Cygwin 1.7.x
+  - Windows XP (Cygwin無し)
+  - Windows 7 64bit + Cygwin 1.7.x
+  - Windows 7 64bit (Cygwin無し)
 
 JDKのバージョンは以下のとおりです。
 

@@ -16,15 +16,14 @@ be intolerable.
 
 GroovyServ reduces the startup time of JVM and Groovy runtime
 significantly. In most situations it is 10 to 20 times faster than
-regular Groovy. The following times are averages of 3 times which
-measured invocation in Groovy 1.7 on Windows XP (Core(TM) 2 Duo 2GHz).
+regular Groovy. The following times are averages of 5 times which
+measured invocation in Groovy 1.8.0 on Mac OS X (Core(TM) 2 Duo 2.53GHz).
 
     ==================  ===========
-    Binary              Result(sec)
+    Command             Result(sec)
     ==================  ===========
-    Groovy(non native)  2.32
-    Groovy(native exe)  0.90
-    GroovyServ          0.10
+    Groovy              1.1058
+    GroovyServ          0.0412
     ==================  ===========
 
 Requirements
@@ -33,11 +32,13 @@ Requirements
 GroovyServ is developed for following environment/OS. Please report if it
 runs on the others.
 
-  - Windows XP + Cygwin 1.7.x
-  - Windows XP without Cygwin
-  - Windows 7(64bit) without Cygwin
   - Mac OS X 10.5/6 (Intel Mac)
   - Ubuntu Linux 9.10
+  - Ubuntu Linux 10.04
+  - Windows XP + Cygwin 1.7.x
+  - Windows XP without Cygwin
+  - Windows 7(64bit) + Cygwin 1.7.x
+  - Windows 7(64bit) without Cygwin
 
 Version of JDK is following:
 
