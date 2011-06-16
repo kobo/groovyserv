@@ -13,8 +13,6 @@ Change Log
 
 Version 0.8 (2011-06-16)
 ------------------------
-New Features:
-
 Improvements:
     - [Windows/Cygwin] groovyserver.bat and groovyserver(sh) were wholly improved:
 
