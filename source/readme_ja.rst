@@ -143,7 +143,7 @@ Mavenを使ってコンパイルします。v0.6からはMaven3が推奨です�
 
     $ mvn -Dmaven.test.skip=true clean package
 
-Windows上でビルドするためにはgccとMinGWが必要です(Cygwin上でのビルドを推奨)。
+Windows上でビルドするためにはgcc-3とMinGWが必要です(Cygwin上でのビルドを推奨)。
 ビルドを実行する前にインストールしてください。
 
 環境変数

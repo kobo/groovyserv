@@ -170,6 +170,6 @@ When I built GroovyServ by myself in Windows, some errors occured. What's requir
 Q:
     When I built GroovyServ by myself on Windows, some errors occured. What's required?
 A:
-    To build it in Windows, you need Cygwin and gcc and MinGW.
+    To build it in Windows, you need Cygwin and gcc-3 and MinGW.
     See :ref:`Build from source code in README <ref-readme-build>`.
 

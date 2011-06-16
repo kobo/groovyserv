@@ -135,7 +135,7 @@ If some tests fail, you can try as follows::
 
     $ mvn -Dmaven.test.skip=true clean package
 
-To build it in Windows, you need gcc and MinGW (recommended on Cygwin).
+To build it in Windows, you need gcc-3 and MinGW (recommended on Cygwin).
 You must install them before trying to build.
 
 .. _ref-readme-env:
