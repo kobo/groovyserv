@@ -161,10 +161,13 @@ GroovyServ uses the following environment variables in runtime.
     It's used by Groovy. Generally, it has been already set through
     installing Groovy.
 
-  GROOVY_HOME (on Linux or Mac OS X: optional, on Windows: required)
-    It's used to specify groovy command path. On Linux or Mac OS X,
-    if you've set groovy command into PATH environment variable,
-    you don't need it.
+  GROOVY_HOME (optional)
+    It's used to specify groovy command path.
+    If you've set groovy command into PATH environment variable, GroovyServ can find groovy command via PATH, so you don't have to set GROOVY_HOME.
+
+  A path of a groovy command in PATH (optional)
+    It's used to specify groovy command path.
+    If you've set GROOVY_HOME environment variable, GroovyServ uses it in order to find a groovy command, so you don't have to set the groovy command path to PATH.
 
   GROOVYSERVER_PORT (optional)
     It's used to specify the port number for server or client.

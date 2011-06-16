@@ -154,10 +154,13 @@ GroovyServは、実行時に以下の環境変数を使用します。
     Groovyを実行するために必要です。
     通常はGroovyのインストール作業の一貫で設定されています。
 
-  GROOVY_HOME (LinuxまたはMac OS X:オプション、Windows:必須)
+  GROOVY_HOME (オプション)
     groovyコマンドのパスを特定するために使用します。
-    LinuxまたはMac OS Xの場合は、groovyコマンドが環境変数PATHに設定され
-    ている場合は必要ありません。
+    groovyコマンドが環境変数PATHに設定されている場合はパス探索で見つけることができるため、環境変数GROOVY_HOMEは必要ありません。
+
+  PATH中のgroovyコマンドパス (オプション)
+    groovyコマンドのパスを特定するために使用します。
+    環境変数GROOVY_HOMEが設定されている場合はそちらが優先して使用されるため、環境変数PATHへのgroovyコマンドの設定は必要ありません。
 
   GROOVYSERVER_PORT (オプション)
     サーバやクライアントでポート番号を指定する場合に使用します。
