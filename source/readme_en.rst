@@ -71,52 +71,54 @@ Install from binary package
 ---------------------------
 
 Download and expand GroovyServ distribution package, e.g.
-groovyserv-0.7-macosx-bin.zip to any directory::
+groovyserv-0.8-macosx-bin.zip to any directory::
 
   $ mkdir ~/opt
   $ cd ~/opt
-  $ unzip groovyserv-0.7-macosx-bin.zip
+  $ unzip groovyserv-0.8-macosx-bin.zip
 
 And add bin directory to PATH environment variable.
 For example in bash/bourne shell::
 
-  export PATH=~/opt/groovyserv-0.7/bin:$PATH
+  export PATH=~/opt/groovyserv-0.8/bin:$PATH
 
 That's all for preparing. When you invoke groovyclient, groovyserver
 automatically starts in background. At first, you might have to wait
 for a few seconds to startup::
 
   $ groovyclient -v
-  Invoking server: '/xxx/groovyserv-0.7/bin/groovyserver' -p 1961
-  Groovy command path: /xxx/bin/groovy (found at PATH)
-  GroovyServ home directory: /xxx/groovyserv-0.7
+  Invoking server: '/xxx/groovyserv-0.8/bin/groovyserver' -p 1961 
+  Groovy home directory: (none)
+  Groovy command path: /usr/local/bin/groovy (found at PATH)
+  GroovyServ home directory: /xxx/groovyserv-0.8
+  GroovyServ work directory: /Users/ynak/.groovy/groovyserv
   Original classpath: (none)
-  GroovyServ default classpath: /xxx/lib/*
-  Starting....
-  groovyserver 30341(1961) is successfully started
-  Groovy Version: 1.7.10 JVM: 1.6.0_24
+  GroovyServ default classpath: /xxx/groovyserv-0.8/lib/*
+  Starting...
+  groovyserver 75808(1961) is successfully started
+  Groovy Version: 1.8.0 JVM: 1.6.0_24
 
 .. _ref-readme-build:
 
 Build from source code
 ----------------------
 
-Download and expand GroovyServ source package groovyserv-0.7-src.zip
+Download and expand GroovyServ source package groovyserv-0.8-src.zip
 to any directory. For example::
 
   $ mkdir -p ~/opt/src
   $ cd ~/opt/src
-  $ unzip groovyserv-0.7-src.zip
+  $ unzip groovyserv-0.8-src.zip
 
 Build with Maven as follows (recommended Maven3.x since v0.6)::
 
-  $ cd ~/opt/src/groovyserv-0.7/
+  $ cd ~/opt/src/groovyserv-0.8/
   $ mvn clean verify
 
 Then some zip files will be generated. According to "Install from
 binary package", install the bin package::
 
-  ~/opt/src/groovyserv-0.7/target/groovyserv-0.7-<OS>-<arch>-bin.zip
+  ~/opt/src/groovyserv-0.8/target/groovyserv-0.8-<OS>-<arch>-bin.zip
 
 If some tests fail, you can try as follows::
 

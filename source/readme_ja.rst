@@ -82,48 +82,50 @@ groovyclient の接続しか受け付けないように制約をかけていま�
 バイナリパッケージからのインストール
 ------------------------------------
 
-バイナリパッケージgroovyserv-0.7-<OS>-<arch>-bin.zipを適当なフォルダ
+バイナリパッケージgroovyserv-0.8-<OS>-<arch>-bin.zipを適当なフォルダ
 に展開します。例えば、~/optに展開するとします。::
 
   $ mkdir ~/opt
   $ cd ~/opt
-  $ unzip groovyserv-0.7-macosx-bin.zip
+  $ unzip groovyserv-0.8-macosx-bin.zip
 
-上記により~/opt/groovyserv-0.7が展開されます。次に環境変数PATHに上記フォ
+上記により~/opt/groovyserv-0.8が展開されます。次に環境変数PATHに上記フォ
 ルダ配下のbinを追加します。仮に、~/opt/groovyservに展開した場合、以下の
 ように設定します(bashなどの環境変数設定)。::
 
-  export PATH=~/opt/groovyserv-0.7/bin:$PATH
+  export PATH=~/opt/groovyserv-0.8/bin:$PATH
 
 設定は以上です。groovyclientを実行するとgroovyserverが起動します。::
 
   $ groovyclient -v
-  Invoking server: '/xxx/groovyserv-0.7/bin/groovyserver' -p 1961
-  Groovy command path: /xxx/bin/groovy (found at PATH)
-  GroovyServ home directory: /xxx/groovyserv-0.7
+  Invoking server: '/xxx/groovyserv-0.8/bin/groovyserver' -p 1961 
+  Groovy home directory: (none)
+  Groovy command path: /usr/local/bin/groovy (found at PATH)
+  GroovyServ home directory: /xxx/groovyserv-0.8
+  GroovyServ work directory: /Users/ynak/.groovy/groovyserv
   Original classpath: (none)
-  GroovyServ default classpath: /xxx/lib/*
-  Starting....
-  groovyserver 30341(1961) is successfully started
-  Groovy Version: 1.7.10 JVM: 1.6.0_24
+  GroovyServ default classpath: /xxx/groovyserv-0.8/lib/*
+  Starting...
+  groovyserver 75808(1961) is successfully started
+  Groovy Version: 1.8.0 JVM: 1.6.0_24
 
 ソースコードからのビルド
 ------------------------
 
-まず、GroovyServのソースコード配布パッケージgroovyserv-0.7-src.zipを展開します。::
+まず、GroovyServのソースコード配布パッケージgroovyserv-0.8-src.zipを展開します。::
 
   $ mkdir -p ~/opt/src
   $ cd ~/opt/src
-  $ unzip groovyserv-0.7-src.zip
+  $ unzip groovyserv-0.8-src.zip
 
 Mavenを使ってコンパイルします。v0.6からはMaven3が推奨です。::
 
-  $ cd ~/opt/src/groovyserv-0.7/
+  $ cd ~/opt/src/groovyserv-0.8/
   $ mvn clean verify
 
 コンパイルした結果、バイナリパッケージが::
 
-  ~/opt/src/groovyserv-0.7/target/groovyserv-0.7-<OS>-<arch>-bin.zip
+  ~/opt/src/groovyserv-0.8/target/groovyserv-0.8-<OS>-<arch>-bin.zip
 
 という形式で作成されますので、これをバイナリパッケージからのインストー
 ルの場合と同じようにインストールしてください。テストで失敗する場合は以
