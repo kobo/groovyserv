@@ -16,15 +16,14 @@ be intolerable.
 
 GroovyServ reduces the startup time of JVM and Groovy runtime
 significantly. In most situations it is 10 to 20 times faster than
-regular Groovy. The following times are averages of 3 times which
-measured invocation in Groovy 1.7 on Windows XP (Core(TM) 2 Duo 2GHz).
+regular Groovy. The following times are averages of 5 times which
+measured invocation in Groovy 1.8.0 on Mac OS X (Core(TM) 2 Duo 2.53GHz).
 
     ==================  ===========
-    Binary              Result(sec)
+    Command             Result(sec)
     ==================  ===========
-    Groovy(non native)  2.32
-    Groovy(native exe)  0.90
-    GroovyServ          0.10
+    Groovy              1.1058
+    GroovyServ          0.0412
     ==================  ===========
 
 Requirements
@@ -33,11 +32,13 @@ Requirements
 GroovyServ is developed for following environment/OS. Please report if it
 runs on the others.
 
-  - Windows XP + Cygwin 1.7.x
-  - Windows XP without Cygwin
-  - Windows 7(64bit) without Cygwin
   - Mac OS X 10.5/6 (Intel Mac)
   - Ubuntu Linux 9.10
+  - Ubuntu Linux 10.04
+  - Windows XP + Cygwin 1.7.x
+  - Windows XP without Cygwin
+  - Windows 7(64bit) + Cygwin 1.7.x
+  - Windows 7(64bit) without Cygwin
 
 Version of JDK is following:
 
@@ -71,52 +72,54 @@ Install from binary package
 ---------------------------
 
 Download and expand GroovyServ distribution package, e.g.
-groovyserv-0.7-macosx-bin.zip to any directory::
+groovyserv-0.8-macosx-bin.zip to any directory::
 
   $ mkdir ~/opt
   $ cd ~/opt
-  $ unzip groovyserv-0.7-macosx-bin.zip
+  $ unzip groovyserv-0.8-macosx-bin.zip
 
 And add bin directory to PATH environment variable.
 For example in bash/bourne shell::
 
-  export PATH=~/opt/groovyserv-0.7/bin:$PATH
+  export PATH=~/opt/groovyserv-0.8/bin:$PATH
 
 That's all for preparing. When you invoke groovyclient, groovyserver
 automatically starts in background. At first, you might have to wait
 for a few seconds to startup::
 
   $ groovyclient -v
-  Invoking server: '/xxx/groovyserv-0.7/bin/groovyserver' -p 1961
-  Groovy command path: /xxx/bin/groovy (found at PATH)
-  GroovyServ home directory: /xxx/groovyserv-0.7
+  Invoking server: '/xxx/groovyserv-0.8/bin/groovyserver' -p 1961 
+  Groovy home directory: (none)
+  Groovy command path: /usr/local/bin/groovy (found at PATH)
+  GroovyServ home directory: /xxx/groovyserv-0.8
+  GroovyServ work directory: /Users/ynak/.groovy/groovyserv
   Original classpath: (none)
-  GroovyServ default classpath: /xxx/lib/*
-  Starting....
-  groovyserver 30341(1961) is successfully started
-  Groovy Version: 1.7.10 JVM: 1.6.0_24
+  GroovyServ default classpath: /xxx/groovyserv-0.8/lib/*
+  Starting...
+  groovyserver 75808(1961) is successfully started
+  Groovy Version: 1.8.0 JVM: 1.6.0_24
 
 .. _ref-readme-build:
 
 Build from source code
 ----------------------
 
-Download and expand GroovyServ source package groovyserv-0.7-src.zip
+Download and expand GroovyServ source package groovyserv-0.8-src.zip
 to any directory. For example::
 
   $ mkdir -p ~/opt/src
   $ cd ~/opt/src
-  $ unzip groovyserv-0.7-src.zip
+  $ unzip groovyserv-0.8-src.zip
 
 Build with Maven as follows (recommended Maven3.x since v0.6)::
 
-  $ cd ~/opt/src/groovyserv-0.7/
+  $ cd ~/opt/src/groovyserv-0.8/
   $ mvn clean verify
 
 Then some zip files will be generated. According to "Install from
 binary package", install the bin package::
 
-  ~/opt/src/groovyserv-0.7/target/groovyserv-0.7-<OS>-<arch>-bin.zip
+  ~/opt/src/groovyserv-0.8/target/groovyserv-0.8-<OS>-<arch>-bin.zip
 
 If some tests fail, you can try as follows::
 
@@ -133,7 +136,7 @@ If some tests fail, you can try as follows::
 
     $ mvn -Dmaven.test.skip=true clean package
 
-To build it in Windows, you need gcc and MinGW (recommended on Cygwin).
+To build it in Windows, you need gcc-3 and MinGW (recommended on Cygwin).
 You must install them before trying to build.
 
 .. _ref-readme-env:
@@ -158,10 +161,13 @@ GroovyServ uses the following environment variables in runtime.
     It's used by Groovy. Generally, it has been already set through
     installing Groovy.
 
-  GROOVY_HOME (on Linux or Mac OS X: optional, on Windows: required)
-    It's used to specify groovy command path. On Linux or Mac OS X,
-    if you've set groovy command into PATH environment variable,
-    you don't need it.
+  GROOVY_HOME (optional)
+    It's used to specify groovy command path.
+    If you've set groovy command into PATH environment variable, GroovyServ can find groovy command via PATH, so you don't have to set GROOVY_HOME.
+
+  A path of a groovy command in PATH (optional)
+    It's used to specify groovy command path.
+    If you've set GROOVY_HOME environment variable, GroovyServ uses it in order to find a groovy command, so you don't have to set the groovy command path to PATH.
 
   GROOVYSERVER_PORT (optional)
     It's used to specify the port number for server or client.

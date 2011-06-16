@@ -1,8 +1,48 @@
 .. _ref-changelog:
 
+..
+   Version 0.N (YYYY-MM-DD)
+   ------------------------
+   New Features:
+   Improvements:
+   Bug Fixes:
+
 ==========
 Change Log
 ==========
+
+Version 0.8 (2011-06-16)
+------------------------
+New Features:
+
+Improvements:
+    - [Windows/Cygwin] groovyserver.bat and groovyserver(sh) were wholly improved:
+
+        - When GROOVY_HOME or GROOVYSERV_HOME isn't set, it's automatically detected.
+        - JAVA_HOME, GROOVY_HOME, GROOVYSERV_HOME and CLASSPATH are converted to the appropriate path format if necessary.
+        - So, you can also use groovyclient.exe to start a groovyserver on Cygwin even if you've set GROOVY_HOME or GROOVYSERV_HOME as an UNIX path format. (It had failed at v0.7.)
+        - Now there isn't the dirty hack using ping to sleep 1 sec.
+
+    - [Log File] The dump data in log file is more easy to read. Until v0.7, many printable characters except alphabet and number were printed as "?", but now they become being printed as original character.
+
+    - [Build] Makefile is added. You can more easily build a binary of groovyclient with "make" command if the downloaded binary doesn't work.
+
+Bug Fixes:
+    - Fixed #28: malloc/free error occurred with a --classpath option
+
+        - https://github.com/kobo/groovyserv/issues/28
+
+    - Fixed #30: cannot invoke a script when transparently restarting server from client
+
+        - https://github.com/kobo/groovyserv/issues/30
+
+    - Fixed #31: "dgroovyclient -h" on Windows shows unexpected behaviors
+
+        - https://github.com/kobo/groovyserv/issues/31
+
+    - Fixed #32: using groovyclient.rb, user.dir is based on cygwin path format on Cygwin
+
+        - https://github.com/kobo/groovyserv/issues/32
 
 Version 0.7 (2011-04-27)
 ------------------------

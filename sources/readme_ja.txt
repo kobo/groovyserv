@@ -6,48 +6,37 @@
 はじめに
 --------
 
-GroovyServは、Groovy処理系をサーバとして動作させることでgroovyコマンド
-の起動を見た目上高速化するものです。groovyclientコマンドはTCP/IP 通信
-を使ってすでに起動しているGroovyランタイムと通信し、結果を出力します。
-もし、Emacsのgnuserv(gnudoit)やemacsserver/emacsclientをご存知であれば
-理解が早いでしょう。
+GroovyServは、Groovy処理系をサーバとして動作させることでgroovyコマンドの起動を見た目上高速化するものです。
+groovyclientコマンドはTCP/IP 通信を使ってすでに起動しているGroovyランタイムと通信し、結果を出力します。
+もし、Emacsのgnuserv(gnudoit)やemacsserver/emacsclientをご存知であれば理解が早いでしょう。
 
-Groovyスクリプトを開発する場合、起動速度がとても重要です。Groovyは動的
-言語であるため、コンパイル時にあらかじめチェックできないエラーについて、
-実行して初めて判明する場合が多いからです。そのため、実行を繰り返しなが
-ら開発をしていくことになります。たとえその起動が1..2秒しかかからなくて
-も、体感としてはとても大きく感じられるのではないでしょうか。
+Groovyスクリプトを開発する場合、起動速度がとても重要です。
+Groovyは動的言語であるため、コンパイル時にあらかじめチェックできないエラーについて、実行して初めて判明する場合が多いからです。
+そのため、実行を繰り返しながら開発をしていくことになります。
+たとえその起動が1..2秒しかかからなくても、体感としてはとても大きく感じられるのではないでしょうか。
 
-GroovyServを使うことで、Groovyコマンドの起動時間を短縮し、さくさくと開
-発を進めていくことができます。以下は、Windows XP Core(TM) 2 Duo 2GHz の
-マシンにおけるGroovy 1.7.0の起動時間の参考値です(3回測定した平均値)。
+GroovyServを使うことで、Groovyコマンドの起動時間を短縮し、さくさくと開発を進めていくことができます。
+以下は、Windows XP Core(TM) 2 Duo 2.53GHzのマシンにおけるGroovy 1.8.0の起動時間の参考値です(5回測定した平均値)。
 
     ==================  ===========
-    バイナリ            結果(sec)
+    コマンド            結果(sec)
     ==================  ===========
-    Groovy(非native版)  2.32
-    Groovy(native版)    0.90
-    GroovyServ          0.10
+    Groovy              1.1058
+    GroovyServ          0.0412
     ==================  ===========
-
-非native版と比べると約20倍程度、起動が高速化しています。
-
-向上の度合いは実際にはケースバイケースですが、native版があるということ
-と、JQS(Java Quick Start)の存在により、Windows環境は比較的Groovyの実行
-は迅速で差が少なく(といっても10倍はありますが)、UNIX環境の方が差が大
-きくなる傾向はあるようです。
 
 動作環境
 --------
 
-動作確認を行っているOSは以下のとおりです。他の環境で動作した場合レポート
-をいただけますと幸いです。
+動作確認を行っているOSは以下のとおりです。他の環境で動作した場合レポートをいただけますと幸いです。
 
-  - Windows XP + Cygwin 1.7.x
-  - Windows XP (Cygwin無し)
-  - Windows 7 64bit (Cygwin無し)
   - Mac OS X 10.5/6 (Intel Mac)
   - Ubuntu Linux 9.10
+  - Ubuntu Linux 10.04
+  - Windows XP + Cygwin 1.7.x
+  - Windows XP (Cygwin無し)
+  - Windows 7 64bit + Cygwin 1.7.x
+  - Windows 7 64bit (Cygwin無し)
 
 JDKのバージョンは以下のとおりです。
 
@@ -82,48 +71,50 @@ groovyclient の接続しか受け付けないように制約をかけていま�
 バイナリパッケージからのインストール
 ------------------------------------
 
-バイナリパッケージgroovyserv-0.7-<OS>-<arch>-bin.zipを適当なフォルダ
+バイナリパッケージgroovyserv-0.8-<OS>-<arch>-bin.zipを適当なフォルダ
 に展開します。例えば、~/optに展開するとします。::
 
   $ mkdir ~/opt
   $ cd ~/opt
-  $ unzip groovyserv-0.7-macosx-bin.zip
+  $ unzip groovyserv-0.8-macosx-bin.zip
 
-上記により~/opt/groovyserv-0.7が展開されます。次に環境変数PATHに上記フォ
+上記により~/opt/groovyserv-0.8が展開されます。次に環境変数PATHに上記フォ
 ルダ配下のbinを追加します。仮に、~/opt/groovyservに展開した場合、以下の
 ように設定します(bashなどの環境変数設定)。::
 
-  export PATH=~/opt/groovyserv-0.7/bin:$PATH
+  export PATH=~/opt/groovyserv-0.8/bin:$PATH
 
 設定は以上です。groovyclientを実行するとgroovyserverが起動します。::
 
   $ groovyclient -v
-  Invoking server: '/xxx/groovyserv-0.7/bin/groovyserver' -p 1961
-  Groovy command path: /xxx/bin/groovy (found at PATH)
-  GroovyServ home directory: /xxx/groovyserv-0.7
+  Invoking server: '/xxx/groovyserv-0.8/bin/groovyserver' -p 1961 
+  Groovy home directory: (none)
+  Groovy command path: /usr/local/bin/groovy (found at PATH)
+  GroovyServ home directory: /xxx/groovyserv-0.8
+  GroovyServ work directory: /Users/ynak/.groovy/groovyserv
   Original classpath: (none)
-  GroovyServ default classpath: /xxx/lib/*
-  Starting....
-  groovyserver 30341(1961) is successfully started
-  Groovy Version: 1.7.10 JVM: 1.6.0_24
+  GroovyServ default classpath: /xxx/groovyserv-0.8/lib/*
+  Starting...
+  groovyserver 75808(1961) is successfully started
+  Groovy Version: 1.8.0 JVM: 1.6.0_24
 
 ソースコードからのビルド
 ------------------------
 
-まず、GroovyServのソースコード配布パッケージgroovyserv-0.7-src.zipを展開します。::
+まず、GroovyServのソースコード配布パッケージgroovyserv-0.8-src.zipを展開します。::
 
   $ mkdir -p ~/opt/src
   $ cd ~/opt/src
-  $ unzip groovyserv-0.7-src.zip
+  $ unzip groovyserv-0.8-src.zip
 
 Mavenを使ってコンパイルします。v0.6からはMaven3が推奨です。::
 
-  $ cd ~/opt/src/groovyserv-0.7/
+  $ cd ~/opt/src/groovyserv-0.8/
   $ mvn clean verify
 
 コンパイルした結果、バイナリパッケージが::
 
-  ~/opt/src/groovyserv-0.7/target/groovyserv-0.7-<OS>-<arch>-bin.zip
+  ~/opt/src/groovyserv-0.8/target/groovyserv-0.8-<OS>-<arch>-bin.zip
 
 という形式で作成されますので、これをバイナリパッケージからのインストー
 ルの場合と同じようにインストールしてください。テストで失敗する場合は以
@@ -141,7 +132,7 @@ Mavenを使ってコンパイルします。v0.6からはMaven3が推奨です�
 
     $ mvn -Dmaven.test.skip=true clean package
 
-Windows上でビルドするためにはgccとMinGWが必要です(Cygwin上でのビルドを推奨)。
+Windows上でビルドするためにはgcc-3とMinGWが必要です(Cygwin上でのビルドを推奨)。
 ビルドを実行する前にインストールしてください。
 
 環境変数
@@ -163,10 +154,13 @@ GroovyServは、実行時に以下の環境変数を使用します。
     Groovyを実行するために必要です。
     通常はGroovyのインストール作業の一貫で設定されています。
 
-  GROOVY_HOME (LinuxまたはMac OS X:オプション、Windows:必須)
+  GROOVY_HOME (オプション)
     groovyコマンドのパスを特定するために使用します。
-    LinuxまたはMac OS Xの場合は、groovyコマンドが環境変数PATHに設定され
-    ている場合は必要ありません。
+    groovyコマンドが環境変数PATHに設定されている場合はパス探索で見つけることができるため、環境変数GROOVY_HOMEは必要ありません。
+
+  PATH中のgroovyコマンドパス (オプション)
+    groovyコマンドのパスを特定するために使用します。
+    環境変数GROOVY_HOMEが設定されている場合はそちらが優先して使用されるため、環境変数PATHへのgroovyコマンドの設定は必要ありません。
 
   GROOVYSERVER_PORT (オプション)
     サーバやクライアントでポート番号を指定する場合に使用します。

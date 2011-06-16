@@ -31,5 +31,5 @@ GroovyServ supports following features:
 - Available without Cygwin in Windows.
 - Show a window to stop server process only in Windows.
 - Propagation of environment variables from a client to a server.
-- Automatic resolution of a "groovy" command path and GROOVYSERV_HOME (except on Windows).
+- Automatic resolution of a "groovy" command path (and GROOVYSERV_HOME).
 

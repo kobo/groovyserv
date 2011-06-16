@@ -7,13 +7,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Change Log &mdash; GroovyServ v0.7 documentation</title>
+    <title>Change Log &mdash; GroovyServ v0.8 documentation</title>
     <link rel="stylesheet" href="static/default.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.7',
+        VERSION:     '0.8',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -22,7 +22,7 @@
     <script type="text/javascript" src="static/jquery.js"></script>
     <script type="text/javascript" src="static/underscore.js"></script>
     <script type="text/javascript" src="static/doctools.js"></script>
-    <link rel="top" title="GroovyServ v0.7 documentation" href="index.html" /> 
+    <link rel="top" title="GroovyServ v0.8 documentation" href="index.html" /> 
   </head>
   <body>
 <div class="container">
@@ -39,8 +39,64 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="change-log">
-<span id="ref-changelog"></span><h1>Change Log<a class="headerlink" href="#change-log" title="Permalink to this headline">¶</a></h1>
+  <span class="target" id="ref-changelog"></span><div class="section" id="change-log">
+<h1>Change Log<a class="headerlink" href="#change-log" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="version-0-8-2011-06-16">
+<h2>Version 0.8 (2011-06-16)<a class="headerlink" href="#version-0-8-2011-06-16" title="Permalink to this headline">¶</a></h2>
+<p>New Features:</p>
+<dl class="docutils">
+<dt>Improvements:</dt>
+<dd><ul class="first last">
+<li><p class="first">[Windows/Cygwin] groovyserver.bat and groovyserver(sh) were wholly improved:</p>
+<blockquote>
+<div><ul class="simple">
+<li>When GROOVY_HOME or GROOVYSERV_HOME isn&#8217;t set, it&#8217;s automatically detected.</li>
+<li>JAVA_HOME, GROOVY_HOME, GROOVYSERV_HOME and CLASSPATH are converted to the appropriate path format if necessary.</li>
+<li>So, you can also use groovyclient.exe to start a groovyserver on Cygwin even if you&#8217;ve set GROOVY_HOME or GROOVYSERV_HOME as an UNIX path format. (It had failed at v0.7.)</li>
+<li>Now there isn&#8217;t the dirty hack using ping to sleep 1 sec.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">[Log File] The dump data in log file is more easy to read. Until v0.7, many printable characters except alphabet and number were printed as &#8221;?&#8221;, but now they become being printed as original character.</p>
+</li>
+<li><p class="first">[Build] Makefile is added. You can more easily build a binary of groovyclient with &#8220;make&#8221; command if the downloaded binary doesn&#8217;t work.</p>
+</li>
+</ul>
+</dd>
+<dt>Bug Fixes:</dt>
+<dd><ul class="first last">
+<li><p class="first">Fixed #28: malloc/free error occurred with a &#8211;classpath option</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="https://github.com/kobo/groovyserv/issues/28">https://github.com/kobo/groovyserv/issues/28</a></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">Fixed #30: cannot invoke a script when transparently restarting server from client</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="https://github.com/kobo/groovyserv/issues/30">https://github.com/kobo/groovyserv/issues/30</a></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">Fixed #31: &#8220;dgroovyclient -h&#8221; on Windows shows unexpected behaviors</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="https://github.com/kobo/groovyserv/issues/31">https://github.com/kobo/groovyserv/issues/31</a></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">Fixed #32: using groovyclient.rb, user.dir is based on cygwin path format on Cygwin</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="https://github.com/kobo/groovyserv/issues/32">https://github.com/kobo/groovyserv/issues/32</a></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</dd>
+</dl>
+</div>
 <div class="section" id="version-0-7-2011-04-27">
 <h2>Version 0.7 (2011-04-27)<a class="headerlink" href="#version-0-7-2011-04-27" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils">
@@ -365,6 +421,7 @@ without -s.)</li>
   <h3>Contents of This Page</h3>
   <ul>
 <li><a class="reference internal" href="#">Change Log</a><ul>
+<li><a class="reference internal" href="#version-0-8-2011-06-16">Version 0.8 (2011-06-16)</a></li>
 <li><a class="reference internal" href="#version-0-7-2011-04-27">Version 0.7 (2011-04-27)</a></li>
 <li><a class="reference internal" href="#version-0-6-2011-03-18">Version 0.6 (2011-03-18)</a></li>
 <li><a class="reference internal" href="#version-0-5-2010-12-22">Version 0.5 (2010-12-22)</a></li>

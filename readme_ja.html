@@ -7,13 +7,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>はじめにお読みください &mdash; GroovyServ v0.7 documentation</title>
+    <title>はじめにお読みください &mdash; GroovyServ v0.8 documentation</title>
     <link rel="stylesheet" href="static/default.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.7',
+        VERSION:     '0.8',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -22,7 +22,7 @@
     <script type="text/javascript" src="static/jquery.js"></script>
     <script type="text/javascript" src="static/underscore.js"></script>
     <script type="text/javascript" src="static/doctools.js"></script>
-    <link rel="top" title="GroovyServ v0.7 documentation" href="index.html" /> 
+    <link rel="top" title="GroovyServ v0.8 documentation" href="index.html" /> 
   </head>
   <body>
 <div class="container">
@@ -43,19 +43,15 @@
 <span id="id1"></span><h1>はじめにお読みください<a class="headerlink" href="#ref-readme-ja" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="id2">
 <h2>はじめに<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
-<p>GroovyServは、Groovy処理系をサーバとして動作させることでgroovyコマンド
-の起動を見た目上高速化するものです。groovyclientコマンドはTCP/IP 通信
-を使ってすでに起動しているGroovyランタイムと通信し、結果を出力します。
-もし、Emacsのgnuserv(gnudoit)やemacsserver/emacsclientをご存知であれば
-理解が早いでしょう。</p>
-<p>Groovyスクリプトを開発する場合、起動速度がとても重要です。Groovyは動的
-言語であるため、コンパイル時にあらかじめチェックできないエラーについて、
-実行して初めて判明する場合が多いからです。そのため、実行を繰り返しなが
-ら開発をしていくことになります。たとえその起動が1..2秒しかかからなくて
-も、体感としてはとても大きく感じられるのではないでしょうか。</p>
-<p>GroovyServを使うことで、Groovyコマンドの起動時間を短縮し、さくさくと開
-発を進めていくことができます。以下は、Windows XP Core(TM) 2 Duo 2GHz の
-マシンにおけるGroovy 1.7.0の起動時間の参考値です(3回測定した平均値)。</p>
+<p>GroovyServは、Groovy処理系をサーバとして動作させることでgroovyコマンドの起動を見た目上高速化するものです。
+groovyclientコマンドはTCP/IP 通信を使ってすでに起動しているGroovyランタイムと通信し、結果を出力します。
+もし、Emacsのgnuserv(gnudoit)やemacsserver/emacsclientをご存知であれば理解が早いでしょう。</p>
+<p>Groovyスクリプトを開発する場合、起動速度がとても重要です。
+Groovyは動的言語であるため、コンパイル時にあらかじめチェックできないエラーについて、実行して初めて判明する場合が多いからです。
+そのため、実行を繰り返しながら開発をしていくことになります。
+たとえその起動が1..2秒しかかからなくても、体感としてはとても大きく感じられるのではないでしょうか。</p>
+<p>GroovyServを使うことで、Groovyコマンドの起動時間を短縮し、さくさくと開発を進めていくことができます。
+以下は、Windows XP Core(TM) 2 Duo 2.53GHzのマシンにおけるGroovy 1.8.0の起動時間の参考値です(5回測定した平均値)。</p>
 <blockquote>
 <div><table border="1" class="docutils">
 <colgroup>
@@ -63,40 +59,33 @@
 <col width="38%" />
 </colgroup>
 <thead valign="bottom">
-<tr><th class="head">バイナリ</th>
+<tr><th class="head">コマンド</th>
 <th class="head">結果(sec)</th>
 </tr>
 </thead>
 <tbody valign="top">
-<tr><td>Groovy(非native版)</td>
-<td>2.32</td>
-</tr>
-<tr><td>Groovy(native版)</td>
-<td>0.90</td>
+<tr><td>Groovy</td>
+<td>1.1058</td>
 </tr>
 <tr><td>GroovyServ</td>
-<td>0.10</td>
+<td>0.0412</td>
 </tr>
 </tbody>
 </table>
 </div></blockquote>
-<p>非native版と比べると約20倍程度、起動が高速化しています。</p>
-<p>向上の度合いは実際にはケースバイケースですが、native版があるということ
-と、JQS(Java Quick Start)の存在により、Windows環境は比較的Groovyの実行
-は迅速で差が少なく(といっても10倍はありますが)、UNIX環境の方が差が大
-きくなる傾向はあるようです。</p>
 </div>
 <div class="section" id="id3">
 <h2>動作環境<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
-<p>動作確認を行っているOSは以下のとおりです。他の環境で動作した場合レポート
-をいただけますと幸いです。</p>
+<p>動作確認を行っているOSは以下のとおりです。他の環境で動作した場合レポートをいただけますと幸いです。</p>
 <blockquote>
 <div><ul class="simple">
-<li>Windows XP + Cygwin 1.7.x</li>
-<li>Windows XP (Cygwin無し)</li>
-<li>Windows 7 64bit (Cygwin無し)</li>
 <li>Mac OS X 10.5/6 (Intel Mac)</li>
 <li>Ubuntu Linux 9.10</li>
+<li>Ubuntu Linux 10.04</li>
+<li>Windows XP + Cygwin 1.7.x</li>
+<li>Windows XP (Cygwin無し)</li>
+<li>Windows 7 64bit + Cygwin 1.7.x</li>
+<li>Windows 7 64bit (Cygwin無し)</li>
 </ul>
 </div></blockquote>
 <p>JDKのバージョンは以下のとおりです。</p>
@@ -134,42 +123,44 @@ groovyclient の接続しか受け付けないように制約をかけていま�
 </div>
 <div class="section" id="id6">
 <h2>バイナリパッケージからのインストール<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
-<p>バイナリパッケージgroovyserv-0.7-&lt;OS&gt;-&lt;arch&gt;-bin.zipを適当なフォルダ
+<p>バイナリパッケージgroovyserv-0.8-&lt;OS&gt;-&lt;arch&gt;-bin.zipを適当なフォルダ
 に展開します。例えば、~/optに展開するとします。:</p>
 <div class="highlight-python"><pre>$ mkdir ~/opt
 $ cd ~/opt
-$ unzip groovyserv-0.7-macosx-bin.zip</pre>
+$ unzip groovyserv-0.8-macosx-bin.zip</pre>
 </div>
-<p>上記により~/opt/groovyserv-0.7が展開されます。次に環境変数PATHに上記フォ
+<p>上記により~/opt/groovyserv-0.8が展開されます。次に環境変数PATHに上記フォ
 ルダ配下のbinを追加します。仮に、~/opt/groovyservに展開した場合、以下の
 ように設定します(bashなどの環境変数設定)。:</p>
-<div class="highlight-python"><pre>export PATH=~/opt/groovyserv-0.7/bin:$PATH</pre>
+<div class="highlight-python"><pre>export PATH=~/opt/groovyserv-0.8/bin:$PATH</pre>
 </div>
 <p>設定は以上です。groovyclientを実行するとgroovyserverが起動します。:</p>
 <div class="highlight-python"><pre>$ groovyclient -v
-Invoking server: '/xxx/groovyserv-0.7/bin/groovyserver' -p 1961
-Groovy command path: /xxx/bin/groovy (found at PATH)
-GroovyServ home directory: /xxx/groovyserv-0.7
+Invoking server: '/xxx/groovyserv-0.8/bin/groovyserver' -p 1961
+Groovy home directory: (none)
+Groovy command path: /usr/local/bin/groovy (found at PATH)
+GroovyServ home directory: /xxx/groovyserv-0.8
+GroovyServ work directory: /Users/ynak/.groovy/groovyserv
 Original classpath: (none)
-GroovyServ default classpath: /xxx/lib/*
-Starting....
-groovyserver 30341(1961) is successfully started
-Groovy Version: 1.7.10 JVM: 1.6.0_24</pre>
+GroovyServ default classpath: /xxx/groovyserv-0.8/lib/*
+Starting...
+groovyserver 75808(1961) is successfully started
+Groovy Version: 1.8.0 JVM: 1.6.0_24</pre>
 </div>
 </div>
 <div class="section" id="id7">
 <h2>ソースコードからのビルド<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
-<p>まず、GroovyServのソースコード配布パッケージgroovyserv-0.7-src.zipを展開します。:</p>
+<p>まず、GroovyServのソースコード配布パッケージgroovyserv-0.8-src.zipを展開します。:</p>
 <div class="highlight-python"><pre>$ mkdir -p ~/opt/src
 $ cd ~/opt/src
-$ unzip groovyserv-0.7-src.zip</pre>
+$ unzip groovyserv-0.8-src.zip</pre>
 </div>
 <p>Mavenを使ってコンパイルします。v0.6からはMaven3が推奨です。:</p>
-<div class="highlight-python"><pre>$ cd ~/opt/src/groovyserv-0.7/
+<div class="highlight-python"><pre>$ cd ~/opt/src/groovyserv-0.8/
 $ mvn clean verify</pre>
 </div>
 <p>コンパイルした結果、バイナリパッケージが:</p>
-<div class="highlight-python"><pre>~/opt/src/groovyserv-0.7/target/groovyserv-0.7-&lt;OS&gt;-&lt;arch&gt;-bin.zip</pre>
+<div class="highlight-python"><pre>~/opt/src/groovyserv-0.8/target/groovyserv-0.8-&lt;OS&gt;-&lt;arch&gt;-bin.zip</pre>
 </div>
 <p>という形式で作成されますので、これをバイナリパッケージからのインストー
 ルの場合と同じようにインストールしてください。テストで失敗する場合は以
@@ -185,7 +176,7 @@ $ mvn clean verify</pre>
 <div class="highlight-python"><pre>$ mvn -Dmaven.test.skip=true clean package</pre>
 </div>
 </div></blockquote>
-<p>Windows上でビルドするためにはgccとMinGWが必要です(Cygwin上でのビルドを推奨)。
+<p>Windows上でビルドするためにはgcc-3とMinGWが必要です(Cygwin上でのビルドを推奨)。
 ビルドを実行する前にインストールしてください。</p>
 </div>
 <div class="section" id="id8">
@@ -204,10 +195,12 @@ BATファイルで起動された場合は、PIDファイルは作成されま�
 <dt>JAVA_HOME</dt>
 <dd>Groovyを実行するために必要です。
 通常はGroovyのインストール作業の一貫で設定されています。</dd>
-<dt>GROOVY_HOME (LinuxまたはMac OS X:オプション、Windows:必須)</dt>
+<dt>GROOVY_HOME (オプション)</dt>
 <dd>groovyコマンドのパスを特定するために使用します。
-LinuxまたはMac OS Xの場合は、groovyコマンドが環境変数PATHに設定され
-ている場合は必要ありません。</dd>
+groovyコマンドが環境変数PATHに設定されている場合はパス探索で見つけることができるため、環境変数GROOVY_HOMEは必要ありません。</dd>
+<dt>PATH中のgroovyコマンドパス (オプション)</dt>
+<dd>groovyコマンドのパスを特定するために使用します。
+環境変数GROOVY_HOMEが設定されている場合はそちらが優先して使用されるため、環境変数PATHへのgroovyコマンドの設定は必要ありません。</dd>
 <dt>GROOVYSERVER_PORT (オプション)</dt>
 <dd>サーバやクライアントでポート番号を指定する場合に使用します。
 コマンド引数で代替することもできます。</dd>
