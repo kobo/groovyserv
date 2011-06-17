@@ -23,6 +23,7 @@ package org.jggug.kobo.groovyserv
 class CurrentDirHolder {
 
     private static final String ORIGINAL_USER_DIR = System.properties["user.dir"]
+    private static final String ORIGINAL_PWD = System.getenv("PWD")
 
     private volatile currentDir
 
@@ -40,6 +41,7 @@ class CurrentDirHolder {
         }
         System.properties['user.dir'] = newDir
         PlatformMethods.chdir(newDir)
+        EnvironmentVariables.instance.put("PWD=$newDir")
         currentDir = newDir
     }
 
@@ -48,6 +50,7 @@ class CurrentDirHolder {
             return
         }
         System.properties['user.dir'] = ORIGINAL_USER_DIR
+        EnvironmentVariables.instance.put("PWD=$ORIGINAL_PWD")
         PlatformMethods.chdir(ORIGINAL_USER_DIR)
         currentDir = null
     }
