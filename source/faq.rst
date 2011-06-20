@@ -163,7 +163,7 @@ A:
       See :ref:`Environment variables in User Guide <ref-userguide-env>`.
 
     - An executable file we built isn't appropriate to your environment. Please build it by yourself.
-      See :ref:`Build from source code in User Guide <ref-userguide-build>`.
+      See :ref:`Build from source code in User Guide <ref-howtobuild>`.
 
 When I built GroovyServ by myself in Windows, some errors occured. What's required?
 -----------------------------------------------------------------------------------
@@ -171,5 +171,5 @@ Q:
     When I built GroovyServ by myself on Windows, some errors occured. What's required?
 A:
     To build it in Windows, you need Cygwin and gcc-3 and MinGW.
-    See :ref:`Build from source code in User Guide <ref-userguide-build>`.
+    See :ref:`Build from source code in User Guide <ref-howtobuild>`.
 

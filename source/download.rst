@@ -1,6 +1,8 @@
 Download
 ========
 
+.. _ref-download:
+
 GroovyServ 0.8
 --------------
 
