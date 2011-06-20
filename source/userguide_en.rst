@@ -1,7 +1,7 @@
-.. _ref-readme:
+.. _ref-userguide:
 
-README
-======
+User Guide
+==========
 
 Introduction
 ------------
@@ -99,7 +99,7 @@ for a few seconds to startup::
   groovyserver 75808(1961) is successfully started
   Groovy Version: 1.8.0 JVM: 1.6.0_24
 
-.. _ref-readme-build:
+.. _ref-userguide-build:
 
 Build from source code
 ----------------------
@@ -139,7 +139,7 @@ If some tests fail, you can try as follows::
 To build it in Windows, you need gcc-3 and MinGW (recommended on Cygwin).
 You must install them before trying to build.
 
-.. _ref-readme-env:
+.. _ref-userguide-env:
 
 Environment variables
 ---------------------

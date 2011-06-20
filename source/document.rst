@@ -8,8 +8,8 @@ Get Started
 .. toctree::
    :maxdepth: 1
 
-   readme_en
-   readme_ja
+   userguide_en
+   userguide_ja
    screencast
 
 
