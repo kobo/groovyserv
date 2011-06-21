@@ -1,7 +1,7 @@
 Community
 =========
 
-Your contact and feedback is welcome!
+We welcome your contact and feedback!
 
 Mailing List (Google Group)
 ---------------------------
