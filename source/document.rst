@@ -8,8 +8,9 @@ Get Started
 .. toctree::
    :maxdepth: 1
 
-   screencast
    howtoinstall
+   quickstart
+   screencast
 
 
 Reference

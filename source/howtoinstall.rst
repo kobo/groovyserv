@@ -60,7 +60,6 @@ At first, you might have to wait for a few seconds to startup::
 
 If the binary downloaded doesn't work, try to build it from source code, according to :ref:`Build from source code <ref-howtobuild>`.
 
-
 .. _ref-howtoinstall-macports:
 
 Install via Macports
