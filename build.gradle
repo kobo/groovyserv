@@ -1,0 +1,198 @@
+/*
+ * Copyright 2009-2011 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+//===========================================
+// Basic
+//===========================================
+
+apply plugin:'groovy'
+
+defaultTasks 'clean', 'build'
+sourceCompatibility = 1.5
+
+repositories {
+    mavenCentral()
+    mavenRepo urls: [
+        "http://repository.codehaus.org",
+        "http://snapshots.repository.codehaus.org",
+    ]
+}
+
+configurations {
+    // dependencies for archives are picked at groovy configration
+    groovy.extendsFrom archives
+}
+
+dependencies {
+    groovy 'org.codehaus.groovy:groovy-all:1.7.10'
+    groovy 'commons-cli:commons-cli:1.2'
+    archives 'net.java.dev.jna:jna:3.2.2'
+    testCompile 'junit:junit:4.8.2'
+}
+
+//===========================================
+// Tasks
+//===========================================
+
+//------------------------
+// Default tasks
+
+jar {
+    baseName = "groovyserv"
+}
+
+test {
+    dependsOn 'unitTest', 'integrationTest'
+    scanForTestClasses = false
+}
+
+//------------------------
+// My tasks
+
+task compileC << {
+    println ">> Compiling C sources..."
+    executeCommand('make', ['-e', 'DESTDIR=build']) // TODO when deleting pom.xml, make Makefile have DESTDIR=build as default
+}
+
+task prepareBin(type:Copy, dependsOn:['jar', 'compileC']) {
+    // construct file tree
+    destinationDir = file("$buildDir/groovyserv-$version")
+    from("$projectDir") {
+        include "*.txt"
+    }
+    into('lib') {
+        from configurations.archives
+        from "$buildDir/libs"
+    }
+    into('bin') {
+        from "src/main/bin"
+        from "$buildDir/groovyclient"
+    }
+
+    // to use later
+    binDir = "${destinationDir}/bin"
+    groovyclientExecutable = "${binDir}/groovyclient"
+    groovyserverExecutable = "${binDir}/groovyserver"
+
+    // add execute permission
+    doLast {
+        file(binDir).eachFile { bin ->
+            ant.chmod(file:bin, perm:755)
+        }
+    }
+}
+
+task distBin(type:Zip, dependsOn:'prepareBin') {
+    baseName = 'groovyserv'
+    classifier = getOsSuffix() + '_bin'
+    from prepareBin.destinationDir
+}
+
+task distSrc(type:Zip) {
+    baseName = 'groovyserv'
+    classifier = 'src'
+    from("$projectDir") {
+        include "*.txt"
+        include "pom.xml"
+        include "build.gradle"
+        include "gradle.properties"
+        include "Makefile"
+    }
+    into("src") {
+        from "src"
+    }
+}
+
+task dist {
+    dependsOn 'distBin', 'distSrc'
+}
+
+task unitTest(type:Test) {
+    include '**/*Test.class'
+}
+
+// integrationTest tasks
+integrationTestType = [CUnix:'', CWin:'.exe', Ruby:'.rb']
+integrationTestType.each { suffix, extension ->
+    task "integrationTest${suffix}"(type:Test) {
+        dependsOn 'prepareBin'
+        include '**/*IT.class'
+
+        // check file existence
+        groovyclientExecutable = prepareBin.groovyclientExecutable + extension
+        onlyIf { file(groovyclientExecutable).exists() }
+
+        // prop for TestUtils
+        systemProperties 'groovyservClientExecutable': groovyclientExecutable
+
+        doFirst {
+            if (isFirstIntegrationTest()) {
+                startGroovyserver()
+            }
+        }
+        doLast {
+            if (isLastIntegrationTest()) {
+                shutdownGroovyServer()
+            }
+        }
+    }
+}
+task integrationTest {
+    dependsOn 'prepareBin', integrationTestType.collect{ "integrationTest${it.key}" }
+}
+
+//===========================================
+// Helper
+//===========================================
+
+def startGroovyserver() {
+    println ">> Starting groovyserver..."
+    executeCommand(prepareBin.groovyserverExecutable, ['-r', '-v'])
+}
+
+def shutdownGroovyServer() {
+    println ">> Shutdowning groovyserver..."
+    executeCommand(prepareBin.groovyserverExecutable, ['-k'])
+}
+
+def getOsSuffix() {
+    def osName = System.properties['os.name'].replaceAll(/ /, '').toLowerCase()
+    def osArch = System.properties['os.arch']
+    return "${osName}_${osArch}"
+}
+
+def executeCommand(command, arguments) {
+    new ByteArrayOutputStream().withStream { os ->
+        def result = exec {
+            executable = command
+            args = arguments
+            standardOutput = os
+        }
+        def outputAsString = os.toString()
+        println outputAsString
+    }
+}
+
+def isFirstIntegrationTest() {
+    def allIntTestTasks = gradle.taskGraph.allTasks.findAll{ it.name =~ /^integrationTest.+/ }
+    return allIntTestTasks.every { !it.state.executed }
+}
+
+def isLastIntegrationTest() {
+    def allIntTestTasks = gradle.taskGraph.allTasks.findAll{ it.name =~ /^integrationTest.+/ }
+    return allIntTestTasks.every { it.state.executed || it.state.executing }
+}
+
