@@ -8,10 +8,8 @@ Get Started
 .. toctree::
    :maxdepth: 1
 
-   howtoinstall
-   userguide_en
-   userguide_ja
    screencast
+   howtoinstall
 
 
 Reference
@@ -20,7 +18,10 @@ Reference
 .. toctree::
    :maxdepth: 1
 
-   changelog
+   userguide_en
+   userguide_ja
+   howtobuild
    faq
    license
+   changelog
 
