@@ -62,7 +62,7 @@ Build RPM file
 
 If you want to install from RPM package, you can build the RPM package by yourself. The sample SPEC file which is required to build a RPM package was at first contributed by Oliver. And Kazuhisha updated it. Thank you, Oliver and Kazuhisha!
 
-The samples of SPEC file is in contrib/rpm-spec. See xxxxxx.
+The samples of SPEC file is in `contrib/rpm-spec <https://github.com/kobo/groovyserv/tree/master/contrib/rpm>`_.
 
 Well, I don't know how to build a RPM package, so I may not be able to support about it. Sorry in advance ;-)
 
