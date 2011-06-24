@@ -127,17 +127,21 @@ task unitTest(type:Test) {
 
 // integrationTest tasks
 integrationTestTargets = new IntegrationTestTargetFactory(prepareBin.groovyclientBasePath).createTargets([
-    [id:'CUnix', extension:'NOTFOUND'],
+    [id:'Java', include:'**/DirectAccessIT.class', exclude:''],
+    [id:'CUnix'],
     [id:'CWin', extension:'.exe'],
     [id:'Ruby', extension:'.rb', invoker:'ruby'],
 ])
 integrationTestTargets.each { target ->
     task "${target.taskName}"(type:Test) {
         dependsOn 'prepareBin'
-        include '**/*IT.class'
 
-        // check file existence
         onlyIf { file(target.groovyclientPath).exists() }
+
+        include target.include
+        exclude target.exclude
+        testReportDir = file("$buildDir/reports/${target.id}")
+        testResultsDir = file("$buildDir/results/${target.id}")
 
         // prop for TestUtils
         systemProperties 'groovyservClientExecutable': target.executableExpression
@@ -211,6 +215,7 @@ def convertMixedPath(File file) {
 
 class IntegrationTestTargetFactory {
     def clientBasePath
+
     def IntegrationTestTargetFactory(path) {
         clientBasePath = path
     }
@@ -227,6 +232,9 @@ class IntegrationTestTarget {
     def extension = ''
     def invoker
     def clientBasePath
+    def include = '**/*IT.class'
+    def exclude = '**/DirectAccessIT.class'
+
     def getGroovyclientPath() {
         clientBasePath + extension
     }
