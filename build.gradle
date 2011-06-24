@@ -74,7 +74,7 @@ test {
 
 task compileC << {
     println ">> Compiling C sources..."
-    executeCommand('make', ['-e', 'DESTDIR=build']) // TODO when deleting pom.xml, make Makefile have DESTDIR=build as default
+    executeCommand('make', ['-e', 'DESTDIR=build/native']) // TODO when deleting pom.xml, make Makefile have DESTDIR=build as default
 }
 
 task prepareBin(type:Copy, dependsOn:['jar', 'compileC']) {
@@ -89,8 +89,8 @@ task prepareBin(type:Copy, dependsOn:['jar', 'compileC']) {
     }
     into('bin') {
         from "$projectDir/src/main/bin"
-        from "$buildDir/groovyclient"     // ignored if not exists
-        from "$buildDir/groovyclient.exe" // ignored if not exists
+        from "$buildDir/native/groovyclient"     // ignored if not exists
+        from "$buildDir/native/groovyclient.exe" // ignored if not exists
     }
 
     // to use later
