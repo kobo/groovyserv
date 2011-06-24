@@ -48,33 +48,29 @@ dependencies {
 // Tasks
 //===========================================
 
-//------------------------
-// Default tasks
+//----------------------------------
+// Build
 
 processResources {
+    // Groovy sources shouldn't be compiled in order to avoid a trouble
+    // of unmatch of Java version between compile-time and runtime.
     from("$projectDir/src/main/groovy")
 }
 
 compileGroovy {
+    // This classes is used only by unit tests.
+    // Instead, groovy sources in jar are used for integration test.
     destinationDir = file("$buildDir/classes/test")
     classpath += files("$buildDir/classes/main")
 }
 
-jar {
-    baseName = project.baseName
-}
-
-test {
-    dependsOn 'unitTest', 'integrationTest'
-    scanForTestClasses = false
-}
-
-//------------------------
-// My tasks
-
 task compileC << {
     println ">> Compiling C sources..."
-    executeCommand('make', ['-e', 'DESTDIR=build/native']) // TODO when deleting pom.xml, make Makefile have DESTDIR=build as default
+    executeCommand('make', ['-e', 'DESTDIR=build/native']) // TODO when deleting pom.xml, make Makefile have DESTDIR=build/native as default
+}
+
+jar {
+    baseName = project.baseName
 }
 
 task prepareBin(type:Copy, dependsOn:['jar', 'compileC']) {
@@ -106,6 +102,13 @@ task prepareBin(type:Copy, dependsOn:['jar', 'compileC']) {
     }
 }
 
+//----------------------------------
+// Distribution
+
+task dist {
+    dependsOn 'distBin', 'distSrc'
+}
+
 task distBin(type:Zip, dependsOn:'prepareBin') {
     baseName = project.baseName
     classifier = getOsSuffix() + '-bin'
@@ -129,8 +132,12 @@ task distSrc(type:Zip) {
     }
 }
 
-task dist {
-    dependsOn 'distBin', 'distSrc'
+//----------------------------------
+// Test
+
+test {
+    dependsOn 'unitTest', 'integrationTest'
+    scanForTestClasses = false
 }
 
 task unitTest(type:Test) {
@@ -173,6 +180,9 @@ integrationTestTargets.each { target ->
 task integrationTest {
     dependsOn 'prepareBin', integrationTestTargets*.taskName
 }
+
+//------------------------
+// Gradle wrapper
 
 task wrapper(type: Wrapper) {
     gradleVersion = '1.0-milestone-3'
