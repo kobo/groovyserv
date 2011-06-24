@@ -20,7 +20,8 @@
 
 apply plugin:'groovy'
 
-defaultTasks 'clean', 'build'
+defaultTasks 'clean', 'check', 'dist' // whole tasks
+
 sourceCompatibility = 1.5
 baseName = 'groovyserv'
 
