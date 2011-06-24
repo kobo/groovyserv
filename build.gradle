@@ -246,7 +246,7 @@ class IntegrationTestTarget {
         "integrationTest" + id
     }
     def shouldRun() {
-        always || getGroovyclientPath().exists()
+        always || new File(getGroovyclientPath()).exists()
     }
 }
 
