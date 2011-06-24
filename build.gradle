@@ -22,6 +22,7 @@ apply plugin:'groovy'
 
 defaultTasks 'clean', 'build'
 sourceCompatibility = 1.5
+baseName = 'groovyserv'
 
 repositories {
     mavenCentral()
@@ -51,7 +52,7 @@ dependencies {
 // Default tasks
 
 jar {
-    baseName = "groovyserv"
+    baseName = project.baseName
 }
 
 test {
@@ -69,7 +70,7 @@ task compileC << {
 
 task prepareBin(type:Copy, dependsOn:['jar', 'compileC']) {
     // construct file tree
-    destinationDir = file("$buildDir/groovyserv-$version")
+    destinationDir = file("$buildDir/${project.baseName}-$version")
     from("$projectDir") {
         include "*.txt"
     }
@@ -97,14 +98,14 @@ task prepareBin(type:Copy, dependsOn:['jar', 'compileC']) {
 }
 
 task distBin(type:Zip, dependsOn:'prepareBin') {
-    baseName = 'groovyserv'
+    baseName = project.baseName
     classifier = getOsSuffix() + '-bin'
     into "$baseName-$version"
     from prepareBin.destinationDir
 }
 
 task distSrc(type:Zip) {
-    baseName = 'groovyserv'
+    baseName = project.baseName
     classifier = 'src'
     into "$baseName-$version"
     from("$projectDir") {
