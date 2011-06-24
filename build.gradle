@@ -127,7 +127,7 @@ task unitTest(type:Test) {
 
 // integrationTest tasks
 integrationTestTargets = new IntegrationTestTargetFactory(prepareBin.groovyclientBasePath).createTargets([
-    [id:'Java', include:'**/DirectAccessIT.class', exclude:''],
+    [id:'Java', include:'**/DirectAccessIT.class', exclude:'', always:true],
     [id:'CUnix'],
     [id:'CWin', extension:'.exe'],
     [id:'Ruby', extension:'.rb', invoker:'ruby'],
@@ -136,7 +136,7 @@ integrationTestTargets.each { target ->
     task "${target.taskName}"(type:Test) {
         dependsOn 'prepareBin'
 
-        onlyIf { file(target.groovyclientPath).exists() }
+        onlyIf { target.shouldRun() }
 
         include target.include
         exclude target.exclude
@@ -234,6 +234,7 @@ class IntegrationTestTarget {
     def clientBasePath
     def include = '**/*IT.class'
     def exclude = '**/DirectAccessIT.class'
+    def always = false
 
     def getGroovyclientPath() {
         clientBasePath + extension
@@ -243,6 +244,9 @@ class IntegrationTestTarget {
     }
     def getTaskName() {
         "integrationTest" + id
+    }
+    def shouldRun() {
+        always || getGroovyclientPath().exists()
     }
 }
 
