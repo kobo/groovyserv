@@ -99,12 +99,14 @@ task prepareBin(type:Copy, dependsOn:['jar', 'compileC']) {
 task distBin(type:Zip, dependsOn:'prepareBin') {
     baseName = 'groovyserv'
     classifier = getOsSuffix() + '-bin'
+    into "$baseName-$version"
     from prepareBin.destinationDir
 }
 
 task distSrc(type:Zip) {
     baseName = 'groovyserv'
     classifier = 'src'
+    into "$baseName-$version"
     from("$projectDir") {
         include "*.txt"
         include "pom.xml"
