@@ -51,6 +51,15 @@ dependencies {
 //------------------------
 // Default tasks
 
+processResources {
+    from("$projectDir/src/main/groovy")
+}
+
+compileGroovy {
+    destinationDir = file("$buildDir/classes/test")
+    classpath += files("$buildDir/classes/main")
+}
+
 jar {
     baseName = project.baseName
 }
@@ -79,7 +88,7 @@ task prepareBin(type:Copy, dependsOn:['jar', 'compileC']) {
         from "$buildDir/libs"
     }
     into('bin') {
-        from "src/main/bin"
+        from "$projectDir/src/main/bin"
         from "$buildDir/groovyclient"     // ignored if not exists
         from "$buildDir/groovyclient.exe" // ignored if not exists
     }
@@ -116,7 +125,7 @@ task distSrc(type:Zip) {
         include "Makefile"
     }
     into("src") {
-        from "src"
+        from "$projectDir/src"
     }
 }
 
