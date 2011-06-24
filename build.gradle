@@ -76,7 +76,7 @@ jar {
 
 task prepareBin(type:Copy, dependsOn:['jar', 'compileC']) {
     // construct file tree
-    destinationDir = file("$buildDir/${project.baseName}-$version")
+    destinationDir = file("$buildDir/${project.baseName}")
     from("$projectDir") {
         include "*.txt"
     }
