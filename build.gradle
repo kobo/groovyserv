@@ -97,7 +97,7 @@ task prepareBin(type:Copy, dependsOn:['jar', 'compileC']) {
 
 task distBin(type:Zip, dependsOn:'prepareBin') {
     baseName = 'groovyserv'
-    classifier = getOsSuffix() + '_bin'
+    classifier = getOsSuffix() + '-bin'
     from prepareBin.destinationDir
 }
 
@@ -175,7 +175,7 @@ def shutdownGroovyServer() {
 def getOsSuffix() {
     def osName = System.properties['os.name'].replaceAll(/ /, '').toLowerCase()
     def osArch = System.properties['os.arch']
-    return "${osName}_${osArch}"
+    return "${osName}-${osArch}"
 }
 
 def executeCommand(command, arguments) {
