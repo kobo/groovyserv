@@ -52,17 +52,20 @@ dependencies {
 //----------------------------------
 // Build
 
-processResources {
-    // Groovy sources shouldn't be compiled in order to avoid a trouble
-    // of unmatch of Java version between compile-time and runtime.
-    from("$projectDir/src/main/groovy")
-}
-
 compileGroovy {
     // This classes is used only by unit tests.
     // Instead, groovy sources in jar are used for integration test.
     destinationDir = file("$buildDir/classes/test")
     classpath += files("$buildDir/classes/main")
+
+    doLast {
+        // Groovy sources shouldn't be compiled in order to avoid a trouble
+        // of unmatch of Java version between compile-time and runtime.
+        copy {
+            into "$buildDir/classes/main"
+            from "$projectDir/src/main/groovy"
+        }
+    }
 }
 
 task compileC << {
