@@ -188,6 +188,20 @@ task wrapper(type: Wrapper) {
     gradleVersion = '1.0-milestone-3'
 }
 
+//------------------------
+// Documents
+
+task docs << {
+    executeCommand 'git', ['checkout', 'docs']
+    executeCommand 'make', ['clean', 'html']
+    executeCommand 'git', ['checkout', 'gh-pages']
+    copy {
+        into "$projectDir"
+        from "$projectDir/build/docs"
+    }
+}
+
+
 //===========================================
 // Helper
 //===========================================
