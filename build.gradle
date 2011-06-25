@@ -209,7 +209,7 @@ def startGroovyserver() {
 }
 
 def shutdownGroovyServer() {
-    println ">> Shutdowning groovyserver..."
+    println ">> Shutting down groovyserver..."
     executeCommand("sh", ['-c', "${prepareBin.groovyserverPath} -k"])
 }
 
