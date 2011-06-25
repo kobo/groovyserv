@@ -11,3 +11,4 @@ work
 bin/groovyclient
 build
 doctrees
+.gradle
