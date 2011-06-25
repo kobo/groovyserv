@@ -20,7 +20,7 @@
 
 apply plugin:'groovy'
 
-defaultTasks 'clean', 'check', 'dist' // whole tasks
+defaultTasks 'clean', 'test', 'dist' // whole tasks
 
 sourceCompatibility = 1.5
 baseName = 'groovyserv'
@@ -52,6 +52,8 @@ dependencies {
 //----------------------------------
 // Build
 
+jar.baseName = project.baseName
+
 compileGroovy {
     // This classes is used only by unit tests.
     // Instead, groovy sources in jar are used for integration test.
@@ -73,11 +75,7 @@ task compileC << {
     executeCommand('make', ['-e', 'DESTDIR=build/native']) // TODO when deleting pom.xml, make Makefile have DESTDIR=build/native as default
 }
 
-jar {
-    baseName = project.baseName
-}
-
-binSpec = copySpec {
+executablesSpec = copySpec {
     from("$projectDir") {
         include "*.txt"
     }
@@ -92,10 +90,10 @@ binSpec = copySpec {
         from "$buildDir/native/groovyclient.exe" // ignored if not exists
     }
 }
-task prepareBin(type:Copy, dependsOn:['jar', 'compileC']) {
+task executables(type:Copy, dependsOn:['jar', 'compileC']) {
     // construct file tree
-    destinationDir = file("$buildDir/${project.baseName}")
-    with binSpec
+    destinationDir = file("$buildDir/executables")
+    with executablesSpec
 
     // to use later
     binDir = "${destinationDir}/bin"
@@ -114,15 +112,13 @@ task prepareBin(type:Copy, dependsOn:['jar', 'compileC']) {
 //----------------------------------
 // Distribution
 
-task dist {
-    dependsOn 'distBin', 'distSrc'
-}
+task dist(dependsOn:['distBin', 'distSrc'])
 
-task distBin(type:Zip, dependsOn:'prepareBin') {
+task distBin(type:Zip) {
     baseName = project.baseName
     classifier = getOsSuffix() + '-bin'
     into "$baseName-$version"
-    with binSpec
+    with executablesSpec
 }
 
 task distSrc(type:Zip) {
@@ -146,35 +142,30 @@ task distSrc(type:Zip) {
 //----------------------------------
 // Test
 
-test {
-    dependsOn 'unitTest', 'integrationTest'
-    scanForTestClasses = false
-}
+task test(overwrite:true, dependsOn:['unitTest', 'integrationTest'])
 
 task unitTest(type:Test) {
     include '**/*Test.class'
 }
 
 // integrationTest tasks
-integrationTestTargets = new IntegrationTestTargetFactory(prepareBin.groovyclientBasePath).createTargets([
+integrationTestSpecs = new IntegrationTestSpecFactory(executables.groovyclientBasePath).createSpecs([
     [id:'Java', include:'**/DirectAccessIT.class', exclude:'', always:true],
     [id:'CUnix'],
     [id:'CWin', extension:'.exe'],
     [id:'Ruby', extension:'.rb', invoker:'ruby'],
 ])
-integrationTestTargets.each { target ->
-    task "${target.taskName}"(type:Test) {
-        dependsOn 'prepareBin'
+integrationTestSpecs.each { spec ->
+    task "${spec.taskName}"(type:Test, dependsOn:'executables') {
+        onlyIf { spec.shouldRun() }
 
-        onlyIf { target.shouldRun() }
-
-        include target.include
-        exclude target.exclude
-        testReportDir = file("$buildDir/reports/${target.id}")
-        testResultsDir = file("$buildDir/results/${target.id}")
+        include spec.include
+        exclude spec.exclude
+        testReportDir = file("$buildDir/reports/${spec.id}")
+        testResultsDir = file("$buildDir/results/${spec.id}")
 
         // prop for TestUtils
-        systemProperties 'groovyservClientExecutable': target.executableExpression
+        systemProperties 'groovyservClientExecutable': spec.executableExpression
 
         doFirst {
             if (isFirstIntegrationTest()) {
@@ -188,9 +179,7 @@ integrationTestTargets.each { target ->
         }
     }
 }
-task integrationTest {
-    dependsOn 'prepareBin', integrationTestTargets*.taskName
-}
+task integrationTest(dependsOn:['executables', integrationTestSpecs*.taskName])
 
 //------------------------
 // Gradle wrapper
@@ -205,12 +194,12 @@ task wrapper(type: Wrapper) {
 
 def startGroovyserver() {
     println ">> Starting groovyserver..."
-    executeCommand("sh", ['-c', "${prepareBin.groovyserverPath} -r -v"])
+    executeCommand("sh", ['-c', "${executables.groovyserverPath} -r -v"])
 }
 
 def shutdownGroovyServer() {
     println ">> Shutting down groovyserver..."
-    executeCommand("sh", ['-c', "${prepareBin.groovyserverPath} -k"])
+    executeCommand("sh", ['-c', "${executables.groovyserverPath} -k"])
 }
 
 def getOsSuffix() {
@@ -233,12 +222,12 @@ def executeCommand(command, arguments) {
 }
 
 def isFirstIntegrationTest() {
-    def allIntTestTasks = gradle.taskGraph.allTasks.findAll{ it.name =~ /^integrationTest.+/ }
+    def allIntTestTasks = gradle.taskGraph.allTasks.findAll{ it.name =~ /^integrationTestFor.+/ }
     return allIntTestTasks.findAll{ !it.state.skipped }.every { !it.state.executed }
 }
 
 def isLastIntegrationTest() {
-    def allIntTestTasks = gradle.taskGraph.allTasks.findAll{ it.name =~ /^integrationTest.+/ }
+    def allIntTestTasks = gradle.taskGraph.allTasks.findAll{ it.name =~ /^integrationTestFor.+/ }
     return allIntTestTasks.every { it.state.executed || it.state.executing }
 }
 
@@ -246,21 +235,21 @@ def convertMixedPath(File file) {
     file.canonicalPath.replaceAll('\\\\', '/')
 }
 
-class IntegrationTestTargetFactory {
+class IntegrationTestSpecFactory {
     def clientBasePath
 
-    def IntegrationTestTargetFactory(path) {
+    def IntegrationTestSpecFactory(path) {
         clientBasePath = path
     }
-    def createTargets(list) {
+    def createSpecs(list) {
         list.collect { map ->
             map.clientBasePath = clientBasePath
-            map as IntegrationTestTarget
+            map as IntegrationTestSpec
         }
     }
 }
 
-class IntegrationTestTarget {
+class IntegrationTestSpec {
     def id
     def extension = ''
     def invoker
@@ -276,7 +265,7 @@ class IntegrationTestTarget {
         (invoker ? "$invoker " : '') + getGroovyclientPath()
     }
     def getTaskName() {
-        "integrationTest" + id
+        "integrationTestFor" + id
     }
     def shouldRun() {
         always || new File(getGroovyclientPath()).exists()
