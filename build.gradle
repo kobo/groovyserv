@@ -77,9 +77,7 @@ jar {
     baseName = project.baseName
 }
 
-task prepareBin(type:Copy, dependsOn:['jar', 'compileC']) {
-    // construct file tree
-    destinationDir = file("$buildDir/${project.baseName}")
+binSpec = copySpec {
     from("$projectDir") {
         include "*.txt"
     }
@@ -88,17 +86,24 @@ task prepareBin(type:Copy, dependsOn:['jar', 'compileC']) {
         from "$buildDir/libs"
     }
     into('bin') {
+        fileMode = 0755
         from "$projectDir/src/main/bin"
         from "$buildDir/native/groovyclient"     // ignored if not exists
         from "$buildDir/native/groovyclient.exe" // ignored if not exists
     }
+}
+task prepareBin(type:Copy, dependsOn:['jar', 'compileC']) {
+    // construct file tree
+    destinationDir = file("$buildDir/${project.baseName}")
+    with binSpec
 
     // to use later
     binDir = "${destinationDir}/bin"
     groovyclientBasePath = convertMixedPath(file("${binDir}/groovyclient"))
     groovyserverPath = convertMixedPath(file("${binDir}/groovyserver"))
 
-    // add execute permission
+    // FIXME it's just a work around because fileMode at Copy task doesn't work.
+    // http://issues.gradle.org/browse/GRADLE-971
     doLast {
         file(binDir).eachFile { bin ->
             ant.chmod(file:bin, perm:755)
@@ -117,22 +122,24 @@ task distBin(type:Zip, dependsOn:'prepareBin') {
     baseName = project.baseName
     classifier = getOsSuffix() + '-bin'
     into "$baseName-$version"
-    from prepareBin.destinationDir
+    with binSpec
 }
 
 task distSrc(type:Zip) {
     baseName = project.baseName
     classifier = 'src'
-    into "$baseName-$version"
-    from("$projectDir") {
-        include "*.txt"
-        include "pom.xml"
-        include "build.gradle"
-        include "gradle.properties"
-        include "Makefile"
-    }
-    into("src") {
-        from "$projectDir/src"
+    with copySpec {
+        into "$baseName-$version"
+        from("$projectDir") {
+            include "*.txt"
+            include "pom.xml"
+            include "build.gradle"
+            include "gradle.properties"
+            include "Makefile"
+        }
+        into("src") {
+            from "$projectDir/src"
+        }
     }
 }
 
