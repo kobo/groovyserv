@@ -144,6 +144,8 @@ task test(overwrite:true, dependsOn:['unitTest', 'integrationTest'])
 
 task unitTest(type:Test) {
     include '**/*Test.class'
+    testReportDir = file("$buildDir/reports/unit")
+    testResultsDir = file("$buildDir/test-results/unit")
 }
 
 // integrationTest tasks
@@ -159,8 +161,8 @@ integrationTestSpecs.each { spec ->
 
         include spec.include
         exclude spec.exclude
-        testReportDir = file("$buildDir/reports/${spec.id}")
-        testResultsDir = file("$buildDir/results/${spec.id}")
+        testReportDir = file("$buildDir/reports/integration-${spec.id}")
+        testResultsDir = file("$buildDir/test-results/integration-${spec.id}")
 
         // prop for TestUtils
         systemProperties 'groovyservClientExecutable': spec.executableExpression
