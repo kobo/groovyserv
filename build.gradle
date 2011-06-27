@@ -112,7 +112,7 @@ task executables(type:Copy, dependsOn:['jar', 'compileC']) {
 
 task dist(dependsOn:['distBin', 'distSrc'])
 
-task distBin(type:Zip) {
+task distBin(type:Zip, dependsOn:['jar', 'compileC']) {
     baseName = project.baseName
     classifier = getOsSuffix() + '-bin'
     into "$baseName-$version"
