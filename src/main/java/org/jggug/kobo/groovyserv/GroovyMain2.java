@@ -113,7 +113,7 @@ public class GroovyMain2 {
                 // If we fail, then exit with an error so scripting frameworks can catch it
                 // TODO: pass printstream(s) down through process
                 if (!process(cmd)) {
-                    System.exit(1);
+                    //System.exit(1); // for GroovyServ: disabled because this causes a secondary disaster
                 }
             }
         } catch (ParseException pe) {
