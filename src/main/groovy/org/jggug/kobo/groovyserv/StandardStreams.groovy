@@ -34,7 +34,12 @@ class StandardStreams {
     ]
 
     static void setUp() {
-        System.in  = ALTERNATES.ins
+        // The standard streams are replaced with GroovyServ's ones
+        // which can handle the socket for each request thread.
+        // close() method is disabled not to use the inner state of wrapper classes.
+        System.in  = new BufferedInputStream(ALTERNATES.ins) {
+            void close() { /* do nothing */ }
+        }
         System.out = new PrintStream(ALTERNATES.out) {
             void close() { /* do nothing */ }
         }
