@@ -19,52 +19,72 @@ package org.jggug.kobo.groovyserv
 /**
  * Handling StreamResponse in protocol between client and server.
  *
- * @author UEHARA Junji
  * @author NAKANO Yasuharu
  */
 class StreamResponseOutputStream extends OutputStream {
 
-    String streamId
+    private OutputStream outputStream
+    private String streamId
+    private boolean closed = false
 
     private StreamResponseOutputStream() { /* preventing from instantiation */ }
 
-    static StreamResponseOutputStream newOut() {
-        new StreamResponseOutputStream(streamId:'out')
+    static OutputStream newOut(OutputStream outputStream) {
+        new StreamResponseOutputStream(streamId:'out', outputStream:outputStream)
     }
 
-    static StreamResponseOutputStream newErr() {
-        new StreamResponseOutputStream(streamId:'err')
+    static OutputStream newErr(OutputStream outputStream) {
+        new StreamResponseOutputStream(streamId:'err', outputStream:outputStream)
     }
 
+    /**
+     * @throws IOException When the stream is already closed
+     */
     @Override
-    public void flush() {
-        currentOutputStream.flush()
-    }
-
-    @Override
-    public void close() {
-        // do nothing here because the OutputStream is connected to socket
-    }
-
-    @Override
-    public void write(int b) {
+    void write(int b) {
+        if (closed) {
+            throw new IOException("Stream of $streamId closed")
+        }
         byte[] buf = new byte[1]
         buf[0] = (b>>8*0) & 0x0000ff
         write(buf, 0, 1)
     }
 
+    /**
+     * @throws IOException When the stream is already closed
+     */
     @Override
-    public void write(byte[] b, int offset, int length) {
+    void write(byte[] b, int offset, int length) {
+        if (closed) {
+            throw new IOException("Stream of $streamId closed")
+        }
         writeVerboseLog(b, offset, length)
         // FIXME When System.exit to a sub thread which in infinte loop, following synchronized occures IllegalMonitorStateException.
-        //synchronized(currentOutputStream) { // to keep independency of 'out' and 'err' on socket stream
+        //synchronized(outputStream) { // to keep independency of 'out' and 'err' on socket stream
             byte[] header = ClientProtocols.formatAsResponseHeader(streamId, length)
-            getCurrentOutputStream().with {
+            outputStream.with {
                 write(header)
                 write(b, offset, length)
                 flush()
             }
         //}
+    }
+
+    /**
+     * @throws IOException When the stream is already closed
+     */
+    @Override
+    void flush() {
+        if (closed) {
+            throw new IOException("Stream of $streamId closed")
+        }
+        outputStream.flush()
+    }
+
+    @Override
+    void close() {
+        closed = true
+        DebugUtils.verboseLog "StreamResponseOutputStream($streamId) is closed: ${ClientConnectionRepository.instance.currentConnection}"
     }
 
     private writeVerboseLog(byte[] b, int offset, int length) {
@@ -79,14 +99,6 @@ class StreamResponseOutputStream extends OutputStream {
             |}
             |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
             |""".stripMargin()
-        }
-    }
-
-    private OutputStream getCurrentOutputStream() {
-        try {
-            ClientConnectionRepository.instance.currentConnection.outputStream
-        } catch (GServIllegalStateException e) {
-            throw new GServIOException("Cannot get a current client connection", e)
         }
     }
 

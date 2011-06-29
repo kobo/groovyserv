@@ -46,13 +46,15 @@ class StreamRequestHandler implements Runnable {
                     return // not to continue because this is unexpected data
                 }
                 if (request.isEmpty()) {
-                    DebugUtils.verboseLog "${id}: Recieved empty request from client"
-                    throw new ClientInterruptionException("${id}: Empty request by client request")
+                    DebugUtils.verboseLog "${id}: Recieved empty request from client (Closed stdin on the client)"
+                    conn.tearDownPipes()
+                    continue
                 }
                 if (request.isInterrupted()) {
                     DebugUtils.verboseLog "${id}: Recieved interrupted request from client"
                     throw new ClientInterruptionException("${id}: Interrupted by client request")
                 }
+
                 def buff = new byte[request.size]
                 int offset = 0
                 int result = conn.socket.inputStream.read(buff, offset, request.size) // read from raw stream
@@ -63,22 +65,27 @@ class StreamRequestHandler implements Runnable {
                     return
                 }
                 readLog(buff, offset, result, request.size)
-                conn.writeFromStreamRequest(buff, offset, result)
+                if (conn.tearedDownPipes) {
+                    DebugUtils.verboseLog "Already teared down pipes. So the above data is just ignored."
+                } else {
+                    conn.transferStreamRequest(buff, offset, result)
+                }
             }
         }
         catch (InterruptedException e) {
             DebugUtils.verboseLog("${id}: Thread interrupted: ${e.message}") // ignored details
         }
-        catch (GServIOException e) {
-            DebugUtils.verboseLog("${id}: I/O error: ${e.message}") // ignored details
-        }
         catch (InterruptedIOException e) {
             DebugUtils.verboseLog("${id}: I/O interrupted: ${e.message}") // ignored details
+        }
+        catch (GServIOException e) {
+            DebugUtils.verboseLog("${id}: I/O error: ${e.message}") // ignored details
         }
         catch (IOException e) {
             DebugUtils.verboseLog("${id}: I/O error: ${e.message}") // ignored details
         }
         finally {
+            conn.tearDownPipes()
             DebugUtils.verboseLog("${id}: Thread is dead")
         }
     }

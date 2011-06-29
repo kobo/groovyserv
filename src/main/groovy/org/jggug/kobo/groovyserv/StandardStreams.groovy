@@ -28,25 +28,36 @@ class StandardStreams {
     ]
 
     private static final ALTERNATES = [
-        ins: new StreamRequestInputStream(),
-        out: StreamResponseOutputStream.newOut(),
-        err: StreamResponseOutputStream.newErr()
+        ins: newInAsInputStream(),
+        out: newOutAsPrintStream(),
+        err: newErrAsPrintStream(),
     ]
 
     static void setUp() {
         // The standard streams are replaced with GroovyServ's ones
         // which can handle the socket for each request thread.
-        // close() method is disabled not to use the inner state of wrapper classes.
-        System.in  = new BufferedInputStream(ALTERNATES.ins) {
-            void close() { /* do nothing */ }
-        }
-        System.out = new PrintStream(ALTERNATES.out) {
-            void close() { /* do nothing */ }
-        }
-        System.err = new PrintStream(ALTERNATES.err) {
-            void close() { /* do nothing */ }
-        }
+        System.in  = ALTERNATES.ins
+        System.out = ALTERNATES.out
+        System.err = ALTERNATES.err
     }
 
+    private static InputStream newInAsInputStream() {
+        new DynamicDelegatedInputStream( { -> ClientConnectionRepository.instance.currentConnection.ins })
+    }
+
+    private static PrintStream newOutAsPrintStream() {
+        wrapInPrintStream(new DynamicDelegatedOutputStream({ -> ClientConnectionRepository.instance.currentConnection.out }))
+    }
+
+    private static PrintStream newErrAsPrintStream() {
+        wrapInPrintStream(new DynamicDelegatedOutputStream({ -> ClientConnectionRepository.instance.currentConnection.err }))
+    }
+
+    private static PrintStream wrapInPrintStream(stream) {
+        new PrintStream(stream) {
+            // it's made just only to call close() and not to use the inner state of PrintStream
+            void close() { stream.close() }
+        }
+    }
 }
 

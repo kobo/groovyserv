@@ -127,6 +127,7 @@ class RequestWorker extends ThreadPoolExecutor {
         conn = null
     }
 
+    @Override
     protected void terminated() {
         closeSafety() // by way of precaution
         DebugUtils.verboseLog("${id}: Terminated")
