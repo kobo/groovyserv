@@ -297,7 +297,7 @@ def handle_stdin(socket)
   begin
     data = $stdin.read_nonblock(512)
   rescue EOFError
-    send_interrupt(socket)
+    socket.write "Size: 0\n\n"
   else
     socket.write "Size: #{data.length}\n\n"
     socket.write data
