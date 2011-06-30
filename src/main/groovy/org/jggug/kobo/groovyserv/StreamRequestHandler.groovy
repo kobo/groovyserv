@@ -25,7 +25,7 @@ class StreamRequestHandler implements Runnable {
     private ClientConnection conn
 
     StreamRequestHandler(clientConnection) {
-        this.id = "GroovyServ:StreamRequestHandler:${clientConnection.socket.port}"
+        this.id = "StreamRequestHandler:${clientConnection.socket.port}"
         this.conn = clientConnection
     }
 

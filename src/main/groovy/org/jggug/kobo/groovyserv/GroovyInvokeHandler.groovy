@@ -28,7 +28,7 @@ class GroovyInvokeHandler implements Runnable {
     private InvocationRequest request
 
     GroovyInvokeHandler(request) {
-        this.id = "GroovyServ:GroovyInvokeHandler:${request.port}"
+        this.id = "GroovyInvokeHandler:${request.port}"
         this.request = request
     }
 

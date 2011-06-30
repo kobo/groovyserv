@@ -43,9 +43,9 @@ class RequestWorker extends ThreadPoolExecutor {
     RequestWorker(cookie, socket) {
         // API: ThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue)
         super(THREAD_COUNT, THREAD_COUNT, 0, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>())
-        this.id = "GroovyServ:RequestWorker:${socket.port}"
+        this.id = "RequestWorker:${socket.port}"
 
-        def rootThreadGroup = new GServThreadGroup("GroovyServ:ThreadGroup:${socket.port}")
+        def rootThreadGroup = new GServThreadGroup("ThreadGroup:${socket.port}")
         this.conn = new ClientConnection(cookie, socket, rootThreadGroup)
 
         // for management sub threads in invoke handler.
