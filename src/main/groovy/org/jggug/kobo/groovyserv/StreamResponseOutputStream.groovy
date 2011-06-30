@@ -42,9 +42,7 @@ class StreamResponseOutputStream extends OutputStream {
      */
     @Override
     void write(int b) {
-        if (closed) {
-            throw new IOException("Stream of $streamId closed")
-        }
+        if (closed) throw new IOException("Stream of $streamId closed")
         byte[] buf = new byte[1]
         buf[0] = (b>>8*0) & 0x0000ff
         write(buf, 0, 1)
@@ -55,9 +53,7 @@ class StreamResponseOutputStream extends OutputStream {
      */
     @Override
     void write(byte[] b, int offset, int length) {
-        if (closed) {
-            throw new IOException("Stream of $streamId closed")
-        }
+        if (closed) throw new IOException("Stream of $streamId closed")
         writeVerboseLog(b, offset, length)
         // FIXME When System.exit to a sub thread which in infinte loop, following synchronized occures IllegalMonitorStateException.
         //synchronized(outputStream) { // to keep independency of 'out' and 'err' on socket stream
@@ -75,9 +71,7 @@ class StreamResponseOutputStream extends OutputStream {
      */
     @Override
     void flush() {
-        if (closed) {
-            throw new IOException("Stream of $streamId closed")
-        }
+        if (closed) throw new IOException("Stream of $streamId closed")
         outputStream.flush()
     }
 

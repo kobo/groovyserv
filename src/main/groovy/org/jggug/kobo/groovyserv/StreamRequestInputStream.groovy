@@ -39,12 +39,8 @@ class StreamRequestInputStream extends InputStream {
      */
     @Override
     int read() {
-        if (closed) {
-            throw new IOException("Stream of in closed")
-        }
-        if (eof) {
-            return -1
-        }
+        if (closed) throw new IOException("Stream of in closed")
+        if (eof) return -1
         try {
             return inputStream.read()
         } catch (InterruptedIOException e) {
@@ -58,12 +54,8 @@ class StreamRequestInputStream extends InputStream {
      */
     @Override
     int read(byte[] buf, int offset, int length) {
-        if (closed) {
-            throw new IOException("Stream of in closed")
-        }
-        if (eof) {
-            return -1
-        }
+        if (closed) throw new IOException("Stream of in closed")
+        if (eof) return -1
         try {
             return inputStream.read(buf, offset, length)
         } catch (InterruptedIOException e) {
@@ -83,9 +75,7 @@ class StreamRequestInputStream extends InputStream {
      */
     @Override
     void mark(int readlimit) {
-        if (closed) {
-            throw new IOException("Stream of in closed")
-        }
+        if (closed) throw new IOException("Stream of in closed")
         inputStream.mark()
     }
 
@@ -94,9 +84,7 @@ class StreamRequestInputStream extends InputStream {
      */
     @Override
     void reset() {
-        if (closed) {
-            throw new IOException("Stream of in closed")
-        }
+        if (closed) throw new IOException("Stream of in closed")
         inputStream.reset()
     }
 
@@ -105,9 +93,7 @@ class StreamRequestInputStream extends InputStream {
      */
     @Override
     boolean markSupported() {
-        if (closed) {
-            throw new IOException("Stream of in closed")
-        }
+        if (closed) throw new IOException("Stream of in closed")
         inputStream.markSupported()
     }
 
