@@ -293,11 +293,14 @@ def handle_socket(socket)
   end
 end
 
+$closedStdin = false # FIXME
 def handle_stdin(socket)
+  return if $closedStdin
   begin
     data = $stdin.read_nonblock(512)
   rescue EOFError
     socket.write "Size: 0\n\n"
+    $closedStdin = true
   else
     socket.write "Size: #{data.length}\n\n"
     socket.write data
