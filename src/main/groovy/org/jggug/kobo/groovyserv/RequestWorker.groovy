@@ -165,8 +165,8 @@ class RequestWorker extends ThreadPoolExecutor {
         try {
             IOUtils.awaitFuture(runnable)
         }
-        catch (ClientInterruptionException e) {
-            DebugUtils.verboseLog("${id}: Interrupted by client: ${e.message}")
+        catch (GServInterruptedException e) {
+            DebugUtils.verboseLog("${id}: Interrupted by StreamRequestHandler: ${e.message}")
             return true
         }
         catch (CancellationException e) {

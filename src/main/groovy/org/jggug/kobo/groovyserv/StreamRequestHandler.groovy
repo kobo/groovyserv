@@ -30,9 +30,11 @@ class StreamRequestHandler implements Runnable {
     }
 
     /**
-     * @throws ClientInterruptionException
-     *             When interrupted by client request which has a "Size: -1" header.
+     * @throws GServInterruptedException
      *             Acutally this exception is wrapped by ExecutionException.
+     *             When interrupted by client request which has a "Size: -1" header.
+     *             When interrupted by receiving invalid request.
+     *             When interrupted by EOF of input stream of socket (Half-closed by the client).
      */
     @Override
     void run() {
@@ -43,7 +45,7 @@ class StreamRequestHandler implements Runnable {
                 def request = conn.readStreamRequest()
                 if (!request.isValid()) {
                     DebugUtils.verboseLog "${id}: 'Size' header is invalid"
-                    throw new ClientInterruptionException("${id}: By receiving invalid request")
+                    throw new GServInterruptedException("${id}: By receiving invalid request")
                 }
                 if (request.isEmpty()) {
                     DebugUtils.verboseLog "${id}: Recieved empty request from client (Closed stdin on the client)"
@@ -52,7 +54,7 @@ class StreamRequestHandler implements Runnable {
                 }
                 if (request.isInterrupted()) {
                     DebugUtils.verboseLog "${id}: Recieved interrupted request from client"
-                    throw new ClientInterruptionException("${id}: By client request")
+                    throw new GServInterruptedException("${id}: By client request")
                 }
 
                 def buff = new byte[request.size]
@@ -60,7 +62,7 @@ class StreamRequestHandler implements Runnable {
                 int result = conn.socket.inputStream.read(buff, offset, request.size) // read from raw stream
                 if (result == -1) {
                     DebugUtils.verboseLog "${id}: EOF of input stream of socket (Half-closed by the client)"
-                    throw new ClientInterruptionException("${id}: By EOF of input stream of socket")
+                    throw new GServInterruptedException("${id}: By EOF of input stream of socket")
                 }
                 readLog(buff, offset, result, request.size)
                 if (conn.tearedDownPipes) {
