@@ -22,7 +22,7 @@ package org.jggug.kobo.groovyserv
 class ClientConnection implements Closeable {
 
     private String id
-    private Cookie cookie
+    final Cookie cookie
     private Socket socket
     private ThreadGroup ownerThreadGroup
 
@@ -113,7 +113,6 @@ class ClientConnection implements Closeable {
             IOUtils.close(pipedInputStream)
             DebugUtils.verboseLog "${id}: PipedInputStream is closed"
             pipedInputStream = null
-            ins.eof = true
         }
         if (socket) {
             // closing output stream because it needs to flush.

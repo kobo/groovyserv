@@ -26,8 +26,6 @@ class StreamRequestInputStream extends InputStream {
     private InputStream inputStream
     private boolean closed = false
 
-    boolean eof = false
-
     private StreamRequestInputStream() { /* preventing from instantiation */ }
 
     static StreamRequestInputStream newIn(InputStream inputStream) {
@@ -40,7 +38,6 @@ class StreamRequestInputStream extends InputStream {
     @Override
     int read() {
         if (closed) throw new IOException("Stream of in closed")
-        if (eof) return -1
         try {
             return inputStream.read()
         } catch (InterruptedIOException e) {
@@ -55,7 +52,6 @@ class StreamRequestInputStream extends InputStream {
     @Override
     int read(byte[] buf, int offset, int length) {
         if (closed) throw new IOException("Stream of in closed")
-        if (eof) return -1
         try {
             return inputStream.read(buf, offset, length)
         } catch (InterruptedIOException e) {
