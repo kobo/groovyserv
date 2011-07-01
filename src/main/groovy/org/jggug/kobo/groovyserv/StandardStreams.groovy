@@ -42,22 +42,16 @@ class StandardStreams {
     }
 
     private static InputStream newInAsInputStream() {
-        new DynamicDelegatedInputStream( { -> ClientConnectionRepository.instance.currentConnection.ins })
+        new DynamicDelegatedInputStream({ -> ClientConnectionRepository.instance.currentConnection.ins })
     }
 
     private static PrintStream newOutAsPrintStream() {
-        wrapInPrintStream(new DynamicDelegatedOutputStream({ -> ClientConnectionRepository.instance.currentConnection.out }))
+        new DynamicDelegatedPrintStream({ -> ClientConnectionRepository.instance.currentConnection.out })
     }
 
     private static PrintStream newErrAsPrintStream() {
-        wrapInPrintStream(new DynamicDelegatedOutputStream({ -> ClientConnectionRepository.instance.currentConnection.err }))
+        new DynamicDelegatedPrintStream({ -> ClientConnectionRepository.instance.currentConnection.err })
     }
 
-    private static PrintStream wrapInPrintStream(stream) {
-        new PrintStream(stream) {
-            // it's made just only to call close() and not to use the inner state of PrintStream
-            void close() { stream.close() }
-        }
-    }
 }
 

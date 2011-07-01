@@ -34,9 +34,9 @@ class ClientConnection implements Closeable {
     private boolean tearedDownPipes = false
 
     // They are used as System.xxx
-    InputStream ins
-    final OutputStream out
-    final OutputStream err
+    final InputStream ins
+    final PrintStream out
+    final PrintStream err
 
     ClientConnection(cookie, socket, ownerThreadGroup) {
         this.id = "ClientConnection:${socket.port}"
@@ -49,8 +49,8 @@ class ClientConnection implements Closeable {
         this.socketOutputStream = new BufferedOutputStream(socket.outputStream)
 
         this.ins = StreamRequestInputStream.newIn(pipedInputStream)
-        this.out = StreamResponseOutputStream.newOut(socketOutputStream)
-        this.err = StreamResponseOutputStream.newErr(socketOutputStream)
+        this.out = new PrintStream(StreamResponseOutputStream.newOut(socketOutputStream))
+        this.err = new PrintStream(StreamResponseOutputStream.newErr(socketOutputStream))
 
         ClientConnectionRepository.instance.bind(ownerThreadGroup, this)
     }
