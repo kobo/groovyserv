@@ -38,14 +38,14 @@ class RequestWorker extends ThreadPoolExecutor {
     private ClientConnection conn
     private Future invokeFuture
     private Future streamFuture
-    private boolean cancelledByClient
+    private boolean cancelledByClient = false
 
     RequestWorker(cookie, socket) {
         // API: ThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue)
         super(THREAD_COUNT, THREAD_COUNT, 0, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>())
         this.id = "RequestWorker:${socket.port}"
 
-        def rootThreadGroup = new GServThreadGroup("ThreadGroup:${socket.port}")
+        def rootThreadGroup = new GServThreadGroup("GServThreadGroup:${socket.port}")
         this.conn = new ClientConnection(cookie, socket, rootThreadGroup)
 
         // for management sub threads in invoke handler.
@@ -55,7 +55,9 @@ class RequestWorker extends ThreadPoolExecutor {
                 // giving individual sub thread group for each thread
                 // in order to kill invoke handler's sub threads which were started in user scripts.
                 def subThreadGroup = new GServThreadGroup(rootThreadGroup, "${rootThreadGroup.name}:${index.getAndIncrement()}")
-                new Thread(subThreadGroup, runnable)
+                def thread = new Thread(subThreadGroup, runnable)
+                DebugUtils.verboseLog("${id}: Thread is created: $thread")
+                return thread
             }
         })
     }
@@ -103,17 +105,28 @@ class RequestWorker extends ThreadPoolExecutor {
                 DebugUtils.verboseLog("${id}: Invoke handler is dead: ${runnable}", e)
                 if (!cancelledByClient) {
                     // connection is maybe shuted down by client, so exit status is not sent.
-                    conn.sendExit(getExitStatus(runnable))
+                    int status = getExitStatus(runnable)
+                    conn.sendExit(status)
+                    DebugUtils.verboseLog("${id}: Exit status $status is sent: ${runnable}", e)
                 }
-                streamFuture.cancel(true)
+                if (streamFuture.isDone()) {
+                    DebugUtils.verboseLog("${id}: Stream handler is already done: ${runnable}", e)
+                } else {
+                    DebugUtils.verboseLog("${id}: Stream handler is cancelled: ${runnable}", e)
+                    streamFuture.cancel(true)
+                }
                 closeSafety()
                 break
             case streamFuture:
                 DebugUtils.verboseLog("${id}: Stream handler is dead: ${runnable}", e)
-                cancelledByClient = isCancelledByClient(runnable)
-                if (cancelledByClient) {
-                    DebugUtils.verboseLog("${id}: Invoke handler is canceled: ${runnable}", e)
-                    invokeFuture.cancel(true)
+                if (invokeFuture.isDone()) {
+                    DebugUtils.verboseLog("${id}: Invoke handler is already done: ${runnable}", e)
+                } else {
+                    cancelledByClient = isCancelledByClient(runnable)
+                    if (cancelledByClient) {
+                        DebugUtils.verboseLog("${id}: Invoke handler is cancelled: ${runnable}", e)
+                        invokeFuture.cancel(true)
+                    }
                 }
                 break
             default:
@@ -166,7 +179,7 @@ class RequestWorker extends ThreadPoolExecutor {
             IOUtils.awaitFuture(runnable)
         }
         catch (GServInterruptedException e) {
-            DebugUtils.verboseLog("${id}: Interrupted by StreamRequestHandler: ${e.message}")
+            DebugUtils.verboseLog("${id}: Interrupted by stream handler: ${e.message}")
             return true
         }
         catch (CancellationException e) {

@@ -55,7 +55,7 @@ class GroovyInvokeHandler implements Runnable {
             awaitAllSubThreads()
         }
         catch (InterruptedException e) {
-            DebugUtils.verboseLog("${id}: Thread interrupted")
+            DebugUtils.verboseLog("${id}: Thread interrupted: ${e.message}")
         }
         catch (GServIllegalStateException e) {
             shouldResetCurrentDir = false

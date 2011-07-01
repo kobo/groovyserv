@@ -48,12 +48,12 @@ class StreamRequestHandler implements Runnable {
                     throw new GServInterruptedException("${id}: By receiving invalid request")
                 }
                 if (request.isEmpty()) {
-                    DebugUtils.verboseLog "${id}: Recieved empty request from client (Closed stdin on the client)"
+                    DebugUtils.verboseLog "${id}: Recieved empty request from client (Closed stdin on client)"
                     conn.tearDownTransferringPipes()
                     continue // continue to check the client interruption
                 }
                 if (request.isInterrupted()) {
-                    DebugUtils.verboseLog "${id}: Recieved interrupted request from client"
+                    DebugUtils.verboseLog "${id}: Recieved interruption request from client"
                     throw new GServInterruptedException("${id}: By client request")
                 }
 
