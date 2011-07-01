@@ -143,12 +143,12 @@ class GroovyInvokeHandler implements Runnable {
             return
         }
         threads.each { thread ->
-            thread.stop() // FORCELY
+            thread.stop() // by force
         }
-        DebugUtils.verboseLog("${id}: All sub threads stopped forcely")
+        DebugUtils.verboseLog("${id}: All sub threads stopped by force")
     }
 
-    private getAllAliveSubThreads() {
+    private getAllAliveSubThreads() { // TODO
         def threadGroup = Thread.currentThread().threadGroup
         Thread[] threads = new Thread[threadGroup.activeCount() + 1] // need at lease one extra space (see Javadoc of ThreadGroup)
         int count = threadGroup.enumerate(threads)

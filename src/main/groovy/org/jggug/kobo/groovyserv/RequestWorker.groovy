@@ -112,6 +112,7 @@ class RequestWorker extends ThreadPoolExecutor {
                 DebugUtils.verboseLog("${id}: Stream handler is dead: ${runnable}", e)
                 cancelledByClient = isCancelledByClient(runnable)
                 if (cancelledByClient) {
+                    DebugUtils.verboseLog("${id}: Invoke handler is canceled: ${runnable}", e)
                     invokeFuture.cancel(true)
                 }
                 break

@@ -108,12 +108,18 @@ class ClientConnection implements Closeable {
             DebugUtils.verboseLog "${id}: Already closed"
             return
         }
-        tearDownPipes()
+        tearDownTransferringPipes()
+        if (pipedInputStream) {
+            IOUtils.close(pipedInputStream)
+            DebugUtils.verboseLog "${id}: PipedInputStream is closed"
+            pipedInputStream = null
+            ins.eof = true
+        }
         if (socket) {
             // closing output stream because it needs to flush.
             // socket and socket.inputStream are also closed by closing output stream which is gotten from socket.
             IOUtils.close(socketOutputStream)
-            DebugUtils.verboseLog "${id}: Socket closed"
+            DebugUtils.verboseLog "${id}: Socket is closed"
             socket = null
         }
         ClientConnectionRepository.instance.unbind(ownerThreadGroup)
@@ -121,27 +127,23 @@ class ClientConnection implements Closeable {
     }
 
     /**
-     * To close piped I/O stream as 'stdin'.
+     * To close PipedOutputStream as 'stdin'.
      * It's import to stop an user script safety and quietly.
      * When an user script is terminated, you must call this method.
      * Or, IOException with the message of "Write end dead" will be occurred.
      * This method doesn't close the actual socket.
+     * The piped input stream isn't closed here. because it's used by a user
+     * script after a source of 'stdin' is closed.
      */
-    void tearDownPipes() {
+    void tearDownTransferringPipes() {
         if (tearedDownPipes) {
-            DebugUtils.verboseLog "${id}: Teared down pipes for transfering stream request"
+            DebugUtils.verboseLog "${id}: Pipes to transfer a stream request teared down"
             return
         }
         if (pipedOutputStream) {
             IOUtils.close(pipedOutputStream)
-            DebugUtils.verboseLog "${id}: Piped output stream closed"
+            DebugUtils.verboseLog "${id}: PipedOutputStream is closed"
             pipedOutputStream = null
-        }
-        if (pipedInputStream) {
-            IOUtils.close(pipedInputStream)
-            DebugUtils.verboseLog "${id}: Piped input stream closed"
-            pipedInputStream = null
-            ins.eof = true
         }
         tearedDownPipes = true
     }

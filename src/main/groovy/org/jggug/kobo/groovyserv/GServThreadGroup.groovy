@@ -32,7 +32,7 @@ class GServThreadGroup extends ThreadGroup {
     @Override
     void uncaughtException(Thread thread, Throwable e) {
         if (e in ThreadDeath) {
-            DebugUtils.verboseLog("${name}: Thread is forcely stopped: ${thread}") // ignored details
+            DebugUtils.verboseLog("${name}: Thread is stopped by force: ${thread}") // ignored details
         } else {
             DebugUtils.errorLog("${name}: Uncaught exception: ${thread}", e)
         }

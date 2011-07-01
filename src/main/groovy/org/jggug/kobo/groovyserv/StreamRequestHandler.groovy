@@ -43,30 +43,28 @@ class StreamRequestHandler implements Runnable {
                 def request = conn.readStreamRequest()
                 if (!request.isValid()) {
                     DebugUtils.verboseLog "${id}: 'Size' header is invalid"
-                    return // not to continue because this is unexpected data
+                    throw new ClientInterruptionException("${id}: By receiving invalid request")
                 }
                 if (request.isEmpty()) {
                     DebugUtils.verboseLog "${id}: Recieved empty request from client (Closed stdin on the client)"
-                    conn.tearDownPipes()
-                    continue
+                    conn.tearDownTransferringPipes()
+                    continue // continue to check the client interruption
                 }
                 if (request.isInterrupted()) {
                     DebugUtils.verboseLog "${id}: Recieved interrupted request from client"
-                    throw new ClientInterruptionException("${id}: Interrupted by client request")
+                    throw new ClientInterruptionException("${id}: By client request")
                 }
 
                 def buff = new byte[request.size]
                 int offset = 0
                 int result = conn.socket.inputStream.read(buff, offset, request.size) // read from raw stream
                 if (result == -1) {
-                    // terminate this thread without closing stream.
-                    // because to be closed input stream by client doesn't mean termination of session.
-                    DebugUtils.verboseLog "${id}: End of stream"
-                    return
+                    DebugUtils.verboseLog "${id}: EOF of input stream of socket (Half-closed by the client)"
+                    throw new ClientInterruptionException("${id}: By EOF of input stream of socket")
                 }
                 readLog(buff, offset, result, request.size)
                 if (conn.tearedDownPipes) {
-                    DebugUtils.verboseLog "Already teared down pipes. So the above data is just ignored."
+                    DebugUtils.errorLog "Already teared down pipes. So the above data is just ignored."
                 } else {
                     conn.transferStreamRequest(buff, offset, result)
                 }
@@ -85,7 +83,7 @@ class StreamRequestHandler implements Runnable {
             DebugUtils.verboseLog("${id}: I/O error: ${e.message}") // ignored details
         }
         finally {
-            conn.tearDownPipes()
+            conn.tearDownTransferringPipes()
             DebugUtils.verboseLog("${id}: Thread is dead")
         }
     }
