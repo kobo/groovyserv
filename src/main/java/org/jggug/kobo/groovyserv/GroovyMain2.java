@@ -22,6 +22,7 @@ import groovy.lang.GroovyShell;
 import groovy.lang.GroovySystem;
 import groovy.lang.MissingMethodException;
 import groovy.lang.Script;
+import groovy.transform.ThreadInterrupt;
 import groovy.ui.GroovySocketServer;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -32,6 +33,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.control.CompilerConfiguration;
+import org.codehaus.groovy.control.customizers.ASTTransformationCustomizer;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.codehaus.groovy.runtime.InvokerInvocationException;
@@ -49,8 +51,10 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A Command line to execute groovy.
@@ -373,6 +377,12 @@ public class GroovyMain2 {
         if (classpath != null) {
             main.conf.setClasspath(classpath);
         }
+
+        // for GroovyServ: ThreadInterrupt
+        Map<String, Object> annotationParamMap = new HashMap<String, Object>();
+        annotationParamMap.put("thrown", GServThreadInterruptedException.class); // TODO run()からthrowsされない
+        annotationParamMap.put("applyToAllClasses", Boolean.FALSE);
+        main.conf.addCompilationCustomizers(new ASTTransformationCustomizer(annotationParamMap, ThreadInterrupt.class));
 
         return main.run();
     }
