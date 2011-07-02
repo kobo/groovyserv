@@ -91,5 +91,5 @@ Install from RPM package
 
 Currently we don't produce a RPM package officially. But there is the contributed SPEC file which is need to buld a RPM file. So you can try to build it by yourself ;-)
 
-See: `Build RPM file <ref-howtobuild-rpm>`
+See: :ref:`Build RPM file <ref-howtobuild-rpm>`
 
