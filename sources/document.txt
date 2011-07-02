@@ -8,8 +8,8 @@ Get Started
 .. toctree::
    :maxdepth: 1
 
-   readme_en
-   readme_ja
+   howtoinstall
+   quickstart
    screencast
 
 
@@ -19,7 +19,10 @@ Reference
 .. toctree::
    :maxdepth: 1
 
-   changelog
+   userguide_en
+   userguide_ja
+   howtobuild
    faq
    license
+   changelog
 

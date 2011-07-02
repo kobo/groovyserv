@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>License &mdash; GroovyServ v0.8 documentation</title>
+    <title>Quick Start &mdash; GroovyServ v0.8 documentation</title>
     <link rel="stylesheet" href="static/default.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     <script type="text/javascript">
@@ -39,21 +39,43 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="license">
-<h1>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="the-apache-software-license-version-2-0">
-<h2>The Apache Software License, Version 2.0<a class="headerlink" href="#the-apache-software-license-version-2-0" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python"><pre>Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.</pre>
+  <div class="section" id="quick-start">
+<h1>Quick Start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="after-installing-groovyserv">
+<h2>After Installing GroovyServ<a class="headerlink" href="#after-installing-groovyserv" title="Permalink to this headline">¶</a></h2>
+<p>Now if you want to use GroovyServ, you can use the groovyclient command instead of an original groovy command:</p>
+<div class="highlight-python"><pre>$ groovy -e "println('Hello, Groovy!')"
+$ groovyclient -e "println('Hello, GroovyServ!')"</pre>
+</div>
+<p>How faster is GroovyServ than Groovy?</p>
+</div>
+<div class="section" id="two-commands-for-you">
+<h2>Two commands for you<a class="headerlink" href="#two-commands-for-you" title="Permalink to this headline">¶</a></h2>
+<p>GroovyServ has two commands, groovyclient and groovyserver.</p>
+<div class="section" id="groovyclient">
+<h3>groovyclient<a class="headerlink" href="#groovyclient" title="Permalink to this headline">¶</a></h3>
+<p>The groovyclient is a front controller for user. When you invoke it, it passed the arguments and standard input stream to the back-end&#8217;s groovyserver (which is automatically invoked if not exists).</p>
+<p>In many cases, groovy command can be just replaced with groovyclient:</p>
+<div class="highlight-python"><pre>$ groovy -e "println('Hello, Groovy!')"
+$ groovyclient -e "println('Hello, GroovyServ!')"</pre>
+</div>
+<p>Or:</p>
+<div class="highlight-python"><pre>$ groovy hello.groovy
+$ groovyclient hello.groovy</pre>
+</div>
+<p>For more topics, read the <a class="reference internal" href="userguide_en.html#ref-userguide"><em>User Guide</em></a>.</p>
+</div>
+<div class="section" id="groovyserver">
+<h3>groovyserver<a class="headerlink" href="#groovyserver" title="Permalink to this headline">¶</a></h3>
+<p>The groovyserver is the engine to run your Groovy script. By invoking groovyclient, groovyserver is automatically invoked and stationed permanently. But you can also explicitly invoke it with detail options.</p>
+<p>For example, when you want to kill the groovyserver process (e.g. because there isn&#8217;t enough memory):</p>
+<div class="highlight-python"><pre>$ groovyserver -k</pre>
+</div>
+<p>Or, when you want to restart the process and turn debug mode on (e.g. because it seems something wrong):</p>
+<div class="highlight-python"><pre>$ groovyserver -r -v</pre>
+</div>
+<p>Of course, in usual case, you don&#8217;t have to use the groovyserver command.
+For more topics, read the <a class="reference internal" href="userguide_en.html#ref-userguide"><em>User Guide</em></a>.</p>
 </div>
 </div>
 </div>
@@ -100,8 +122,13 @@ limitations under the License.</pre>
 </div>
   <h3>Contents of This Page</h3>
   <ul>
-<li><a class="reference internal" href="#">License</a><ul>
-<li><a class="reference internal" href="#the-apache-software-license-version-2-0">The Apache Software License, Version 2.0</a></li>
+<li><a class="reference internal" href="#">Quick Start</a><ul>
+<li><a class="reference internal" href="#after-installing-groovyserv">After Installing GroovyServ</a></li>
+<li><a class="reference internal" href="#two-commands-for-you">Two commands for you</a><ul>
+<li><a class="reference internal" href="#groovyclient">groovyclient</a></li>
+<li><a class="reference internal" href="#groovyserver">groovyserver</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

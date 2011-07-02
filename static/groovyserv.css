@@ -102,13 +102,13 @@ img {
   border-bottom: 5px solid #ddd;
 }
 .document .body h2 {
-  margin: 15px 2px;
+  margin: 30px 2px 20px 2px;
   background: #fff;
   border: 0;
   border-bottom: 2px solid #ddd;
 }
 .document .body h3 {
-  margin: 15px 2px;
+  margin: 15px 2px 5px 2px;
   background: #fff;
   border: 0;
 }

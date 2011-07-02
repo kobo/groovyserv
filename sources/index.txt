@@ -12,7 +12,7 @@ It is too long to wait for start-up of Groovy even for 1 second.
 GroovyServ reduces startup time of the JVM and Groovy significantly.
 It's of course dependent on environments, but in most case, it is *10 to 20 times faster than regular Groovy*.
 
-See also :ref:`README <ref-readme>` (:ref:`Japanese <ref-readme_ja>`) and :ref:`Screencast <ref-screencast>`.
+See also :ref:`User Guide <ref-userguide>` (:ref:`Japanese <ref-userguide_ja>`) and :ref:`Screencast <ref-screencast>`.
 
 Feature
 =======
