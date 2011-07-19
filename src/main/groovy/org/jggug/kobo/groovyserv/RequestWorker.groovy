@@ -126,6 +126,11 @@ class RequestWorker extends ThreadPoolExecutor {
                     if (cancelledByClient) {
                         DebugUtils.verboseLog("${id}: Invoke handler is cancelled: ${runnable}", e)
                         invokeFuture.cancel(true)
+
+                        // Future#cancel(true) isn't a certain way to stop a running thread to invoke a user script.
+                        // So Socket#close is called here to force to fail reading/writing of standard streams,
+                        // and it causes a termination of the running thread.
+                        closeSafety()
                     }
                 }
                 break
@@ -137,6 +142,7 @@ class RequestWorker extends ThreadPoolExecutor {
     private closeSafety() {
         // if stream handler is blocking to read from input stream,
         // this closing makes socket error, then blocking in stream handler is cancelled.
+        if (!conn) return
         IOUtils.close(conn)
         conn = null
     }
