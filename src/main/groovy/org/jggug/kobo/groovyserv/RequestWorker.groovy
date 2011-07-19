@@ -115,7 +115,6 @@ class RequestWorker extends ThreadPoolExecutor {
                     DebugUtils.verboseLog("${id}: Stream handler is cancelled: ${runnable}", e)
                     streamFuture.cancel(true)
                 }
-                closeSafety()
                 break
             case streamFuture:
                 DebugUtils.verboseLog("${id}: Stream handler is dead: ${runnable}", e)
@@ -126,17 +125,25 @@ class RequestWorker extends ThreadPoolExecutor {
                     if (cancelledByClient) {
                         DebugUtils.verboseLog("${id}: Invoke handler is cancelled: ${runnable}", e)
                         invokeFuture.cancel(true)
-
-                        // Future#cancel(true) isn't a certain way to stop a running thread to invoke a user script.
-                        // So Socket#close is called here to force to fail reading/writing of standard streams,
-                        // and it causes a termination of the running thread.
-                        closeSafety()
                     }
                 }
                 break
             default:
                 throw new GServIllegalStateException("${id}: unexpected state: runnable=${runnable}, invokeFuture=${invokeFuture}, streamFuture=${streamFuture}")
         }
+
+        // When this executor is terminated, the terminated() method is called and in there closeSafety() is called too.
+        // If you want to close the socket certainly, it's enough.
+        // But if you want to terminate threads of handler, it isn't enough.
+        //
+        // Calling Future#cancel(true) isn't a certain way to stop a running thread to invoke a user script
+        // because the script may not be able to react to an thread interruption.
+        // So Socket#close is called here to force to fail reading/writing of standard streams.
+        // It causes a termination of the running thread, so certainly the invoke handler is terminated.
+        //
+        // When the invoke handler ends before the stream handler, the following closeSafety() is also called.
+        // It causes IOException on the thread of the stream handler. As a result, the stream handler is also terminated.
+        closeSafety()
     }
 
     private closeSafety() {
