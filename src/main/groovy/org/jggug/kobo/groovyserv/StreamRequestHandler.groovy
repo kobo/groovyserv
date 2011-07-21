@@ -25,14 +25,16 @@ class StreamRequestHandler implements Runnable {
     private ClientConnection conn
 
     StreamRequestHandler(clientConnection) {
-        this.id = "GroovyServ:StreamRequestHandler:${clientConnection.socket.port}"
+        this.id = "StreamRequestHandler:${clientConnection.socket.port}"
         this.conn = clientConnection
     }
 
     /**
-     * @throws ClientInterruptionException
-     *             When interrupted by client request which has a "Size: -1" header.
+     * @throws GServInterruptedException
      *             Acutally this exception is wrapped by ExecutionException.
+     *             When interrupted by client request which has a "Size: -1" header.
+     *             When interrupted by receiving invalid request.
+     *             When interrupted by EOF of input stream of socket (Half-closed by the client).
      */
     @Override
     void run() {
@@ -43,42 +45,47 @@ class StreamRequestHandler implements Runnable {
                 def request = conn.readStreamRequest()
                 if (!request.isValid()) {
                     DebugUtils.verboseLog "${id}: 'Size' header is invalid"
-                    return // not to continue because this is unexpected data
+                    throw new GServInterruptedException("${id}: By receiving invalid request")
                 }
                 if (request.isEmpty()) {
-                    DebugUtils.verboseLog "${id}: Recieved empty request from client"
-                    throw new ClientInterruptionException("${id}: Empty request by client request")
+                    DebugUtils.verboseLog "${id}: Recieved empty request from client (Closed stdin on client)"
+                    conn.tearDownTransferringPipes()
+                    continue // continue to check the client interruption
                 }
                 if (request.isInterrupted()) {
-                    DebugUtils.verboseLog "${id}: Recieved interrupted request from client"
-                    throw new ClientInterruptionException("${id}: Interrupted by client request")
+                    DebugUtils.verboseLog "${id}: Recieved interruption request from client"
+                    throw new GServInterruptedException("${id}: By client request")
                 }
+
                 def buff = new byte[request.size]
                 int offset = 0
                 int result = conn.socket.inputStream.read(buff, offset, request.size) // read from raw stream
                 if (result == -1) {
-                    // terminate this thread without closing stream.
-                    // because to be closed input stream by client doesn't mean termination of session.
-                    DebugUtils.verboseLog "${id}: End of stream"
-                    return
+                    DebugUtils.verboseLog "${id}: EOF of input stream of socket (Half-closed by the client)"
+                    throw new GServInterruptedException("${id}: By EOF of input stream of socket")
                 }
                 readLog(buff, offset, result, request.size)
-                conn.writeFromStreamRequest(buff, offset, result)
+                if (conn.tearedDownPipes) {
+                    DebugUtils.errorLog "Already teared down pipes. So the above data is just ignored."
+                } else {
+                    conn.transferStreamRequest(buff, offset, result)
+                }
             }
         }
         catch (InterruptedException e) {
             DebugUtils.verboseLog("${id}: Thread interrupted: ${e.message}") // ignored details
         }
-        catch (GServIOException e) {
-            DebugUtils.verboseLog("${id}: I/O error: ${e.message}") // ignored details
-        }
         catch (InterruptedIOException e) {
             DebugUtils.verboseLog("${id}: I/O interrupted: ${e.message}") // ignored details
+        }
+        catch (GServIOException e) {
+            DebugUtils.verboseLog("${id}: I/O error: ${e.message}") // ignored details
         }
         catch (IOException e) {
             DebugUtils.verboseLog("${id}: I/O error: ${e.message}") // ignored details
         }
         finally {
+            conn.tearDownTransferringPipes()
             DebugUtils.verboseLog("${id}: Thread is dead")
         }
     }

@@ -19,25 +19,41 @@ package org.jggug.kobo.groovyserv
 /**
  * Handling StreamRequest in protocol between client and server.
  *
- * @author UEHARA Junji
  * @author NAKANO Yasuharu
  */
 class StreamRequestInputStream extends InputStream {
 
+    private InputStream inputStream
+    private boolean closed = false
+
+    private StreamRequestInputStream() { /* preventing from instantiation */ }
+
+    static StreamRequestInputStream newIn(InputStream inputStream) {
+        new StreamRequestInputStream(inputStream:inputStream)
+    }
+
+    /**
+     * @throws IOException When the stream is already closed
+     */
     @Override
-    public int read() {
+    int read() {
+        if (closed) throw new IOException("Stream of in closed")
         try {
-            return currentInputStream.read()
+            return inputStream.read()
         } catch (InterruptedIOException e) {
             DebugUtils.verboseLog("StreamRequestInputStream:read(): Interrupted I/O")
             return -1
         }
     }
 
+    /**
+     * @throws IOException When the stream is already closed
+     */
     @Override
-    public int read(byte[] buf, int offset, int length) {
+    int read(byte[] buf, int offset, int length) {
+        if (closed) throw new IOException("Stream of in closed")
         try {
-            return currentInputStream.read(buf, offset, length)
+            return inputStream.read(buf, offset, length)
         } catch (InterruptedIOException e) {
             DebugUtils.verboseLog("StreamRequestInputStream:read(byte[], int, int): Interrupted I/O")
             return -1
@@ -45,27 +61,36 @@ class StreamRequestInputStream extends InputStream {
     }
 
     @Override
-    public void close() {
-        // do nothing here because the InputStream is connected to socket
+    void close() {
+        closed = true
+        DebugUtils.verboseLog "StreamRequestInputStream is closed: ${ClientConnectionRepository.instance.currentConnection}"
     }
 
+    /**
+     * @throws IOException When the stream is already closed
+     */
     @Override
-    public void mark(int readlimit) {
-        currentInputStream.mark()
+    void mark(int readlimit) {
+        if (closed) throw new IOException("Stream of in closed")
+        inputStream.mark()
     }
 
+    /**
+     * @throws IOException When the stream is already closed
+     */
     @Override
-    public void reset() {
-        currentInputStream.reset()
+    void reset() {
+        if (closed) throw new IOException("Stream of in closed")
+        inputStream.reset()
     }
 
+    /**
+     * @throws IOException When the stream is already closed
+     */
     @Override
-    public boolean markSupported() {
-        currentInputStream.markSupported()
-    }
-
-    private InputStream getCurrentInputStream() {
-        ClientConnectionRepository.instance.currentConnection.inputStream
+    boolean markSupported() {
+        if (closed) throw new IOException("Stream of in closed")
+        inputStream.markSupported()
     }
 
 }

@@ -22,19 +22,36 @@ package org.jggug.kobo.groovyserv
 class ClientConnection implements Closeable {
 
     private String id
-    private Cookie cookie
+    final Cookie cookie
     private Socket socket
     private ThreadGroup ownerThreadGroup
+
     private PipedOutputStream pipedOutputStream // to transfer from socket.inputStream
     private PipedInputStream pipedInputStream   // connected to socket.inputStream indirectly via pipedInputStream and used as System.in
+    private OutputStream socketOutputStream
+
+    private boolean closed = false
+    private boolean tearedDownPipes = false
+
+    // They are used as System.xxx
+    final InputStream ins
+    final PrintStream out
+    final PrintStream err
 
     ClientConnection(cookie, socket, ownerThreadGroup) {
         this.id = "ClientConnection:${socket.port}"
         this.cookie = cookie
         this.socket = socket
         this.ownerThreadGroup = ownerThreadGroup
+
         this.pipedOutputStream = new PipedOutputStream()
         this.pipedInputStream = new PipedInputStream(pipedOutputStream)
+        this.socketOutputStream = new BufferedOutputStream(socket.outputStream)
+
+        this.ins = StreamRequestInputStream.newIn(pipedInputStream)
+        this.out = new PrintStream(StreamResponseOutputStream.newOut(socketOutputStream))
+        this.err = new PrintStream(StreamResponseOutputStream.newErr(socketOutputStream))
+
         ClientConnectionRepository.instance.bind(ownerThreadGroup, this)
     }
 
@@ -57,7 +74,7 @@ class ClientConnection implements Closeable {
     /**
      * @throws GServIOException
      */
-    void writeFromStreamRequest(byte[] buff, int offset, int result) {
+    void transferStreamRequest(byte[] buff, int offset, int result) {
         try {
             pipedOutputStream.write(buff, offset, result)
             pipedOutputStream.flush()
@@ -69,25 +86,11 @@ class ClientConnection implements Closeable {
     }
 
     /**
-     * to return InputStream which you can use as System.in.
-     */
-    InputStream getInputStream() {
-        pipedInputStream
-    }
-
-    /**
-     * to return InputStream which you can use as System.out or System.err.
-     */
-    OutputStream getOutputStream() {
-        socket.outputStream
-    }
-
-    /**
      * @throws GServIOException
      */
     void sendExit(int status) {
         try {
-            socket.outputStream.with { // not to close yet
+            socketOutputStream.with { // not to close yet
                 write(ClientProtocols.formatAsExitHeader(status))
                 flush()
             }
@@ -97,22 +100,51 @@ class ClientConnection implements Closeable {
     }
 
     /**
-     * To close socket and tear down some relational environment.
+     * To close socket and piped I/O stream, and tear down some relational environment.
+     * This method closes the actual socket.
      */
     void close() {
-        ClientConnectionRepository.instance.unbind(ownerThreadGroup)
+        if (closed) {
+            DebugUtils.verboseLog "${id}: Already closed"
+            return
+        }
+        tearDownTransferringPipes()
         if (pipedInputStream) {
             IOUtils.close(pipedInputStream)
-            DebugUtils.verboseLog "${id}: Piped stream closed"
+            DebugUtils.verboseLog "${id}: PipedInputStream is closed"
             pipedInputStream = null
         }
         if (socket) {
             // closing output stream because it needs to flush.
             // socket and socket.inputStream are also closed by closing output stream which is gotten from socket.
-            IOUtils.close(socket.outputStream)
-            DebugUtils.verboseLog "${id}: Socket closed"
+            IOUtils.close(socketOutputStream)
+            DebugUtils.verboseLog "${id}: Socket is closed"
             socket = null
         }
+        ClientConnectionRepository.instance.unbind(ownerThreadGroup)
+        closed = true
+    }
+
+    /**
+     * To close PipedOutputStream as 'stdin'.
+     * It's import to stop an user script safety and quietly.
+     * When an user script is terminated, you must call this method.
+     * Or, IOException with the message of "Write end dead" will be occurred.
+     * This method doesn't close the actual socket.
+     * The piped input stream isn't closed here. because it's used by a user
+     * script after a source of 'stdin' is closed.
+     */
+    void tearDownTransferringPipes() {
+        if (tearedDownPipes) {
+            DebugUtils.verboseLog "${id}: Pipes to transfer a stream request teared down"
+            return
+        }
+        if (pipedOutputStream) {
+            IOUtils.close(pipedOutputStream)
+            DebugUtils.verboseLog "${id}: PipedOutputStream is closed"
+            pipedOutputStream = null
+        }
+        tearedDownPipes = true
     }
 
     @Override

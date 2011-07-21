@@ -28,19 +28,29 @@ class StandardStreams {
     ]
 
     private static final ALTERNATES = [
-        ins: new StreamRequestInputStream(),
-        out: StreamResponseOutputStream.newOut(),
-        err: StreamResponseOutputStream.newErr()
+        ins: newInAsInputStream(),
+        out: newOutAsPrintStream(),
+        err: newErrAsPrintStream(),
     ]
 
     static void setUp() {
+        // The standard streams are replaced with GroovyServ's ones
+        // which can handle the socket for each request thread.
         System.in  = ALTERNATES.ins
-        System.out = new PrintStream(ALTERNATES.out) {
-            void close() { /* do nothing */ }
-        }
-        System.err = new PrintStream(ALTERNATES.err) {
-            void close() { /* do nothing */ }
-        }
+        System.out = ALTERNATES.out
+        System.err = ALTERNATES.err
+    }
+
+    private static InputStream newInAsInputStream() {
+        new DynamicDelegatedInputStream({ -> ClientConnectionRepository.instance.currentConnection.ins })
+    }
+
+    private static PrintStream newOutAsPrintStream() {
+        new DynamicDelegatedPrintStream({ -> ClientConnectionRepository.instance.currentConnection.out })
+    }
+
+    private static PrintStream newErrAsPrintStream() {
+        new DynamicDelegatedPrintStream({ -> ClientConnectionRepository.instance.currentConnection.err })
     }
 
 }

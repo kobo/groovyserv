@@ -74,21 +74,21 @@ class OptionInfo
   class OptionInfoHelp < OptionInfo
     def eval
       usage()
-      exit(0)
+      exit 0
     end
   end
 
   class OptionInfoKillServer < OptionInfo
     def eval
       start_server(["-k"])
-      exit(0)
+      exit 0
     end
   end
 
   class OptionInfoRestartServer < OptionInfo
     def eval
       start_server(["-r"])
-      exit(0)
+      exit 0
     end
   end
 
@@ -293,11 +293,14 @@ def handle_socket(socket)
   end
 end
 
+$closedStdin = false # FIXME
 def handle_stdin(socket)
+  return if $closedStdin
   begin
     data = $stdin.read_nonblock(512)
   rescue EOFError
-    send_interrupt(socket)
+    socket.write "Size: 0\n\n"
+    $closedStdin = true
   else
     socket.write "Size: #{data.length}\n\n"
     socket.write data
@@ -306,6 +309,7 @@ end
 
 def send_interrupt(socket)
     socket.write "Size: -1\n\n"
+    socket.close()
 end
 
 def read_headers(socket)
@@ -331,13 +335,12 @@ begin
   TCPSocket.open(DESTHOST, $client_option.port) { |socket|
     Signal.trap(:INT) {
       send_interrupt(socket)
-      socket.close()
       exit 8
     }
     session(socket, args)
     if $client_option.help
       usage()
-      exit(0)
+      exit 0
     end
   }
 rescue Errno::ECONNREFUSED

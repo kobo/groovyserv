@@ -28,7 +28,7 @@ class GroovyInvokeHandler implements Runnable {
     private InvocationRequest request
 
     GroovyInvokeHandler(request) {
-        this.id = "GroovyServ:GroovyInvokeHandler:${request.port}"
+        this.id = "GroovyInvokeHandler:${request.port}"
         this.request = request
     }
 
@@ -55,7 +55,7 @@ class GroovyInvokeHandler implements Runnable {
             awaitAllSubThreads()
         }
         catch (InterruptedException e) {
-            DebugUtils.verboseLog("${id}: Thread interrupted")
+            DebugUtils.verboseLog("${id}: Thread interrupted: ${e.message}")
         }
         catch (GServIllegalStateException e) {
             shouldResetCurrentDir = false
@@ -143,12 +143,12 @@ class GroovyInvokeHandler implements Runnable {
             return
         }
         threads.each { thread ->
-            thread.stop() // FORCELY
+            thread.stop() // by force
         }
-        DebugUtils.verboseLog("${id}: All sub threads stopped forcely")
+        DebugUtils.verboseLog("${id}: All sub threads stopped by force")
     }
 
-    private getAllAliveSubThreads() {
+    private getAllAliveSubThreads() { // TODO
         def threadGroup = Thread.currentThread().threadGroup
         Thread[] threads = new Thread[threadGroup.activeCount() + 1] // need at lease one extra space (see Javadoc of ThreadGroup)
         int count = threadGroup.enumerate(threads)
