@@ -136,7 +136,7 @@ class ClientConnection implements Closeable {
      */
     void tearDownTransferringPipes() {
         if (tearedDownPipes) {
-            DebugUtils.verboseLog "${id}: Pipes to transfer a stream request teared down"
+            DebugUtils.verboseLog "${id}: Pipes to transfer a stream request already teared down"
             return
         }
         if (pipedOutputStream) {
