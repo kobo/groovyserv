@@ -106,6 +106,11 @@ class DirectAccessIT extends GroovyTestCase {
 
                 Thread.sleep(500)
 
+                assert ins.text == String.format("""\
+                    |Status: 0
+                    |
+                    |""".stripMargin(), SERVER_SIDE_SEPARATOR)
+
                 assert ins.read() == -1
             }
         }
