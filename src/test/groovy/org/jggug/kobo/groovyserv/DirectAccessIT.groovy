@@ -96,6 +96,31 @@ class DirectAccessIT extends GroovyTestCase {
                     |Size: ${SERVER_SIDE_SEPARATOR.size()}
                     |
                     |%s""".stripMargin(), SERVER_SIDE_SEPARATOR)
+            }
+        }
+    }
+
+    void testInterruptedByClient() {
+        use(TestUtils) { // for TestUtils.getAvailableText()
+            new Socket("localhost", 1961).withStreams { ins, out ->
+                out << """\
+                    |Cwd: /tmp
+                    |Arg: ${encodeBase64('-e')}
+                    |Arg: ${encodeBase64('println "BB"; while (true) { sleep 1000 }')}
+                    |Cookie: ${WorkFiles.COOKIE_FILE.text}
+                    |
+                    |""".stripMargin()
+
+                Thread.sleep(1000)
+
+                assert ins.availableText == String.format("""\
+                    |Channel: out
+                    |Size: 2
+                    |
+                    |BBChannel: out
+                    |Size: ${SERVER_SIDE_SEPARATOR.size()}
+                    |
+                    |%s""".stripMargin(), SERVER_SIDE_SEPARATOR)
 
                 Thread.sleep(500)
 
