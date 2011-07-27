@@ -32,7 +32,7 @@ import java.util.concurrent.atomic.AtomicInteger
  */
 class RequestWorker extends ThreadPoolExecutor {
 
-    private static final int THREAD_COUNT = 2
+    private static final int POOL_SIZE = 2
 
     private String id
     private ClientConnection conn
@@ -41,7 +41,7 @@ class RequestWorker extends ThreadPoolExecutor {
 
     RequestWorker(cookie, socket) {
         // API: ThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue)
-        super(THREAD_COUNT, THREAD_COUNT, 0, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>())
+        super(POOL_SIZE, POOL_SIZE, 0, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>())
         this.id = "RequestWorker:${socket.port}"
 
         def rootThreadGroup = new GServThreadGroup("GServThreadGroup:${socket.port}")
@@ -92,48 +92,29 @@ class RequestWorker extends ThreadPoolExecutor {
         DebugUtils.verboseLog("${id}: Handler is dead: ${runnable}", e)
         super.afterExecute(runnable, e)
 
-        // to await assign futures to instance variables.
-        // if user script is very very short, a thread which is invoking the script
+        // To await assign futures to instance variables.
+        // If user script is very very short, a thread which is invoking the script
         // will be done quickly before assign to instance variables in start() method.
         while (!streamFuture || !invokeFuture) {
             Thread.sleep 10
         }
 
-        int exitStatus = ExitStatus.SUCCESS.code
-        switch (runnable) {
-            case invokeFuture:
-                DebugUtils.verboseLog("${id}: Invoke handler is dead: ${runnable}", e)
-                exitStatus = getExitStatus(runnable)
-                if (streamFuture.isDone()) {
-                    DebugUtils.verboseLog("${id}: Stream handler is already done: ${runnable}", e)
-                } else {
-                    DebugUtils.verboseLog("${id}: Stream handler is canceling: ${runnable}", e)
-                    streamFuture.cancel(true)
-                }
-                break
-            case streamFuture:
-                DebugUtils.verboseLog("${id}: Stream handler is dead: ${runnable}", e)
-                if (invokeFuture.isDone()) {
-                    DebugUtils.verboseLog("${id}: Invoke handler is already done: ${runnable}", e)
-                } else {
-                    if (isCancelledByClient(runnable)) {
-                        exitStatus = ExitStatus.INTERRUPTED.code
-                        DebugUtils.verboseLog("${id}: Invoke handler is canceling: ${runnable}", e)
-                        invokeFuture.cancel(true)
-                    }
-                }
-                break
-            default:
-                throw new GServIllegalStateException("${id}: unexpected state: runnable=${runnable}, invokeFuture=${invokeFuture}, streamFuture=${streamFuture}")
+        int exitStatus = getExitStatus(runnable)
+        def anotherFuture = (runnable == invokeFuture) ? streamFuture : invokeFuture
+        if (anotherFuture.isDone()) {
+            DebugUtils.verboseLog("${id}: another handler ${anotherFuture} is already done", e)
+        } else {
+            DebugUtils.verboseLog("${id}: another handler ${anotherFuture} is canceling by ${runnable}", e)
+            anotherFuture.cancel(true)
         }
 
-        // When this executor is terminated, the terminated() method is called and in there closeSafety() is called too.
+        // When this executor instance is terminated, the terminated() method is called and in there closeSafety() is called too.
         // If you want to close the socket certainly, it's enough.
         // But if you want to terminate threads of handler, it isn't enough.
         //
         // Calling Future#cancel(true) isn't a certain way to stop a running thread to invoke a user script
-        // because the script may not be able to react to an thread interruption.
-        // So Socket#close is called here to force to fail reading/writing of standard streams.
+        // because the script may not be able to react to an thread's interruption.
+        // So Socket#close is called here in order to force to fail reading/writing of standard streams.
         // It causes a termination of the running thread, so certainly the invoke handler is terminated.
         //
         // When the invoke handler ends before the stream handler, the following closeSafety() is also called.
@@ -142,14 +123,14 @@ class RequestWorker extends ThreadPoolExecutor {
     }
 
     private synchronized closeSafety(int exitStatus) {
-        // if stream handler is blocking to read from input stream,
-        // this closing makes socket error, then blocking in stream handler is cancelled.
+        // While stream handler is blocking to read from the input stream,
+        // this closing makes a socket error, and then blocking in stream handler is cancelled.
         if (!conn) return
         try {
             conn.sendExit(exitStatus)
-            DebugUtils.verboseLog("${id}: Exit status is sent: $exitStatus")
+            DebugUtils.verboseLog("${id}: Sent exit status: ${exitStatus}")
         } catch (GServIOException e) {
-            DebugUtils.verboseLog("${id}: Failed to send exit status: $exitStatus", e)
+            DebugUtils.verboseLog("${id}: Failed to send exit status: ${exitStatus}", e)
         }
         IOUtils.close(conn)
         conn = null
@@ -161,7 +142,7 @@ class RequestWorker extends ThreadPoolExecutor {
         DebugUtils.verboseLog("${id}: Terminated")
     }
 
-    private int getExitStatus(runnable) { // FIXME to use ExitStatus
+    private int getExitStatus(runnable) {
         try {
             IOUtils.awaitFuture(runnable)
             return ExitStatus.SUCCESS.code
@@ -171,7 +152,11 @@ class RequestWorker extends ThreadPoolExecutor {
             return ExitStatus.INTERRUPTED.code
         }
         catch (InterruptedException e) {
-            DebugUtils.verboseLog("${id}: Interrupted: ${e.message}")
+            DebugUtils.verboseLog("${id}: Interrupted as thread: ${e.message}")
+            return ExitStatus.INTERRUPTED.code
+        }
+        catch (GServInterruptedException e) {
+            DebugUtils.verboseLog("${id}: Interrupted by client: ${e.message}")
             return ExitStatus.INTERRUPTED.code
         }
         catch (SystemExitException e) {
@@ -187,26 +172,5 @@ class RequestWorker extends ThreadPoolExecutor {
             return ExitStatus.UNEXPECTED_ERROR.code
         }
     }
-
-    private isCancelledByClient(runnable) {
-        try {
-            IOUtils.awaitFuture(runnable)
-        }
-        catch (GServInterruptedException e) {
-            DebugUtils.verboseLog("${id}: Interrupted by stream handler: ${e.message}")
-            return true
-        }
-        catch (CancellationException e) {
-            DebugUtils.verboseLog("${id}: Cancelled: ${e.message}")
-        }
-        catch (InterruptedException e) {
-            DebugUtils.verboseLog("${id}: Interrupted: ${e.message}")
-        }
-        catch (Throwable e) {
-            DebugUtils.errorLog("${id}: Unexpected error", e)
-        }
-        return false
-    }
-
 }
 
