@@ -145,8 +145,12 @@ class RequestWorker extends ThreadPoolExecutor {
         // if stream handler is blocking to read from input stream,
         // this closing makes socket error, then blocking in stream handler is cancelled.
         if (!conn) return
-        conn.sendExit(exitStatus)
-        DebugUtils.verboseLog("${id}: Exit status $exitStatus is sent")
+        try {
+            conn.sendExit(exitStatus)
+            DebugUtils.verboseLog("${id}: Exit status is sent: $exitStatus")
+        } catch (GServIOException e) {
+            DebugUtils.verboseLog("${id}: Failed to send exit status: $exitStatus", e)
+        }
         IOUtils.close(conn)
         conn = null
     }
