@@ -27,6 +27,7 @@ public enum ExitStatus {
     INVALID_REQUEST(2),
     IO_ERROR(3),
     ILLEGAL_STATE(4),
+    TERMINATED(5),
     UNEXPECTED_ERROR(9)
 
     int code

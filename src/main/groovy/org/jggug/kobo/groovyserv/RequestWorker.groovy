@@ -38,7 +38,6 @@ class RequestWorker extends ThreadPoolExecutor {
     private ClientConnection conn
     private Future invokeFuture
     private Future streamFuture
-    private boolean cancelledByClient = false
 
     RequestWorker(cookie, socket) {
         // API: ThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue)
@@ -100,19 +99,15 @@ class RequestWorker extends ThreadPoolExecutor {
             Thread.sleep 10
         }
 
+        int exitStatus = ExitStatus.SUCCESS.code
         switch (runnable) {
             case invokeFuture:
                 DebugUtils.verboseLog("${id}: Invoke handler is dead: ${runnable}", e)
-                if (!cancelledByClient) {
-                    // connection is maybe shuted down by client, so exit status is not sent.
-                    int status = getExitStatus(runnable)
-                    conn.sendExit(status)
-                    DebugUtils.verboseLog("${id}: Exit status $status is sent: ${runnable}", e)
-                }
+                exitStatus = getExitStatus(runnable)
                 if (streamFuture.isDone()) {
                     DebugUtils.verboseLog("${id}: Stream handler is already done: ${runnable}", e)
                 } else {
-                    DebugUtils.verboseLog("${id}: Stream handler is cancelled: ${runnable}", e)
+                    DebugUtils.verboseLog("${id}: Stream handler is canceling: ${runnable}", e)
                     streamFuture.cancel(true)
                 }
                 break
@@ -121,9 +116,9 @@ class RequestWorker extends ThreadPoolExecutor {
                 if (invokeFuture.isDone()) {
                     DebugUtils.verboseLog("${id}: Invoke handler is already done: ${runnable}", e)
                 } else {
-                    cancelledByClient = isCancelledByClient(runnable)
-                    if (cancelledByClient) {
-                        DebugUtils.verboseLog("${id}: Invoke handler is cancelled: ${runnable}", e)
+                    if (isCancelledByClient(runnable)) {
+                        exitStatus = ExitStatus.INTERRUPTED.code
+                        DebugUtils.verboseLog("${id}: Invoke handler is canceling: ${runnable}", e)
                         invokeFuture.cancel(true)
                     }
                 }
@@ -143,24 +138,26 @@ class RequestWorker extends ThreadPoolExecutor {
         //
         // When the invoke handler ends before the stream handler, the following closeSafety() is also called.
         // It causes IOException on the thread of the stream handler. As a result, the stream handler is also terminated.
-        closeSafety()
+        closeSafety(exitStatus)
     }
 
-    private closeSafety() {
+    private closeSafety(int exitStatus) {
         // if stream handler is blocking to read from input stream,
         // this closing makes socket error, then blocking in stream handler is cancelled.
         if (!conn) return
+        conn.sendExit(exitStatus)
+        DebugUtils.verboseLog("${id}: Exit status $exitStatus is sent")
         IOUtils.close(conn)
         conn = null
     }
 
     @Override
     protected void terminated() {
-        closeSafety() // by way of precaution
+        closeSafety(ExitStatus.TERMINATED.code) // by way of precaution
         DebugUtils.verboseLog("${id}: Terminated")
     }
 
-    private int getExitStatus(runnable) {
+    private int getExitStatus(runnable) { // FIXME to use ExitStatus
         try {
             IOUtils.awaitFuture(runnable)
             return ExitStatus.SUCCESS.code

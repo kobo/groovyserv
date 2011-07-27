@@ -107,7 +107,7 @@ class DirectAccessIT extends GroovyTestCase {
                 Thread.sleep(500)
 
                 assert ins.text == String.format("""\
-                    |Status: 0
+                    |Status: ${ExitStatus.INTERRUPTED.code}
                     |
                     |""".stripMargin(), SERVER_SIDE_SEPARATOR)
 
