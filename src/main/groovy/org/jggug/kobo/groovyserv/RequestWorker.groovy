@@ -141,7 +141,7 @@ class RequestWorker extends ThreadPoolExecutor {
         closeSafety(exitStatus)
     }
 
-    private closeSafety(int exitStatus) {
+    private synchronized closeSafety(int exitStatus) {
         // if stream handler is blocking to read from input stream,
         // this closing makes socket error, then blocking in stream handler is cancelled.
         if (!conn) return
