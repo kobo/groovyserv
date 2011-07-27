@@ -50,7 +50,7 @@ class ClientConnectionRepository {
     private ClientConnection findConnection(threadGroup) {
         def conn = connectionPerThreadGroup[threadGroup]
         if (conn) {
-            DebugUtils.verboseLog("ClientConnectionRepository: Found client connection: ${threadGroup}: ${conn}")
+            //DebugUtils.verboseLog("ClientConnectionRepository: Found client connection: ${threadGroup}: ${conn}")
             return conn
         }
         if (threadGroup.parent == null) {
