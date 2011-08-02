@@ -253,10 +253,6 @@ exit /B %ERRORLEVEL%
         echo ERROR: Not found a valid GROOVY_HOME directory: "%GROOVY_HOME%" >&2
         exit /B 1
     )
-
-    @rem Replace long name to short name for start command
-    rem for %%A in ("%GROOVY_BIN%") do set GROOVY_BIN=%%~sA
-
     call :info_log Groovy command path: "%GROOVY_BIN%" ^(found at GROOVY_HOME^)
 exit /B
 
@@ -272,7 +268,8 @@ exit /B
 
 @rem GROOVY_BIN will be modified
 :find_groovy_from_path_and_setup_GROOVY_BIN
-    set GROOVY_BIN=%~$PATH:1
+    @rem Replace long name to short name for start command
+    set GROOVY_BIN=%~s$PATH:1
 exit /B
 
 @rem ERRORLEVEL will be modified
@@ -292,6 +289,7 @@ exit /B 0
             call :info_log   +  %1="%%z"
         )
     ) else (
+        @rem Replace long name to short name for start command
         set %1=%gs_tmp_value%
     )
 exit /B 0
