@@ -175,7 +175,7 @@ if not errorlevel 1 (
 
 if exist "%GROOVYSERV_COOKIE_FILE%" del "%GROOVYSERV_COOKIE_FILE%"
 if defined DEBUG (
-    "%GROOVY_BIN%" %GROOVYSERV_OPTS% -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)"
+    %GROOVY_BIN% %GROOVYSERV_OPTS% -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)"
     goto end
 ) else (
     @rem The start command somehow doesn't update errorleve when it's succeed.
@@ -184,7 +184,7 @@ if defined DEBUG (
     start ^
         "groovyserver[port:%GROOVYSERVER_PORT%]" ^
         /MIN ^
-        "%GROOVY_BIN%" ^
+        %GROOVY_BIN% ^
         %GROOVYSERV_OPTS% ^
         -e "println('Groovyserver^(port %GROOVYSERVER_PORT%^) is running');println('Close this window to stop');org.jggug.kobo.groovyserv.GroovyServer.main(args)"
     if errorlevel 1 (
