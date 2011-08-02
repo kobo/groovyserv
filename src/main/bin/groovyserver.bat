@@ -280,8 +280,9 @@ exit /B
 exit /B 0
 
 @rem environment variable which name is the first argument will be modified
+@rem or when it's a valid windows' long name, it will be converted to the short name.
 :expand_path
-    set gs_tmp_value=%~2
+    set gs_tmp_value=%~s2
     @rem TODO checking a first char need to apply each entry of CLASSPATH
     if "%gs_tmp_value:~0,1%" == "/" (
         for /f "delims=" %%z in ('cygpath.exe --windows --path "%~2"') do (
@@ -290,6 +291,8 @@ exit /B 0
             call :info_log   -  %1="%gs_tmp_value%"
             call :info_log   +  %1="%%z"
         )
+    ) else (
+        set %1=%gs_tmp_value%
     )
 exit /B 0
 
