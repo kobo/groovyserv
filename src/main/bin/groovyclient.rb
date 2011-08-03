@@ -252,15 +252,18 @@ end
 #puts "Original ARGV: #{ARGV.inspect}"
 #puts "Parsed options: #{$options.inspect}"
 
-# Only show usage
+# Only show usage (highest priority)
 if $options.client[:help]
   usage()
   exit 0
 end
 
-# Start server when specified
+# Start or stop server when specified
 unless $options.client[:groovyserver_opt].empty?
   start_server($options.client[:groovyserver_opt].uniq)
+  if $options.client[:groovyserver_opt].include?("-k")
+    exit 0
+  end
 end
 
 # Invoke script (before, start server if down)
