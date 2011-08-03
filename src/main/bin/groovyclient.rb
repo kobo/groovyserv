@@ -79,18 +79,18 @@ options:
                                    name includes specified substr"
 end
 
-def start_server(arg)
+def start_server(args)
   unless FileTest.executable? GROOVYSERVER_CMD
     STDERR.puts "ERROR: Command not found: #{GROOVYSERVER_CMD}"
     exit 1
   end
   if $options.client[:quiet]
-    arg << "-q"
+    args << "-q"
   else
-    command_str = "'#{GROOVYSERVER_CMD}' -p #{$options.client[:port]} #{arg.join}"
+    command_str = "'#{GROOVYSERVER_CMD}' -p #{$options.client[:port]} #{args.join(' ')}"
     STDERR.printf "Invoking server: %s\n", command_str
   end
-  system(GROOVYSERVER_CMD, "-p", $options.client[:port].to_s, *arg)
+  system(GROOVYSERVER_CMD, "-p", $options.client[:port].to_s, *args)
 end
 
 def session(socket, args)
