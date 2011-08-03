@@ -46,7 +46,10 @@ class Options
       :help => false,
       :groovyserver_opt => [],
     }
-    @server = []
+    @server = {
+      :help => false,
+      :args => [],
+    }
   end
 end
 
@@ -61,20 +64,19 @@ $options = nil    # FIXME shouldn't use global variables
 #-------------------------------------------
 
 def usage()
-  print(("\n"+
-         "usage: groovyclient.rb %s[option for groovyclient] [args/options for groovy]\n"+
-         "options:\n"+
-         "  %sh,%shelp                       show this usage\n" \
-         "  %sp,%sport <port>                specify the port to connect to groovyserver\n" \
-         "  %sk,%skill-server                kill the running groovyserver\n" \
-         "  %sr,%srestart-server             restart the running groovyserver\n" \
-         "  %sq,%squiet                      suppress statring messages\n" \
-         "  %senv <substr>                   pass environment variables of which a name\n" \
-         "                                   includes specified substr\n" \
-         "  %senv-all                        pass all environment variables\n" \
-         "  %senv-exclude <substr>           don't pass environment variables of which a\n" \
-         "                                   name includes specified substr\n" \
-         "").gsub("%s", CLIENT_OPTION_PREFIX))
+  puts "\
+usage: groovyclient.rb -C[option for groovyclient] [args/options for groovy]
+options:
+  -Ch,-Chelp                       show this usage
+  -Cp,-Cport <port>                specify the port to connect to groovyserver
+  -Ck,-Ckill-server                kill the running groovyserver
+  -Cr,-Crestart-server             restart the running groovyserver
+  -Cq,-Cquiet                      suppress statring messages
+  -Cenv <substr>                   pass environment variables of which a name
+                                   includes specified substr
+  -Cenv-all                        pass all environment variables
+  -Cenv-exclude <substr>           don't pass environment variables of which a
+                                   name includes specified substr"
 end
 
 def start_server(arg)
@@ -146,7 +148,10 @@ def handle_socket(socket)
     exit 1
   end
   if headers['Status']
-    usage() if $options.client[:help]
+    if $options.server[:help]
+      puts "\n"
+      usage()
+    end
     exit headers['Status'].to_i
   end
   data = socket.read(headers['Size'].to_i)
@@ -224,10 +229,10 @@ def parse_option(args)
     when "-Ch", "-Chelp"
       options.client[:help] = true
     when "--help", "-help", "-h"
-      options.client[:help] = true
-      options.server << arg
+      options.server[:help] = true
+      options.server[:args] << arg
     else
-      options.server << arg
+      options.server[:args] << arg
     end
   end
   options
@@ -237,6 +242,7 @@ end
 # Main
 #-------------------------------------------
 
+# Parsing options
 begin
   $options = parse_option(ARGV)
 rescue => e
@@ -246,10 +252,18 @@ end
 #puts "Original ARGV: #{ARGV.inspect}"
 #puts "Parsed options: #{$options.inspect}"
 
+# Only show usage
+if $options.client[:help]
+  usage()
+  exit 0
+end
+
+# Start server when specified
 unless $options.client[:groovyserver_opt].empty?
   start_server($options.client[:groovyserver_opt].uniq)
 end
 
+# Invoke script (before, start server if down)
 failCount = 0
 begin
   TCPSocket.open(DESTHOST, $options.client[:port]) { |socket|
@@ -257,11 +271,7 @@ begin
       send_interrupt(socket)
       exit 8
     }
-    session(socket, $options.server)
-    if $options.client[:help]
-      usage()
-      exit 0
-    end
+    session(socket, $options.server[:args])
   }
 rescue Errno::ECONNREFUSED
   if $options.client[:without_invoking_server]
