@@ -135,22 +135,33 @@ task distBin(type:Zip, dependsOn:['jar', 'compileC']) {
     with executablesSpec
 }
 
+srcSpec = copySpec {
+    from("$projectDir") {
+        include "*.txt"
+        include "pom.xml"
+        include "build.gradle"
+        include "gradle.properties"
+        include "Makefile"
+    }
+    into("src") {
+        from "$projectDir/src"
+    }
+    into("contrib") {
+        from "$projectDir/contrib"
+    }
+    from("$projectDir") {
+        fileMode = 0755
+        include "gradlew*"
+    }
+    into("gradle") {
+        from "$projectDir/gradle"
+    }
+}
 task distSrc(type:Zip) {
     baseName = project.baseName
     classifier = 'src'
-    with copySpec {
-        into "$baseName-$version"
-        from("$projectDir") {
-            include "*.txt"
-            include "pom.xml"
-            include "build.gradle"
-            include "gradle.properties"
-            include "Makefile"
-        }
-        into("src") {
-            from "$projectDir/src"
-        }
-    }
+    into "$baseName-$version"
+    with srcSpec
 }
 
 //----------------------------------
