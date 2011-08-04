@@ -230,6 +230,8 @@ def parse_option(args)
     when "--help", "-help", "-h"
       options.server[:help] = true
       options.server[:args] << arg
+    when /-C.*/
+      raise "Unknown option #{arg}"
     else
       options.server[:args] << arg
     end
@@ -246,6 +248,7 @@ begin
   $options = parse_option(ARGV)
 rescue => e
   STDERR.puts "ERROR: #{e.message}"
+  usage()
   exit 1
 end
 #puts "Original ARGV: #{ARGV.inspect}"
