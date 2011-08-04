@@ -1,18 +1,17 @@
 Summary: GroovyServ, a process server for Groovy
 Name: groovyserv
-Version: 0.8
+Version: 0.9
 Release: 0%{?dist}
 License: Apache License, Version 2.0
 Group: Development/Languages
 Provides: groovyserv
 Requires: java-1.6.0-openjdk
 Requires: groovy >= 1.7.0
-Source0: groovyserv-%{version}_src.zip
+Source0: groovyserv-%{version}-src.zip
 BuildArch: x86_64
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 Packager: Kazuhisa Hara <kazuhisya@gmail.com>
 BuildRequires: unzip
-BuildRequires: maven >= 3.0.0
 BuildRequires: java-1.6.0-openjdk
 
 %description
@@ -32,11 +31,11 @@ rm %{_sourcedir}/groovyserv-%{version} -rf
 
 %build
 cd %{_sourcedir}
-unzip groovyserv-%{version}_src.zip
+unzip groovyserv-%{version}-src.zip
 cd groovyserv-%{version}
-mvn -Dmaven.test.skip=true clean package
+./gradlew
 cd %{_sourcedir}
-mv groovyserv-%{version}/target/groovyserv-%{version}-linux-amd64-bin.zip .
+mv groovyserv-%{version}/build/distributions/groovyserv-%{version}-linux-amd64-bin.zip .
 rm groovyserv-%{version} -rf
 unzip groovyserv-%{version}-linux-amd64-bin.zip
 
@@ -50,7 +49,6 @@ done
 ln -s /opt/groovyserv/bin/groovyclient.rb $RPM_BUILD_ROOT/usr/local/bin
 
 #we're not interested in the bat file
-#rm $RPM_BUILD_ROOT/opt/groovyserv/bin/groovyclient.rb
 rm $RPM_BUILD_ROOT/opt/groovyserv/bin/groovyserver.bat
 
 
@@ -80,6 +78,10 @@ rm -Rf $RPM_BUILD_ROOT
 /usr/local/bin/groovyclient.rb
 
 %changelog
+* Fri Aug  5 2011 Kazuhisa Hara <kazuhisya@gmail.com>
+- Updated to 0.9-release
+- build GroovyServ by Gradle
+
 * Sun Jun 26 2011 Kazuhisa Hara <kazuhisya@gmail.com>
 - Fix for the build section could be constructed automatically from the src.zip
 - Divide ruby client package
