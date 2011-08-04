@@ -6,21 +6,21 @@ How to Build
 Build binary zip
 ----------------
 
-Download and expand GroovyServ source package groovyserv-0.8-src.zip to any directory.
+Download and expand GroovyServ source package groovyserv-0.9-src.zip to any directory.
 For example::
 
     $ mkdir -p ~/opt/src
     $ cd ~/opt/src
-    $ unzip groovyserv-0.8-src.zip
+    $ unzip groovyserv-0.9-src.zip
 
 Build with Maven as follows (recommended Maven3.x since v0.6)::
 
-    $ cd ~/opt/src/groovyserv-0.8
+    $ cd ~/opt/src/groovyserv-0.9
     $ mvn clean verify
 
 Then some zip files will be generated. According to :ref:`Install from binary package <ref-howtoinstall-binary>`, install the bin package::
 
-    ~/opt/src/groovyserv-0.8/target/groovyserv-0.8-<OS>-<arch>-bin.zip
+    ~/opt/src/groovyserv-0.9/target/groovyserv-0.9-<OS>-<arch>-bin.zip
 
 If some tests fail, please try again with specifying character encoding as follows::
 
@@ -45,14 +45,14 @@ Build only groovyclient
 Since v0.8, there is the Makefile which can build a groovyclient from C sources.
 You can easily build a groovyclient binary file as follows::
 
-    $ cd ~/opt/src/groovyserv-0.8
+    $ cd ~/opt/src/groovyserv-0.9
     $ make clean
     $ make
 
 The binary file is created in target directory. You can copy it where you want::
 
-    ~/opt/src/groovyserv-0.8/target/groovyclient      (for Linux / Mac OS X)
-    ~/opt/src/groovyserv-0.8/target/groovyclient.exe  (for Windows)
+    ~/opt/src/groovyserv-0.9/target/groovyclient      (for Linux / Mac OS X)
+    ~/opt/src/groovyserv-0.9/target/groovyclient.exe  (for Windows)
 
 
 .. _ref-howtobuild-rpm:
