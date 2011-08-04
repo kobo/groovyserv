@@ -6,10 +6,40 @@
    New Features:
    Improvements:
    Bug Fixes:
+   Contributes:
 
 ==========
 Change Log
 ==========
+
+Version 0.9 (2011-08-04)
+------------------------
+Improvements:
+    - [Env] Now you can use PWD environment variable. PWD is individually changed to the current directory for each invocation of user script.
+    - [Build] You can build GroovyServ by Gradle. Maven's pom.xml is temporarily still there, but maybe it will be removed at next version.
+    - [Performance] The overhead at sequential invocation of groovyclient was reduced. You needed at least one second as a interval of each sequential invocation at v0.8, but at v0.9 you might not be able to notice the overhead.
+    - [Internal] To close connections and to terminate threads are improved. GroovyServ will probably behave more similarly to the regular Groovy than before.
+
+Bug Fixes:
+    - Fixed #33 : When a path of GROOVY_HOME was including a white space, the invocation of groovyserver was failed at v0.8
+
+        - https://github.com/kobo/groovyserv/issues/33
+
+    - Parsing options of Ruby client was wholly refactored. So, some bugs were fixed.
+
+        - Fixed #34 : When invoking "groovyclient.rb -Cr -Cq", -Cq was ignored
+
+            - https://github.com/kobo/groovyserv/issues/34
+
+        - Fixed #35 : When transparently invoking groovyserver by groovyclient.rb, user script isn't invoked
+
+            - https://github.com/kobo/groovyserv/issues/35
+
+    - And other small fixes and improvements are included.
+
+Contributes:
+    - [Build] The spec file required to build a RPM package is there. See: :ref:`Build RPM file <ref-howtobuild-rpm>` (Thanks, Oliver and Kazuhisha)
+
 
 Version 0.8 (2011-06-16)
 ------------------------
