@@ -3,8 +3,40 @@
 How to Build
 ============
 
-Build binary zip
-----------------
+Build binary zip by Gradle
+--------------------------
+
+Download and expand GroovyServ source package groovyserv-0.9-src.zip to any directory.
+For example::
+
+    $ mkdir -p ~/opt/src
+    $ cd ~/opt/src
+    $ unzip groovyserv-0.9-src.zip
+
+Build with Gradle as follows::
+
+    $ cd ~/opt/src/groovyserv-0.9
+    $ ./gradlew
+
+Then some zip files will be generated. According to :ref:`Install from binary package <ref-howtoinstall-binary>`, install the bin package::
+
+    ~/opt/src/groovyserv-0.9/build/distributions/groovyserv-0.9-<OS>-<arch>-bin.zip
+
+If some tests fail, please try again with specifying character encoding as follows::
+
+    $ export _JAVA_OPTIONS=-Dfile.encoding=UTF-8
+    $ ./gradlew
+
+or skip all tests::
+
+    $ ./gradlew clean dist
+
+To build in Windows, you need gcc-3 and MinGW. You must install them before trying to build.
+Then, execute the above commands on Cygwin.
+
+
+Build binary zip by Maven
+-------------------------
 
 Download and expand GroovyServ source package groovyserv-0.9-src.zip to any directory.
 For example::
@@ -35,8 +67,8 @@ or skip all tests::
 
     $ mvn -Dmaven.test.skip=true clean package
 
-To build it in Windows, you need gcc-3 and MinGW (recommended on Cygwin).
-You must install them before trying to build.
+To build in Windows, you need gcc-3 and MinGW. You must install them before trying to build.
+Then, execute the above commands on Cygwin.
 
 
 Build only groovyclient
