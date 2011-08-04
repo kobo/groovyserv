@@ -236,6 +236,10 @@ def parse_option(args)
       options.server[:args] << arg
     end
   end
+  if options.server[:args].empty?
+    # display additionally client's usage at the end of session
+    options.server[:help] = true
+  end
   options
 end
 
