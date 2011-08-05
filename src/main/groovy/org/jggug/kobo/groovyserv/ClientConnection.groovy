@@ -103,7 +103,7 @@ class ClientConnection implements Closeable {
      * To close socket and piped I/O stream, and tear down some relational environment.
      * This method closes the actual socket.
      */
-    void close() {
+    synchronized void close() {
         if (closed) {
             DebugUtils.verboseLog "${id}: Already closed"
             return
@@ -134,7 +134,7 @@ class ClientConnection implements Closeable {
      * The piped input stream isn't closed here. because it's used by a user
      * script after a source of 'stdin' is closed.
      */
-    void tearDownTransferringPipes() {
+    synchronized void tearDownTransferringPipes() {
         if (tearedDownPipes) {
             DebugUtils.verboseLog "${id}: Pipes to transfer a stream request already teared down"
             return
