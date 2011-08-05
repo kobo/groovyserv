@@ -50,6 +50,10 @@ class Options
       :args => [],
     }
   end
+  def need_to_invoke_server?
+    return false if @client[:without_invoking_server]
+    @client[:groovyserver_opt].any? {|v| ['-k', '-r'].include?(v) }
+  end
 end
 
 #-------------------------------------------
@@ -265,7 +269,7 @@ if $options.client[:help]
 end
 
 # Start or stop server when specified
-unless $options.client[:groovyserver_opt].empty?
+if $options.need_to_invoke_server?
   start_server($options.client[:groovyserver_opt].uniq)
   if $options.client[:groovyserver_opt].include?("-k")
     exit 0
