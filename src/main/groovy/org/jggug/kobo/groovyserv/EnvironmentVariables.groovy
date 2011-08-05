@@ -37,6 +37,7 @@ class EnvironmentVariables {
      * Replace System.getenv by the platform native method.
      */
     private void replaceSystemGetenv() {
+        // for System.getenv("xxx")
         System.metaClass.'static'.getenv = { String envVarName ->
             String value = cache[envVarName]
             if (value == null) {
@@ -45,7 +46,15 @@ class EnvironmentVariables {
             DebugUtils.verboseLog("getenv(${envVarName}) => $value")
             return value
         }
+        // for System.getenv()["xxx"] or System.getenv().xxx
         System.metaClass.'static'.getenv = { ->
+            def envMap = new HashMap(origGetenvAll.doMethodInvoke(System))
+            envMap.putAll(cache) // overwritten by cache entries
+            DebugUtils.verboseLog("getenv() => $envMap")
+            return envMap
+        }
+        // for System.env["xxx"] or System.env.xxx
+        System.metaClass.'static'.getEnv = { ->
             def envMap = new HashMap(origGetenvAll.doMethodInvoke(System))
             envMap.putAll(cache) // overwritten by cache entries
             DebugUtils.verboseLog("getenv() => $envMap")

@@ -24,17 +24,39 @@ class EnvironmentVariablesTest extends GroovyTestCase {
         EnvironmentVariables.setUp()
     }
 
-    void testPutAndGetenv() {
+    void testPutAndGetenvWithName() {
         // Before
         assert System.getenv("ENV_TEST_1_NAME") == null
-        assert System.getenv()["ENV_TEST_1_NAME"] == null
-        int beforeEnvCount = System.getenv().size()
         // Exercise
         EnvironmentVariables.instance.put("ENV_TEST_1_NAME=ENV_TEST_1_VALUE")
         // Verify
         assert System.getenv("ENV_TEST_1_NAME") == "ENV_TEST_1_VALUE"
-        assert System.getenv()["ENV_TEST_1_NAME"] == "ENV_TEST_1_VALUE"
+    }
+
+    void testPutAndGetenvWithNoArg() {
+        // Before
+        assert System.getenv()["ENV_TEST_2_NAME"] == null
+        assert System.getenv().ENV_TEST_2_NAME == null
+        int beforeEnvCount = System.getenv().size()
+        // Exercise
+        EnvironmentVariables.instance.put("ENV_TEST_2_NAME=ENV_TEST_2_VALUE")
+        // Verify
+        assert System.getenv()["ENV_TEST_2_NAME"] == "ENV_TEST_2_VALUE"
+        assert System.getenv().ENV_TEST_2_NAME == "ENV_TEST_2_VALUE"
         assert System.getenv().size() == beforeEnvCount + 1
+    }
+
+    void testPutAndEnvProperty() {
+        // Before
+        assert System.env["ENV_TEST_3_NAME"] == null
+        assert System.env.ENV_TEST_3_NAME == null
+        int beforeEnvCount = System.env.size()
+        // Exercise
+        EnvironmentVariables.instance.put("ENV_TEST_3_NAME=ENV_TEST_3_VALUE")
+        // Verify
+        assert System.env["ENV_TEST_3_NAME"] == "ENV_TEST_3_VALUE"
+        assert System.env.ENV_TEST_3_NAME == "ENV_TEST_3_VALUE"
+        assert System.env.size() == beforeEnvCount + 1
     }
 
 }
