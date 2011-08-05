@@ -6,7 +6,7 @@
    New Features:
    Improvements:
    Bug Fixes:
-   Contributes:
+   Contributions:
 
 ==========
 Change Log
@@ -37,7 +37,7 @@ Bug Fixes:
 
     - And other small fixes and improvements are included.
 
-Contributes:
+Contributions:
     - [Build] The spec file required to build a RPM package is there. See: :ref:`Build RPM file <ref-howtobuild-rpm>` (Thanks, Oliver and Kazuhisha)
 
 
