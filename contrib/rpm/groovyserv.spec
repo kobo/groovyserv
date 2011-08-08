@@ -19,6 +19,8 @@ Provides the GroovyServ mechanism for faster groovy execution.
 
 %package ruby
 Summary: GroovyServ Ruby Client
+License: Apache License, Version 2.0
+Group: Development/Languages
 Requires: groovyserv >= %{version}-%{release}
 Requires: ruby
 
@@ -33,6 +35,7 @@ rm %{_sourcedir}/groovyserv-%{version} -rf
 cd %{_sourcedir}
 unzip groovyserv-%{version}-src.zip
 cd groovyserv-%{version}
+export _JAVA_OPTIONS=-Dfile.encoding=UTF-8
 ./gradlew
 cd %{_sourcedir}
 mv groovyserv-%{version}/build/distributions/groovyserv-%{version}-linux-amd64-bin.zip .
@@ -78,6 +81,9 @@ rm -Rf $RPM_BUILD_ROOT
 /usr/local/bin/groovyclient.rb
 
 %changelog
+* Mon Aug  8 2011 Kazuhisa Hara <kazuhisya@gmail.com>
+- Added a workaround for some tests fail
+
 * Fri Aug  5 2011 Kazuhisa Hara <kazuhisya@gmail.com>
 - Updated to 0.9-release
 - build GroovyServ by Gradle
