@@ -27,7 +27,7 @@ baseName = 'groovyserv'
 
 repositories {
     mavenCentral()
-    mavenRepo urls: [
+    mavenRepo url: [
         "http://repository.codehaus.org",
         "http://snapshots.repository.codehaus.org",
     ]
@@ -212,7 +212,7 @@ task integrationTest(dependsOn:['executables', integrationTestSpecs*.taskName])
 // Gradle wrapper
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '1.0-milestone-4'
+    gradleVersion = '1.0-milestone-5'
 }
 
 //------------------------
