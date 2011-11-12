@@ -83,7 +83,8 @@ class RequestWorker extends ThreadPoolExecutor {
     protected RunnableFuture newTaskFor(Runnable runnable, defaultValue) {
         DebugUtils.verboseLog("${id}: Future task of handler is created: ${runnable.id}")
         new FutureTask(runnable, defaultValue) {
-            String toString() { runnable.id } // for debug
+            // temporary fix for GROOVY-5101
+            //String toString() { runnable.id } // for debug
         }
     }
 
