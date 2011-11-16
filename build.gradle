@@ -68,7 +68,15 @@ compileTestGroovy {
 //----------------------------------
 // Build
 
-jar.baseName = project.baseName
+jar {
+    baseName = project.baseName
+
+    // appending the commit id as suffix to the jar file's name of SNAPSHOT
+    if (project.version ==~ /.*SNAPSHOT/) {
+        def commitId = 'git log --oneline -1 HEAD'.execute().text.split()[0]
+        classifier = commitId
+    }
+}
 
 compileGroovy {
     // This classes is used only by unit tests.
