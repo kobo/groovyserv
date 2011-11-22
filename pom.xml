@@ -53,7 +53,7 @@
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy-all</artifactId>
-      <version>1.7.10</version>
+      <version>1.8.4</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -131,7 +131,7 @@
           <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-all</artifactId>
-            <version>1.7.10</version>
+            <version>1.8.4</version>
           </dependency>
           <dependency>
             <groupId>org.codehaus.gmaven</groupId>
