@@ -94,7 +94,7 @@ class GroovyServer {
     }
 
     static int getPortNumber() {
-        return System.getProperty("groovyserver.port") as int ?: DEFAULT_PORT
+        return (System.getProperty("groovyserver.port") ?: DEFAULT_PORT) as int
     }
 
 }
