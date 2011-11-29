@@ -27,6 +27,7 @@ IS_WINDOWS = RUBY_PLATFORM.downcase =~ /mswin(?!ce)|mingw|cygwin|bccwin/
 HOME_DIR = IS_WINDOWS ? ENV['USERPROFILE'] : ENV['HOME']
 COOKIE_FILE_BASE = HOME_DIR + "/.groovy/groovyserv/cookie"
 GROOVYSERVER_CMD = File.expand_path(ENV.fetch("GROOVYSERV_HOME", File.dirname($0)+"/..") + "/bin/groovyserver")
+VERSION = " Client: @GROOVYSERV_VERSION@"
 
 #-------------------------------------------
 # Classes
@@ -83,10 +84,6 @@ options:
   -Cenv-exclude <substr>           don't pass environment variables of which a
                                    name includes specified substr
   -Cv,-Cversion                    display the Groovy and JVM versions"
-end
-
-def version()
-  puts "GroovyServ Version: Client: 0.10-SNAPSHOT" # FIXME
 end
 
 def start_server(args)
@@ -163,7 +160,7 @@ def handle_socket(socket)
       usage()
     end
     if $options.server[:version]
-      version()
+      puts VERSION
     end
     exit headers['Status'].to_i
   end
@@ -246,7 +243,7 @@ def parse_option(args)
       options.server[:args] << arg
     when "-Cv", "-Cversion"
       options.client[:version] = true
-    when "--version", "-version", "-v"
+    when "--version", /^-v/
       options.server[:version] = true
       options.server[:args] << arg
     when /-C.*/
@@ -285,7 +282,7 @@ end
 
 # Only show version (highest priority)
 if $options.client[:version]
-  version()
+    puts "GroovyServ Version:#{VERSION}"
   exit 0
 end
 
