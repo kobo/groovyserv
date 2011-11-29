@@ -43,10 +43,12 @@ class Options
       :env_include_mask => [],
       :env_exclude_mask => [],
       :help => false,
+      :version => false,
       :groovyserver_opt => [],
     }
     @server = {
       :help => false,
+      :version => false,
       :args => [],
     }
   end
@@ -79,7 +81,12 @@ options:
                                    includes specified substr
   -Cenv-all                        pass all environment variables
   -Cenv-exclude <substr>           don't pass environment variables of which a
-                                   name includes specified substr"
+                                   name includes specified substr
+  -Cv,-Cversion                    display the Groovy and JVM versions"
+end
+
+def version()
+  puts "GroovyServ Version: Client: 0.10-SNAPSHOT" # FIXME
 end
 
 def start_server(args)
@@ -154,6 +161,9 @@ def handle_socket(socket)
     if $options.server[:help]
       puts "\n"
       usage()
+    end
+    if $options.server[:version]
+      version()
     end
     exit headers['Status'].to_i
   end
@@ -234,6 +244,11 @@ def parse_option(args)
     when "--help", "-help", "-h"
       options.server[:help] = true
       options.server[:args] << arg
+    when "-Cv", "-Cversion"
+      options.client[:version] = true
+    when "--version", "-version", "-v"
+      options.server[:version] = true
+      options.server[:args] << arg
     when /-C.*/
       raise "Unknown option #{arg}"
     else
@@ -265,6 +280,12 @@ end
 # Only show usage (highest priority)
 if $options.client[:help]
   usage()
+  exit 0
+end
+
+# Only show version (highest priority)
+if $options.client[:version]
+  version()
   exit 0
 end
 
