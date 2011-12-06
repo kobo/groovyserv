@@ -27,7 +27,7 @@ IS_WINDOWS = RUBY_PLATFORM.downcase =~ /mswin(?!ce)|mingw|cygwin|bccwin/
 HOME_DIR = IS_WINDOWS ? ENV['USERPROFILE'] : ENV['HOME']
 COOKIE_FILE_BASE = HOME_DIR + "/.groovy/groovyserv/cookie"
 GROOVYSERVER_CMD = File.expand_path(ENV.fetch("GROOVYSERV_HOME", File.dirname($0)+"/..") + "/bin/groovyserver")
-VERSION = "GroovyServ Version: Client: @GROOVYSERV_VERSION@"
+VERSION_MESSAGE = "GroovyServ Version: Client: @GROOVYSERV_VERSION@"
 
 #-------------------------------------------
 # Classes
@@ -160,7 +160,7 @@ def handle_socket(socket)
       usage()
     end
     if $options.server[:version]
-      puts VERSION
+      puts VERSION_MESSAGE
     end
     exit headers['Status'].to_i
   end
@@ -282,7 +282,7 @@ end
 
 # Only show version (highest priority)
 if $options.client[:version]
-    puts VERSION
+    puts VERSION_MESSAGE
   exit 0
 end
 
