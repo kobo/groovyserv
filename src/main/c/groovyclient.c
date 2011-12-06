@@ -255,14 +255,21 @@ int main(int argc, char** argv)
     fd_soc = connect_server(argv[0], port);
     signal(SIGINT, signal_handler); // using fd_soc in handler
 
+    // get shared cookie
     char cookie[BUFFER_SIZE];
     read_cookie(cookie, sizeof(cookie), port);
 
+    // invoke a script on server
     send_header(fd_soc, argc, argv, cookie);
     int status = start_session(fd_soc);
 
+    // an additional text after invoking
     if (client_option.help) {
         usage();
+        exit(0);
+    }
+    if (client_option.version) {
+        version();
         exit(0);
     }
 

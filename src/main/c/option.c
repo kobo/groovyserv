@@ -40,6 +40,8 @@ struct option_info_t option_info[] = {
     { "help", OPT_HELP, FALSE },
     { "h", OPT_HELP, FALSE },
     { "", OPT_HELP, FALSE },
+    { "version", OPT_VERSION, FALSE },
+    { "v", OPT_VERSION, FALSE },
 };
 
 struct option_t client_option = {
@@ -52,52 +54,54 @@ struct option_t client_option = {
     {}, // each array elements are expected to be filled with NULLs
     {}, // each array elements are expected to be filled with NULLs
     FALSE,
+    FALSE,
 };
 
-static char *groovy_help_options[] = {
-    "--help",
-    "-h"
+static char *groovy_version_options[] = {
+    "--version",
+    "-version",
+    "-v"
 };
 
 void usage()
 {
-    printf("\n"
-           "usage: groovyclient %s[option for groovyclient] [args/options for groovy]\n" \
+    printf("usage: groovyclient -C[option for groovyclient] [args/options for groovy]\n" \
            "options:\n" \
-           "  %sh,%shelp                       show this usage\n" \
-           "  %sp,%sport <port>                specify the port to connect to groovyserver\n" \
-           "  %sk,%skill-server                kill the running groovyserver\n" \
-           "  %sr,%srestart-server             restart the running groovyserver\n" \
-           "  %sq,%squiet                      suppress statring messages\n" \
-           "  %senv <substr>                   pass environment variables of which a name\n" \
+           "  -Ch,-Chelp                       show this usage\n" \
+           "  -Cp,-Cport <port>                specify the port to connect to groovyserver\n" \
+           "  -Ck,-Ckill-server                kill the running groovyserver\n" \
+           "  -Cr,-Crestart-server             restart the running groovyserver\n" \
+           "  -Cq,-Cquiet                      suppress statring messages\n" \
+           "  -Cenv <substr>                   pass environment variables of which a name\n" \
            "                                   includes specified substr\n" \
-           "  %senv-all                        pass all environment variables\n" \
-           "  %senv-exclude <substr>           don't pass environment variables of which a\n" \
+           "  -Cenv-all                        pass all environment variables\n" \
+           "  -Cenv-exclude <substr>           don't pass environment variables of which a\n" \
            "                                   name includes specified substr\n" \
-           ""
-           , CLIENT_OPTION_PREFIX, CLIENT_OPTION_PREFIX, CLIENT_OPTION_PREFIX
-           , CLIENT_OPTION_PREFIX, CLIENT_OPTION_PREFIX, CLIENT_OPTION_PREFIX
-           , CLIENT_OPTION_PREFIX, CLIENT_OPTION_PREFIX, CLIENT_OPTION_PREFIX
-           , CLIENT_OPTION_PREFIX, CLIENT_OPTION_PREFIX, CLIENT_OPTION_PREFIX
-           , CLIENT_OPTION_PREFIX, CLIENT_OPTION_PREFIX
-        );
+           "  -Cv,-Cversion                    display the Groovy and JVM versions\n" \
+           "");
+}
+
+void version()
+{
+    printf("GroovyServ Version: Client: %s\n", GROOVYSERV_VERSION);
 }
 
 static BOOL is_client_option(char* s)
 {
-    return strncmp(s, CLIENT_OPTION_PREFIX,
-                   strlen(CLIENT_OPTION_PREFIX)) == 0;
+    return strncmp(s, CLIENT_OPTION_PREFIX, strlen(CLIENT_OPTION_PREFIX)) == 0;
 }
 
 static BOOL is_groovy_help_option(char* s)
 {
-    char** p;
-    for (p = groovy_help_options;
-         (p-groovy_help_options) < sizeof(groovy_help_options)/sizeof(groovy_help_options[0]); p++) {
-        if (strcmp(*p, s) == 0) {
-            return TRUE;
-        }
-    }
+    if (strncmp("-h", s, 2) == 0) return TRUE; // 'starts with' like as the behavior of the original Groovy
+    if (strcmp("--help", s) == 0) return TRUE;
+    return FALSE;
+}
+
+static BOOL is_groovy_version_option(char* s)
+{
+    if (strncmp("-v", s, 2) == 0) return TRUE; // 'starts with' like as the behavior of the original Groovy
+    if (strcmp("--version", s) == 0) return TRUE;
     return FALSE;
 }
 
@@ -118,7 +122,7 @@ static void set_mask_option(char ** env_mask, char* opt, char* value)
 static struct option_info_t* what_option(char* name)
 {
     int j = 0;
-    for (j=0; j<sizeof(option_info)/sizeof(struct option_info_t); j++) {
+    for (j = 0; j < sizeof(option_info)/sizeof(struct option_info_t); j++) {
         if (strcmp(option_info[j].name, name) == 0) {
             return &option_info[j];
         }
@@ -136,6 +140,11 @@ void scan_options(struct option_t* option, int argc, char **argv)
     for (i = 1; i < argc; i++) {
         if (is_groovy_help_option(argv[i])) {
             option->help = TRUE;
+            return;
+        }
+
+        if (is_groovy_version_option(argv[i])) {
+            option->version = TRUE;
             return;
         }
 
@@ -203,7 +212,11 @@ void scan_options(struct option_t* option, int argc, char **argv)
                 break;
             case OPT_HELP:
                 usage();
-                exit(1);
+                exit(0);
+                break;
+            case OPT_VERSION:
+                version();
+                exit(0);
                 break;
             default:
                 assert(FALSE);

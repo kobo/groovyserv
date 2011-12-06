@@ -99,7 +99,8 @@ compileGroovy {
 
 task compileC << {
     println ">> Compiling C sources..."
-    executeCommand('make', ['-e', 'DESTDIR=build/native']) // TODO when deleting pom.xml, make Makefile have DESTDIR=build/native as default
+    // TODO when deleting pom.xml, make Makefile have DESTDIR=build/native as default
+    executeCommand('make', ['-e', 'DESTDIR=build/native', "GROOVYSERV_VERSION=${project.version}"])
 }
 
 executablesSpec = copySpec {

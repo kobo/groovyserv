@@ -33,6 +33,7 @@ struct option_t {
     char* env_include_mask[MAX_MASK];
     char* env_exclude_mask[MAX_MASK];
     BOOL help;
+    BOOL version;
 };
 
 enum OPTION_TYPE {
@@ -45,6 +46,7 @@ enum OPTION_TYPE {
   OPT_ENV_ALL,
   OPT_ENV_EXCLUDE,
   OPT_HELP,
+  OPT_VERSION,
 };
 
 struct option_info_t {
@@ -56,6 +58,7 @@ struct option_info_t {
 extern struct option_t client_option;
 
 void usage();
+void version();
 void scan_options(struct option_t* option, int argc, char **argv);
 void print_client_options(struct option_t *opt);
 

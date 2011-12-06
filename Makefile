@@ -38,6 +38,10 @@ OBJS =  $(DESTDIR)/groovyclient.o \
 		$(DESTDIR)/session.o \
 		$(DESTDIR)/base64.o
 
+# for built-in version
+GROOVYSERV_VERSION = X.XX-SNAPSHOT
+CFLAGS += -DGROOVYSERV_VERSION=\"$(GROOVYSERV_VERSION)\"
+
 #
 # Rules
 #
