@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import org.apache.tools.ant.filters.ReplaceTokens
+
 //===========================================
 // Basic
 //===========================================
@@ -90,6 +92,7 @@ compileGroovy {
         copy {
             into "$buildDir/classes/main"
             from "$projectDir/src/main/groovy"
+            filter(ReplaceTokens, tokens: ["GROOVYSERV_VERSION": project.version])
         }
     }
 }
@@ -109,9 +112,13 @@ executablesSpec = copySpec {
     }
     into('bin') {
         fileMode = 0755
-        from "$projectDir/src/main/bin"
         from "$buildDir/native/groovyclient"     // ignored if not exists
         from "$buildDir/native/groovyclient.exe" // ignored if not exists
+    }
+    into('bin') { // scripts with filter
+        fileMode = 0755
+        from "$projectDir/src/main/bin"
+        filter(ReplaceTokens, tokens: ["GROOVYSERV_VERSION": project.version])
     }
 }
 task executables(type:Copy, dependsOn:['jar', 'compileC']) {
