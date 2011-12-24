@@ -50,6 +50,7 @@ fi
 # Parse arguments
 #-------------------------------------------
 
+VERSION_MESSAGE="GroovyServ Version: Server: @GROOVYSERV_VERSION@"
 while [ $# -gt 0 ]; do
     case $1 in
         -v)
@@ -73,6 +74,10 @@ while [ $# -gt 0 ]; do
             DO_KILL=RESTART
             shift
             ;;
+        --version)
+            echo "GroovyServ Version: Server: 0.10-SNAPSHOT"
+            exit 1
+            ;;
         *)
             echo "usage: `basename $0` [options]"
             echo "options:"
@@ -81,6 +86,7 @@ while [ $# -gt 0 ]; do
             echo "  -k         kill the running groovyserver"
             echo "  -r         restart the running groovyserver"
             echo "  -p <port>  specify the port to listen"
+            echo "  --version  display the GroovyServ version"
             exit 1
             ;;
     esac

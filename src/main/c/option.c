@@ -77,7 +77,7 @@ void usage()
            "  -Cenv-all                        pass all environment variables\n" \
            "  -Cenv-exclude <substr>           don't pass environment variables of which a\n" \
            "                                   name includes specified substr\n" \
-           "  -Cv,-Cversion                    display the Groovy and JVM versions\n" \
+           "  -Cv,-Cversion                    display the GroovyServ version\n" \
            "");
 }
 

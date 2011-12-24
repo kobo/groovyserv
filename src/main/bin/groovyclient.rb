@@ -83,7 +83,7 @@ options:
   -Cenv-all                        pass all environment variables
   -Cenv-exclude <substr>           don't pass environment variables of which a
                                    name includes specified substr
-  -Cv,-Cversion                    display the Groovy and JVM versions"
+  -Cv,-Cversion                    display the GroovyServ version"
 end
 
 def start_server(args)
