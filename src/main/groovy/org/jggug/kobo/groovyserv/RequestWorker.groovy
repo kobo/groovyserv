@@ -102,9 +102,9 @@ class RequestWorker extends ThreadPoolExecutor {
         int exitStatus = getExitStatus(runnable)
         def anotherFuture = (runnable == invokeFuture) ? streamFuture : invokeFuture
         if (anotherFuture.isDone()) {
-            DebugUtils.verboseLog("${id}: another handler ${anotherFuture} is already done", e)
+            DebugUtils.verboseLog("${id}: Another handler ${anotherFuture} is already done", e)
         } else {
-            DebugUtils.verboseLog("${id}: another handler ${anotherFuture} is canceling by ${runnable}", e)
+            DebugUtils.verboseLog("${id}: Another handler ${anotherFuture} is canceling by ${runnable}", e)
             anotherFuture.cancel(true)
         }
 
