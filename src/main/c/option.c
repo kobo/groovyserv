@@ -57,12 +57,6 @@ struct option_t client_option = {
     FALSE,
 };
 
-static char *groovy_version_options[] = {
-    "--version",
-    "-version",
-    "-v"
-};
-
 void usage()
 {
     printf("usage: groovyclient -C[option for groovyclient] [args/options for groovy]\n" \
