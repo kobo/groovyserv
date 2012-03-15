@@ -96,8 +96,7 @@ compileGroovy {
 
 task compileC << {
     println ">> Compiling C sources..."
-    // TODO when deleting pom.xml, make Makefile have DESTDIR=build/native as default
-    executeCommand('make', ['-e', 'DESTDIR=build/native', "GROOVYSERV_VERSION=${project.version}"])
+    executeCommand('make', ['-e', "GROOVYSERV_VERSION=${project.version}"])
 }
 
 def executablesSpec = copySpec {
@@ -110,8 +109,8 @@ def executablesSpec = copySpec {
     }
     into('bin') {
         fileMode = 0755
-        from "$buildDir/native/groovyclient"     // ignored if not exists
-        from "$buildDir/native/groovyclient.exe" // ignored if not exists
+        from "$buildDir/natives/groovyclient"     // ignored if not exists
+        from "$buildDir/natives/groovyclient.exe" // ignored if not exists
     }
     into('bin') { // scripts with filter
         fileMode = 0755

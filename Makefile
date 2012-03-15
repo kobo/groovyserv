@@ -31,7 +31,7 @@ endif
 RM = rm -f
 MKDIR = mkdir -p
 SRCDIR = src/main/c
-DESTDIR = target
+DESTDIR = build/natives
 OBJS =  $(DESTDIR)/groovyclient.o \
 		$(DESTDIR)/buf.o \
 		$(DESTDIR)/option.o \
