@@ -83,7 +83,7 @@ void usage()
 
 void version()
 {
-    printf("GroovyServ Version: Client: %s\n", GROOVYSERV_VERSION);
+    printf("GroovyServ Version: Client: %s (.c)\n", GROOVYSERV_VERSION);
 }
 
 static BOOL is_client_option(char* s)
