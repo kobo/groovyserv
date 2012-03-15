@@ -38,10 +38,10 @@ configurations {
 }
 
 dependencies {
-    groovy 'org.codehaus.groovy:groovy-all:1.8.4'
+    groovy 'org.codehaus.groovy:groovy-all:1.8.6'
     groovy 'commons-cli:commons-cli:1.2'
     archives 'net.java.dev.jna:jna:3.2.2'
-    testCompile 'junit:junit:4.8.2'
+    testCompile 'junit:junit:4.10'
 }
 
 def defaultEncoding = 'UTF-8'
