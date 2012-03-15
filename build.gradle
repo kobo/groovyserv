@@ -25,14 +25,11 @@ apply plugin:'groovy'
 defaultTasks 'clean', 'test', 'dist' // whole tasks
 
 sourceCompatibility = 1.5
-baseName = 'groovyserv'
 
 repositories {
     mavenCentral()
-    mavenRepo url: [
-        "http://repository.codehaus.org",
-        "http://snapshots.repository.codehaus.org",
-    ]
+    mavenRepo name:"codehaus", url:"http://repository.codehaus.org"
+    mavenRepo name:"codehaus-snapshots", url:"http://snapshots.repository.codehaus.org"
 }
 
 configurations {
@@ -71,7 +68,7 @@ compileTestGroovy {
 // Build
 
 jar {
-    baseName = project.baseName
+    baseName = project.name
 
     // appending the commit id as suffix to the jar file's name of SNAPSHOT
     if (project.version ==~ /.*SNAPSHOT/) {
@@ -103,7 +100,7 @@ task compileC << {
     executeCommand('make', ['-e', 'DESTDIR=build/native', "GROOVYSERV_VERSION=${project.version}"])
 }
 
-executablesSpec = copySpec {
+def executablesSpec = copySpec {
     from("$projectDir") {
         include "*.txt"
     }
@@ -128,9 +125,9 @@ task executables(type:Copy, dependsOn:['jar', 'compileC']) {
     with executablesSpec
 
     // to use later
-    binDir = "${destinationDir}/bin"
-    groovyclientBasePath = convertMixedPath(file("${binDir}/groovyclient"))
-    groovyserverPath = convertMixedPath(file("${binDir}/groovyserver"))
+    def binDir = "${destinationDir}/bin"
+    ext.groovyclientBasePath = convertMixedPath(file("${binDir}/groovyclient"))
+    ext.groovyserverPath = convertMixedPath(file("${binDir}/groovyserver"))
 
     // FIXME it's just a work around because fileMode at Copy task doesn't work.
     // http://issues.gradle.org/browse/GRADLE-971
@@ -145,13 +142,13 @@ task executables(type:Copy, dependsOn:['jar', 'compileC']) {
 task dist(dependsOn:['distBin', 'distSrc'])
 
 task distBin(type:Zip, dependsOn:['jar', 'compileC']) {
-    baseName = project.baseName
+    baseName = project.name
     classifier = getOsSuffix() + '-bin'
     into "$baseName-$version"
     with executablesSpec
 }
 
-srcSpec = copySpec {
+def srcSpec = copySpec {
     from("$projectDir") {
         include "*.txt"
         include "pom.xml"
@@ -174,7 +171,7 @@ srcSpec = copySpec {
     }
 }
 task distSrc(type:Zip) {
-    baseName = project.baseName
+    baseName = project.name
     classifier = 'src'
     into "$baseName-$version"
     with srcSpec
@@ -192,7 +189,7 @@ task unitTest(type:Test) {
 }
 
 // integrationTest tasks
-integrationTestSpecs = new IntegrationTestSpecFactory(executables.groovyclientBasePath).createSpecs([
+def integrationTestSpecs = new IntegrationTestSpecFactory(executables.groovyclientBasePath).createSpecs([
     [id:'Java', include:'**/DirectAccessIT.class', exclude:'', always:true],
     [id:'CUnix'],
     [id:'CWin', extension:'.exe'],
