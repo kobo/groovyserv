@@ -112,7 +112,7 @@ class GroovyInvokeHandler implements Runnable {
 
         // replace classpath option in arguments
         // quotes are necessary in case of including white spaces at paths
-        request.args = [CLASSPATH_OPTIONS.first(), "\"${paths.join(File.pathSeparator)}\"", *filteredArgs]
+        request.args = [CLASSPATH_OPTIONS.first(), /"${paths.join(File.pathSeparator)}"/ as String, *filteredArgs]
     }
 
     private invokeGroovy(args) {
