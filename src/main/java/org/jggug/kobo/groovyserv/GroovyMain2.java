@@ -18,12 +18,16 @@ package org.jggug.kobo.groovyserv;
 
 import groovy.ui.*;
 
+import groovy.lang.GroovyRuntimeException;
 import groovy.lang.GroovyShell;
 import groovy.lang.GroovySystem;
+import groovy.lang.MissingMethodException;
 import groovy.lang.Script;
 
 import java.io.*;
 import java.math.BigInteger;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
 
@@ -36,15 +40,18 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.control.CompilerConfiguration;
+import org.codehaus.groovy.runtime.InvokerHelper;
 import org.codehaus.groovy.runtime.InvokerInvocationException;
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
+import org.codehaus.groovy.runtime.StackTraceUtils;
 
 /**
  * A Command line to execute groovy.
  *
  * @author Jeremy Rayner
  * @author Yuri Schimke
- * @version $Revision: 19977 $
+ * @author Roshan Dawrani
+ * @version 40c80ea560da015b015ca8d90358a75aa6525208
  */
 public class GroovyMain2 {
 
@@ -108,7 +115,8 @@ public class GroovyMain2 {
                 printHelp(out, options);
             } else if (cmd.hasOption('v')) {
                 String version = GroovySystem.getVersion();
-                out.println("Groovy Version: " + version + " JVM: " + System.getProperty("java.version"));
+                out.println("Groovy Version: " + version + " JVM: " + System.getProperty("java.version") + 
+                        " Vendor: " + System.getProperty("java.vm.vendor")  + " OS: " + System.getProperty("os.name"));
             } else {
                 // If we fail, then exit with an error so scripting frameworks can catch it
                 // TODO: pass printstream(s) down through process
@@ -158,6 +166,7 @@ public class GroovyMain2 {
      *
      * @return an options parser.
      */
+    @SuppressWarnings("static-access")
     private static synchronized Options buildOptions() {
         Options options = new Options();
         options.addOption(OptionBuilder.hasArg().withArgName("path").withDescription("Specify where to find the class files - must be first argument").create("classpath"));
@@ -165,11 +174,19 @@ public class GroovyMain2 {
 
         options.addOption(
             OptionBuilder.withLongOpt("define").
-                withDescription("define a system property").
-                hasArg(true).
-                withArgName("name=value").
-                create('D')
-        );
+            withDescription("define a system property").
+            hasArg(true).
+            withArgName("name=value").
+            create('D'));
+        options.addOption(
+            OptionBuilder.withLongOpt("disableopt").
+            withDescription("disables one or all optimization elements. " +
+                            "optlist can be a comma separated list with the elements: " +
+                            "all (disables all optimizations), " +
+                            "int (disable any int based optimizations)").
+            hasArg(true).
+            withArgName("optlist").
+            create());
         options.addOption(
             OptionBuilder.hasArg(false)
             .withDescription("usage information")
@@ -250,8 +267,6 @@ public class GroovyMain2 {
      * @throws ParseException if invalid options are chosen
      */
     private static boolean process(CommandLine line) throws ParseException {
-        GroovyMain2 main = new GroovyMain2();
-
         List args = line.getArgList();
         
         if (line.hasOption('D')) {
@@ -262,6 +277,8 @@ public class GroovyMain2 {
             }
         }
 
+        GroovyMain2 main = new GroovyMain2();
+        
         // add the ability to parse scripts with a specified encoding
         main.conf.setSourceEncoding(line.getOptionValue('c',main.conf.getSourceEncoding()));
 
@@ -295,6 +312,15 @@ public class GroovyMain2 {
             String p = line.getOptionValue('l', "1960"); // default port to listen to
             main.port = Integer.parseInt(p);
         }
+        
+        // we use "," as default, because then split will create
+        // an empty array if no option is set
+        String disabled = line.getOptionValue("disableopt", ",");
+        String[] deopts = disabled.split(",");
+        for (String deopt_i : deopts) {
+            main.conf.getOptimizationOptions().put(deopt_i,false);
+        }
+        
         main.args = args;
 
         // for GroovyServ: classpath is given by GroovyInvokeHandler
@@ -330,18 +356,10 @@ public class GroovyMain2 {
                 e = iie.getCause();
             }
             System.err.println("Caught: " + e);
-            if (debug) {
-                e.printStackTrace();
-            } else {
-                StackTraceElement[] stackTrace = e.getStackTrace();
-                for (int i = 0; i < stackTrace.length; i++) {
-                    StackTraceElement element = stackTrace[i];
-                    String fileName = element.getFileName();
-                    if (fileName!=null && !fileName.endsWith(".java")) {
-                        System.err.println("\tat " + element);
-                    }
-                }
+            if (!debug) {
+                StackTraceUtils.deepSanitize(e);
             }
+            e.printStackTrace();
             return false;
         }
     }
@@ -353,11 +371,26 @@ public class GroovyMain2 {
         GroovyShell groovy = new GroovyShell(conf);
         //check the script is currently valid before starting a server against the script
         if (isScriptFile) {
-            groovy.parse(DefaultGroovyMethods.getText(huntForTheScriptFile(script)));
+            groovy.parse(getText(script));
         } else {
             groovy.parse(script);
         }
         new GroovySocketServer(groovy, isScriptFile, script, autoOutput, port);
+    }
+
+    public String getText(String urlOrFilename) throws IOException {
+        if (isScriptUrl(urlOrFilename)) {
+            try {
+                return DefaultGroovyMethods.getText(new URL(urlOrFilename));
+            } catch (Exception e) {
+                throw new GroovyRuntimeException("Unable to get script from URL: ", e);
+            }
+        }
+        return DefaultGroovyMethods.getText(huntForTheScriptFile(urlOrFilename));
+    }
+
+    private boolean isScriptUrl(String urlOrFilename) {
+        return urlOrFilename.startsWith("http://") || urlOrFilename.startsWith("https://") || urlOrFilename.startsWith("file:");
     }
 
     /**
@@ -395,7 +428,11 @@ public class GroovyMain2 {
         Script s;
 
         if (isScriptFile) {
-            s = groovy.parse(huntForTheScriptFile(script));
+            if (isScriptUrl(script)) {
+                s = groovy.parse(getText(script), script.substring(script.lastIndexOf("/") + 1));
+            } else {
+                s = groovy.parse(huntForTheScriptFile(script));
+            }
         } else {
             s = groovy.parse(script, "main");
         }
@@ -480,6 +517,13 @@ public class GroovyMain2 {
         String autoSplitName = "split";
         s.setProperty("out", pw);
 
+        try {
+            InvokerHelper.invokeMethod(s, "begin", null);
+        } catch (MissingMethodException mme) {
+            // ignore the missing method exception
+            // as it means no begin() method is present
+        }
+
         while ((line = reader.readLine()) != null) {
             s.setProperty("line", line);
             s.setProperty(lineCountName, ((BigInteger)s.getProperty(lineCountName)).add(BigInteger.ONE));
@@ -494,8 +538,15 @@ public class GroovyMain2 {
                 pw.println(o);
             }
         }
+
+        try {
+            InvokerHelper.invokeMethod(s, "end", null);
+        } catch (MissingMethodException mme) {
+            // ignore the missing method exception
+            // as it means no end() method is present
+        }
     }
-    
+
     /**
      * Process the standard, single script with args.
      */
@@ -503,9 +554,12 @@ public class GroovyMain2 {
         GroovyShell groovy = new GroovyShell(conf);
 
         if (isScriptFile) {
-            groovy.run(huntForTheScriptFile(script), args);
-        }
-        else {
+            if (isScriptUrl(script)) {
+                groovy.run(getText(script), script.substring(script.lastIndexOf("/") + 1), args);
+            } else {
+                groovy.run(huntForTheScriptFile(script), args);
+            }
+        } else {
             groovy.run(script, "script_from_command_line", args);
         }
     }
