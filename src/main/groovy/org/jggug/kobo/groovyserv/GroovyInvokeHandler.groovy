@@ -50,8 +50,8 @@ class GroovyInvokeHandler implements Runnable {
         try {
             CurrentDirHolder.instance.setDir(request.cwd)
             setupEnvVars(request.envVars)
-            completeClasspathArg(request)
-            invokeGroovy(request.args)
+            def classpath = removeClasspathFromArgs(request)
+            invokeGroovy(request.args, classpath)
             awaitAllSubThreads()
         }
         catch (InterruptedException e) {
@@ -85,7 +85,7 @@ class GroovyInvokeHandler implements Runnable {
      * Setting a classpath using the -cp or -classpath option means not to use the global classpath.
      * GroovyServ behaves then the same as the java interpreter and Groovy.
      */
-    private completeClasspathArg(request) {
+    private removeClasspathFromArgs(request) {
         def paths = [] as LinkedHashSet
 
         // parse classpath option's values from arguments.
@@ -110,14 +110,15 @@ class GroovyInvokeHandler implements Runnable {
         // CWD must be always the last entry of classpath
         paths << "."
 
-        // replace classpath option in arguments
-        // quotes are necessary in case of including white spaces at paths
-        request.args = [CLASSPATH_OPTIONS.first(), /"${paths.join(File.pathSeparator)}"/ as String, *filteredArgs]
+        // removed classpath options
+        request.args = filteredArgs
+
+        return paths.join(File.pathSeparator)
     }
 
-    private invokeGroovy(args) {
-        DebugUtils.verboseLog("${id}: Invoking groovy: ${args}")
-        GroovyMain2.main(args as String[])
+    private invokeGroovy(args, classpath) {
+        DebugUtils.verboseLog("${id}: Invoking groovy: ${args} with classpath=${classpath}")
+        GroovyMain2.processArgs(args as String[], System.out, classpath)
         appendServerVersion(args)
     }
 

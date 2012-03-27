@@ -100,12 +100,12 @@ public class GroovyMain2 {
      * @param args all command line args.
      */
     public static void main(String args[]) {
-        processArgs(args, System.out);
+        processArgs(args, System.out, null);
     }
 
     // package-level visibility for testing purposes (just usage/errors at this stage)
     // TODO: should we have an 'err' printstream too for ParseException?
-    static void processArgs(String[] args, final PrintStream out) {
+    static void processArgs(String[] args, final PrintStream out, String classpath) { // for GroovyServ
         Options options = buildOptions();
 
         try {
@@ -120,7 +120,7 @@ public class GroovyMain2 {
             } else {
                 // If we fail, then exit with an error so scripting frameworks can catch it
                 // TODO: pass printstream(s) down through process
-                if (!process(cmd)) {
+                if (!process(cmd, classpath)) {
                     //System.exit(1); // for GroovyServ: disabled because this causes a secondary disaster
                 }
             }
@@ -266,7 +266,7 @@ public class GroovyMain2 {
      * @param line the parsed command line.
      * @throws ParseException if invalid options are chosen
      */
-    private static boolean process(CommandLine line) throws ParseException {
+    private static boolean process(CommandLine line, String classpath) throws ParseException { // for GroovyServ
         List args = line.getArgList();
         
         if (line.hasOption('D')) {
@@ -324,9 +324,9 @@ public class GroovyMain2 {
         main.args = args;
 
         // for GroovyServ: classpath is given by GroovyInvokeHandler
-        // TODO On general groovy, should "groovy.classpath" property be merged
-        //      or ignored when specifing classpath arguments? Ignoring it now.
-        main.conf.setClasspath(line.getOptionValue("classpath"));
+        if (classpath != null) {
+            main.conf.setClasspath(classpath);
+        }
 
         return main.run();
     }
