@@ -38,36 +38,36 @@ class GroovyInvokeHandlerTest extends GroovyTestCase {
         handler = new GroovyInvokeHandler(request)
     }
 
-    void testCompleteClasspathArg_withEnv_withLongOptClasspath() {
+    void testRemoveClasspathFromArgs_withEnv_withLongOptClasspath() {
         assert handler.removeClasspathFromArgs(request) == "CP6${PSEP}CP7${PSEP}CP8${PSEP}."
         assert request.args == ['-e', 'println("hello")']
     }
 
-    void testCompleteClasspathArg_withEnv_withShortOptCp() {
+    void testRemoveClasspathFromArgs_withEnv_withShortOptCp() {
         request.args = ['-cp', "CP6${PSEP}CP7${PSEP}CP8", '-e', 'println("hello")']
         assert handler.removeClasspathFromArgs(request) == "CP6${PSEP}CP7${PSEP}CP8${PSEP}."
         assert request.args == ['-e', 'println("hello")']
     }
 
-    void testCompleteClasspathArg_withEnv_withShortOptClasspath() {
+    void testRemoveClasspathFromArgs_withEnv_withShortOptClasspath() {
         request.args = ['-classpath', "CP6${PSEP}CP7${PSEP}CP8", '-e', 'println("hello")']
         assert handler.removeClasspathFromArgs(request) == "CP6${PSEP}CP7${PSEP}CP8${PSEP}."
         assert request.args == ['-e', 'println("hello")']
     }
 
-    void testCompleteClasspathArg_noEnv_withLongOptClasspath() {
+    void testRemoveClasspathFromArgs_noEnv_withLongOptClasspath() {
         request.classpath = null
         assert handler.removeClasspathFromArgs(request) == "CP6${PSEP}CP7${PSEP}CP8${PSEP}."
         assert request.args == ['-e', 'println("hello")']
     }
 
-    void testCompleteClasspathArg_withEnv_noOptOfClasspath() {
+    void testRemoveClasspathFromArgs_withEnv_noOptOfClasspath() {
         request.args = ['-e', 'println("hello")']
         assert handler.removeClasspathFromArgs(request) == "CP1${PSEP}CP2${PSEP}CP3${PSEP}."
         assert request.args == ['-e', 'println("hello")']
     }
 
-    void testCompleteClasspathArg_noEnv_noOptOfClasspath() {
+    void testRemoveClasspathFromArgs_noEnv_noOptOfClasspath() {
         request.classpath = null
         request.args = ['-e', 'println("hello")']
         assert handler.removeClasspathFromArgs(request) == "."
