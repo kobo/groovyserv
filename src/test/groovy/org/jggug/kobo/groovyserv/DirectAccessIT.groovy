@@ -111,7 +111,7 @@ class DirectAccessIT extends GroovyTestCase {
                     |
                     |""".stripMargin()
 
-                Thread.sleep(1000)
+                Thread.sleep(1500)
 
                 assert ins.availableText == String.format("""\
                     |Channel: out
