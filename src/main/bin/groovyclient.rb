@@ -21,7 +21,7 @@ require 'base64'
 # Constants
 #-------------------------------------------
 
-DESTHOST = "localhost" # for security
+DESTHOST = "127.0.0.1" # for security
 DESTPORT = ENV.fetch("GROOVYSERVER_PORT", 1961)
 IS_WINDOWS = RUBY_PLATFORM.downcase =~ /mswin(?!ce)|mingw|cygwin|bccwin/
 HOME_DIR = IS_WINDOWS ? ENV['USERPROFILE'] : ENV['HOME']
