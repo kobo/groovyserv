@@ -225,17 +225,19 @@ and consumed by groovyclient, and aren&#8217;t passed to groovy command:</p>
                          includes specified substr
 -Cenv-all                pass all environment variables
 -Cenv-exclude &lt;substr&gt;   don't pass environment variables of which
-                         a name includes specified substr</pre>
+                         a name includes specified substr
+-Cv,-Cversion            display the GroovyServ version</pre>
 </div>
 </div>
 <div class="section" id="groovyserver-s-option">
 <h2>groovyserver&#8217;s option<a class="headerlink" href="#groovyserver-s-option" title="Permalink to this headline">¶</a></h2>
 <p>groovyserver&#8217;s options are as follows:</p>
-<div class="highlight-python"><pre>-v         verbose output to the log file
--q         suppress starting messages
--k         kill the running groovyserver (groovyserver.bat cannot use this)
--r         restart the running groovyserver (groovyserver.bat cannot use this)
--p &lt;port&gt;  specify the port to listen</pre>
+<div class="highlight-python"><pre>-v                       verbose output to the log file
+-q                       suppress starting messages
+-k                       kill the running groovyserver
+-r                       restart the running groovyserver
+-p &lt;port&gt;                specify the port to listen
+--allow-from &lt;ADDRESSES&gt; specify optional acceptable client addresses (delimiter: comma)</pre>
 </div>
 </div>
 <div class="section" id="start-and-stop-groovyserver">

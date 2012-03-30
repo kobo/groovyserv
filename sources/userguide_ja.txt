@@ -180,17 +180,19 @@ groovyclientでは-Cで始まる以下の起動オプションが指定可能で
   -Cenv <substr>           substrを変数名に含む環境変数をサーバに転送する
   -Cenv-all                すべての環境変数の値をサーバに転送する
   -Cenv-exclude <substr>   substrを変数名に含む環境変数をサーバへの転送から除外する
+  -Cv,-Cversion            groovyclientのバージョンを表示する
 
 groovyserverのオプション
 ------------------------
 
 groovyserverの起動オプションは以下の通りです。::
 
-  -v         デバッグ情報などをログファイルに出力する
-  -q         起動時のメッセージを表示しない
-  -k         起動中のgroovyserverを終了する (groovyserver.batでは使えません)
-  -r         起動中のgroovyserverを再起動する (groovyserver.batでは使えません)
-  -p <port>  LISTENするポート番号を指定する
+  -v                       デバッグ情報などをログファイルに出力する
+  -q                       起動時のメッセージを表示しない
+  -k                       起動中のgroovyserverを終了する (groovyserver.batでは使えません)
+  -r                       起動中のgroovyserverを再起動する (groovyserver.batでは使えません)
+  -p <port>                LISTENするポート番号を指定する
+  --allow-from <ADDRESSES> 追加でアクセスを許可するクライアントのIPアドレスを指定する(カンマ区切り) (groovyserver.batでは使えません)
 
 groovyserverの起動と停止
 ------------------------
