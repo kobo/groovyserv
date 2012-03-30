@@ -1,4 +1,5 @@
 .. _ref-userguide:
+.. role:: alert
 
 User Guide
 ==========
@@ -48,7 +49,7 @@ Version of JDK is following:
 
 Version of Groovy is following:
 
-  - Groovy 1.7 or later
+  - :alert:`Groovy 1.8.5 or later` (see https://github.com/kobo/groovyserv/issues/38)
 
 Language
 --------

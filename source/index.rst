@@ -1,6 +1,13 @@
+.. role:: alert
+
 ########
 Welcome!
 ########
+
+NOTICE
+======
+
+:alert:`Latest GroovyServ requires Groovy1.8.5+` (https://github.com/kobo/groovyserv/issues/38)
 
 Overview
 ========
