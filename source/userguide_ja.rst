@@ -30,7 +30,7 @@ GroovyServを使うことで、Groovyコマンドの起動時間を短縮し、�
 
 動作確認を行っているOSは以下のとおりです。他の環境で動作した場合レポートをいただけますと幸いです。
 
-  - Mac OS X 10.5/6 (Intel Mac)
+  - Mac OS X 10.5/6/7 (Intel Mac)
   - Ubuntu Linux 9.10
   - Ubuntu Linux 10.04
   - Windows XP + Cygwin 1.7.x
@@ -40,8 +40,9 @@ GroovyServを使うことで、Groovyコマンドの起動時間を短縮し、�
 
 JDKのバージョンは以下のとおりです。
 
-  - JDK 6u24以降 (Mac OS X)
-  - JDK 6u21以降 (Windows, Linux)
+  - JDK 6u29以降 (Mac OS X)
+  - JDK 7 Developer Preview以降 (Mac OS X)
+  - JDK 6u30以降 (Windows, Linux)
 
 Groovyのバージョンは以下のとおりです。
 
