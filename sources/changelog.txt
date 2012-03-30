@@ -1,5 +1,5 @@
 .. _ref-changelog:
-
+.. role:: alert
 ..
    Version 0.N (YYYY-MM-DD)
    ------------------------
@@ -11,6 +11,11 @@
 ==========
 Change Log
 ==========
+
+NOTICE
+------
+
+:alert:`Latest GroovyServ requires Groovy1.8.5+` (https://github.com/kobo/groovyserv/issues/38)
 
 Version 0.10 (2012-03-30)
 -------------------------

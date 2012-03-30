@@ -1,4 +1,5 @@
 .. _ref-userguide_ja:
+.. role:: alert
 
 ユーザガイド
 ============
@@ -46,7 +47,7 @@ JDKのバージョンは以下のとおりです。
 
 Groovyのバージョンは以下のとおりです。
 
-  - Groovy 1.7以降
+  - :alert:`Groovy 1.8.5以降` (see https://github.com/kobo/groovyserv/issues/38)
 
 実装言語
 --------
