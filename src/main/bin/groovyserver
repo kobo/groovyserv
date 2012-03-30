@@ -79,10 +79,6 @@ while [ $# -gt 0 ]; do
             GROOVYSERV_OPTS="$GROOVYSERV_OPTS -Dgroovyserver.allowFrom=$1"
             shift
             ;;
-        --version)
-            echo "GroovyServ Version: Server: 0.10-SNAPSHOT"
-            exit 1
-            ;;
         *)
             echo "usage: `basename $0` [options]"
             echo "options:"
@@ -92,7 +88,6 @@ while [ $# -gt 0 ]; do
             echo "  -r                       restart the running groovyserver"
             echo "  -p <port>                specify the port to listen"
             echo "  --allow-from <ADDRESSES> specify optional acceptable client addresses (delimiter: comma)"
-            echo "  --version                display the GroovyServ version"
             exit 1
             ;;
     esac
