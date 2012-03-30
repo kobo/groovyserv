@@ -183,17 +183,20 @@ and consumed by groovyclient, and aren't passed to groovy command::
   -Cenv-all                pass all environment variables
   -Cenv-exclude <substr>   don't pass environment variables of which
                            a name includes specified substr
+  -Cv,-Cversion            display the GroovyServ version
 
 groovyserver's option
 ---------------------
 
 groovyserver's options are as follows::
 
-  -v         verbose output to the log file
-  -q         suppress starting messages
-  -k         kill the running groovyserver (groovyserver.bat cannot use this)
-  -r         restart the running groovyserver (groovyserver.bat cannot use this)
-  -p <port>  specify the port to listen
+  -v                       verbose output to the log file
+  -q                       suppress starting messages
+  -k                       kill the running groovyserver
+  -r                       restart the running groovyserver
+  -p <port>                specify the port to listen
+  --allow-from <ADDRESSES> specify optional acceptable client addresses (delimiter: comma)
+
 
 Start and stop groovyserver
 ---------------------------
