@@ -3,17 +3,20 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>How to Build &mdash; GroovyServ v0.9 documentation</title>
+    <title>How to Build &mdash; GroovyServ documentation</title>
+    
     <link rel="stylesheet" href="static/default.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.9',
+        VERSION:     '0.10',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -22,7 +25,7 @@
     <script type="text/javascript" src="static/jquery.js"></script>
     <script type="text/javascript" src="static/underscore.js"></script>
     <script type="text/javascript" src="static/doctools.js"></script>
-    <link rel="top" title="GroovyServ v0.9 documentation" href="index.html" /> 
+    <link rel="top" title="GroovyServ documentation" href="index.html" /> 
   </head>
   <body>
 <div class="container">
@@ -43,53 +46,25 @@
 <span id="ref-howtobuild"></span><h1>How to Build<a class="headerlink" href="#how-to-build" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="build-binary-zip-by-gradle">
 <h2>Build binary zip by Gradle<a class="headerlink" href="#build-binary-zip-by-gradle" title="Permalink to this headline">¶</a></h2>
-<p>Download and expand GroovyServ source package groovyserv-0.9-src.zip to any directory.
+<p>Download and expand GroovyServ source package groovyserv-0.10-src.zip to any directory.
 For example:</p>
 <div class="highlight-python"><pre>$ mkdir -p ~/opt/src
 $ cd ~/opt/src
-$ unzip groovyserv-0.9-src.zip</pre>
+$ unzip groovyserv-0.10-src.zip</pre>
 </div>
 <p>Build with Gradle as follows:</p>
-<div class="highlight-python"><pre>$ cd ~/opt/src/groovyserv-0.9
+<div class="highlight-python"><pre>$ cd ~/opt/src/groovyserv-0.10
 $ ./gradlew</pre>
 </div>
 <p>Then some zip files will be generated. According to <a class="reference internal" href="howtoinstall.html#ref-howtoinstall-binary"><em>Install from binary package</em></a>, install the bin package:</p>
-<div class="highlight-python"><pre>~/opt/src/groovyserv-0.9/build/distributions/groovyserv-0.9-&lt;OS&gt;-&lt;arch&gt;-bin.zip</pre>
+<div class="highlight-python"><pre>~/opt/src/groovyserv-0.10/build/distributions/groovyserv-0.10-&lt;OS&gt;-&lt;arch&gt;-bin.zip</pre>
 </div>
 <p>If some tests fail, please try again with specifying character encoding as follows:</p>
 <div class="highlight-python"><pre>$ export _JAVA_OPTIONS=-Dfile.encoding=UTF-8
 $ ./gradlew</pre>
 </div>
-<p>or skip all tests:</p>
+<p>or to skip all tests:</p>
 <div class="highlight-python"><pre>$ ./gradlew clean dist</pre>
-</div>
-<p>To build in Windows, you need gcc-3 and MinGW. You must install them before trying to build.
-Then, execute the above commands on Cygwin.</p>
-</div>
-<div class="section" id="build-binary-zip-by-maven">
-<h2>Build binary zip by Maven<a class="headerlink" href="#build-binary-zip-by-maven" title="Permalink to this headline">¶</a></h2>
-<p>Download and expand GroovyServ source package groovyserv-0.9-src.zip to any directory.
-For example:</p>
-<div class="highlight-python"><pre>$ mkdir -p ~/opt/src
-$ cd ~/opt/src
-$ unzip groovyserv-0.9-src.zip</pre>
-</div>
-<p>Build with Maven as follows (recommended Maven3.x since v0.6):</p>
-<div class="highlight-python"><pre>$ cd ~/opt/src/groovyserv-0.9
-$ mvn clean verify</pre>
-</div>
-<p>Then some zip files will be generated. According to <a class="reference internal" href="howtoinstall.html#ref-howtoinstall-binary"><em>Install from binary package</em></a>, install the bin package:</p>
-<div class="highlight-python"><pre>~/opt/src/groovyserv-0.9/target/groovyserv-0.9-&lt;OS&gt;-&lt;arch&gt;-bin.zip</pre>
-</div>
-<p>If some tests fail, please try again with specifying character encoding as follows:</p>
-<div class="highlight-python"><pre>$ export _JAVA_OPTIONS=-Dfile.encoding=UTF-8
-$ mvn clean verify</pre>
-</div>
-<p>or skip integration tests:</p>
-<div class="highlight-python"><pre>$ mvn clean package</pre>
-</div>
-<p>or skip all tests:</p>
-<div class="highlight-python"><pre>$ mvn -Dmaven.test.skip=true clean package</pre>
 </div>
 <p>To build in Windows, you need gcc-3 and MinGW. You must install them before trying to build.
 Then, execute the above commands on Cygwin.</p>
@@ -98,13 +73,13 @@ Then, execute the above commands on Cygwin.</p>
 <h2>Build only groovyclient<a class="headerlink" href="#build-only-groovyclient" title="Permalink to this headline">¶</a></h2>
 <p>Since v0.8, there is the Makefile which can build a groovyclient from C sources.
 You can easily build a groovyclient binary file as follows:</p>
-<div class="highlight-python"><pre>$ cd ~/opt/src/groovyserv-0.9
+<div class="highlight-python"><pre>$ cd ~/opt/src/groovyserv-0.10
 $ make clean
 $ make</pre>
 </div>
 <p>The binary file is created in target directory. You can copy it where you want:</p>
-<div class="highlight-python"><pre>~/opt/src/groovyserv-0.9/target/groovyclient      (for Linux / Mac OS X)
-~/opt/src/groovyserv-0.9/target/groovyclient.exe  (for Windows)</pre>
+<div class="highlight-python"><pre>~/opt/src/groovyserv-0.10/target/groovyclient      (for Linux / Mac OS X)
+~/opt/src/groovyserv-0.10/target/groovyclient.exe  (for Windows)</pre>
 </div>
 </div>
 <div class="section" id="build-rpm-file">
@@ -159,7 +134,6 @@ $ make</pre>
   <ul>
 <li><a class="reference internal" href="#">How to Build</a><ul>
 <li><a class="reference internal" href="#build-binary-zip-by-gradle">Build binary zip by Gradle</a></li>
-<li><a class="reference internal" href="#build-binary-zip-by-maven">Build binary zip by Maven</a></li>
 <li><a class="reference internal" href="#build-only-groovyclient">Build only groovyclient</a></li>
 <li><a class="reference internal" href="#build-rpm-file">Build RPM file</a></li>
 </ul>
@@ -169,7 +143,7 @@ $ make</pre>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" size="18" />
+      <input type="text" name="q" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />

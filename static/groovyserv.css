@@ -145,7 +145,7 @@ img {
 }
 
 div.sphinxsidebar {
-  width: 250px;
+  width: 255px;
 }
 div.sphinxsidebar .sphinxsidebarwrapper {
   padding: 5px 0 0 40px;
@@ -168,3 +168,7 @@ div.sphinxsidebar .sphinxsidebarwrapper a.reference {
   line-height: 20px;
 }
 
+object#screencast {
+  margin: 15px 0 0 0;
+  background-color: #fff;
+}

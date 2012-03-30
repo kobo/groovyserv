@@ -3,17 +3,20 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>How to Install &mdash; GroovyServ v0.9 documentation</title>
+    <title>How to Install &mdash; GroovyServ documentation</title>
+    
     <link rel="stylesheet" href="static/default.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.9',
+        VERSION:     '0.10',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -22,7 +25,7 @@
     <script type="text/javascript" src="static/jquery.js"></script>
     <script type="text/javascript" src="static/underscore.js"></script>
     <script type="text/javascript" src="static/doctools.js"></script>
-    <link rel="top" title="GroovyServ v0.9 documentation" href="index.html" /> 
+    <link rel="top" title="GroovyServ documentation" href="index.html" /> 
   </head>
   <body>
 <div class="container">
@@ -71,26 +74,26 @@
 </div>
 <div class="section" id="install-from-binary-package">
 <span id="ref-howtoinstall-binary"></span><h2>Install from binary package<a class="headerlink" href="#install-from-binary-package" title="Permalink to this headline">¶</a></h2>
-<p>Download and expand GroovyServ distribution package from <a class="reference internal" href="download.html#ref-download"><em>Download page</em></a>, e.g. groovyserv-0.9-macosx-bin.zip to any directory:</p>
+<p>Download and expand GroovyServ distribution package from <a class="reference internal" href="download.html#ref-download"><em>Download page</em></a>, e.g. groovyserv-0.10-macosx-bin.zip to any directory:</p>
 <div class="highlight-python"><pre>$ mkdir ~/opt
 $ cd ~/opt
-$ unzip groovyserv-0.9-macosx-bin.zip</pre>
+$ unzip groovyserv-0.10-macosx-bin.zip</pre>
 </div>
 <p>And add bin directory to PATH environment variable.
 For example in bash/bourne shell:</p>
-<div class="highlight-python"><pre>export PATH=~/opt/groovyserv-0.9/bin:$PATH</pre>
+<div class="highlight-python"><pre>export PATH=~/opt/groovyserv-0.10/bin:$PATH</pre>
 </div>
 <p>That&#8217;s all for preparing.
 When you invoke groovyclient, groovyserver automatically starts in background.
 At first, you might have to wait for a few seconds to startup:</p>
 <div class="highlight-python"><pre>$ groovyclient -v
-Invoking server: '/opt/groovyserv-0.9/bin/groovyserver' -p 1961
+Invoking server: '/opt/groovyserv-0.10/bin/groovyserver' -p 1961
 Groovy home directory: (none)
 Groovy command path: /usr/local/bin/groovy (found at PATH)
-GroovyServ home directory: /opt/groovyserv-0.9
+GroovyServ home directory: /opt/groovyserv-0.10
 GroovyServ work directory: /Users/ynak/.groovy/groovyserv
 Original classpath: (none)
-GroovyServ default classpath: /opt/groovyserv-0.9/lib/*
+GroovyServ default classpath: /opt/groovyserv-0.10/lib/*
 Starting...
 groovyserver 75808(1961) is successfully started
 Groovy Version: 1.8.0 JVM: 1.6.0_24</pre>
@@ -179,7 +182,7 @@ Groovy Version: 1.8.0 JVM: 1.6.0_24</pre>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" size="18" />
+      <input type="text" name="q" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />

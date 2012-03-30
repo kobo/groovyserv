@@ -32,7 +32,7 @@ Requirements
 GroovyServ is developed for following environment/OS. Please report if it
 runs on the others.
 
-  - Mac OS X 10.5/6 (Intel Mac)
+  - Mac OS X 10.5/6/7 (Intel Mac)
   - Ubuntu Linux 9.10
   - Ubuntu Linux 10.04
   - Windows XP + Cygwin 1.7.x
@@ -42,8 +42,9 @@ runs on the others.
 
 Version of JDK is following:
 
-  - JDK 6u24 or later (Mac OS X)
-  - JDK 6u21 or later (Windows, Linux)
+  - JDK 6u29 or later (Mac OS X)
+  - JDK 7 Developer Preview or later (Mac OS X)
+  - JDK 6u30以降 (Windows, Linux)
 
 Version of Groovy is following:
 

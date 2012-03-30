@@ -3,17 +3,20 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>ユーザガイド &mdash; GroovyServ v0.9 documentation</title>
+    <title>ユーザガイド &mdash; GroovyServ documentation</title>
+    
     <link rel="stylesheet" href="static/default.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.9',
+        VERSION:     '0.10',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -22,7 +25,7 @@
     <script type="text/javascript" src="static/jquery.js"></script>
     <script type="text/javascript" src="static/underscore.js"></script>
     <script type="text/javascript" src="static/doctools.js"></script>
-    <link rel="top" title="GroovyServ v0.9 documentation" href="index.html" /> 
+    <link rel="top" title="GroovyServ documentation" href="index.html" /> 
   </head>
   <body>
 <div class="container">
@@ -59,15 +62,15 @@ Groovyは動的言語であるため、コンパイル時にあらかじめチ�
 <col width="38%" />
 </colgroup>
 <thead valign="bottom">
-<tr><th class="head">コマンド</th>
+<tr class="row-odd"><th class="head">コマンド</th>
 <th class="head">結果(sec)</th>
 </tr>
 </thead>
 <tbody valign="top">
-<tr><td>Groovy</td>
+<tr class="row-even"><td>Groovy</td>
 <td>1.1058</td>
 </tr>
-<tr><td>GroovyServ</td>
+<tr class="row-odd"><td>GroovyServ</td>
 <td>0.0412</td>
 </tr>
 </tbody>
@@ -79,7 +82,7 @@ Groovyは動的言語であるため、コンパイル時にあらかじめチ�
 <p>動作確認を行っているOSは以下のとおりです。他の環境で動作した場合レポートをいただけますと幸いです。</p>
 <blockquote>
 <div><ul class="simple">
-<li>Mac OS X 10.5/6 (Intel Mac)</li>
+<li>Mac OS X 10.5/6/7 (Intel Mac)</li>
 <li>Ubuntu Linux 9.10</li>
 <li>Ubuntu Linux 10.04</li>
 <li>Windows XP + Cygwin 1.7.x</li>
@@ -91,8 +94,9 @@ Groovyは動的言語であるため、コンパイル時にあらかじめチ�
 <p>JDKのバージョンは以下のとおりです。</p>
 <blockquote>
 <div><ul class="simple">
-<li>JDK 6u24以降 (Mac OS X)</li>
-<li>JDK 6u21以降 (Windows, Linux)</li>
+<li>JDK 6u29以降 (Mac OS X)</li>
+<li>JDK 7 Developer Preview以降 (Mac OS X)</li>
+<li>JDK 6u30以降 (Windows, Linux)</li>
 </ul>
 </div></blockquote>
 <p>Groovyのバージョンは以下のとおりです。</p>
@@ -255,19 +259,19 @@ groovyserverが起動されたときの値が使用されます。しかし、-C
 <col width="22%" />
 </colgroup>
 <thead valign="bottom">
-<tr><th class="head">Script</th>
+<tr class="row-odd"><th class="head">Script</th>
 <th class="head">Windows Cygwin版</th>
 <th class="head">Windows Cygwinなし</th>
 <th class="head">Mac OS X, Linux</th>
 </tr>
 </thead>
 <tbody valign="top">
-<tr><td>groovyserver</td>
+<tr class="row-even"><td>groovyserver</td>
 <td>OK</td>
 <td>N/A</td>
 <td>OK</td>
 </tr>
-<tr><td>groovyserver.bat</td>
+<tr class="row-odd"><td>groovyserver.bat</td>
 <td>OK</td>
 <td>OK</td>
 <td>N/A</td>
@@ -447,7 +451,7 @@ $ groovyserver</pre>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" size="18" />
+      <input type="text" name="q" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
