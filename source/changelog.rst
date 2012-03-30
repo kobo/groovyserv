@@ -12,6 +12,28 @@
 Change Log
 ==========
 
+Version 0.10 (2012-03-30)
+-------------------------
+New Features:
+    - [Client] -v option can also display the GroovyServ's version not only Groovy's version.
+    - [Network] Supported --allow-from option at groovyserver(sh). If 'localhost' is resolved except to loopback address in your environment, you can use --allow-from option with groovyserver(sh). In future, I want to support that groovyclient could access a groovyserver at remote host in security. This is the first step.
+
+Bug Fixes:
+    - Fixed 39: Processing of Groovy cmd line args is inconsistent
+
+        - https://github.com/kobo/groovyserv/issues/39
+
+    - Fixed 40: "System.env[name]" cannot access environment variables at client side
+
+        - https://github.com/kobo/groovyserv/issues/40
+
+    - Fixed 41: ruby client cannot invoke groovyserver automatically in windows 7
+
+        - https://github.com/kobo/groovyserv/issues/41
+
+    - And other small fixes and improvements are included.
+
+
 Version 0.9 (2011-08-04)
 ------------------------
 Improvements:
