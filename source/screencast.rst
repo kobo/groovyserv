@@ -5,5 +5,5 @@ Screencast
 
 .. raw:: html
 
-   <object type="application/x-shockwave-flash" data="_static/swf/groovyserv.swf" width="620" height="480" ></object>
+   <object id="screencast" type="application/x-shockwave-flash" data="_static/swf/groovyserv.swf" width="515" height="275"></object>
 
