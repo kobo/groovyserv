@@ -27,45 +27,9 @@ If some tests fail, please try again with specifying character encoding as follo
     $ export _JAVA_OPTIONS=-Dfile.encoding=UTF-8
     $ ./gradlew
 
-or skip all tests::
+or to skip all tests::
 
     $ ./gradlew clean dist
-
-To build in Windows, you need gcc-3 and MinGW. You must install them before trying to build.
-Then, execute the above commands on Cygwin.
-
-
-Build binary zip by Maven
--------------------------
-
-Download and expand GroovyServ source package groovyserv-0.10-src.zip to any directory.
-For example::
-
-    $ mkdir -p ~/opt/src
-    $ cd ~/opt/src
-    $ unzip groovyserv-0.10-src.zip
-
-Build with Maven as follows (recommended Maven3.x since v0.6)::
-
-    $ cd ~/opt/src/groovyserv-0.10
-    $ mvn clean verify
-
-Then some zip files will be generated. According to :ref:`Install from binary package <ref-howtoinstall-binary>`, install the bin package::
-
-    ~/opt/src/groovyserv-0.10/target/groovyserv-0.10-<OS>-<arch>-bin.zip
-
-If some tests fail, please try again with specifying character encoding as follows::
-
-    $ export _JAVA_OPTIONS=-Dfile.encoding=UTF-8
-    $ mvn clean verify
-
-or skip integration tests::
-
-    $ mvn clean package
-
-or skip all tests::
-
-    $ mvn -Dmaven.test.skip=true clean package
 
 To build in Windows, you need gcc-3 and MinGW. You must install them before trying to build.
 Then, execute the above commands on Cygwin.
