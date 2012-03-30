@@ -78,8 +78,9 @@ class GroovyServer {
         while (true) {
             def socket = serverSocket.accept()
             DebugUtils.verboseLog "Recieved socket: ${socket}"
-            if (!socket.localSocketAddress.address.isLoopbackAddress()) { // only from localhost
-                DebugUtils.errorLog "Cannot accept except loopback address: ${socket}"
+            if (!isAllowedClientAddress(socket)) {
+                DebugUtils.errorLog "Cannot accept address: actual=${socket}, allowFrom=${getAllowedAddresses()}"
+                socket.close()
                 continue
             }
             DebugUtils.verboseLog "Accepted socket: ${socket}"
@@ -97,4 +98,17 @@ class GroovyServer {
         return (System.getProperty("groovyserver.port") ?: DEFAULT_PORT) as int
     }
 
+    private static boolean isAllowedClientAddress(socket) {
+        // always OK from loopback address
+        if (socket.localSocketAddress.address.isLoopbackAddress()) {
+            return true
+        }
+        return getAllowedAddresses().any { address ->
+            socket.inetAddress.hostAddress == address
+        }
+    }
+
+    private static List<String> getAllowedAddresses() {
+        return System.getProperty("groovyserver.allowFrom")?.split(",") ?: []
+    }
 }

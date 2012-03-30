@@ -74,6 +74,11 @@ while [ $# -gt 0 ]; do
             DO_KILL=RESTART
             shift
             ;;
+        --allow-from)
+            shift
+            GROOVYSERV_OPTS="$GROOVYSERV_OPTS -Dgroovyserver.allowFrom=$1"
+            shift
+            ;;
         --version)
             echo "GroovyServ Version: Server: 0.10-SNAPSHOT"
             exit 1
@@ -81,12 +86,13 @@ while [ $# -gt 0 ]; do
         *)
             echo "usage: `basename $0` [options]"
             echo "options:"
-            echo "  -v         verbose output to the log file"
-            echo "  -q         suppress starting messages"
-            echo "  -k         kill the running groovyserver"
-            echo "  -r         restart the running groovyserver"
-            echo "  -p <port>  specify the port to listen"
-            echo "  --version  display the GroovyServ version"
+            echo "  -v                       verbose output to the log file"
+            echo "  -q                       suppress starting messages"
+            echo "  -k                       kill the running groovyserver"
+            echo "  -r                       restart the running groovyserver"
+            echo "  -p <port>                specify the port to listen"
+            echo "  --allow-from <ADDRESSES> specify optional acceptable client addresses (delimiter: comma)"
+            echo "  --version                display the GroovyServ version"
             exit 1
             ;;
     esac
