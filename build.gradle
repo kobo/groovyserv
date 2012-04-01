@@ -144,6 +144,7 @@ task distBin(type:Zip, dependsOn:['jar', 'compileC']) {
 def srcSpec = copySpec {
     from("$projectDir") {
         include "*.txt"
+        include "settings.gradle"
         include "build.gradle"
         include "gradle.properties"
         include "Makefile"
