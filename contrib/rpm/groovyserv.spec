@@ -1,16 +1,17 @@
 Summary: GroovyServ, a process server for Groovy
 Name: groovyserv
-Version: 0.9
+Version: 0.10
 Release: 0%{?dist}
 License: Apache License, Version 2.0
 Group: Development/Languages
 Provides: groovyserv
 Requires: java-1.6.0-openjdk
-Requires: groovy >= 1.7.0
+Requires: groovy >= 1.8.5
 Source0: groovyserv-%{version}-src.zip
 BuildArch: x86_64
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 Packager: Kazuhisa Hara <kazuhisya@gmail.com>
+BuildRequires: groovy >= 1.8.5
 BuildRequires: unzip
 BuildRequires: java-1.6.0-openjdk
 
@@ -23,6 +24,7 @@ License: Apache License, Version 2.0
 Group: Development/Languages
 Requires: groovyserv >= %{version}-%{release}
 Requires: ruby
+BuildRequires: ruby
 
 %description ruby
 Provides the GroovyServ mechanism for faster groovy execution.
@@ -41,7 +43,6 @@ cd %{_sourcedir}
 mv groovyserv-%{version}/build/distributions/groovyserv-%{version}-linux-amd64-bin.zip .
 rm groovyserv-%{version} -rf
 unzip groovyserv-%{version}-linux-amd64-bin.zip
-
 
 %install
 mkdir -p $RPM_BUILD_ROOT/opt $RPM_BUILD_ROOT/usr/local/bin
@@ -81,6 +82,11 @@ rm -Rf $RPM_BUILD_ROOT
 /usr/local/bin/groovyclient.rb
 
 %changelog
+* Sat Mar 31 2012 Kazuhisa Hara <kazuhisya@gmail.com>
+- Updated to 0.10-release
+- GroovyServ requires Groovy1.8.5+ (https://github.com/kobo/groovyserv/issues/38)
+- Added BuildRequires Ruby
+
 * Mon Aug  8 2011 Kazuhisa Hara <kazuhisya@gmail.com>
 - Added a workaround for some tests fail
 
