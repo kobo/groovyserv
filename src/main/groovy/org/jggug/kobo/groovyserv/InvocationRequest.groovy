@@ -25,8 +25,8 @@ class InvocationRequest {
     String cwd           // required: current working directory
     String classpath     // optional
     List<String> args    // required
-    String clientCookie  // required
-    Cookie serverCookie  // required
+    String clientAuthToken  // required
+    AuthToken serverAuthToken  // required
     List<String> envVars // optional
 
     InvocationRequest(map) {
@@ -34,8 +34,8 @@ class InvocationRequest {
         this.cwd = map.cwd
         this.classpath = map.classpath
         this.args = map.args
-        this.clientCookie = map.clientCookie
-        this.serverCookie = map.serverCookie
+        this.clientAuthToken = map.clientAuthToken
+        this.serverAuthToken = map.serverAuthToken
         this.envVars = map.envVars
     }
 
@@ -46,9 +46,9 @@ class InvocationRequest {
         if (!cwd) {
             throw new InvalidRequestHeaderException("'Cwd' header is not found: ${port}")
         }
-        if (!clientCookie || !serverCookie.isValid(clientCookie)) {
+        if (!clientAuthToken || !serverAuthToken.isValid(clientAuthToken)) {
             Thread.sleep(5000) // to prevent from brute force atack
-            throw new InvalidRequestHeaderException("Authentication failed. Cookie is unmatched: ${clientCookie} <=> ${serverCookie.token}")
+            throw new InvalidRequestHeaderException("Authentication failed. AuthToken is unmatched: ${clientAuthToken} <=> ${serverAuthToken.token}")
         }
     }
 

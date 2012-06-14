@@ -34,7 +34,7 @@ package org.jggug.kobo.groovyserv
  *    'Env:' <env3>=<value3> LF
  *      :
  *    'Cp:' <classpath> LF
- *    'Cookie:' <cookie> LF
+ *    'AuthToken:' <authToken> LF
  *    LF
  *
  *   where:
@@ -43,7 +43,7 @@ package org.jggug.kobo.groovyserv
  *     <env1>,<env2>.. are environment variable names which sent to the server. (optional)
  *     <value1>,<valeu2>.. are environment variable values which sent to the server. (optional)
  *     <classpath> is the value of environment variable CLASSPATH. (optional)
- *     <cookie> is authentication value which certify client is the user who invoked the server.
+ *     <authToken> is authentication value which certify client is the user who invoked the server.
  *     LF is line feed (0x0a, '\n').
  *
  * StreamRequest ::=
@@ -81,7 +81,7 @@ class ClientProtocols {
     private final static String HEADER_ARG = "Arg"
     private final static String HEADER_CP = "Cp"
     private final static String HEADER_STATUS = "Status"
-    private final static String HEADER_COOKIE = "Cookie"
+    private final static String HEADER_AUTHTOKEN = "AuthToken"
     private final static String HEADER_STREAM_ID = "Channel"
     private final static String HEADER_SIZE = "Size"
     private final static String HEADER_ENV = "Env"
@@ -99,8 +99,8 @@ class ClientProtocols {
             cwd: headers[HEADER_CURRENT_WORKING_DIR]?.getAt(0),
             classpath: headers[HEADER_CP]?.getAt(0),
             args: decodeArgs(id, headers[HEADER_ARG]),
-            clientCookie: headers[HEADER_COOKIE]?.getAt(0),
-            serverCookie: conn.cookie,
+            clientAuthToken: headers[HEADER_AUTHTOKEN]?.getAt(0),
+            serverAuthToken: conn.authToken,
             envVars: headers[HEADER_ENV]
         )
         request.check()

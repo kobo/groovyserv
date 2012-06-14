@@ -29,7 +29,7 @@ struct header_t {
 };
 
 int open_socket(char* server_name, int server_port);
-void send_header(int fd, int argc, char** argv, char* cookie);
+void send_header(int fd, int argc, char** argv, char* authtoken);
 int start_session(int fd);
 
 #endif

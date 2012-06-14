@@ -121,7 +121,7 @@ if not exist "%GROOVYSERV_WORK_DIR%" (
 call :info_log GroovyServ work directory: "%GROOVYSERV_WORK_DIR%"
 
 @rem ----------------------------------------
-@rem Port and PID and Cookie
+@rem Port and PID and AuthToken
 @rem ----------------------------------------
 
 if not defined GROOVYSERVER_PORT (
@@ -132,7 +132,7 @@ if defined GROOVYSERV_OPTS (
 ) else (
     set GROOVYSERV_OPTS=-Dgroovyserver.port=%GROOVYSERVER_PORT%
 )
-set GROOVYSERV_COOKIE_FILE=%GROOVYSERV_WORK_DIR\%cookie-%GROOVYSERVER_PORT%
+set GROOVYSERV_AUTHTOKEN_FILE=%GROOVYSERV_WORK_DIR\%authtoken-%GROOVYSERVER_PORT%
 
 @rem ----------------------------------------
 @rem Setup classpath
@@ -173,7 +173,7 @@ if not errorlevel 1 (
 @rem Invoke server
 @rem -------------------------------------------
 
-if exist "%GROOVYSERV_COOKIE_FILE%" del "%GROOVYSERV_COOKIE_FILE%"
+if exist "%GROOVYSERV_AUTHTOKEN_FILE%" del "%GROOVYSERV_AUTHTOKEN_FILE%"
 if defined DEBUG (
     %GROOVY_BIN% %GROOVYSERV_OPTS% -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)"
     goto end

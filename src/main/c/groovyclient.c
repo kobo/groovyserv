@@ -134,26 +134,26 @@ void restart_server(char* script_path, int port)
 }
 
 /*
- * read authentication cookie.
+ * read authentication auth token.
  */
-static void read_cookie(char* cookie, int size, int port)
+static void read_authtoken(char* authtoken, int size, int port)
 {
     char path[MAXPATHLEN];
 #ifdef WINDOWS
-    sprintf(path, "%s\\.groovy\\groovyserv\\cookie-%d", getenv("USERPROFILE"), port);
+    sprintf(path, "%s\\.groovy\\groovyserv\\authtoken-%d", getenv("USERPROFILE"), port);
 #else
-    sprintf(path, "%s/.groovy/groovyserv/cookie-%d", getenv("HOME"), port);
+    sprintf(path, "%s/.groovy/groovyserv/authtoken-%d", getenv("HOME"), port);
 #endif
     FILE* fp = fopen(path, "r");
     if (fp != NULL) {
-        if (fgets(cookie, size, fp) == NULL) {
+        if (fgets(authtoken, size, fp) == NULL) {
             perror("ERROR: fgets");
             exit(1);
         }
         fclose(fp);
     }
     else {
-        fprintf(stderr, "ERROR: cannot open cookie file\n");
+        fprintf(stderr, "ERROR: cannot open auth token file\n");
         exit(1);
     }
 }
@@ -255,12 +255,12 @@ int main(int argc, char** argv)
     fd_soc = connect_server(argv[0], port);
     signal(SIGINT, signal_handler); // using fd_soc in handler
 
-    // get shared cookie
-    char cookie[BUFFER_SIZE];
-    read_cookie(cookie, sizeof(cookie), port);
+    // get shared auth token
+    char authtoken[BUFFER_SIZE];
+    read_authtoken(authtoken, sizeof(authtoken), port);
 
     // invoke a script on server
-    send_header(fd_soc, argc, argv, cookie);
+    send_header(fd_soc, argc, argv, authtoken);
     int status = start_session(fd_soc);
 
     // an additional text after invoking

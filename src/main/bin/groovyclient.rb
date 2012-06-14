@@ -25,7 +25,7 @@ DESTHOST = "127.0.0.1" # for security
 DESTPORT = ENV.fetch("GROOVYSERVER_PORT", 1961)
 IS_WINDOWS = RUBY_PLATFORM.downcase =~ /mswin(?!ce)|mingw|cygwin|bccwin/
 HOME_DIR = IS_WINDOWS ? ENV['USERPROFILE'] : ENV['HOME']
-COOKIE_FILE_BASE = HOME_DIR + "/.groovy/groovyserv/cookie"
+AUTHTOKEN_FILE_BASE = HOME_DIR + "/.groovy/groovyserv/authtoken"
 GROOVYSERVER_CMD = File.expand_path(ENV.fetch("GROOVYSERV_HOME", File.dirname($0)+"/..") + "/bin/groovyserver")
 VERSION_MESSAGE = "GroovyServ Version: Client: @GROOVYSERV_VERSION@ (.ruby)"
 
@@ -130,8 +130,8 @@ def send_command(socket, args)
     # TODO using default encoding.
     socket.puts "Arg: #{Base64.encode64(arg).gsub(/\s/, '')}"
   end
-  File.open(COOKIE_FILE_BASE + "-" + $options.client[:port].to_s) { |f|
-    socket.puts "Cookie: #{f.read}"
+  File.open(AUTHTOKEN_FILE_BASE + "-" + $options.client[:port].to_s) { |f|
+    socket.puts "AuthToken: #{f.read}"
   }
   send_envvars(socket)
   if ENV['CLASSPATH']

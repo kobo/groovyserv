@@ -29,8 +29,8 @@ class GroovyInvokeHandlerTest extends GroovyTestCase {
         request = new InvocationRequest(
             port: 1234,
             cwd: "CWD",
-            clientCookie: "DUMMY",
-            serverCookie: null,
+            clientAuthToken: "DUMMY",
+            serverAuthToken: null,
             envVars: ["KEY1=VALUE1"],
             classpath: "CP1${PSEP}CP2${PSEP}CP3",
             args: ['--classpath', "CP6${PSEP}CP7${PSEP}CP8", '-e', 'println("hello")'],

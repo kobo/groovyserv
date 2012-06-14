@@ -52,7 +52,7 @@ const char * const HEADER_KEY_CURRENT_WORKING_DIR = "Cwd";
 const char * const HEADER_KEY_ARG = "Arg";
 const char * const HEADER_KEY_ENV = "Env";
 const char * const HEADER_KEY_CP = "Cp";
-const char * const HEADER_KEY_COOKIE = "Cookie";
+const char * const HEADER_KEY_AUTHTOKEN = "AuthToken";
 
 // response headers
 const char * const HEADER_KEY_CHANNEL = "Channel";
@@ -159,7 +159,7 @@ static void make_env_headers(buf* read_buf, char** env, char** inc_mask, char** 
  * command line arguments, and CLASSPATH environment variable
  * to the server.
  */
-void send_header(int fd, int argc, char** argv, char* cookie)
+void send_header(int fd, int argc, char** argv, char* authtoken)
 {
     char path_buffer[MAXPATHLEN];
     buf read_buf = buf_new(BUFFER_SIZE, NULL);
@@ -176,7 +176,7 @@ void send_header(int fd, int argc, char** argv, char* cookie)
     buf_add(&read_buf, cwd);
     buf_add(&read_buf, "\n");
 
-    buf_printf(&read_buf, "%s: %s\n", HEADER_KEY_COOKIE, cookie);
+    buf_printf(&read_buf, "%s: %s\n", HEADER_KEY_AUTHTOKEN, authtoken);
 
     // send command line arguments.
     char *encoded_ptr, *encoded_work;

@@ -204,13 +204,13 @@ fi
 info_log "GroovyServ work directory: $GROOVYSERV_WORK_DIR"
 
 #-------------------------------------------
-# Port and PID and Cookie
+# Port and PID and AuthToken
 #-------------------------------------------
 
 PORT=${GROOVYSERVER_PORT:-1961}
 GROOVYSERV_OPTS="$GROOVYSERV_OPTS -Dgroovyserver.port=$PORT"
 GROOVYSERV_PID_FILE="$GROOVYSERV_WORK_DIR/pid-$PORT"
-GROOVYSERV_COOKIE_FILE="$GROOVYSERV_WORK_DIR/cookie-$PORT"
+GROOVYSERV_AUTHTOKEN_FILE="$GROOVYSERV_WORK_DIR/authtoken-$PORT"
 IS_SERVER_AVAILABLE="env GROOVYSERVER_PORT=$PORT $GROOVYCLIENT_BIN -Cwithout-invoking-server -e \"\""
 EXPIRED_PID_FILE="( cd \"$GROOVYSERV_WORK_DIR\" && find . -name pid-$PORT -mmin +1 )"
 
@@ -248,7 +248,7 @@ if [ "$DO_KILL" != "" ]; then
             info_log "Process of groovyserver of $EXISTED_PID($PORT) not found"
         fi
         rm -f "$GROOVYSERV_PID_FILE"
-        rm -f "$GROOVYSERV_COOKIE_FILE"
+        rm -f "$GROOVYSERV_AUTHTOKEN_FILE"
     else
         info_log "PID file $GROOVYSERV_PID_FILE not found"
     fi
@@ -322,8 +322,8 @@ while true; do
     fi
     sleep 1
 
-    # waiting until cookie filed is created
-    if [ ! -f "$GROOVYSERV_COOKIE_FILE" ]; then
+    # waiting until authToken filed is created
+    if [ ! -f "$GROOVYSERV_AUTHTOKEN_FILE" ]; then
         continue
     fi
 

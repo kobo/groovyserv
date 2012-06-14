@@ -27,7 +27,7 @@ class GroovyServer {
     private static final int DEFAULT_PORT = 1961
 
     private ServerSocket serverSocket
-    private Cookie cookie
+    private AuthToken authToken
 
     static void main(String[] args) {
         new GroovyServer().start()
@@ -41,7 +41,7 @@ class GroovyServer {
             setupSecurityManager()
             setupRunningMode()
             startServer()
-            setupCookie()
+            setupAuthToken()
             handleRequest()
         }
         catch (GServException e) {
@@ -62,9 +62,9 @@ class GroovyServer {
         System.setProperty("groovy.runningmode", "server")
     }
 
-    private void setupCookie() {
-        cookie = new Cookie()
-        cookie.save()
+    private void setupAuthToken() {
+        authToken = new AuthToken()
+        authToken.save()
     }
 
     private void startServer() {
@@ -87,7 +87,7 @@ class GroovyServer {
 
             // this socket will be closed under a responsibility of RequestWorker
             try {
-                new RequestWorker(cookie, socket).start()
+                new RequestWorker(authToken, socket).start()
             } catch (e) {
                 DebugUtils.errorLog("Failed to invoke RequestWorker: ${socket}", e)
             }

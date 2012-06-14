@@ -39,13 +39,13 @@ class RequestWorker extends ThreadPoolExecutor {
     private Future invokeFuture
     private Future streamFuture
 
-    RequestWorker(cookie, socket) {
+    RequestWorker(authToken, socket) {
         // API: ThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue)
         super(POOL_SIZE, POOL_SIZE, 0, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>())
         this.id = "RequestWorker:${socket.port}"
 
         def rootThreadGroup = new GServThreadGroup("GServThreadGroup:${socket.port}")
-        this.conn = new ClientConnection(cookie, socket, rootThreadGroup)
+        this.conn = new ClientConnection(authToken, socket, rootThreadGroup)
 
         // for management sub threads in invoke handler.
         setThreadFactory(new ThreadFactory() {

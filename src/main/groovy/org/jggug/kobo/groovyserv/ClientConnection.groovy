@@ -22,7 +22,7 @@ package org.jggug.kobo.groovyserv
 class ClientConnection implements Closeable {
 
     private String id
-    final Cookie cookie
+    final AuthToken authToken
     private Socket socket
     private ThreadGroup ownerThreadGroup
 
@@ -38,9 +38,9 @@ class ClientConnection implements Closeable {
     final PrintStream out
     final PrintStream err
 
-    ClientConnection(cookie, socket, ownerThreadGroup) {
+    ClientConnection(authToken, socket, ownerThreadGroup) {
         this.id = "ClientConnection:${socket.port}"
-        this.cookie = cookie
+        this.authToken = authToken
         this.socket = socket
         this.ownerThreadGroup = ownerThreadGroup
 

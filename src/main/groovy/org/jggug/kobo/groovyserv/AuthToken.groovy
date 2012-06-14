@@ -17,28 +17,28 @@ package org.jggug.kobo.groovyserv
 
 /**
  * A connection between client process and server process in localhost
- * is authenticated by simple cookie mechanism.
+ * is authenticated by simple authToken mechanism.
  *
  * @author NAKANO Yasuharu
  */
-class Cookie {
+class AuthToken {
 
     final String token
 
-    Cookie() {
-        token = createNewCookieToken()
+    AuthToken() {
+        token = createNewAuthToken()
     }
 
-    private static createNewCookieToken() {
+    private static createNewAuthToken() {
         Long.toHexString(new Random().nextLong())
     }
 
     void save() {
         try {
-            WorkFiles.COOKIE_FILE.text = token
-            DebugUtils.verboseLog "Saved cookie: ${token}"
+            WorkFiles.AUTHTOKEN_FILE.text = token
+            DebugUtils.verboseLog "Saved authToken: ${token}"
         } catch (IOException e) {
-            throw new GServIOException("I/O error: Cookie file cannot be written: ${WorkFiles.COOKIE_FILE}", e)
+            throw new GServIOException("I/O error: AuthToken file cannot be written: ${WorkFiles.AUTHTOKEN_FILE}", e)
         }
     }
 

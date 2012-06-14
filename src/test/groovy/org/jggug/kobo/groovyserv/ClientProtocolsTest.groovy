@@ -27,7 +27,7 @@ Cwd: /tmp/cwd
 Cp: /tmp/cp1:/tmp/cp2
 Arg: argument_1
 Arg: argument_2
-Cookie: DUMMY_COOKIE
+AuthToken: DUMMY_AUTHTOKEN
 """.bytes)
         // exercise
         def headers = ClientProtocols.parseHeaders('ID:0', ins)
@@ -35,7 +35,7 @@ Cookie: DUMMY_COOKIE
         assert headers.Cwd == ['/tmp/cwd']
         assert headers.Cp == ['/tmp/cp1:/tmp/cp2']
         assert headers.Arg == ['argument_1', 'argument_2']
-        assert headers.Cookie == ['DUMMY_COOKIE']
+        assert headers.AuthToken == ['DUMMY_AUTHTOKEN']
         assert headers.size() == 4
     }
 
@@ -43,13 +43,13 @@ Cookie: DUMMY_COOKIE
         // setup
         def ins = new ByteArrayInputStream("""\
 Cwd: /tmp/cwd
-Cookie: DUMMY_COOKIE
+AuthToken: DUMMY_AUTHTOKEN
 """.bytes)
         // exercise
         def headers = ClientProtocols.parseHeaders('ID:0', ins)
         // verify
         assert headers.Cwd == ['/tmp/cwd']
-        assert headers.Cookie == ['DUMMY_COOKIE']
+        assert headers.AuthToken == ['DUMMY_AUTHTOKEN']
         assert headers.size() == 2
     }
 
