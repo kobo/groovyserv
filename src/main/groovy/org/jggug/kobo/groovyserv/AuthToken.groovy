@@ -25,8 +25,8 @@ class AuthToken {
 
     final String token
 
-    AuthToken() {
-        token = createNewAuthToken()
+    AuthToken(token = null) {
+        this.token = token ?: createNewAuthToken()
     }
 
     private static createNewAuthToken() {

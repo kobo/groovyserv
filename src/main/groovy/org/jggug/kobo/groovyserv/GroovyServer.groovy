@@ -63,7 +63,8 @@ class GroovyServer {
     }
 
     private void setupAuthToken() {
-        authToken = new AuthToken()
+        def givenAuthToken = System.getProperty("groovyserver.authtoken")
+        authToken = new AuthToken(givenAuthToken)
         authToken.save()
     }
 
