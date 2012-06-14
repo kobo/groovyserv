@@ -158,6 +158,20 @@ static void read_authtoken(char* authtoken, int size, int port)
     }
 }
 
+static char* get_host()
+{
+    if (client_option.host != NULL) {
+        return client_option.host;
+    }
+
+    char* host = getenv("GROOVYSERVER_HOST");
+    if (host != NULL) {
+        return host;
+    }
+
+    return DESTHOST;
+}
+
 static int get_port()
 {
     if (client_option.port != PORT_NOT_SPECIFIED) {
@@ -177,13 +191,13 @@ static int get_port()
     return DESTPORT;
 }
 
-static int connect_server(char* argv0, int port)
+static int connect_server(char* argv0, char* host, int port)
 {
     int fd;
 
     int failCount = 0;
 
-    while ((fd = open_socket(DESTSERV, port)) == -1) {
+    while ((fd = open_socket(host, port)) == -1) {
         if (client_option.without_invocation_server == TRUE) {
             fprintf(stderr, "ERROR: groovyserver isn't running\n");
             exit(9);
@@ -242,6 +256,7 @@ int main(int argc, char** argv)
     print_client_options(&client_option);
 #endif
 
+    char* host = get_host();
     int port = get_port();
 
     if (client_option.kill) {
@@ -252,7 +267,7 @@ int main(int argc, char** argv)
         restart_server(argv[0], port);
     }
 
-    fd_soc = connect_server(argv[0], port);
+    fd_soc = connect_server(argv[0], host, port);
     signal(SIGINT, signal_handler); // using fd_soc in handler
 
     // get shared auth token

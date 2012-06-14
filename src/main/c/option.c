@@ -26,6 +26,8 @@
 
 struct option_info_t option_info[] = {
     { "without-invoking-server", OPT_WITHOUT_INVOCATION_SERVER, FALSE },
+    { "s", OPT_HOST, TRUE },
+    { "host", OPT_HOST, TRUE },
     { "p", OPT_PORT, TRUE },
     { "port", OPT_PORT, TRUE },
     { "k", OPT_KILL_SERVER, FALSE },
@@ -45,16 +47,17 @@ struct option_info_t option_info[] = {
 };
 
 struct option_t client_option = {
-    FALSE,
-    PORT_NOT_SPECIFIED, // if -Cp not specified.
-    FALSE,
-    FALSE,
-    FALSE,
-    FALSE,
-    {}, // each array elements are expected to be filled with NULLs
-    {}, // each array elements are expected to be filled with NULLs
-    FALSE,
-    FALSE,
+    FALSE,  // without_invocation_server
+    NULL,   // host
+    PORT_NOT_SPECIFIED, // port
+    FALSE,  // kill
+    FALSE,  // restart
+    FALSE,  // quiet
+    FALSE,  // env_all
+    {},     // env_include_mask; each array elements are expected to be filled with NULLs
+    {},     // env_exclude_mask; each array elements are expected to be filled with NULLs
+    FALSE,  // help
+    FALSE,  // version
 };
 
 void usage()
@@ -62,6 +65,7 @@ void usage()
     printf("usage: groovyclient -C[option for groovyclient] [args/options for groovy]\n" \
            "options:\n" \
            "  -Ch,-Chelp                       show this usage\n" \
+           "  -Cs,-Chost                       specify the host to connect to groovyserver\n"\
            "  -Cp,-Cport <port>                specify the port to connect to groovyserver\n" \
            "  -Ck,-Ckill-server                kill the running groovyserver\n" \
            "  -Cr,-Crestart-server             restart the running groovyserver\n" \
@@ -143,7 +147,7 @@ void scan_options(struct option_t* option, int argc, char **argv)
         }
 
         if (is_client_option(argv[i])) {
-            char* name = argv[i]+strlen(CLIENT_OPTION_PREFIX);
+            char* name = argv[i] + strlen(CLIENT_OPTION_PREFIX);
             char* argvi_copy = argv[i];
             argv[i] = NULL;
             struct option_info_t* opt = what_option(name);
@@ -170,7 +174,12 @@ void scan_options(struct option_t* option, int argc, char **argv)
             case OPT_WITHOUT_INVOCATION_SERVER:
                 option->without_invocation_server = TRUE;
                 break;
+            case OPT_HOST:
+                assert(opt->take_value == TRUE);
+                option->host = value;
+                break;
             case OPT_PORT:
+                assert(opt->take_value == TRUE);
                 if (sscanf(value, "%d", &option->port) != 1) {
                     fprintf(stderr, "ERROR: port number %s of option %s error\n", value, argvi_copy);
                     exit(1);
@@ -178,14 +187,14 @@ void scan_options(struct option_t* option, int argc, char **argv)
                 break;
             case OPT_KILL_SERVER:
                 if (option->restart) {
-                    fprintf(stderr, "ERROR: can't specify both of kill & restart\n");
+                    fprintf(stderr, "ERROR: cannot specify both of kill & restart\n");
                     exit(1);
                 }
                 option->kill = TRUE;
                 break;
             case OPT_RESTART_SERVER:
                 if (option->kill) {
-                    fprintf(stderr, "ERROR: can't specify both of kill & restart\n");
+                    fprintf(stderr, "ERROR: cannot specify both of kill & restart\n");
                     exit(1);
                 }
                 option->restart = TRUE;

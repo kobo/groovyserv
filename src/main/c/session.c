@@ -69,16 +69,17 @@ extern char **environ;
 #endif
 
 /*
- * Make socket and connect to the server (fixed to localhost).
+ * Make socket and connect to the server.
  */
-int open_socket(char* server_name, int server_port)
+int open_socket(char* server_host, int server_port)
 {
     struct hostent *hostent;
     struct sockaddr_in server;
 
-    hostent = gethostbyname(server_name); // lookup IP
+    // FIXME to use getaddressinfo or getnameinfo
+    hostent = gethostbyname(server_host); // lookup IP
     if (hostent == NULL) {
-        perror("ERROR: gethostbyname");
+        printf("ERROR: cannot resolve host address: %s\n", server_host);
         exit(1);
     }
 

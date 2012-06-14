@@ -25,6 +25,7 @@
 
 struct option_t {
     BOOL without_invocation_server;
+    char* host;
     int port;
     BOOL kill;
     BOOL restart;
@@ -38,6 +39,7 @@ struct option_t {
 
 enum OPTION_TYPE {
   OPT_WITHOUT_INVOCATION_SERVER,
+  OPT_HOST,
   OPT_PORT,
   OPT_KILL_SERVER,
   OPT_RESTART_SERVER,

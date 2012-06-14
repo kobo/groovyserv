@@ -23,7 +23,7 @@
 #define UNIX
 #endif
 
-#define DESTSERV "localhost"
+#define DESTHOST "localhost"
 #define DESTPORT 1961
 
 #endif
