@@ -39,24 +39,24 @@ struct option_t {
 };
 
 enum OPTION_TYPE {
-  OPT_WITHOUT_INVOCATION_SERVER,
-  OPT_HOST,
-  OPT_PORT,
-  OPT_AUTHTOKEN,
-  OPT_KILL_SERVER,
-  OPT_RESTART_SERVER,
-  OPT_QUIET,
-  OPT_ENV,
-  OPT_ENV_ALL,
-  OPT_ENV_EXCLUDE,
-  OPT_HELP,
-  OPT_VERSION,
+    OPT_WITHOUT_INVOCATION_SERVER,
+    OPT_HOST,
+    OPT_PORT,
+    OPT_AUTHTOKEN,
+    OPT_KILL_SERVER,
+    OPT_RESTART_SERVER,
+    OPT_QUIET,
+    OPT_ENV,
+    OPT_ENV_ALL,
+    OPT_ENV_EXCLUDE,
+    OPT_HELP,
+    OPT_VERSION,
 };
 
 struct option_info_t {
-  char* name;
-  enum OPTION_TYPE type;
-  BOOL take_value;
+    char* name;
+    enum OPTION_TYPE type;
+    BOOL take_value;
 };
 
 extern struct option_t client_option;
