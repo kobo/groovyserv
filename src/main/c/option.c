@@ -136,8 +136,8 @@ void scan_options(struct option_t* option, int argc, char **argv)
 {
     int i;
     if (argc <= 1) {
-            option->help = TRUE;
-            return;
+        option->help = TRUE;
+        return;
     }
     for (i = 1; i < argc; i++) {
         if (is_groovy_help_option(argv[i])) {
@@ -196,11 +196,19 @@ void scan_options(struct option_t* option, int argc, char **argv)
                     fprintf(stderr, "ERROR: cannot specify both of kill & restart\n");
                     exit(1);
                 }
+                if (option->host != NULL) {
+                    fprintf(stderr, "ERROR: cannot specify kill-server to remote host\n");
+                    exit(1);
+                }
                 option->kill = TRUE;
                 break;
             case OPT_RESTART_SERVER:
                 if (option->kill) {
                     fprintf(stderr, "ERROR: cannot specify both of kill & restart\n");
+                    exit(1);
+                }
+                if (option->host != NULL) {
+                    fprintf(stderr, "ERROR: cannot specify restart-server to remote host\n");
                     exit(1);
                 }
                 option->restart = TRUE;
