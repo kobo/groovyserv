@@ -192,25 +192,9 @@ void scan_options(struct option_t* option, int argc, char **argv)
                 option->authtoken = value;
                 break;
             case OPT_KILL_SERVER:
-                if (option->restart) {
-                    fprintf(stderr, "ERROR: cannot specify both of kill & restart\n");
-                    exit(1);
-                }
-                if (option->host != NULL) {
-                    fprintf(stderr, "ERROR: cannot specify kill-server to remote host\n");
-                    exit(1);
-                }
                 option->kill = TRUE;
                 break;
             case OPT_RESTART_SERVER:
-                if (option->kill) {
-                    fprintf(stderr, "ERROR: cannot specify both of kill & restart\n");
-                    exit(1);
-                }
-                if (option->host != NULL) {
-                    fprintf(stderr, "ERROR: cannot specify restart-server to remote host\n");
-                    exit(1);
-                }
                 option->restart = TRUE;
                 break;
             case OPT_QUIET:
@@ -238,6 +222,22 @@ void scan_options(struct option_t* option, int argc, char **argv)
             default:
                 assert(FALSE);
             }
+        }
+    }
+
+    // check unavailable combination of options
+    if (option->kill && option->restart) {
+        fprintf(stderr, "ERROR: cannot specify both of kill & restart\n");
+        exit(1);
+    }
+    if (option->host != NULL) {
+        if (option->restart) {
+            fprintf(stderr, "ERROR: cannot specify restart-server to remote host\n");
+            exit(1);
+        }
+        if (option->kill) {
+            fprintf(stderr, "ERROR: cannot specify kill-server to remote host\n");
+            exit(1);
         }
     }
 }
