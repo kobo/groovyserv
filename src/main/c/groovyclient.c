@@ -259,6 +259,7 @@ int main(int argc, char** argv)
     char* host = get_host();
     int port = get_port();
 
+    // control server
     if (client_option.kill) {
         kill_server(argv[0], port);
         exit(0);
@@ -267,12 +268,17 @@ int main(int argc, char** argv)
         restart_server(argv[0], port);
     }
 
-    fd_soc = connect_server(argv[0], host, port);
-    signal(SIGINT, signal_handler); // using fd_soc in handler
-
     // get shared auth token
     char authtoken[BUFFER_SIZE];
-    read_authtoken(authtoken, sizeof(authtoken), port);
+    if (client_option.authtoken != NULL) {
+        strcpy(authtoken, client_option.authtoken);
+    } else {
+        read_authtoken(authtoken, sizeof(authtoken), port);
+    }
+
+    // connect to server
+    fd_soc = connect_server(argv[0], host, port);
+    signal(SIGINT, signal_handler); // using fd_soc in handler
 
     // invoke a script on server
     send_header(fd_soc, argc, argv, authtoken);

@@ -30,6 +30,8 @@ struct option_info_t option_info[] = {
     { "host", OPT_HOST, TRUE },
     { "p", OPT_PORT, TRUE },
     { "port", OPT_PORT, TRUE },
+    { "a", OPT_AUTHTOKEN, TRUE },
+    { "authtoken", OPT_AUTHTOKEN, TRUE },
     { "k", OPT_KILL_SERVER, FALSE },
     { "kill-server", OPT_KILL_SERVER, FALSE },
     { "r", OPT_RESTART_SERVER, FALSE },
@@ -50,6 +52,7 @@ struct option_t client_option = {
     FALSE,  // without_invocation_server
     NULL,   // host
     PORT_NOT_SPECIFIED, // port
+    NULL,   // authtoken
     FALSE,  // kill
     FALSE,  // restart
     FALSE,  // quiet
@@ -65,8 +68,9 @@ void usage()
     printf("usage: groovyclient -C[option for groovyclient] [args/options for groovy]\n" \
            "options:\n" \
            "  -Ch,-Chelp                       show this usage\n" \
-           "  -Cs,-Chost                       specify the host to connect to groovyserver\n"\
+           "  -Cs,-Chost                       specify the host to connect to groovyserver\n" \
            "  -Cp,-Cport <port>                specify the port to connect to groovyserver\n" \
+           "  -Ca,-Cauthtoken <authtoken>      specify the authtoken\n" \
            "  -Ck,-Ckill-server                kill the running groovyserver\n" \
            "  -Cr,-Crestart-server             restart the running groovyserver\n" \
            "  -Cq,-Cquiet                      suppress statring messages\n" \
@@ -138,12 +142,10 @@ void scan_options(struct option_t* option, int argc, char **argv)
     for (i = 1; i < argc; i++) {
         if (is_groovy_help_option(argv[i])) {
             option->help = TRUE;
-            return;
         }
 
         if (is_groovy_version_option(argv[i])) {
             option->version = TRUE;
-            return;
         }
 
         if (is_client_option(argv[i])) {
@@ -161,7 +163,7 @@ void scan_options(struct option_t* option, int argc, char **argv)
             char* value = NULL;
             if (opt->take_value == TRUE) {
                 if (i >= argc-1) {
-                    fprintf(stderr, "ERROR: option %s require param\n", argvi_copy);
+                    fprintf(stderr, "ERROR: option %s requires param\n", argvi_copy);
                     usage();
                     exit(1);
                 }
@@ -184,6 +186,10 @@ void scan_options(struct option_t* option, int argc, char **argv)
                     fprintf(stderr, "ERROR: port number %s of option %s error\n", value, argvi_copy);
                     exit(1);
                 }
+                break;
+            case OPT_AUTHTOKEN:
+                assert(opt->take_value == TRUE);
+                option->authtoken = value;
                 break;
             case OPT_KILL_SERVER:
                 if (option->restart) {
@@ -215,11 +221,11 @@ void scan_options(struct option_t* option, int argc, char **argv)
                 break;
             case OPT_HELP:
                 usage();
-                exit(0);
+                exit(0); // because client's usage is printable without server communication
                 break;
             case OPT_VERSION:
                 version();
-                exit(0);
+                exit(0); // because client's version is printable without server communication
                 break;
             default:
                 assert(FALSE);
