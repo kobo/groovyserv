@@ -92,8 +92,8 @@ while [ $# -gt 0 ]; do
             echo "  -k                       kill the running groovyserver"
             echo "  -r                       restart the running groovyserver"
             echo "  -p <port>                specify the port to listen"
-            echo "  --allow-from <ADDRESSES> specify optional acceptable client addresses (delimiter: comma)"
-            echo "  --authtoken <AUTHTOKEN>  specify authtoken (which is automatically generated if not specified)"
+            echo "  --allow-from <addresses> specify optional acceptable client addresses (delimiter: comma)"
+            echo "  --authtoken <authtoken>  specify authtoken (which is automatically generated if not specified)"
             exit 1
             ;;
     esac
