@@ -134,7 +134,7 @@ void restart_server(char* script_path, int port)
 }
 
 /*
- * read authentication auth token.
+ * read authentication authtoken.
  */
 static void read_authtoken(char* authtoken, int size, int port)
 {
@@ -153,23 +153,25 @@ static void read_authtoken(char* authtoken, int size, int port)
         fclose(fp);
     }
     else {
-        fprintf(stderr, "ERROR: cannot open auth token file\n");
+        fprintf(stderr, "ERROR: cannot open authtoken file\n");
         exit(1);
     }
 }
 
-static char* get_host()
+static void get_host(char* host)
 {
     if (client_option.host != NULL) {
-        return client_option.host;
+        strcpy(host, client_option.host);
+        return;
     }
 
-    char* host = getenv("GROOVYSERVER_HOST");
-    if (host != NULL) {
-        return host;
+    char* host_env = getenv("GROOVYSERVER_HOST");
+    if (host_env != NULL) {
+        strcpy(host, host_env);
+        return;
     }
 
-    return DESTHOST;
+    strcpy(host, DESTHOST);
 }
 
 static int get_port()
@@ -189,6 +191,24 @@ static int get_port()
     }
 
     return DESTPORT;
+}
+
+static void get_authtoken(char* authtoken, int port)
+{
+    if (client_option.authtoken != NULL) {
+        strcpy(authtoken, client_option.authtoken);
+        return;
+    }
+
+    char* authtoken_env = getenv("GROOVYSERVER_AUTHTOKEN");
+    if (authtoken_env != NULL) {
+        strcpy(authtoken, authtoken_env);
+        return;
+    }
+
+    char authtoken_from_file[BUFFER_SIZE];
+    read_authtoken(authtoken_from_file, sizeof(authtoken_from_file), port);
+    strcpy(authtoken, authtoken_from_file);
 }
 
 static int connect_server(char* argv0, char* host, int port)
@@ -239,13 +259,13 @@ int main(int argc, char** argv)
 #ifdef WINDOWS
     WSADATA wsadata;
     if (WSAStartup(MAKEWORD(1,1), &wsadata) == SOCKET_ERROR) {
-        fprintf(stderr, "ERROR: creating socket");
+        fprintf(stderr, "ERROR: creating socket\n");
         exit(1);
     }
 
     // make standard output to binary mode.
     if (_setmode(_fileno(stdout), _O_BINARY) < 0) {
-        fprintf(stderr, "ERROR: setmode stdout failed");
+        fprintf(stderr, "ERROR: setmode stdout failed\n");
         exit(1);
     }
 #endif
@@ -256,8 +276,13 @@ int main(int argc, char** argv)
     print_client_options(&client_option);
 #endif
 
-    char* host = get_host();
+    char host[BUFFER_SIZE];
+    get_host(host);
+
     int port = get_port();
+
+    char authtoken[BUFFER_SIZE];
+    get_authtoken(authtoken, port);
 
     // control server
     if (client_option.kill) {
@@ -266,14 +291,6 @@ int main(int argc, char** argv)
     }
     else if (client_option.restart) {
         restart_server(argv[0], port);
-    }
-
-    // get shared auth token
-    char authtoken[BUFFER_SIZE];
-    if (client_option.authtoken != NULL) {
-        strcpy(authtoken, client_option.authtoken);
-    } else {
-        read_authtoken(authtoken, sizeof(authtoken), port);
     }
 
     // connect to server
