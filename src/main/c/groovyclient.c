@@ -100,15 +100,23 @@ static char* groovyserver_cmdline(char* script_path, char* arg, int port)
     return cmdline;
 }
 
-void invoke_server(char* script_path, int port, char* main_opt)
+void invoke_server(char* script_path, int port, char* main_opt, char* authtoken)
 {
     char* opt = strdup(main_opt);
     char* quiet_option = " -q";
 
     if (client_option.quiet) {
-        opt = realloc(opt, strlen(opt)+strlen(quiet_option)+1); 
+        opt = realloc(opt, strlen(opt) + strlen(quiet_option) + 1);
         strcat(opt, quiet_option);
     }
+
+    char authtoken_option[BUFFER_SIZE];
+    if (authtoken != NULL) {
+        sprintf(authtoken_option, " --authtoken %s", authtoken);
+        opt = realloc(opt, strlen(opt) + strlen(authtoken_option) + 1);
+        strcat(opt, authtoken_option);
+    }
+
     char* cmdline = groovyserver_cmdline(script_path, opt, port);
     if (!client_option.quiet) {
         fprintf(stderr, "Invoking server: %s\n", cmdline);
@@ -118,19 +126,19 @@ void invoke_server(char* script_path, int port, char* main_opt)
     free(opt);
 }
 
-void start_server(char* script_path, int port)
+void start_server(char* script_path, int port, char* authtoken)
 {
-    invoke_server(script_path, port, "");
+    invoke_server(script_path, port, "", authtoken);
 }
 
 void kill_server(char* script_path, int port)
 {
-    invoke_server(script_path, port, "-k");
+    invoke_server(script_path, port, "-k", NULL);
 }
 
-void restart_server(char* script_path, int port)
+void restart_server(char* script_path, int port, char* authtoken)
 {
-    invoke_server(script_path, port, "-r");
+    invoke_server(script_path, port, "-r", authtoken);
 }
 
 /*
@@ -158,20 +166,19 @@ static void read_authtoken(char* authtoken, int size, int port)
     }
 }
 
-static void get_host(char* host)
+static char* get_host()
 {
     if (client_option.host != NULL) {
-        strcpy(host, client_option.host);
-        return;
+        return client_option.host;
     }
 
-    char* host_env = getenv("GROOVYSERVER_HOST");
+    static char* host_env;
+    host_env = getenv("GROOVYSERVER_HOST");
     if (host_env != NULL) {
-        strcpy(host, host_env);
-        return;
+        return host_env;
     }
 
-    strcpy(host, DESTHOST);
+    return DESTHOST;
 }
 
 static int get_port()
@@ -193,25 +200,29 @@ static int get_port()
     return DESTPORT;
 }
 
-static void get_authtoken(char* authtoken, int port)
+static char* get_authtoken_specified_by_client(int port)
 {
     if (client_option.authtoken != NULL) {
-        strcpy(authtoken, client_option.authtoken);
-        return;
+        return client_option.authtoken;
     }
 
-    char* authtoken_env = getenv("GROOVYSERVER_AUTHTOKEN");
+    static char* authtoken_env;
+    authtoken_env = getenv("GROOVYSERVER_AUTHTOKEN");
     if (authtoken_env != NULL) {
-        strcpy(authtoken, authtoken_env);
-        return;
+        return authtoken_env;
     }
 
-    char authtoken_from_file[BUFFER_SIZE];
-    read_authtoken(authtoken_from_file, sizeof(authtoken_from_file), port);
-    strcpy(authtoken, authtoken_from_file);
+    return NULL;
 }
 
-static int connect_server(char* argv0, char* host, int port)
+static char* get_authtoken_generated_by_server(int port)
+{
+    static char authtoken[BUFFER_SIZE];
+    read_authtoken(authtoken, sizeof(authtoken), port);
+    return authtoken;
+}
+
+static int connect_server(char* argv0, char* host, int port, char* authtoken)
 {
     int fd;
 
@@ -226,7 +237,7 @@ static int connect_server(char* argv0, char* host, int port)
             fprintf(stderr, "ERROR: Failed to start up groovyserver\n");
             exit(1);
         }
-        start_server(argv0, port);
+        start_server(argv0, port, authtoken);
 
 #ifdef WINDOWS
         Sleep(3000);
@@ -276,13 +287,13 @@ int main(int argc, char** argv)
     print_client_options(&client_option);
 #endif
 
-    char host[BUFFER_SIZE];
-    get_host(host);
-
+    char* host = get_host(host);
     int port = get_port();
 
-    char authtoken[BUFFER_SIZE];
-    get_authtoken(authtoken, port);
+    // authtoken sprintf by client can use for both control to server and connection of server.
+    // when authtoken is not specified by client, it means that a user want to use remote
+    // groovyserver, groovyserver must generate new authtoken by server side
+    char* authtoken = get_authtoken_specified_by_client(port);
 
     // control server
     if (client_option.kill) {
@@ -290,11 +301,18 @@ int main(int argc, char** argv)
         exit(0);
     }
     else if (client_option.restart) {
-        restart_server(argv[0], port);
+        restart_server(argv[0], port, authtoken);
+    }
+
+    // ~/.groovy/groovserv/authtoken-NNNN file data can use only for connection to server.
+    // but if authtoken is already specified by client, it must be used to the connection
+    // instead of the file data, because it means that a user want to use a remote groovyserver.
+    if (authtoken == NULL) {
+        authtoken = get_authtoken_generated_by_server(port);
     }
 
     // connect to server
-    fd_soc = connect_server(argv[0], host, port);
+    fd_soc = connect_server(argv[0], host, port, authtoken);
     signal(SIGINT, signal_handler); // using fd_soc in handler
 
     // invoke a script on server
