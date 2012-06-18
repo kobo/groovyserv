@@ -287,7 +287,7 @@ int main(int argc, char** argv)
     print_client_options(&client_option);
 #endif
 
-    char* host = get_host(host);
+    char* host = get_host();
     int port = get_port();
 
     // authtoken sprintf by client can use for both control to server and connection of server.
