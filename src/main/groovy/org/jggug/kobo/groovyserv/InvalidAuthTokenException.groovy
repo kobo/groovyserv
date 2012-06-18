@@ -1,4 +1,3 @@
-#!/usr/bin/env groovy
 /*
  * Copyright 2009-2011 the original author or authors.
  *
@@ -16,27 +15,14 @@
  */
 package org.jggug.kobo.groovyserv
 
-
 /**
  * @author NAKANO Yasuharu
  */
-public enum ExitStatus {
+class InvalidAuthTokenException extends InvalidRequestHeaderException {
 
-    SUCCESS(0),
-    INTERRUPTED(1),
-    INVALID_REQUEST(2),
-    IO_ERROR(3),
-    ILLEGAL_STATE(4),
-    TERMINATED(5),
-    INVALID_AUTH_TOKEN(6),
-    CLIENT_NOT_ALLOWED(7),
-    UNEXPECTED_ERROR(9)
-
-    int code
-
-    private ExitStatus(code) {
-        this.code = code
+    InvalidAuthTokenException(String message, Throwable e = null) {
+        super(message, e)
+        exitStatus = ExitStatus.INVALID_AUTH_TOKEN.code
     }
 
 }
-

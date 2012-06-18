@@ -49,26 +49,26 @@ package org.jggug.kobo.groovyserv
  * StreamRequest ::=
  *    'Size:' <size> LF
  *    LF
- *    <data from STDIN>
+ *    <body from STDIN>
  *
  *   where:
- *     <size> is the size of data to send to server.
+ *     <size> is the size of body to send to server.
  *            <size>==-1 means client exited.
- *     <data from STDIN> is byte sequence from standard input.
+ *     <body from STDIN> is byte sequence from standard input.
  *
  * StreamResponse ::=
  *    'Status:' <status> LF
  *    'Channel:' <id> LF
  *    'Size:' <size> LF
  *    LF
- *    <data for STDERR/STDOUT>
+ *    <body for STDERR/STDOUT>
  *
  *   where:
  *     <status> is exit status of invoked groovy script.
  *     <id> is 'out' or 'err', where 'out' means standard output of the program.
  *          'err' means standard error of the program.
  *     <size> is the size of chunk.
- *     <data from STDERR/STDOUT> is byte sequence from standard output/error.
+ *     <body from STDERR/STDOUT> is byte sequence from standard output/error.
  *
  * </pre>
  *
@@ -165,13 +165,13 @@ class ClientProtocols {
         formatAsHeader(header)
     }
 
-    static byte[] formatAsExitHeader(status) {
+    static byte[] formatAsExitHeader(int status, String body = null) {
         def header = [:]
         header[HEADER_STATUS] = status
-        formatAsHeader(header)
+        formatAsHeader(header, body)
     }
 
-    private static byte[] formatAsHeader(map) {
+    private static byte[] formatAsHeader(Map map, String body = null) {
         def buff = new StringBuilder()
         map.each { key, value ->
             if (key) {
@@ -179,6 +179,9 @@ class ClientProtocols {
             }
         }
         buff << LINE_SEPARATOR
+        if (body) {
+            buff << body
+        }
         buff.toString().bytes
     }
 

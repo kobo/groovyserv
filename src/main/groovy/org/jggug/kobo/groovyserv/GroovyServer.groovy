@@ -78,16 +78,9 @@ class GroovyServer {
     private void handleRequest() {
         while (true) {
             def socket = serverSocket.accept()
-            DebugUtils.verboseLog "Recieved socket: ${socket}"
-            if (!isAllowedClientAddress(socket)) {
-                DebugUtils.errorLog "Cannot accept address: actual=${socket}, allowFrom=${getAllowedAddresses()}"
-                socket.close()
-                continue
-            }
             DebugUtils.verboseLog "Accepted socket: ${socket}"
-
-            // this socket will be closed under a responsibility of RequestWorker
             try {
+                // this socket will be closed under a responsibility of RequestWorker
                 new RequestWorker(authToken, socket).start()
             } catch (e) {
                 DebugUtils.errorLog("Failed to invoke RequestWorker: ${socket}", e)
@@ -97,19 +90,5 @@ class GroovyServer {
 
     static int getPortNumber() {
         return (System.getProperty("groovyserver.port") ?: DEFAULT_PORT) as int
-    }
-
-    private static boolean isAllowedClientAddress(socket) {
-        // always OK from loopback address
-        if (socket.localSocketAddress.address.isLoopbackAddress()) {
-            return true
-        }
-        return getAllowedAddresses().any { address ->
-            socket.inetAddress.hostAddress == address
-        }
-    }
-
-    private static List<String> getAllowedAddresses() {
-        return System.getProperty("groovyserver.allowFrom")?.split(",") ?: []
     }
 }

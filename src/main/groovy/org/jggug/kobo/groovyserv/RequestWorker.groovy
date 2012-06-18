@@ -25,7 +25,6 @@ import java.util.concurrent.RunnableFuture
 import java.util.concurrent.FutureTask
 import java.util.concurrent.atomic.AtomicInteger
 
-
 /**
  * @author UEHARA Junji
  * @author NAKANO Yasuharu
@@ -50,6 +49,7 @@ class RequestWorker extends ThreadPoolExecutor {
         // for management sub threads in invoke handler.
         setThreadFactory(new ThreadFactory() {
             def index = new AtomicInteger(0)
+
             Thread newThread(Runnable runnable) {
                 // giving individual sub thread group for each thread
                 // in order to kill invoke handler's sub threads which were started in user scripts.
@@ -62,16 +62,21 @@ class RequestWorker extends ThreadPoolExecutor {
     }
 
     void start() {
+        def request
         try {
-            def request = conn.openSession()
+            request = conn.openSession()
+        } catch (e) {
+            conn.sendExit(e.exitStatus, e.message)
+            throw e
+        }
+        try {
             streamFuture = submit(new StreamRequestHandler(conn))
             invokeFuture = submit(new GroovyInvokeHandler(request))
             DebugUtils.verboseLog("${id}: Request worker is started")
 
             // when all tasks will finish, executor will be shut down.
             shutdown()
-        }
-        catch (GServException e) {
+        } catch (GServException e) {
             // cancelling all tasks
             if (!isShutdown()) shutdownNow()
 
@@ -122,15 +127,15 @@ class RequestWorker extends ThreadPoolExecutor {
         closeSafety(exitStatus)
     }
 
-    private synchronized closeSafety(int exitStatus) {
+    private synchronized closeSafety(int exitStatus, String message = null) {
         // While stream handler is blocking to read from the input stream,
         // this closing makes a socket error, and then blocking in stream handler is cancelled.
         if (!conn) return
         try {
             conn.sendExit(exitStatus)
-            DebugUtils.verboseLog("${id}: Sent exit status: ${exitStatus}")
+            DebugUtils.verboseLog("${id}: Sent exit status: ${exitStatus}: ${message}")
         } catch (GServIOException e) {
-            DebugUtils.verboseLog("${id}: Failed to send exit status: ${exitStatus}", e)
+            DebugUtils.verboseLog("${id}: Failed to send exit status: ${exitStatus}: ${message}", e)
         }
         IOUtils.close(conn)
         conn = null

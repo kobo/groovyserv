@@ -15,7 +15,6 @@
  */
 package org.jggug.kobo.groovyserv
 
-
 /**
  * @author NAKANO Yasuharu
  */
@@ -56,10 +55,12 @@ class ClientConnection implements Closeable {
     }
 
     /**
+     * @throws InvalidAuthTokenException
      * @throws InvalidRequestHeaderException
      * @throws GServIOException
      */
     InvocationRequest openSession() {
+        checkAllowedClientAddress()
         ClientProtocols.readInvocationRequest(this)
     }
 
@@ -88,10 +89,10 @@ class ClientConnection implements Closeable {
     /**
      * @throws GServIOException
      */
-    void sendExit(int status) {
+    void sendExit(int status, String message = null) {
         try {
             socketOutputStream.with { // not to close yet
-                write(ClientProtocols.formatAsExitHeader(status))
+                write(ClientProtocols.formatAsExitHeader(status, message))
                 flush()
             }
         } catch (IOException e) {
@@ -150,5 +151,24 @@ class ClientConnection implements Closeable {
     @Override
     String toString() { id }
 
+    private checkAllowedClientAddress() {
+        if (!isAllowedClientAddress(socket)) {
+            throw new ClientNotAllowedException("Cannot accept address: actual=${socket}, allowFrom=${getAllowedAddresses()}")
+        }
+    }
+
+    private static boolean isAllowedClientAddress(socket) {
+        // always OK from loopback address
+        if (socket.localSocketAddress.address.isLoopbackAddress()) {
+            return true
+        }
+        return getAllowedAddresses().any { address ->
+            socket.inetAddress.hostAddress == address
+        }
+    }
+
+    private static List<String> getAllowedAddresses() {
+        return System.getProperty("groovyserver.allowFrom")?.split(",") ?: []
+    }
 }
 
