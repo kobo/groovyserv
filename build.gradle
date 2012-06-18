@@ -21,6 +21,7 @@ import org.apache.tools.ant.filters.ReplaceTokens
 //===========================================
 
 apply plugin:'groovy'
+apply plugin:'idea'
 
 defaultTasks 'clean', 'test', 'dist' // whole tasks
 
