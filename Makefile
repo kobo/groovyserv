@@ -18,10 +18,15 @@
 # Variables
 #
 
+UNAME := $(shell uname)
 ifeq ($(OS), Windows_NT)
 	CC = gcc-3
 	CFLAGS = -mno-cygwin -Wall -g
 	LDFLAGS = -lws2_32
+else ifeq ($(UNAME), Darwin)
+	CC = clang
+	CFLAGS = -Wall -g
+	LDFLAGS =
 else
 	CC = gcc
 	CFLAGS = -Wall -g
