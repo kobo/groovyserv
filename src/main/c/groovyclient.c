@@ -304,16 +304,16 @@ int main(int argc, char** argv)
         restart_server(argv[0], port, authtoken);
     }
 
+    // connect to server
+    fd_soc = connect_server(argv[0], host, port, authtoken);
+    signal(SIGINT, signal_handler); // using fd_soc in handler
+
     // ~/.groovy/groovserv/authtoken-NNNN file data can use only for connection to server.
     // but if authtoken is already specified by client, it must be used to the connection
     // instead of the file data, because it means that a user want to use a remote groovyserver.
     if (authtoken == NULL) {
         authtoken = get_authtoken_generated_by_server(port);
     }
-
-    // connect to server
-    fd_soc = connect_server(argv[0], host, port, authtoken);
-    signal(SIGINT, signal_handler); // using fd_soc in handler
 
     // invoke a script on server
     send_header(fd_soc, argc, argv, authtoken);
