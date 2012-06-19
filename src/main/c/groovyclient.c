@@ -325,14 +325,27 @@ int main(int argc, char** argv)
     send_header(fd_soc, argc, argv, authtoken);
     int status = start_session(fd_soc);
 
+    // print particular error status message
+    // FIXME it's strongly bound to exit code of ExitStatus on groovyserver.
+    //       and it will easily conflict with exit code which is specified at user script...
+    if (status == 6) {
+        fprintf(stderr, "ERROR: rejected by groovyserv because of invalid authtoken\n");
+    } else if (status == 7) {
+        fprintf(stderr, "ERROR: rejected by groovyserv because of not allowed client address\n");
+    }
+
+#ifdef DEBUG
+    fprintf(stderr, "DEBUG: exit code: %d\n", status);
+#endif
+
     // an additional text after invoking
     if (client_option.help) {
         usage();
-        exit(0);
+        exit(status);
     }
     if (client_option.version) {
         version();
-        exit(0);
+        exit(status);
     }
 
 #ifdef WINDOWS
