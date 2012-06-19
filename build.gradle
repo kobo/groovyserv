@@ -97,7 +97,11 @@ compileGroovy {
 
 task compileC << {
     println ">> Compiling C sources..."
-    executeCommand('make', ['-e', "GROOVYSERV_VERSION=${project.version}"])
+    def options = ['-e', "GROOVYSERV_VERSION=${project.version}"]
+    if (Boolean.valueOf(System.properties['debug'])) {
+        options << 'DEBUG=true'
+    }
+    executeCommand('make', options)
 }
 
 def executablesSpec = copySpec {

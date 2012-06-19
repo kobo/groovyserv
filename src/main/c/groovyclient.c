@@ -61,7 +61,10 @@ static void scriptdir(char* result_dir, char* script_path)
 
     // set result
     strcpy(result_dir, work_path);
-    //fprintf(stderr, "DEBUG: scriptdir: %s, %d\n", result_dir, strlen(result_dir));
+
+#ifdef DEBUG
+    fprintf(stderr, "DEBUG: scriptdir: %s, %zu\n", result_dir, strlen(result_dir));
+#endif
 }
 
 static char* groovyserver_cmdline(char* script_path, char* arg, int port)
@@ -87,7 +90,10 @@ static char* groovyserver_cmdline(char* script_path, char* arg, int port)
         sprintf(basedir_path, "%s/bin/", groovyserv_home);
 #endif
     }
-    //fprintf(stderr, "DEBUG: basedir_path: %s, %d\n", basedir_path, strlen(basedir_path));
+
+#ifdef DEBUG
+    fprintf(stderr, "DEBUG: basedir_path: %s, %zu\n", basedir_path, strlen(basedir_path));
+#endif
 
     // make command line to invoke groovyserver
     static char cmdline[MAXPATHLEN];
@@ -96,7 +102,11 @@ static char* groovyserver_cmdline(char* script_path, char* arg, int port)
 #else
     sprintf(cmdline, "'%sgroovyserver' -p %d %s", basedir_path, port, arg);
 #endif
-    //fprintf(stderr, "DEBUG: cmdline: %s, %d\n", cmdline, strlen(cmdline));
+
+#ifdef DEBUG
+    fprintf(stderr, "DEBUG: cmdline: %s, %zu\n", cmdline, strlen(cmdline));
+#endif
+
     return cmdline;
 }
 
@@ -282,10 +292,6 @@ int main(int argc, char** argv)
 #endif
 
     scan_options(&client_option, argc, argv);
-
-#ifdef DEBUG
-    print_client_options(&client_option);
-#endif
 
     char* host = get_host();
     int port = get_port();

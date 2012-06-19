@@ -226,7 +226,9 @@ void send_header(int fd, int argc, char** argv, char* authtoken)
  */
 static void read_header(char* buf, struct header_t* header)
 {
-    //fprintf(stderr, "DEBUG: read_header: line: %s<LF> (size:%d)\n", buf, strlen(buf));
+#ifdef DEBUG
+    fprintf(stderr, "DEBUG: read_header: line: %s<LF> (size:%zu)\n", buf, strlen(buf));
+#endif
 
     // key
     char* p = strtok(buf, " :");
@@ -270,7 +272,9 @@ static void read_header(char* buf, struct header_t* header)
     }
     strncpy(header->value, p, MAX_HEADER_VALUE_LEN);
 
-    //fprintf(stderr, "DEBUG: read_header: parsed: \"%s\"(size:%d) => \"%s\"(size:%d)\n", header->key, strlen(header->key), header->value, strlen(header->value));
+#ifdef DEBUG
+    fprintf(stderr, "DEBUG: read_header: parsed: \"%s\"(size:%zu) => \"%s\"(size:%zu)\n", header->key, strlen(header->key), header->value, strlen(header->value));
+#endif
 }
 
 static char* read_line(int fd, char* buf, int size)
@@ -280,23 +284,29 @@ static char* read_line(int fd, char* buf, int size)
 #ifdef WINDOWS
          int ret = recv(fd, buf + i, 1, 0);
          if (ret == -1) {
-             fprintf(stderr, "ERROR: failed to read line: %d\n", WSAGetLastError());
+             fprintf(stderr, "ERROR: failed to read line: %zu\n", WSAGetLastError());
              exit(1);
          }
          if (ret != 1) {
              // signal handler output breaks stream.
-             //fprintf(stderr, "DEBUG: read_line (maybe by signal handler): %d\n", ret);
+#ifdef DEBUG
+             fprintf(stderr, "DEBUG: read_line (maybe by signal handler): %zu\n", ret);
+#endif
              return NULL;
          }
 #else
          read(fd, buf + i, 1);
 #endif
          if (buf[i] == '\n') {
-             //fprintf(stderr, "DEBUG: read_line (until LF): %s<LF> (size:%d)\n", buf, strlen(buf));
+#ifdef DEBUG
+             fprintf(stderr, "DEBUG: read_line (until LF): %s<LF> (size:%zu)\n", buf, strlen(buf));
+#endif
              return buf;
          }
      }
-     //fprintf(stderr, "DEBUG: read_line (size over): %s<END> (size:%d)\n", buf, strlen(buf));
+#ifdef DEBUG
+     fprintf(stderr, "DEBUG: read_line (size over): %s<END> (size:%zu)\n", buf, strlen(buf));
+#endif
      return buf;
  }
 

@@ -241,23 +241,3 @@ void scan_options(struct option_t* option, int argc, char **argv)
         }
     }
 }
-
-static void print_mask_option(char ** env_mask)
-{
-    char** p;
-    for (p = env_mask; p-env_mask < MAX_MASK && *p != NULL; p++) {
-        printf("%s ", *p);
-    }
-}
-
-void print_client_options(struct option_t *opt)
-{
-    printf("without_invocation_server = %d\n", opt->without_invocation_server);
-    printf("env_include_mask = { ");
-    print_mask_option(opt->env_include_mask);
-    printf("}\n");
-    printf("env_exclude_mask = { ");
-    print_mask_option(opt->env_exclude_mask);
-    printf("}\n");
-}
-

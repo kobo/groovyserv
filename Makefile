@@ -47,6 +47,11 @@ OBJS =  $(DESTDIR)/groovyclient.o \
 GROOVYSERV_VERSION = X.XX-SNAPSHOT
 CFLAGS += -DGROOVYSERV_VERSION=\"$(GROOVYSERV_VERSION)\"
 
+# for DEBUG
+ifdef DEBUG
+	CFLAGS += -DDEBUG
+endif
+
 #
 # Rules
 #
