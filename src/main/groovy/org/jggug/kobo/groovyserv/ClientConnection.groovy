@@ -92,9 +92,11 @@ class ClientConnection implements Closeable {
     void sendExit(int status, String message = null) {
         try {
             socketOutputStream.with { // not to close yet
-                write(ClientProtocols.formatAsExitHeader(status, message))
+                def data = ClientProtocols.formatAsExitHeader(status, message)
+                write(data)
                 flush()
             }
+            DebugUtils.verboseLog "${id}: Sent exit code: ${status}: ${message}"
         } catch (IOException e) {
             throw new GServIOException("${id}: I/O error: failed to send exit status", e)
         }

@@ -65,7 +65,8 @@ class RequestWorker extends ThreadPoolExecutor {
         def request
         try {
             request = conn.openSession()
-        } catch (e) {
+        } catch (GServException e) {
+            DebugUtils.verboseLog("${id}: Failed to open session: ${e.message}")
             conn.sendExit(e.exitStatus, e.message)
             throw e
         }
@@ -113,7 +114,7 @@ class RequestWorker extends ThreadPoolExecutor {
             anotherFuture.cancel(true)
         }
 
-        // When this executor instance is terminated, the terminated() method is called and in there closeSafety() is called too.
+        // When this executor instance is terminated, the terminated() method is called and in there closeSafely() is called too.
         // If you want to close the socket certainly, it's enough.
         // But if you want to terminate threads of handler, it isn't enough.
         //
@@ -122,28 +123,28 @@ class RequestWorker extends ThreadPoolExecutor {
         // So Socket#close is called here in order to force to fail reading/writing of standard streams.
         // It causes a termination of the running thread, so certainly the invoke handler is terminated.
         //
-        // When the invoke handler ends before the stream handler, the following closeSafety() is also called.
+        // When the invoke handler ends before the stream handler, the following closeSafely() is also called.
         // It causes IOException on the thread of the stream handler. As a result, the stream handler is also terminated.
-        closeSafety(exitStatus)
+        closeSafely(exitStatus)
     }
 
-    private synchronized closeSafety(int exitStatus, String message = null) {
+    private synchronized closeSafely(int exitStatus, String message = null) {
         // While stream handler is blocking to read from the input stream,
         // this closing makes a socket error, and then blocking in stream handler is cancelled.
         if (!conn) return
         try {
             conn.sendExit(exitStatus)
-            DebugUtils.verboseLog("${id}: Sent exit status: ${exitStatus}: ${message}")
-        } catch (GServIOException e) {
-            DebugUtils.verboseLog("${id}: Failed to send exit status: ${exitStatus}: ${message}", e)
+        } catch (e) {
+            DebugUtils.errorLog("${id}: Failed to send exit status: ${exitStatus}: ${message}", e)
         }
         IOUtils.close(conn)
         conn = null
+        DebugUtils.verboseLog("${id}: Closed safely: ${exitStatus}: ${message}")
     }
 
     @Override
     protected void terminated() {
-        closeSafety(ExitStatus.TERMINATED.code) // by way of precaution
+        closeSafely(ExitStatus.TERMINATED.code) // by way of precaution
         DebugUtils.verboseLog("${id}: Terminated")
     }
 

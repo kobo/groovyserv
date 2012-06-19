@@ -182,6 +182,7 @@ class ClientProtocols {
         if (body) {
             buff << body
         }
+        DebugUtils.verboseLog "ClientProtocols: formatAsHeader: ${buff.toString()}"
         buff.toString().bytes
     }
 

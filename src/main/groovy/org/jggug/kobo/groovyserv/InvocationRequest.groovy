@@ -48,7 +48,8 @@ class InvocationRequest {
         }
         if (!clientAuthToken || !serverAuthToken.isValid(clientAuthToken)) {
             Thread.sleep(5000) // to prevent from brute force atack
-            throw new InvalidAuthTokenException("Authentication failed. AuthToken is unmatched: ${clientAuthToken} <=> ${serverAuthToken.token}")
+            DebugUtils.errorLog "Authentication failed. AuthToken is unmatched: ${clientAuthToken} <=> ${serverAuthToken.token}"
+            throw new InvalidAuthTokenException("Authentication failed. AuthToken is unmatched: ${clientAuthToken} <=> ******")
         }
     }
 
