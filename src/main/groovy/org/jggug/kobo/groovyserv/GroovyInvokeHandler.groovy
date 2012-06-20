@@ -15,8 +15,6 @@
  */
 package org.jggug.kobo.groovyserv
 
-import org.codehaus.groovy.tools.GroovyStarter
-
 /**
  * @author NAKANO Yasuharu
  */
