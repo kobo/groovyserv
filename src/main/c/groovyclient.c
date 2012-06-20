@@ -244,7 +244,7 @@ static int connect_server(char* argv0, char* host, int port, char* authtoken)
             exit(9);
         }
         if (failCount >= 3) {
-            fprintf(stderr, "ERROR: Failed to start up groovyserver\n");
+            fprintf(stderr, "ERROR: failed to start up groovyserver\n");
             exit(1);
         }
         start_server(argv0, port, authtoken);
@@ -328,9 +328,9 @@ int main(int argc, char** argv)
     // print particular error status message
     // FIXME it's strongly bound to exit code of ExitStatus on groovyserver.
     //       and it will easily conflict with exit code which is specified at user script...
-    if (status == 6) {
+    if (status == ERROR_INVALID_AUTHTOKEN) {
         fprintf(stderr, "ERROR: rejected by groovyserv because of invalid authtoken\n");
-    } else if (status == 7) {
+    } else if (status == ERROR_CLIENT_NOT_ALLOWED) {
         fprintf(stderr, "ERROR: rejected by groovyserv because of not allowed client address\n");
     }
 

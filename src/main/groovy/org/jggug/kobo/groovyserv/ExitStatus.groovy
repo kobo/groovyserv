@@ -16,7 +16,6 @@
  */
 package org.jggug.kobo.groovyserv
 
-
 /**
  * @author NAKANO Yasuharu
  */
@@ -28,9 +27,9 @@ public enum ExitStatus {
     IO_ERROR(3),
     ILLEGAL_STATE(4),
     TERMINATED(5),
-    INVALID_AUTH_TOKEN(6),
-    CLIENT_NOT_ALLOWED(7),
-    UNEXPECTED_ERROR(9)
+    INVALID_AUTH_TOKEN(201),
+    CLIENT_NOT_ALLOWED(202),
+    UNEXPECTED_ERROR(-1)
 
     int code
 

@@ -26,4 +26,7 @@
 #define DESTHOST "localhost"
 #define DESTPORT 1961
 
+#define ERROR_INVALID_AUTHTOKEN 201
+#define ERROR_CLIENT_NOT_ALLOWED 202
+
 #endif
