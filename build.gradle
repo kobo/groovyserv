@@ -25,7 +25,8 @@ apply plugin:'idea'
 
 defaultTasks 'clean', 'test', 'dist' // whole tasks
 
-sourceCompatibility = 1.5
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
 
 repositories {
     mavenCentral()
