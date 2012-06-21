@@ -80,20 +80,20 @@ jar {
 }
 
 compileGroovy {
-    // This classes is used only by unit tests.
-    // Instead, groovy sources in jar are used for integration test.
-    destinationDir = file("$buildDir/classes/test")
-    classpath += files("$buildDir/classes/main")
+    dependsOn 'copyGroovyIntoMain'
 
-    doLast {
-        // Groovy sources shouldn't be compiled in order to avoid a trouble
-        // of unmatch of Java version between compile-time and runtime.
-        copy {
-            into "$buildDir/classes/main"
-            from "$projectDir/src/main/groovy"
-            filter(ReplaceTokens, tokens: ["GROOVYSERV_VERSION": project.version])
-        }
-    }
+    // Groovy sources shouldn't be compiled in order to avoid a trouble
+    // of unmatch of Java version between compile-time and runtime.
+    // Compiled groovy classes are used only by unit tests.
+    // Instead, groovy sources in jar under executables dir are used
+    // for integration test.
+    exclude "**/*.groovy"
+}
+
+task copyGroovyIntoMain(type: Copy) {
+    into "$buildDir/classes/main"
+    from "$projectDir/src/main/groovy"
+    filter(ReplaceTokens, tokens: ["GROOVYSERV_VERSION": project.version])
 }
 
 task compileC << {
