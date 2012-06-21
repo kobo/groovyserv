@@ -20,8 +20,8 @@ import org.apache.tools.ant.filters.ReplaceTokens
 // Basic
 //===========================================
 
-apply plugin:'groovy'
-apply plugin:'idea'
+apply plugin: 'groovy'
+apply plugin: 'idea'
 
 defaultTasks 'clean', 'test', 'dist' // whole tasks
 
@@ -30,8 +30,8 @@ targetCompatibility = 1.7
 
 repositories {
     mavenCentral()
-    mavenRepo name:"codehaus", url:"http://repository.codehaus.org"
-    mavenRepo name:"codehaus-snapshots", url:"http://snapshots.repository.codehaus.org"
+    mavenRepo name: "codehaus", url: "http://repository.codehaus.org"
+    mavenRepo name: "codehaus-snapshots", url: "http://snapshots.repository.codehaus.org"
 }
 
 configurations {
@@ -124,7 +124,7 @@ def executablesSpec = copySpec {
         filter(ReplaceTokens, tokens: ["GROOVYSERV_VERSION": project.version])
     }
 }
-task executables(type:Copy, dependsOn:['jar', 'compileC']) {
+task executables(type: Copy, dependsOn: ['jar', 'compileC']) {
     // construct file tree
     destinationDir = file("$buildDir/executables")
     with executablesSpec
@@ -138,9 +138,9 @@ task executables(type:Copy, dependsOn:['jar', 'compileC']) {
 //----------------------------------
 // Distribution
 
-task dist(dependsOn:['distBin', 'distSrc'])
+task dist(dependsOn: ['distBin', 'distSrc'])
 
-task distBin(type:Zip, dependsOn:['jar', 'compileC']) {
+task distBin(type: Zip, dependsOn: ['jar', 'compileC']) {
     baseName = project.name
     classifier = getOsSuffix() + '-bin'
     into "$baseName-$version"
@@ -169,7 +169,7 @@ def srcSpec = copySpec {
         from "$projectDir/gradle"
     }
 }
-task distSrc(type:Zip) {
+task distSrc(type: Zip) {
     baseName = project.name
     classifier = 'src'
     into "$baseName-$version"
@@ -179,9 +179,9 @@ task distSrc(type:Zip) {
 //----------------------------------
 // Test
 
-task test(overwrite:true, dependsOn:['unitTest', 'integrationTest'])
+task test(overwrite: true, dependsOn: ['unitTest', 'integrationTest'])
 
-task unitTest(type:Test) {
+task unitTest(type: Test) {
     include '**/*Test.class'
     testReportDir = file("$buildDir/reports/unit")
     testResultsDir = file("$buildDir/test-results/unit")
@@ -189,13 +189,13 @@ task unitTest(type:Test) {
 
 // integrationTest tasks
 def integrationTestSpecs = new IntegrationTestSpecFactory(executables.groovyclientBasePath).createSpecs([
-    [id:'Java', include:'**/DirectAccessIT.class', exclude:'', always:true],
-    [id:'CUnix'],
-    [id:'CWin', extension:'.exe'],
-    [id:'Ruby', extension:'.rb', invoker:'ruby'],
+    [id: 'Java', include: '**/DirectAccessIT.class', exclude: '', always: true],
+    [id: 'CUnix'],
+    [id: 'CWin', extension: '.exe'],
+    [id: 'Ruby', extension: '.rb', invoker: 'ruby'],
 ])
 integrationTestSpecs.each { spec ->
-    task "${spec.taskName}"(type:Test, dependsOn:'executables') {
+    task "${spec.taskName}"(type: Test, dependsOn: 'executables') {
         onlyIf { spec.shouldRun() }
 
         include spec.include
@@ -208,7 +208,7 @@ integrationTestSpecs.each { spec ->
 
         doFirst {
             if (isFirstIntegrationTest()) {
-                startGroovyserver()
+                startGroovyServer()
             }
         }
         doLast {
@@ -218,7 +218,7 @@ integrationTestSpecs.each { spec ->
         }
     }
 }
-task integrationTest(dependsOn:['executables', integrationTestSpecs*.taskName])
+task integrationTest(dependsOn: ['executables', integrationTestSpecs*.taskName])
 
 //------------------------
 // Gradle wrapper
@@ -240,12 +240,11 @@ task docs << {
     }
 }
 
-
 //===========================================
 // Helper
 //===========================================
 
-def startGroovyserver() {
+def startGroovyServer() {
     println ">> Starting groovyserver..."
     executeCommand("sh", ['-c', "${executables.groovyserverPath} -r -v"])
 }
@@ -256,7 +255,7 @@ def shutdownGroovyServer() {
 }
 
 def getOsSuffix() {
-    def osName = System.properties['os.name'].replaceAll(/ /, '').toLowerCase()
+    def osName = System.properties['os.name'].replaceAll(' ', '').toLowerCase()
     def osArch = System.properties['os.arch']
     return "${osName}-${osArch}"
 }
@@ -275,12 +274,12 @@ def executeCommand(command, arguments) {
 }
 
 def isFirstIntegrationTest() {
-    def allIntTestTasks = gradle.taskGraph.allTasks.findAll{ it.name =~ /^integrationTestFor.+/ }
-    return allIntTestTasks.findAll{ !it.state.skipped }.every { !it.state.executed }
+    def allIntTestTasks = gradle.taskGraph.allTasks.findAll { it.name =~ /^integrationTestFor.+/ }
+    return allIntTestTasks.findAll { !it.state.skipped }.every { !it.state.executed }
 }
 
 def isLastIntegrationTest() {
-    def allIntTestTasks = gradle.taskGraph.allTasks.findAll{ it.name =~ /^integrationTestFor.+/ }
+    def allIntTestTasks = gradle.taskGraph.allTasks.findAll { it.name =~ /^integrationTestFor.+/ }
     return allIntTestTasks.every { it.state.executed || it.state.executing }
 }
 
@@ -294,6 +293,7 @@ class IntegrationTestSpecFactory {
     def IntegrationTestSpecFactory(path) {
         clientBasePath = path
     }
+
     def createSpecs(list) {
         list.collect { map ->
             map.clientBasePath = clientBasePath
@@ -314,12 +314,15 @@ class IntegrationTestSpec {
     def getGroovyclientPath() {
         clientBasePath + extension
     }
+
     def getExecutableExpression() {
         (invoker ? "$invoker " : '') + getGroovyclientPath()
     }
+
     def getTaskName() {
         "integrationTestFor" + id
     }
+
     def shouldRun() {
         always || new File(getGroovyclientPath()).exists()
     }
