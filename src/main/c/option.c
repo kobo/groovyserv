@@ -232,11 +232,11 @@ void scan_options(struct option_t* option, int argc, char **argv)
     }
     if (option->host != NULL) {
         if (option->restart) {
-            fprintf(stderr, "ERROR: cannot specify restart-server to remote host\n");
+            fprintf(stderr, "ERROR: cannot specify restart-server to explicitly specified host\n");
             exit(1);
         }
         if (option->kill) {
-            fprintf(stderr, "ERROR: cannot specify kill-server to remote host\n");
+            fprintf(stderr, "ERROR: cannot specify kill-server to explicitly specified host\n");
             exit(1);
         }
     }
