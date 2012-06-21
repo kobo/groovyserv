@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jggug.kobo.groovyserv
+package org.jggug.kobo.groovyserv.stream
 
+import org.jggug.kobo.groovyserv.ClientConnectionRepository
 
 /**
  * @author NAKANO Yasuharu
@@ -36,21 +37,21 @@ class StandardStreams {
     static void setUp() {
         // The standard streams are replaced with GroovyServ's ones
         // which can handle the socket for each request thread.
-        System.in  = ALTERNATES.ins
+        System.in = ALTERNATES.ins
         System.out = ALTERNATES.out
         System.err = ALTERNATES.err
     }
 
     private static InputStream newInAsInputStream() {
-        new DynamicDelegatedInputStream({ -> ClientConnectionRepository.instance.currentConnection.ins })
+        new DynamicDelegatedInputStream({-> ClientConnectionRepository.instance.currentConnection.ins })
     }
 
     private static PrintStream newOutAsPrintStream() {
-        new DynamicDelegatedPrintStream({ -> ClientConnectionRepository.instance.currentConnection.out })
+        new DynamicDelegatedPrintStream({-> ClientConnectionRepository.instance.currentConnection.out })
     }
 
     private static PrintStream newErrAsPrintStream() {
-        new DynamicDelegatedPrintStream({ -> ClientConnectionRepository.instance.currentConnection.err })
+        new DynamicDelegatedPrintStream({-> ClientConnectionRepository.instance.currentConnection.err })
     }
 
 }

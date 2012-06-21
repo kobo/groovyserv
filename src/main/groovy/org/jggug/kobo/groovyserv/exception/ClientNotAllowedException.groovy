@@ -13,16 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jggug.kobo.groovyserv
+package org.jggug.kobo.groovyserv.exception
 
+import org.jggug.kobo.groovyserv.ExitStatus
 
 /**
  * @author NAKANO Yasuharu
  */
-class GServIllegalStateException extends GServException {
+class ClientNotAllowedException extends GServException {
 
-    GServIllegalStateException(String message, Throwable e = null) {
-        super(ExitStatus.ILLEGAL_STATE.code, message, e)
+    ClientNotAllowedException(String message, Throwable e = null) {
+        super(ExitStatus.CLIENT_NOT_ALLOWED.code, message, e)
     }
 
 }

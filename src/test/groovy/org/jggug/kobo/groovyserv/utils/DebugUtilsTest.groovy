@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jggug.kobo.groovyserv
+package org.jggug.kobo.groovyserv.utils
 
 /**
- * Tests for the {@link org.jggug.kobo.groovyserv.DebugUtils} class.
+ * Tests for the {@link org.jggug.kobo.groovyserv.utils.DebugUtils} class.
  */
 class DebugUtilsTest extends GroovyTestCase {
 

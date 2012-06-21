@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jggug.kobo.groovyserv
+package org.jggug.kobo.groovyserv.platform
 
 /**
- * Tests for the {@link org.jggug.kobo.groovyserv.EnvironmentVariables} class.
+ * Tests for the {@link org.jggug.kobo.groovyserv.platform.EnvironmentVariables} class.
  */
 class EnvironmentVariablesTest extends GroovyTestCase {
 

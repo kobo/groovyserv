@@ -13,16 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jggug.kobo.groovyserv
+package org.jggug.kobo.groovyserv.platform
 
+import com.sun.jna.Library
 
 /**
+ * JNA interface for LibC on Linux and MacOSX.
+ *
+ * @author UEHARA Junji
  * @author NAKANO Yasuharu
  */
-class GServInterruptedException extends GServException {
-
-    GServInterruptedException(String message, Throwable e = null) {
-        super(ExitStatus.INTERRUPTED.code, message, e)
-    }
-
+interface UnixLibC extends Library {
+    int chdir(String dir)
+    int setenv(String envVarName, String envVarValue, int overwrite)
 }
+

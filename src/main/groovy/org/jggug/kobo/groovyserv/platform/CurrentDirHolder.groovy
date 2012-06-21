@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jggug.kobo.groovyserv
+package org.jggug.kobo.groovyserv.platform
 
+import org.jggug.kobo.groovyserv.exception.GServIllegalStateException
 
 /**
  * @author NAKANO Yasuharu

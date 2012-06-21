@@ -15,9 +15,6 @@
  */
 package org.jggug.kobo.groovyserv
 
-import groovy.util.GroovyTestCase
-
-
 /**
  * Test by using socket directly
  */

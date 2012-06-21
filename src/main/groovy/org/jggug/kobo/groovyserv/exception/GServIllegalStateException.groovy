@@ -13,18 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jggug.kobo.groovyserv
+package org.jggug.kobo.groovyserv.exception
 
-import com.sun.jna.Library
+import org.jggug.kobo.groovyserv.ExitStatus
 
 /**
- * JNA interface for LibC on Linux and MacOSX.
- *
- * @author UEHARA Junji
  * @author NAKANO Yasuharu
  */
-interface UnixLibC extends Library {
-    int chdir(String dir)
-    int setenv(String envVarName, String envVarValue, int overwrite)
-}
+class GServIllegalStateException extends GServException {
 
+    GServIllegalStateException(String message, Throwable e = null) {
+        super(ExitStatus.ILLEGAL_STATE.code, message, e)
+    }
+
+}

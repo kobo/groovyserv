@@ -15,6 +15,11 @@
  */
 package org.jggug.kobo.groovyserv
 
+import org.jggug.kobo.groovyserv.exception.GServIOException
+import org.jggug.kobo.groovyserv.exception.InvalidRequestHeaderException
+
+import org.jggug.kobo.groovyserv.utils.DebugUtils
+import org.jggug.kobo.groovyserv.utils.IOUtils
 
 /**
  * Protocol summary:
@@ -88,6 +93,7 @@ class ClientProtocols {
     private final static String LINE_SEPARATOR = "\n"
 
     /**
+     * @Throws InvalidAuthTokenException
      * @throws InvalidRequestHeaderException
      * @throws GServIOException
      */

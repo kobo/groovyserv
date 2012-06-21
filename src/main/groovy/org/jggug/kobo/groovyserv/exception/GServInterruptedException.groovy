@@ -13,16 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jggug.kobo.groovyserv
+package org.jggug.kobo.groovyserv.exception
 
+import org.jggug.kobo.groovyserv.ExitStatus
 
 /**
  * @author NAKANO Yasuharu
  */
-class GServIOException extends GServException {
+class GServInterruptedException extends GServException {
 
-    GServIOException(String message, Throwable e = null) {
-        super(ExitStatus.IO_ERROR.code, message, e)
+    GServInterruptedException(String message, Throwable e = null) {
+        super(ExitStatus.INTERRUPTED.code, message, e)
     }
 
 }

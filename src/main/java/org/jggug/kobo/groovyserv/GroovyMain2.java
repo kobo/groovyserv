@@ -88,7 +88,7 @@ public class GroovyMain2 {
     // backup input files with extension
     private String backupExtension;
 
-    // do you want full stack traces in script exceptions?
+    // do you want full stack traces in script exception?
     private boolean debug = false;
 
     // Compiler configuration, used to set the encodings of the scripts/classes
@@ -115,7 +115,7 @@ public class GroovyMain2 {
                 printHelp(out, options);
             } else if (cmd.hasOption('v')) {
                 String version = GroovySystem.getVersion();
-                out.println("Groovy Version: " + version + " JVM: " + System.getProperty("java.version") + 
+                out.println("Groovy Version: " + version + " JVM: " + System.getProperty("java.version") +
                         " Vendor: " + System.getProperty("java.vm.vendor")  + " OS: " + System.getProperty("os.name"));
             } else {
                 // If we fail, then exit with an error so scripting frameworks can catch it
@@ -144,7 +144,7 @@ public class GroovyMain2 {
             4,
             null, // footer
             false);
-       
+
         pw.flush();
     }
 
@@ -268,7 +268,7 @@ public class GroovyMain2 {
      */
     private static boolean process(CommandLine line, String classpath) throws ParseException { // for GroovyServ
         List args = line.getArgList();
-        
+
         if (line.hasOption('D')) {
             String[] values = line.getOptionValues('D');
 
@@ -278,7 +278,7 @@ public class GroovyMain2 {
         }
 
         GroovyMain2 main = new GroovyMain2();
-        
+
         // add the ability to parse scripts with a specified encoding
         main.conf.setSourceEncoding(line.getOptionValue('c',main.conf.getSourceEncoding()));
 
@@ -312,7 +312,7 @@ public class GroovyMain2 {
             String p = line.getOptionValue('l', "1960"); // default port to listen to
             main.port = Integer.parseInt(p);
         }
-        
+
         // we use "," as default, because then split will create
         // an empty array if no option is set
         String disabled = line.getOptionValue("disableopt", ",");
@@ -320,7 +320,7 @@ public class GroovyMain2 {
         for (String deopt_i : deopts) {
             main.conf.getOptimizationOptions().put(deopt_i,false);
         }
-        
+
         main.args = args;
 
         // for GroovyServ: classpath is given by GroovyInvokeHandler

@@ -15,6 +15,8 @@
  */
 package org.jggug.kobo.groovyserv
 
+import org.jggug.kobo.groovyserv.exception.GServIllegalStateException
+import org.jggug.kobo.groovyserv.utils.DebugUtils
 
 /**
  * A repository of ClientConnection for each ThreadGroup.

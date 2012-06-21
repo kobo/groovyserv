@@ -13,18 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jggug.kobo.groovyserv
+package org.jggug.kobo.groovyserv.exception
 
-import com.sun.jna.Library
+import org.jggug.kobo.groovyserv.ExitStatus
 
 /**
- * JNA interface for LibC on Windows.
- *
- * @author UEHARA Junji
  * @author NAKANO Yasuharu
  */
-interface WindowsLibC extends Library {
-    int _chdir(String dir)
-    void _putenv(String envVar)
-}
+class GServException extends RuntimeException {
 
+    int exitStatus
+
+    GServException(String message, Throwable e = null) {
+        this(ExitStatus.UNEXPECTED_ERROR.code, message, e)
+    }
+
+    GServException(int exitStatus, String message, Throwable e = null) {
+        super(message, e)
+        this.exitStatus = exitStatus
+    }
+
+}

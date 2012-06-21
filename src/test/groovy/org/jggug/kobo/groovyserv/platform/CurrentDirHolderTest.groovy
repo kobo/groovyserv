@@ -15,13 +15,15 @@
  */
 package org.jggug.kobo.groovyserv
 
+import org.jggug.kobo.groovyserv.exception.GServIllegalStateException
+import org.jggug.kobo.groovyserv.platform.CurrentDirHolder
+
 /**
- * Tests for the {@link org.jggug.kobo.groovyserv.CurrentDirHolder} class.
+ * Tests for the {@link org.jggug.kobo.groovyserv.platform.CurrentDirHolder} class.
  */
 class CurrentDirHolderTest extends GroovyTestCase {
 
     CurrentDirHolder holder = CurrentDirHolder.instance
-    String originalClasspath
     String workDir
 
     void setUp() {

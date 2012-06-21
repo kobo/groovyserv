@@ -15,10 +15,7 @@
  */
 package org.jggug.kobo.groovyserv
 
-import groovy.util.GroovyTestCase
-
 import static org.junit.Assert.*
-
 
 /**
  * Utilities only for tests.

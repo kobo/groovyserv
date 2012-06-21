@@ -13,15 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jggug.kobo.groovyserv
+package org.jggug.kobo.groovyserv.exception
+
+import org.jggug.kobo.groovyserv.ExitStatus
 
 /**
  * @author NAKANO Yasuharu
  */
-class InvalidRequestHeaderException extends GServException {
+class GServIOException extends GServException {
 
-    InvalidRequestHeaderException(String message, Throwable e = null) {
-        super(ExitStatus.INVALID_REQUEST.code, message, e)
+    GServIOException(String message, Throwable e = null) {
+        super(ExitStatus.IO_ERROR.code, message, e)
     }
 
 }

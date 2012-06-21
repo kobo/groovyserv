@@ -15,8 +15,6 @@
  */
 package org.jggug.kobo.groovyserv
 
-import groovy.util.GroovyTestCase
-
 /**
  * Tests for the {@code groovyclient}.
  * Before running this, you must start groovyserver.
