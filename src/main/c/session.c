@@ -227,7 +227,7 @@ void send_header(int fd, int argc, char** argv, char* authtoken)
 static void read_header(char* buf, struct header_t* header)
 {
 #ifdef DEBUG
-    fprintf(stderr, "DEBUG: read_header: line: %s<LF> (size:%zu)\n", buf, strlen(buf));
+    fprintf(stderr, "DEBUG: read_header: line: %s<EOL> (size:%zu)\n", buf, strlen(buf));
 #endif
 
     // key
@@ -299,13 +299,13 @@ static char* read_line(int fd, char* buf, int size)
 #endif
          if (buf[i] == '\n') {
 #ifdef DEBUG
-             fprintf(stderr, "DEBUG: read_line (until LF): %s<LF> (size:%zu)\n", buf, strlen(buf));
+             fprintf(stderr, "DEBUG: read_line (until LF): %s<EOL> (size:%zu)\n", buf, strlen(buf));
 #endif
              return buf;
          }
      }
 #ifdef DEBUG
-     fprintf(stderr, "DEBUG: read_line (size over): %s<END> (size:%zu)\n", buf, strlen(buf));
+     fprintf(stderr, "DEBUG: read_line (size over): %s<EOL> (size:%zu)\n", buf, strlen(buf));
 #endif
      return buf;
  }
@@ -383,9 +383,12 @@ static int receive_from_server(int socket, char* stream_identifier, int size)
     char read_buf[BUFFER_SIZE];
     int remained_size = size;
     int ret;
-    while ((ret = recv(socket, read_buf, min_int(remained_size, BUFFER_SIZE), 0)) > 0) {
+    while (min_int(remained_size, BUFFER_SIZE) > 0 && (ret = recv(socket, read_buf, min_int(remained_size, BUFFER_SIZE), 0)) > 0) {
         write(output_fd, read_buf, ret);
         remained_size -= ret;
+#ifdef DEBUG
+        fprintf(stderr, "DEBUG: read and write from server: %d (remained: %d)\n", ret, min_int(remained_size, BUFFER_SIZE));
+#endif
     }
     return 0;
 }
@@ -403,10 +406,12 @@ static int send_to_server(int fd)
         exit(1);
     }
     read_buf[ret] = '\0';
+#ifdef DEBUG
+        fprintf(stderr, "DEBUG: read from stdin: %s (size:%d)\n", read_buf, strlen(read_buf));
+#endif
 
     char write_buf[BUFFER_SIZE];
     sprintf(write_buf, "Size: %d\n\n", ret); // TODO: check size
-
 #ifdef WINDOWS
     send(fd, write_buf, strlen(write_buf), 0);
     send(fd, read_buf, ret, 0);
@@ -461,10 +466,10 @@ int start_session(int fd)
         FD_ZERO(&read_set);
 
         // watch stdin of client and socket.
-        FD_SET(0, &read_set);
+        FD_SET(STDIN_FILENO, &read_set);
         FD_SET(fd, &read_set);
 
-        if ((ret = select(FD_SETSIZE, &read_set, (fd_set*)NULL, (fd_set*)NULL, NULL)) == -1) {
+        if ((ret = select(fd + 1, &read_set, (fd_set*)NULL, (fd_set*)NULL, NULL)) == -1) {
             perror("ERROR: select failure");
             exit(1);
         }
@@ -474,12 +479,22 @@ int start_session(int fd)
         }
 
         // detect changed descriptor
-        if (!stdin_closed && FD_ISSET(0, &read_set)) { // stdin
+        if (!stdin_closed && FD_ISSET(STDIN_FILENO, &read_set)) { // stdin
+#ifdef DEBUG
+            fprintf(stderr, "DEBUG: detect stdin\n");
+#endif
             stdin_closed = send_to_server(fd);
-        }
-        if (FD_ISSET(fd, &read_set) == FALSE){ // socket
             continue;
         }
+        if (FD_ISSET(fd, &read_set) == FALSE){ // socket
+#ifdef DEBUG
+            fprintf(stderr, "DEBUG: detect nothing\n");
+#endif
+            continue;
+        }
+#ifdef DEBUG
+        fprintf(stderr, "DEBUG: detect socket\n");
+#endif
 #endif
 
         int size = read_headers(fd, headers);
