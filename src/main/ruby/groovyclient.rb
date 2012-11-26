@@ -169,8 +169,10 @@ def handle_socket(socket)
 
   if headers['Channel'] == 'out'
     $stdout.print data
+    $stdout.flush
   elsif headers['Channel'] == 'err'
     $stderr.print data
+    $stderr.flush
   end
 end
 
