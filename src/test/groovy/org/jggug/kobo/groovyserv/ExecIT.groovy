@@ -36,11 +36,17 @@ class ExecIT extends GroovyTestCase {
     }
 
     void testMultiLineReadAndWrite() {
-        def p = TestUtils.executeClient(["-e", '"System.in.eachLine { line, index -> println(line * 2); if (index >= 2) { System.exit 0 } }"']) { p ->
+        def p = TestUtils.executeClient(["-e", '"System.in.eachLine { line, index -> println(line * 2); if (index >= 3) { System.exit 0 } }"']) { p ->
+            // improved to be able to detect the issue: https://github.com/kobo/groovyserv/issues/44
+            // when two lines sequentially are inputed, it exists normally.
+            // but if inputing three lines or with a interval, c client was frozen.
             p.out << "A" + SEP
+            sleep 1000
             p.out << "B" + SEP
+            sleep 1000
+            p.out << "C" + SEP
         }
-        assertEquals "AA" + SEP + "BB" + SEP, p.text
+        assertEquals "AA" + SEP + "BB" + SEP + "CC" + SEP, p.text
         assertEquals "", p.err.text
     }
 
