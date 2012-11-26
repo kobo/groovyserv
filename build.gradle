@@ -199,8 +199,14 @@ integrationTestSpecs.each { spec ->
     task "${spec.taskName}"(type: Test, dependsOn: 'executables') {
         onlyIf { spec.shouldRun() }
 
-        include spec.include
-        exclude spec.exclude
+
+        // Support for -Dtest.single
+        if (System.properties['test.single']) {
+            include "**/${System.properties['test.single']}.*"
+        } else {
+            include spec.include
+            exclude spec.exclude
+        }
         testReportDir = file("$buildDir/reports/integration-${spec.id}")
         testResultsDir = file("$buildDir/test-results/integration-${spec.id}")
 
