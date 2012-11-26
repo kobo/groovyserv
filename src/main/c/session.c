@@ -407,7 +407,7 @@ static int send_to_server(int fd)
     }
     read_buf[ret] = '\0';
 #ifdef DEBUG
-        fprintf(stderr, "DEBUG: read from stdin: %s (size:%d)\n", read_buf, strlen(read_buf));
+        fprintf(stderr, "DEBUG: read from stdin: %s (size:%zu)\n", read_buf, strlen(read_buf));
 #endif
 
     char write_buf[BUFFER_SIZE];
