@@ -225,7 +225,7 @@ task integrationTest(dependsOn: ['executables', integrationTestSpecs*.taskName])
 // Gradle wrapper
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '1.0'
+    gradleVersion = '1.3'
 }
 
 //------------------------
