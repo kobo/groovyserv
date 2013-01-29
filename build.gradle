@@ -40,8 +40,8 @@ configurations {
 }
 
 dependencies {
-    groovy 'org.codehaus.groovy:groovy-all:1.8.6'
-    groovy 'commons-cli:commons-cli:1.2'
+    compile 'org.codehaus.groovy:groovy-all:1.8.6'
+    compile 'commons-cli:commons-cli:1.2'
     archives 'net.java.dev.jna:jna:3.2.7'
     testCompile 'junit:junit:4.10'
 }
@@ -231,7 +231,7 @@ task integrationTest(dependsOn: ['executables', integrationTestSpecs*.taskName])
 // Gradle wrapper
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '1.3'
+    gradleVersion = '1.4'
 }
 
 //------------------------
