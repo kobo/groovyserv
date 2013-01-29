@@ -40,7 +40,7 @@ configurations {
 }
 
 dependencies {
-    compile 'org.codehaus.groovy:groovy-all:1.8.6'
+    compile 'org.codehaus.groovy:groovy-all:2.1.0'
     compile 'commons-cli:commons-cli:1.2'
     archives 'net.java.dev.jna:jna:3.2.7'
     testCompile 'junit:junit:4.10'

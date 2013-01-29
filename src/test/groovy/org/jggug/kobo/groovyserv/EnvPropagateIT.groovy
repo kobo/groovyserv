@@ -175,7 +175,7 @@ class EnvPropagationIT extends GroovyTestCase {
 
    void testAccessableToOriginalEnvironmentOnServerSides() {
        TestUtils.executeClientOk(["-e", '"print(System.getenv(\'PWD\'))"']) {
-           assert it.text != "null"
+           assert it.in.text != "null"
            assert it.err.text == ""
        }
    }

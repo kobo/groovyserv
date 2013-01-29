@@ -25,13 +25,13 @@ class ExecIT extends GroovyTestCase {
 
     void testExec() {
         def p = TestUtils.executeClientOk(["-e", '"println(\'hello\')"'])
-        assertEquals "hello" + SEP, p.text
+        assertEquals "hello" + SEP, p.in.text
         assertEquals "", p.err.text
     }
 
     void testMultiLineWrite() {
         def p = TestUtils.executeClientOk(["-e", '"[0, 1, 2].each{ println(it) }"'])
-        assertEquals "0" + SEP + "1" + SEP + "2" + SEP, p.text
+        assertEquals "0" + SEP + "1" + SEP + "2" + SEP, p.in.text
         assertEquals "", p.err.text
     }
 
@@ -46,7 +46,7 @@ class ExecIT extends GroovyTestCase {
             sleep 1000
             p.out << "C" + SEP
         }
-        assertEquals "AA" + SEP + "BB" + SEP + "CC" + SEP, p.text
+        assertEquals "AA" + SEP + "BB" + SEP + "CC" + SEP, p.in.text
         assertEquals "", p.err.text
     }
 

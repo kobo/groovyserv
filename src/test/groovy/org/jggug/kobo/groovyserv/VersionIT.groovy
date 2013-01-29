@@ -25,7 +25,7 @@ class VersionIT extends GroovyTestCase {
 
     void testVersionOption_clientAndServer_short() {
         def p = TestUtils.executeClientOk(["-v"])
-        p.text.with { stdout ->
+        p.in.text.with { stdout ->
             assert stdout.contains("Groovy Version:")
             assert stdout.contains("GroovyServ Version: Server")
             assert stdout.contains("GroovyServ Version: Client")
@@ -36,7 +36,7 @@ class VersionIT extends GroovyTestCase {
     void testVersionOption_clientAndServer_vagueShort() {
         // the original Groovy considers the option value to a valid version option.
         def p = TestUtils.executeClientOk(["-vFOOBAR"])
-        p.text.with { stdout ->
+        p.in.text.with { stdout ->
             assert stdout.contains("Groovy Version:")
             assert stdout.contains("GroovyServ Version: Server")
             assert stdout.contains("GroovyServ Version: Client")
@@ -46,7 +46,7 @@ class VersionIT extends GroovyTestCase {
 
     void testVersionOption_clientAndServer_long() {
         def p = TestUtils.executeClientOk(["--version"])
-        p.text.with { stdout ->
+        p.in.text.with { stdout ->
             assert stdout.contains("Groovy Version:")
             assert stdout.contains("GroovyServ Version: Server")
             assert stdout.contains("GroovyServ Version: Client")
@@ -56,7 +56,7 @@ class VersionIT extends GroovyTestCase {
 
     void testVersionOption_onlyClient_short() {
         def p = TestUtils.executeClientOk(["-Cv"])
-        p.text.with { stdout ->
+        p.in.text.with { stdout ->
             assert stdout.contains("Groovy Version:") == false
             assert stdout.contains("GroovyServ Version: Server") == false
             assert stdout.contains("GroovyServ Version: Client")
@@ -66,7 +66,7 @@ class VersionIT extends GroovyTestCase {
 
     void testVersionOption_onlyClient_long() {
         def p = TestUtils.executeClientOk(["-Cversion"])
-        p.text.with { stdout ->
+        p.in.text.with { stdout ->
             assert stdout.contains("Groovy Version:") == false
             assert stdout.contains("GroovyServ Version: Server") == false
             assert stdout.contains("GroovyServ Version: Client")

@@ -30,7 +30,7 @@ class ClasspathIT extends GroovyTestCase {
         def p = Runtime.runtime.exec(command, env as String[])
         p.waitFor()
         assert p.err.text == ""
-        assert p.text.contains("Env:hello")
+        assert p.in.text.contains("Env:hello")
     }
 
     void testArguments() {
@@ -38,7 +38,7 @@ class ClasspathIT extends GroovyTestCase {
         def p = Runtime.runtime.exec(command)
         p.waitFor()
         assert p.err.text == ""
-        assert p.text.contains("Arg:hello")
+        assert p.in.text.contains("Arg:hello")
     }
 
     void testArguments_withEnvironmentVariables_usingArgIsHigherPriorityThanEnv() {
@@ -48,14 +48,14 @@ class ClasspathIT extends GroovyTestCase {
         def p = Runtime.runtime.exec(command, env as String[])
         p.waitFor()
         assert p.err.text == ""
-        assert p.text.contains("Arg:hello")
+        assert p.in.text.contains("Arg:hello")
     }
 
     void testVolatileOfClasspath() {
         def command = TestUtils.getCommand(["-e", '"new ArgEcho().echo(\'hello\')"']) as String[]
         def p = Runtime.runtime.exec(command)
         p.waitFor()
-        assert p.text == ""
+        assert p.in.text == ""
         assert p.err.text.contains("org.codehaus.groovy.control.MultipleCompilationErrorsException")
     }
 
