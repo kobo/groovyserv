@@ -43,7 +43,7 @@ dependencies {
     compile 'org.codehaus.groovy:groovy-all:2.1.0'
     compile 'commons-cli:commons-cli:1.2'
     archives 'net.java.dev.jna:jna:3.2.7'
-    testCompile 'junit:junit:4.10'
+    testCompile 'junit:junit:4.11'
 }
 
 def defaultEncoding = 'UTF-8'
