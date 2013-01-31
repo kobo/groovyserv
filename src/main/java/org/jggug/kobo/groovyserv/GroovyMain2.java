@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 the original author or authors.
+ * Copyright 2003-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,13 @@
 //package groovy.ui;
 package org.jggug.kobo.groovyserv;
 
-import groovy.ui.*;
-
+import groovy.lang.Binding;
 import groovy.lang.GroovyRuntimeException;
 import groovy.lang.GroovyShell;
 import groovy.lang.GroovySystem;
 import groovy.lang.MissingMethodException;
 import groovy.lang.Script;
-
-import java.io.*;
-import java.math.BigInteger;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Iterator;
-import java.util.List;
-
+import groovy.ui.GroovySocketServer;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -40,10 +32,25 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.control.CompilerConfiguration;
+import org.codehaus.groovy.control.customizers.ImportCustomizer;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.codehaus.groovy.runtime.InvokerInvocationException;
-import org.codehaus.groovy.runtime.DefaultGroovyMethods;
+import org.codehaus.groovy.runtime.ResourceGroovyMethods;
 import org.codehaus.groovy.runtime.StackTraceUtils;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.math.BigInteger;
+import java.net.URL;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * A Command line to execute groovy.
@@ -51,7 +58,7 @@ import org.codehaus.groovy.runtime.StackTraceUtils;
  * @author Jeremy Rayner
  * @author Yuri Schimke
  * @author Roshan Dawrani
- * @version 40c80ea560da015b015ca8d90358a75aa6525208
+ * @version 8898472c91803d765c54a2221582adfa237b9f96
  */
 public class GroovyMain2 {
 
@@ -88,7 +95,7 @@ public class GroovyMain2 {
     // backup input files with extension
     private String backupExtension;
 
-    // do you want full stack traces in script exception?
+    // do you want full stack traces in script exceptions?
     private boolean debug = false;
 
     // Compiler configuration, used to set the encodings of the scripts/classes
@@ -127,6 +134,8 @@ public class GroovyMain2 {
         } catch (ParseException pe) {
             out.println("error: " + pe.getMessage());
             printHelp(out, options);
+        } catch (IOException ioe) {
+            out.println("error: " + ioe.getMessage());
         }
     }
 
@@ -157,6 +166,7 @@ public class GroovyMain2 {
      * @throws ParseException if there was a problem.
      */
     private static CommandLine parseCommandLine(Options options, String[] args) throws ParseException {
+        //CommandLineParser parser = new GroovyPosixParser(); // because occurring ClassNotFoundException when build
         CommandLineParser parser = new PosixParser();
         return parser.parse(options, args, true);
     }
@@ -237,8 +247,20 @@ public class GroovyMain2 {
             .withDescription("split lines using splitPattern (default '\\s') using implicit 'split' variable")
             .withLongOpt("autosplit")
             .create('a'));
-
+        options.addOption(
+            OptionBuilder.withLongOpt("indy")
+            .withDescription("enables compilation using invokedynamic")
+            .create());
+        options.addOption(
+            OptionBuilder.withLongOpt("configscript")
+            .hasArg().withDescription("A script for tweaking the configuration options")
+            .create());
+        options.addOption(
+                OptionBuilder.withLongOpt("basescript")
+                .hasArg().withArgName("class").withDescription("Base class name for scripts (must derive from Script)")
+                .create('b'));
         return options;
+
     }
 
     private static void setSystemPropertyFrom(final String nameValue) {
@@ -266,7 +288,7 @@ public class GroovyMain2 {
      * @param line the parsed command line.
      * @throws ParseException if invalid options are chosen
      */
-    private static boolean process(CommandLine line, String classpath) throws ParseException { // for GroovyServ
+    private static boolean process(CommandLine line, String classpath) throws ParseException, IOException { // for GroovyServ
         List args = line.getArgList();
 
         if (line.hasOption('D')) {
@@ -321,7 +343,31 @@ public class GroovyMain2 {
             main.conf.getOptimizationOptions().put(deopt_i,false);
         }
 
-        main.args = args;
+        if (line.hasOption("indy")) {
+            CompilerConfiguration.DEFAULT.getOptimizationOptions().put("indy", true);
+            main.conf.getOptimizationOptions().put("indy", true);
+        }
+
+         if (line.hasOption("basescript")) {
+             main.conf.setScriptBaseClass(line.getOptionValue("basescript"));
+         }
+
+         if (line.hasOption("configscript")) {
+             String path = line.getOptionValue("configscript");
+             File groovyConfigurator = new File(path);
+             Binding binding = new Binding();
+             binding.setVariable("configuration", main.conf);
+
+             CompilerConfiguration configuratorConfig = new CompilerConfiguration();
+             ImportCustomizer customizer = new ImportCustomizer();
+             customizer.addStaticStars("org.codehaus.groovy.control.customizers.builder.CompilerCustomizationBuilder");
+             configuratorConfig.addCompilationCustomizers(customizer);
+
+             GroovyShell shell = new GroovyShell(binding, configuratorConfig);
+             shell.evaluate(groovyConfigurator);
+         }
+
+         main.args = args;
 
         // for GroovyServ: classpath is given by GroovyInvokeHandler
         if (classpath != null) {
@@ -381,16 +427,16 @@ public class GroovyMain2 {
     public String getText(String urlOrFilename) throws IOException {
         if (isScriptUrl(urlOrFilename)) {
             try {
-                return DefaultGroovyMethods.getText(new URL(urlOrFilename));
+                return ResourceGroovyMethods.getText(new URL(urlOrFilename));
             } catch (Exception e) {
                 throw new GroovyRuntimeException("Unable to get script from URL: ", e);
             }
         }
-        return DefaultGroovyMethods.getText(huntForTheScriptFile(urlOrFilename));
+        return ResourceGroovyMethods.getText(huntForTheScriptFile(urlOrFilename));
     }
 
     private boolean isScriptUrl(String urlOrFilename) {
-        return urlOrFilename.startsWith("http://") || urlOrFilename.startsWith("https://") || urlOrFilename.startsWith("file:");
+        return urlOrFilename.startsWith("http://") || urlOrFilename.startsWith("https://") || urlOrFilename.startsWith("file:") || urlOrFilename.startsWith("jar:");
     }
 
     /**
