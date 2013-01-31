@@ -35,8 +35,8 @@ repositories {
 }
 
 configurations {
-    // dependencies for archives are picked at groovy configration
-    groovy.extendsFrom archives
+    // dependencies for archives are picked at compile configration
+    compile.extendsFrom archives
 }
 
 dependencies {
