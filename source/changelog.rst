@@ -23,6 +23,9 @@ New Features:
         - [Client] groovyclient can send a valid request to groovyserver on the other machine by using -Chost and -Cauthtoken.
         - [Server] you can provide an arbitrary authtoken when invoking groovyserver.
 
+Improvements:
+    - Renamed "cookie" to "authtoken".
+
 Bug Fixes:
     - FIxed 44: caused a freeze when reading from stdin on Linux
 
