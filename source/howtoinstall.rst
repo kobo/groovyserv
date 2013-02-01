@@ -31,29 +31,29 @@ Only for Windows
 Install from binary package
 ---------------------------
 
-Download and expand GroovyServ distribution package from :ref:`Download page <ref-download>`, e.g. groovyserv-0.10-macosx-bin.zip to any directory::
+Download and expand GroovyServ distribution package from :ref:`Download page <ref-download>`, e.g. groovyserv-0.11-macosx-bin.zip to any directory::
 
     $ mkdir ~/opt
     $ cd ~/opt
-    $ unzip groovyserv-0.10-macosx-bin.zip
+    $ unzip groovyserv-0.11-macosx-bin.zip
 
 And add bin directory to PATH environment variable.
 For example in bash/bourne shell::
 
-    export PATH=~/opt/groovyserv-0.10/bin:$PATH
+    export PATH=~/opt/groovyserv-0.11/bin:$PATH
 
 That's all for preparing.
 When you invoke groovyclient, groovyserver automatically starts in background.
 At first, you might have to wait for a few seconds to startup::
 
     $ groovyclient -v
-    Invoking server: '/opt/groovyserv-0.10/bin/groovyserver' -p 1961
+    Invoking server: '/opt/groovyserv-0.11/bin/groovyserver' -p 1961
     Groovy home directory: (none)
     Groovy command path: /usr/local/bin/groovy (found at PATH)
-    GroovyServ home directory: /opt/groovyserv-0.10
+    GroovyServ home directory: /opt/groovyserv-0.11
     GroovyServ work directory: /Users/ynak/.groovy/groovyserv
     Original classpath: (none)
-    GroovyServ default classpath: /opt/groovyserv-0.10/lib/*
+    GroovyServ default classpath: /opt/groovyserv-0.11/lib/*
     Starting...
     groovyserver 75808(1961) is successfully started
     Groovy Version: 1.8.0 JVM: 1.6.0_24

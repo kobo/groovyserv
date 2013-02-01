@@ -15,7 +15,16 @@ Change Log
 NOTICE
 ------
 
-:alert:`Latest GroovyServ requires Groovy1.8.5+` (https://github.com/kobo/groovyserv/issues/38)
+Version 0.11 (2013-02-01)
+-------------------------
+New Features:
+
+TBD
+
+Bug Fixes:
+
+TBD
+
 
 Version 0.10 (2012-03-30)
 -------------------------

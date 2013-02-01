@@ -6,21 +6,21 @@ How to Build
 Build binary zip by Gradle
 --------------------------
 
-Download and expand GroovyServ source package groovyserv-0.10-src.zip to any directory.
+Download and expand GroovyServ source package groovyserv-0.11-src.zip to any directory.
 For example::
 
     $ mkdir -p ~/opt/src
     $ cd ~/opt/src
-    $ unzip groovyserv-0.10-src.zip
+    $ unzip groovyserv-0.11-src.zip
 
 Build with Gradle as follows::
 
-    $ cd ~/opt/src/groovyserv-0.10
+    $ cd ~/opt/src/groovyserv-0.11
     $ ./gradlew
 
 Then some zip files will be generated. According to :ref:`Install from binary package <ref-howtoinstall-binary>`, install the bin package::
 
-    ~/opt/src/groovyserv-0.10/build/distributions/groovyserv-0.10-<OS>-<arch>-bin.zip
+    ~/opt/src/groovyserv-0.11/build/distributions/groovyserv-0.11-<OS>-<arch>-bin.zip
 
 If some tests fail, please try again with specifying character encoding as follows::
 
@@ -41,14 +41,14 @@ Build only groovyclient
 Since v0.8, there is the Makefile which can build a groovyclient from C sources.
 You can easily build a groovyclient binary file as follows::
 
-    $ cd ~/opt/src/groovyserv-0.10
+    $ cd ~/opt/src/groovyserv-0.11
     $ make clean
     $ make
 
 The binary file is created in target directory. You can copy it where you want::
 
-    ~/opt/src/groovyserv-0.10/target/groovyclient      (for Linux / Mac OS X)
-    ~/opt/src/groovyserv-0.10/target/groovyclient.exe  (for Windows)
+    ~/opt/src/groovyserv-0.11/target/groovyclient      (for Linux / Mac OS X)
+    ~/opt/src/groovyserv-0.11/target/groovyclient.exe  (for Windows)
 
 
 .. _ref-howtobuild-rpm:
