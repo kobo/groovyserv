@@ -298,8 +298,8 @@ When invoking groovyclient on the client, the authtoken which is stored in ~/.gr
   server$ cat ~/.groovy/groovyserv/authtoken-1961
   7d3dc4d7a2b8b5ca
 
-  client$ groovyclient -Chost 192.168.1.1 -Cauthtoken 7d3dc4d7a2b8b5ca -e "println('hello from remote client!!')"
-  hello from remote client!!
+  client$ groovyclient -Chost 192.168.1.1 -Cauthtoken 7d3dc4d7a2b8b5ca -e "println('Hello from remote client.')"
+  Hello from remote client.
 
 You can also provide an authtoken explicitly as you want.
 But it might cause less security if the authtoken is too simple::
@@ -307,8 +307,8 @@ But it might cause less security if the authtoken is too simple::
   server$ groovyserver --allow-from 192.168.1.2 --authtoken GROOVYSERV
   server$ cat ~/.groovy/groovyserv/authtoken-1961
   GROOVYSERV
-  client$ groovyclient -Chost 192.168.1.1 -Cauthtoken GROOVYSERV -e "println('hello from remote client!!')"
-  hello from remote client!!
+  client$ groovyclient -Chost 192.168.1.1 -Cauthtoken GROOVYSERV -e "println('Hello from remote client.')"
+  Hello from remote client.
 
 When invoking groovyclient with -Chost option, you cannot use options to control groovyserver process in localhost like -Cr option.
 You can provide multi ip addresses of clients to --allow-from option with a comma as a delimiter.

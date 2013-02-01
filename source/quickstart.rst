@@ -6,8 +6,8 @@ After Installing GroovyServ
 
 Now if you want to use GroovyServ, you can use the groovyclient command instead of an original groovy command::
 
-    $ groovy -e "println('Hello, Groovy!')"
-    $ groovyclient -e "println('Hello, GroovyServ!')"
+    $ groovy -e "println('Hello, Groovy.')"
+    $ groovyclient -e "println('Hello, GroovyServ.')"
 
 How faster is GroovyServ than Groovy?
 
@@ -25,8 +25,8 @@ The groovyclient is a front controller for user. When you invoke it, it passed t
 
 In many cases, groovy command can be just replaced with groovyclient::
 
-    $ groovy -e "println('Hello, Groovy!')"
-    $ groovyclient -e "println('Hello, GroovyServ!')"
+    $ groovy -e "println('Hello, Groovy.')"
+    $ groovyclient -e "println('Hello, GroovyServ.')"
 
 Or::
 

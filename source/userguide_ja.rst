@@ -287,8 +287,8 @@ groovyserverのログは以下のファイルに出力されます。::
   server$ cat ~/.groovy/groovyserv/authtoken-1961
   7d3dc4d7a2b8b5ca
 
-  client$ groovyclient -Chost 192.168.1.1 -Cauthtoken 7d3dc4d7a2b8b5ca -e "println('hello from remote client!!')"
-  hello from remote client!!
+  client$ groovyclient -Chost 192.168.1.1 -Cauthtoken 7d3dc4d7a2b8b5ca -e "println('Hello from remote client.')"
+  Hello from remote client.
 
 認証トークンは、groovyserver起動時に明示的に指定することもできます。
 ただし、総当たりや類推可能な文字列を指定した場合、セキュリティが低下することに注意してください。::
@@ -296,8 +296,8 @@ groovyserverのログは以下のファイルに出力されます。::
   server$ groovyserver --allow-from 192.168.1.2 --authtoken GROOVYSERV
   server$ cat ~/.groovy/groovyserv/authtoken-1961
   GROOVYSERV
-  client$ groovyclient -Chost 192.168.1.1 -Cauthtoken GROOVYSERV -e "println('hello from remote client!!')"
-  hello from remote client!!
+  client$ groovyclient -Chost 192.168.1.1 -Cauthtoken GROOVYSERV -e "println('Hello from remote client.')"
+  Hello from remote client.
 
 groovyclientで-Chostオプションを指定した場合は、-Crなどのgroovyserver操作オプションは利用できません。
 また、--allow-fromオプションでは複数のクライアントアドレスをカンマ区切りで指定することもできます。
