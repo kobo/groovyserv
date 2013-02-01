@@ -42,7 +42,7 @@ Version of JDK using at build is following:
 
 Version of Groovy is following:
 
-  - Groovy 2.0+
+  - Groovy 1.8.6+
 
 Language
 --------
