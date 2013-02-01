@@ -135,16 +135,6 @@ A:
       @Grab("..")
 
 
-Can groovyclient connect to groovyserver running on remote server?
-------------------------------------------------------------------
-Q:
-    Can groovyclient connect to groovyserver running on remote server?
-A:
-    No, it can't.
-    A connection from the host other than localhost is inhibited for security reasons.
-    Only a client which can read a secret cookie file created by the groovyserver is allowed to connect.
-    This restriction is needed because groovyserver invokes any script containing even evil code through TCP socket.
-
 Can I use JQS(Java Quick Start) with GroovyServ at the same time?
 -----------------------------------------------------------------
 Q:
