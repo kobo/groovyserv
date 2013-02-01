@@ -4,7 +4,7 @@ Download
 .. _ref-download:
 
 GroovyServ 0.11
---------------
+---------------
 
 See also: :ref:`Change Log <ref-changelog>`
 
