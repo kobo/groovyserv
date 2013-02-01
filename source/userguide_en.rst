@@ -100,7 +100,7 @@ Security
 GroovyServ has a possibility to run any groovy script from client at default.
 So server-client connection is limited to the connection from the same machine (localhost).
 And the connection is authenticated by simple authtoken mechanism.
-The authtoken file is stored at ~/.groovy/groovyserv/authtoken-<port> and the file mode set to 0400.
+The authtoken file is stored at ~/.groovy/groovyserv/authtoken-<port> and the file mode set to 0600.
 But in Windows environment, it is not effective.
 So appropriately protect access to the file in Windows if needed.
 
