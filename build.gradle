@@ -62,7 +62,7 @@ jar {
 
     // appending the commit id as suffix to the jar file's name of SNAPSHOT
     if (project.version ==~ /.*SNAPSHOT/) {
-        def commitId = 'git log --oneline -1 HEAD'.execute().text.split()[0]
+        def commitId = 'git log --no-color --oneline -1 HEAD'.execute().text.split()[0]
         classifier = commitId
     }
 }
