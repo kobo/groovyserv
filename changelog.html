@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.10',
+        VERSION:     '0.11',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -46,7 +46,53 @@
 <h1>Change Log<a class="headerlink" href="#change-log" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="notice">
 <h2>NOTICE<a class="headerlink" href="#notice" title="Permalink to this headline">¶</a></h2>
-<p><span class="alert">Latest GroovyServ requires Groovy1.8.5+</span> (<a class="reference external" href="https://github.com/kobo/groovyserv/issues/38">https://github.com/kobo/groovyserv/issues/38</a>)</p>
+</div>
+<div class="section" id="version-0-11-2013-02-01">
+<h2>Version 0.11 (2013-02-01)<a class="headerlink" href="#version-0-11-2013-02-01" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>New Features:</dt>
+<dd><ul class="first last">
+<li><p class="first">[Client/Server] Supported fully remote access.</p>
+<blockquote>
+<div><ul class="simple">
+<li>[Client] groovyclient can send a valid request to groovyserver on the other machine by using -Chost and -Cauthtoken.</li>
+<li>[Server] you can provide an arbitrary authtoken when invoking groovyserver.</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</dd>
+<dt>Improvements:</dt>
+<dd><ul class="first last simple">
+<li>Renamed &#8220;cookie&#8221; to &#8220;authtoken&#8221;.</li>
+</ul>
+</dd>
+<dt>Bug Fixes:</dt>
+<dd><ul class="first last">
+<li><p class="first">FIxed 44: caused a freeze when reading from stdin on Linux</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="https://github.com/kobo/groovyserv/issues/44">https://github.com/kobo/groovyserv/issues/44</a></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">Fixed 45: cookie file permission is 644</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="https://github.com/kobo/groovyserv/issues/45">https://github.com/kobo/groovyserv/issues/45</a></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">Fixed 46: standard out/err doesn&#8217;t flush at ruby client when the content includes no line separator</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="https://github.com/kobo/groovyserv/issues/46">https://github.com/kobo/groovyserv/issues/46</a></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</dd>
+</dl>
 </div>
 <div class="section" id="version-0-10-2012-03-30">
 <h2>Version 0.10 (2012-03-30)<a class="headerlink" href="#version-0-10-2012-03-30" title="Permalink to this headline">¶</a></h2>
@@ -520,6 +566,7 @@ without -s.)</li>
   <ul>
 <li><a class="reference internal" href="#">Change Log</a><ul>
 <li><a class="reference internal" href="#notice">NOTICE</a></li>
+<li><a class="reference internal" href="#version-0-11-2013-02-01">Version 0.11 (2013-02-01)</a></li>
 <li><a class="reference internal" href="#version-0-10-2012-03-30">Version 0.10 (2012-03-30)</a></li>
 <li><a class="reference internal" href="#version-0-9-2011-08-04">Version 0.9 (2011-08-04)</a></li>
 <li><a class="reference internal" href="#version-0-8-2011-06-16">Version 0.8 (2011-06-16)</a></li>

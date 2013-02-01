@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.10',
+        VERSION:     '0.11',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -47,7 +47,6 @@
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="index.html">Welcome!</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="index.html#notice">NOTICE</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#overview">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#feature">Feature</a></li>
 </ul>
@@ -85,16 +84,17 @@
 <li class="toctree-l4"><a class="reference internal" href="userguide_en.html#introduction">Introduction</a></li>
 <li class="toctree-l4"><a class="reference internal" href="userguide_en.html#requirements">Requirements</a></li>
 <li class="toctree-l4"><a class="reference internal" href="userguide_en.html#language">Language</a></li>
-<li class="toctree-l4"><a class="reference internal" href="userguide_en.html#security">Security</a></li>
-<li class="toctree-l4"><a class="reference internal" href="userguide_en.html#environment-variables">Environment variables</a></li>
 <li class="toctree-l4"><a class="reference internal" href="userguide_en.html#how-to-use">How to use</a></li>
 <li class="toctree-l4"><a class="reference internal" href="userguide_en.html#restriction-differences">Restriction/Differences</a></li>
+<li class="toctree-l4"><a class="reference internal" href="userguide_en.html#security">Security</a></li>
+<li class="toctree-l4"><a class="reference internal" href="userguide_en.html#environment-variables">Environment variables</a></li>
 <li class="toctree-l4"><a class="reference internal" href="userguide_en.html#groovyclient-s-option">groovyclient&#8217;s option</a></li>
 <li class="toctree-l4"><a class="reference internal" href="userguide_en.html#groovyserver-s-option">groovyserver&#8217;s option</a></li>
 <li class="toctree-l4"><a class="reference internal" href="userguide_en.html#start-and-stop-groovyserver">Start and stop groovyserver</a></li>
 <li class="toctree-l4"><a class="reference internal" href="userguide_en.html#propagation-of-environment-variable">Propagation of environment variable</a></li>
 <li class="toctree-l4"><a class="reference internal" href="userguide_en.html#port-number">Port number</a></li>
 <li class="toctree-l4"><a class="reference internal" href="userguide_en.html#log-file">Log file</a></li>
+<li class="toctree-l4"><a class="reference internal" href="userguide_en.html#remote-access">Remote access</a></li>
 <li class="toctree-l4"><a class="reference internal" href="userguide_en.html#tips">Tips</a></li>
 </ul>
 </li>
@@ -102,16 +102,17 @@
 <li class="toctree-l4"><a class="reference internal" href="userguide_ja.html#id2">はじめに</a></li>
 <li class="toctree-l4"><a class="reference internal" href="userguide_ja.html#id3">動作環境</a></li>
 <li class="toctree-l4"><a class="reference internal" href="userguide_ja.html#id4">実装言語</a></li>
-<li class="toctree-l4"><a class="reference internal" href="userguide_ja.html#id5">セキュリティ</a></li>
-<li class="toctree-l4"><a class="reference internal" href="userguide_ja.html#id6">環境変数</a></li>
-<li class="toctree-l4"><a class="reference internal" href="userguide_ja.html#id7">使い方</a></li>
-<li class="toctree-l4"><a class="reference internal" href="userguide_ja.html#id8">制限・機能の違い</a></li>
+<li class="toctree-l4"><a class="reference internal" href="userguide_ja.html#id5">使い方</a></li>
+<li class="toctree-l4"><a class="reference internal" href="userguide_ja.html#id6">制限・機能の違い</a></li>
+<li class="toctree-l4"><a class="reference internal" href="userguide_ja.html#id7">セキュリティ</a></li>
+<li class="toctree-l4"><a class="reference internal" href="userguide_ja.html#id8">環境変数</a></li>
 <li class="toctree-l4"><a class="reference internal" href="userguide_ja.html#groovyclient">groovyclientのオプション</a></li>
 <li class="toctree-l4"><a class="reference internal" href="userguide_ja.html#groovyserver">groovyserverのオプション</a></li>
 <li class="toctree-l4"><a class="reference internal" href="userguide_ja.html#id9">groovyserverの起動と停止</a></li>
 <li class="toctree-l4"><a class="reference internal" href="userguide_ja.html#id10">環境変数の伝搬</a></li>
 <li class="toctree-l4"><a class="reference internal" href="userguide_ja.html#id11">ポート番号</a></li>
 <li class="toctree-l4"><a class="reference internal" href="userguide_ja.html#id12">ログファイル</a></li>
+<li class="toctree-l4"><a class="reference internal" href="userguide_ja.html#id13">リモートアクセス</a></li>
 <li class="toctree-l4"><a class="reference internal" href="userguide_ja.html#tips">Tips</a></li>
 </ul>
 </li>
@@ -135,7 +136,6 @@
 <li class="toctree-l4"><a class="reference internal" href="faq.html#how-can-i-restart-or-kill-groovyserver">How can I restart or kill groovyserver?</a></li>
 <li class="toctree-l4"><a class="reference internal" href="faq.html#why-is-the-name-of-this-software-groovyserv">Why is the name of this software &#8216;GroovyServ&#8217;?</a></li>
 <li class="toctree-l4"><a class="reference internal" href="faq.html#can-i-use-groovyserv-with-grape-s-grab-annotation">Can I use GroovyServ with Grape&#8217;s &#64;Grab annotation?</a></li>
-<li class="toctree-l4"><a class="reference internal" href="faq.html#can-groovyclient-connect-to-groovyserver-running-on-remote-server">Can groovyclient connect to groovyserver running on remote server?</a></li>
 <li class="toctree-l4"><a class="reference internal" href="faq.html#can-i-use-jqs-java-quick-start-with-groovyserv-at-the-same-time">Can I use JQS(Java Quick Start) with GroovyServ at the same time?</a></li>
 <li class="toctree-l4"><a class="reference internal" href="faq.html#i-installed-groovyserv-but-it-doesn-t-work">I installed GroovyServ, but it doesn&#8217;t work.</a></li>
 <li class="toctree-l4"><a class="reference internal" href="faq.html#when-i-built-groovyserv-by-myself-in-windows-some-errors-occured-what-s-required">When I built GroovyServ by myself in Windows, some errors occured. What&#8217;s required?</a></li>
@@ -147,6 +147,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="changelog.html">Change Log</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="changelog.html#notice">NOTICE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="changelog.html#version-0-11-2013-02-01">Version 0.11 (2013-02-01)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="changelog.html#version-0-10-2012-03-30">Version 0.10 (2012-03-30)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="changelog.html#version-0-9-2011-08-04">Version 0.9 (2011-08-04)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="changelog.html#version-0-8-2011-06-16">Version 0.8 (2011-06-16)</a></li>
@@ -164,7 +165,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="download.html">Download</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="download.html#groovyserv-0-10">GroovyServ 0.10</a></li>
+<li class="toctree-l2"><a class="reference internal" href="download.html#groovyserv-0-11">GroovyServ 0.11</a></li>
 <li class="toctree-l2"><a class="reference internal" href="download.html#previous-versions">Previous versions</a></li>
 </ul>
 </li>

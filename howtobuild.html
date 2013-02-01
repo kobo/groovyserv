@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.10',
+        VERSION:     '0.11',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -46,18 +46,18 @@
 <span id="ref-howtobuild"></span><h1>How to Build<a class="headerlink" href="#how-to-build" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="build-binary-zip-by-gradle">
 <h2>Build binary zip by Gradle<a class="headerlink" href="#build-binary-zip-by-gradle" title="Permalink to this headline">¶</a></h2>
-<p>Download and expand GroovyServ source package groovyserv-0.10-src.zip to any directory.
+<p>Download and expand GroovyServ source package groovyserv-0.11-src.zip to any directory.
 For example:</p>
 <div class="highlight-python"><pre>$ mkdir -p ~/opt/src
 $ cd ~/opt/src
-$ unzip groovyserv-0.10-src.zip</pre>
+$ unzip groovyserv-0.11-src.zip</pre>
 </div>
 <p>Build with Gradle as follows:</p>
-<div class="highlight-python"><pre>$ cd ~/opt/src/groovyserv-0.10
+<div class="highlight-python"><pre>$ cd ~/opt/src/groovyserv-0.11
 $ ./gradlew</pre>
 </div>
 <p>Then some zip files will be generated. According to <a class="reference internal" href="howtoinstall.html#ref-howtoinstall-binary"><em>Install from binary package</em></a>, install the bin package:</p>
-<div class="highlight-python"><pre>~/opt/src/groovyserv-0.10/build/distributions/groovyserv-0.10-&lt;OS&gt;-&lt;arch&gt;-bin.zip</pre>
+<div class="highlight-python"><pre>~/opt/src/groovyserv-0.11/build/distributions/groovyserv-0.11-&lt;OS&gt;-&lt;arch&gt;-bin.zip</pre>
 </div>
 <p>If some tests fail, please try again with specifying character encoding as follows:</p>
 <div class="highlight-python"><pre>$ export _JAVA_OPTIONS=-Dfile.encoding=UTF-8
@@ -73,13 +73,13 @@ Then, execute the above commands on Cygwin.</p>
 <h2>Build only groovyclient<a class="headerlink" href="#build-only-groovyclient" title="Permalink to this headline">¶</a></h2>
 <p>Since v0.8, there is the Makefile which can build a groovyclient from C sources.
 You can easily build a groovyclient binary file as follows:</p>
-<div class="highlight-python"><pre>$ cd ~/opt/src/groovyserv-0.10
+<div class="highlight-python"><pre>$ cd ~/opt/src/groovyserv-0.11
 $ make clean
 $ make</pre>
 </div>
 <p>The binary file is created in target directory. You can copy it where you want:</p>
-<div class="highlight-python"><pre>~/opt/src/groovyserv-0.10/target/groovyclient      (for Linux / Mac OS X)
-~/opt/src/groovyserv-0.10/target/groovyclient.exe  (for Windows)</pre>
+<div class="highlight-python"><pre>~/opt/src/groovyserv-0.11/target/groovyclient      (for Linux / Mac OS X)
+~/opt/src/groovyserv-0.11/target/groovyclient.exe  (for Windows)</pre>
 </div>
 </div>
 <div class="section" id="build-rpm-file">
