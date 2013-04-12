@@ -50,6 +50,12 @@ if "%DIRNAME%" == "" set DIRNAME=.\
     ) else if "%1" == "-r" (
         echo ERROR: groovyserver.bat does not support %1. >&2
         goto end
+    ) else if "%1" == "--allow-from" (
+        set GROOVYSERV_OPTS=%GROOVYSERV_OPTS% -Dgroovyserver.allowFrom=%2
+        shift
+    ) else if "%1" == "--authtoken" (
+        set GROOVYSERV_OPTS=%GROOVYSERV_OPTS% -Dgroovyserver.authtoken=%2
+        shift
     ) else (
         echo usage: groovyserver.bat [options]
         echo options:
