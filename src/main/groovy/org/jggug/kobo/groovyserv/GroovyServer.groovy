@@ -45,8 +45,12 @@ class GroovyServer {
             StandardStreams.setUp()
             setupSecurityManager()
             setupRunningMode()
+
+            // The order is important.
+            // If an error occurs when startServer, authtoken file shouldn't be created.
             startServer()
             setupAuthToken()
+
             handleRequest()
         }
         catch (GServException e) {
@@ -64,6 +68,8 @@ class GroovyServer {
     }
 
     private void setupRunningMode() {
+        // It's an original system property of GroovyServ which is used
+        // to identify whether a groovy script is running on normal groovy or groovyserv.
         System.setProperty("groovy.runningmode", "server")
     }
 
