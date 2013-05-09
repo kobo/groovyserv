@@ -61,18 +61,22 @@ import org.jggug.kobo.groovyserv.utils.IOUtils
  *     <body from STDIN> is byte sequence from standard input.
  *
  * StreamResponse ::=
- *    'Status:' <status> LF
  *    'Channel:' <id> LF
  *    'Size:' <size> LF
  *    LF
  *    <body for STDERR/STDOUT>
  *
  *   where:
- *     <status> is exit status of invoked groovy script.
  *     <id> is 'out' or 'err', where 'out' means standard output of the program.
  *          'err' means standard error of the program.
  *     <size> is the size of chunk.
  *     <body from STDERR/STDOUT> is byte sequence from standard output/error.
+ *
+ * InvocationResponse ::=
+ *    'Status:' <status> LF
+ *
+ *   where:
+ *     <status> is exit status of invoked groovy script.
  *
  * </pre>
  *
