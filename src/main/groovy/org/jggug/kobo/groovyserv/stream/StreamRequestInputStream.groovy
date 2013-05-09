@@ -15,8 +15,8 @@
  */
 package org.jggug.kobo.groovyserv.stream
 
-import org.jggug.kobo.groovyserv.utils.DebugUtils
 import org.jggug.kobo.groovyserv.ClientConnectionRepository
+import org.jggug.kobo.groovyserv.utils.DebugUtils
 
 /**
  * Handling StreamRequest in protocol between client and server.
@@ -31,7 +31,7 @@ class StreamRequestInputStream extends InputStream {
     private StreamRequestInputStream() { /* preventing from instantiation */ }
 
     static StreamRequestInputStream newIn(InputStream inputStream) {
-        new StreamRequestInputStream(inputStream:inputStream)
+        new StreamRequestInputStream(inputStream: inputStream)
     }
 
     /**

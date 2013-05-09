@@ -15,9 +15,9 @@
  */
 package org.jggug.kobo.groovyserv.stream
 
+import org.jggug.kobo.groovyserv.ClientConnectionRepository
 import org.jggug.kobo.groovyserv.ClientProtocols
 import org.jggug.kobo.groovyserv.utils.DebugUtils
-import org.jggug.kobo.groovyserv.ClientConnectionRepository
 
 /**
  * Handling StreamResponse in protocol between client and server.
@@ -33,11 +33,11 @@ class StreamResponseOutputStream extends OutputStream {
     private StreamResponseOutputStream() { /* preventing from instantiation */ }
 
     static OutputStream newOut(OutputStream outputStream) {
-        new StreamResponseOutputStream(streamId:'out', outputStream:outputStream)
+        new StreamResponseOutputStream(streamId: 'out', outputStream: outputStream)
     }
 
     static OutputStream newErr(OutputStream outputStream) {
-        new StreamResponseOutputStream(streamId:'err', outputStream:outputStream)
+        new StreamResponseOutputStream(streamId: 'err', outputStream: outputStream)
     }
 
     /**
@@ -47,7 +47,7 @@ class StreamResponseOutputStream extends OutputStream {
     void write(int b) {
         if (closed) throw new IOException("Stream of $streamId closed")
         byte[] buf = new byte[1]
-        buf[0] = (b>>8*0) & 0x0000ff
+        buf[0] = (b >> 8 * 0) & 0x0000ff
         write(buf, 0, 1)
     }
 
@@ -60,12 +60,12 @@ class StreamResponseOutputStream extends OutputStream {
         writeVerboseLog(b, offset, length)
         // FIXME When System.exit to a sub thread which in infinte loop, following synchronized occures IllegalMonitorStateException.
         //synchronized(outputStream) { // to keep independency of 'out' and 'err' on socket stream
-            byte[] header = ClientProtocols.formatAsResponseHeader(streamId, length)
-            outputStream.with {
-                write(header)
-                write(b, offset, length)
-                flush()
-            }
+        byte[] header = ClientProtocols.formatAsResponseHeader(streamId, length)
+        outputStream.with {
+            write(header)
+            write(b, offset, length)
+            flush()
+        }
         //}
     }
 
@@ -85,7 +85,8 @@ class StreamResponseOutputStream extends OutputStream {
     }
 
     private writeVerboseLog(byte[] b, int offset, int length) {
-        DebugUtils.verboseLog { """\
+        DebugUtils.verboseLog {
+            """\
             |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
             |Server->Client {
             |  id: ${streamId}

@@ -25,6 +25,7 @@ import com.sun.jna.Library
  */
 interface UnixLibC extends Library {
     int chdir(String dir)
+
     int setenv(String envVarName, String envVarValue, int overwrite)
 }
 

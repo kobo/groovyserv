@@ -15,14 +15,14 @@
  */
 package org.jggug.kobo.groovyserv.utils
 
-import java.util.concurrent.Future
-import java.util.concurrent.ExecutionException
 import java.util.concurrent.CancellationException
+import java.util.concurrent.ExecutionException
+import java.util.concurrent.Future
 
 /**
  * @author NAKANO Yasuharu
  */
- class IOUtils {
+class IOUtils {
 
     /**
      * @throws Throwable when ExecutionException is occured, throw an inner exception wrapped by ExecutionException
@@ -74,5 +74,5 @@ import java.util.concurrent.CancellationException
         return baos.toString()
     }
 
- }
+}
 

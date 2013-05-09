@@ -15,7 +15,6 @@
  */
 package org.jggug.kobo.groovyserv.stream
 
-
 /**
  * Dynamically delegatable InputStream.
  *

@@ -16,10 +16,9 @@
 package org.jggug.kobo.groovyserv
 
 import org.jggug.kobo.groovyserv.exception.ClientNotAllowedException
+import org.jggug.kobo.groovyserv.exception.GServIOException
 import org.jggug.kobo.groovyserv.exception.InvalidAuthTokenException
 import org.jggug.kobo.groovyserv.exception.InvalidRequestHeaderException
-import org.jggug.kobo.groovyserv.exception.GServIOException
-
 import org.jggug.kobo.groovyserv.stream.StreamRequestInputStream
 import org.jggug.kobo.groovyserv.stream.StreamResponseOutputStream
 import org.jggug.kobo.groovyserv.utils.DebugUtils

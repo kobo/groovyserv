@@ -89,8 +89,8 @@ class DebugUtils {
     }
 
     private static String sanitizeStackTrace(string) {
-       def sw = new StringWriter()
-       string.eachLine { line ->
+        def sw = new StringWriter()
+        string.eachLine { line ->
             if (line =~ /at (sun\.|org.codehaus.groovy)/) return
             sw.println line
         }
@@ -111,9 +111,9 @@ class DebugUtils {
         for (int startIndex = offset; startIndex < maxIndex; startIndex += numPerLine) { // for each 16 elements
             int endIndex = [startIndex + numPerLine, maxIndex].min()
             def elementsAtLine = buf[startIndex..<endIndex]
-            def completed = (0..15).collect{ elementsAtLine[it] ?: null }
-            def digitPart = completed.collect{ toDisplayDigit(it) }.join(" ")
-            def asciiPart = completed.collect{ toDisplayAscii(it) }.join()
+            def completed = (0..15).collect { elementsAtLine[it] ?: null }
+            def digitPart = completed.collect { toDisplayDigit(it) }.join(" ")
+            def asciiPart = completed.collect { toDisplayAscii(it) }.join()
             pw.println(digitPart + " | " + asciiPart)
         }
         pw.print(separatorLine)

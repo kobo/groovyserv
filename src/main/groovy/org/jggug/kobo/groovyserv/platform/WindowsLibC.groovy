@@ -25,6 +25,7 @@ import com.sun.jna.Library
  */
 interface WindowsLibC extends Library {
     int _chdir(String dir)
+
     void _putenv(String envVar)
 }
 

@@ -15,7 +15,6 @@
  */
 package org.jggug.kobo.groovyserv.stream
 
-
 /**
  * Dynamically delegatable PrintStream.
  *
@@ -155,22 +154,22 @@ class DynamicDelegatedPrintStream extends PrintStream {
     }
 
     @Override
-    PrintStream printf(String format, Object ... args) {
+    PrintStream printf(String format, Object... args) {
         getPrintStream().printf(format, args)
     }
 
     @Override
-    PrintStream printf(Locale l, String format, Object ... args) {
+    PrintStream printf(Locale l, String format, Object... args) {
         getPrintStream().printf(l, format, args)
     }
 
     @Override
-    PrintStream format(String format, Object ... args) {
+    PrintStream format(String format, Object... args) {
         getPrintStream().format(format, args)
     }
 
     @Override
-    PrintStream format(Locale l, String format, Object ... args) {
+    PrintStream format(Locale l, String format, Object... args) {
         getPrintStream().format(l, format, args)
     }
 

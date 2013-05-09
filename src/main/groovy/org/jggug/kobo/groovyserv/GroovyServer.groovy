@@ -16,9 +16,9 @@
 package org.jggug.kobo.groovyserv
 
 import org.jggug.kobo.groovyserv.exception.GServException
+import org.jggug.kobo.groovyserv.platform.EnvironmentVariables
 import org.jggug.kobo.groovyserv.stream.StandardStreams
 import org.jggug.kobo.groovyserv.utils.DebugUtils
-import org.jggug.kobo.groovyserv.platform.EnvironmentVariables
 
 /**
  * GroovyServer runs groovy command background.

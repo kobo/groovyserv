@@ -17,9 +17,9 @@ package org.jggug.kobo.groovyserv
 
 import org.jggug.kobo.groovyserv.exception.GServIllegalStateException
 import org.jggug.kobo.groovyserv.exception.InvalidRequestHeaderException
-import org.jggug.kobo.groovyserv.utils.DebugUtils
-import org.jggug.kobo.groovyserv.platform.EnvironmentVariables
 import org.jggug.kobo.groovyserv.platform.CurrentDirHolder
+import org.jggug.kobo.groovyserv.platform.EnvironmentVariables
+import org.jggug.kobo.groovyserv.utils.DebugUtils
 
 /**
  * @author NAKANO Yasuharu
@@ -94,7 +94,7 @@ class GroovyInvokeHandler implements Runnable {
 
         // parse classpath option's values from arguments.
         def filteredArgs = [] // args except options about classpath
-        for (def it = request.args.iterator(); it.hasNext(); ) {
+        for (def it = request.args.iterator(); it.hasNext();) {
             String opt = it.next()
             if (CLASSPATH_OPTIONS.contains(opt)) {
                 if (!it.hasNext()) {
@@ -162,7 +162,7 @@ class GroovyInvokeHandler implements Runnable {
         int count = threadGroup.enumerate(threads)
         if (count < threads.size()) {
             // convert to list for convenience except own thread
-            def list = (threads as List).findAll{ it && it != Thread.currentThread() }
+            def list = (threads as List).findAll { it && it != Thread.currentThread() }
             DebugUtils.verboseLog("${id}: Found ${list.size()} sub thread(s): ${list}")
             return list
         }
