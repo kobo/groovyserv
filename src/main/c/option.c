@@ -68,7 +68,7 @@ void usage()
     printf("usage: groovyclient -C[option for groovyclient] [args/options for groovy]\n" \
            "options:\n" \
            "  -Ch,-Chelp                       show this usage\n" \
-           "  -Cs,-Chost                       specify the host to connect to groovyserver\n" \
+           "  -Cs,-Chost <address>             specify the host to connect to groovyserver\n" \
            "  -Cp,-Cport <port>                specify the port to connect to groovyserver\n" \
            "  -Ca,-Cauthtoken <authtoken>      specify the authtoken\n" \
            "  -Ck,-Ckill-server                kill the running groovyserver\n" \
