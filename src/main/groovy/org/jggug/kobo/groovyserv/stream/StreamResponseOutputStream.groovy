@@ -29,15 +29,16 @@ class StreamResponseOutputStream extends OutputStream {
     private OutputStream outputStream
     private String streamId
     private boolean closed = false
+    private boolean noHeader = false
 
     private StreamResponseOutputStream() { /* preventing from instantiation */ }
 
-    static OutputStream newOut(OutputStream outputStream) {
-        new StreamResponseOutputStream(streamId: 'out', outputStream: outputStream)
+    static OutputStream newOut(OutputStream outputStream, boolean noHeader = false) {
+        new StreamResponseOutputStream(streamId: 'out', outputStream: outputStream, noHeader: noHeader)
     }
 
-    static OutputStream newErr(OutputStream outputStream) {
-        new StreamResponseOutputStream(streamId: 'err', outputStream: outputStream)
+    static OutputStream newErr(OutputStream outputStream, boolean noHeader = false) {
+        new StreamResponseOutputStream(streamId: 'err', outputStream: outputStream, noHeader: noHeader)
     }
 
     /**
@@ -62,7 +63,7 @@ class StreamResponseOutputStream extends OutputStream {
         //synchronized(outputStream) { // to keep independency of 'out' and 'err' on socket stream
         byte[] header = ClientProtocols.formatAsResponseHeader(streamId, length)
         outputStream.with {
-            write(header)
+            if (!noHeader) write(header)
             write(b, offset, length)
             flush()
         }

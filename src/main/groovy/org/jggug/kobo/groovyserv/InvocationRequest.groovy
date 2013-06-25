@@ -25,12 +25,13 @@ import org.jggug.kobo.groovyserv.utils.DebugUtils
 class InvocationRequest {
 
     int port
-    String cwd           // required: current working directory
-    String classpath     // optional
-    List<String> args    // required
-    String clientAuthToken  // required
+    String cwd                 // required: current working directory
+    String classpath           // optional
+    List<String> args          // required
+    String clientAuthToken     // required
     AuthToken serverAuthToken  // required
-    List<String> envVars // optional
+    List<String> envVars       // optional
+    String protocol            // optional
 
     InvocationRequest(map) {
         this.port = map.port
@@ -40,6 +41,7 @@ class InvocationRequest {
         this.clientAuthToken = map.clientAuthToken
         this.serverAuthToken = map.serverAuthToken
         this.envVars = map.envVars
+        this.protocol = map.protocol
     }
 
     /**

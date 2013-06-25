@@ -28,6 +28,7 @@ import org.jggug.kobo.groovyserv.utils.IOUtils
  * Response ::= ( StreamResponse ) *
  *
  * InvocationRequest ::=
+ *    'Protocol:' <protocol> LF
  *    'Cwd:' <cwd> LF
  *    'Arg:' <arg1> LF
  *    'Arg:' <arg2> LF
@@ -42,6 +43,7 @@ import org.jggug.kobo.groovyserv.utils.IOUtils
  *    LF
  *
  *   where:
+ *     <protocol> is a type of protocol, like 'simple'. (optional)
  *     <cwd> is current working directory.
  *     <arg1>,<arg2>.. are commandline arguments which must be encoded by Base64. (optional)
  *     <env1>,<env2>.. are environment variable names which sent to the server. (optional)
@@ -93,6 +95,7 @@ class ClientProtocols {
     private final static String HEADER_STREAM_ID = "Channel"
     private final static String HEADER_SIZE = "Size"
     private final static String HEADER_ENV = "Env"
+    private final static String HEADER_PROTOCOL = "Protocol"
     private final static String LINE_SEPARATOR = "\n"
 
     /**
@@ -110,7 +113,8 @@ class ClientProtocols {
             args: decodeArgs(id, headers[HEADER_ARG]),
             clientAuthToken: headers[HEADER_AUTHTOKEN]?.getAt(0),
             serverAuthToken: conn.authToken,
-            envVars: headers[HEADER_ENV]
+            envVars: headers[HEADER_ENV],
+            protocol: headers[HEADER_PROTOCOL]?.getAt(0),
         )
         request.check()
         return request

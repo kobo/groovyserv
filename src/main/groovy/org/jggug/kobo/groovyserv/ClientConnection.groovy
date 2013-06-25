@@ -40,6 +40,7 @@ class ClientConnection implements Closeable {
 
     private boolean closed = false
     private boolean tearedDownPipes = false
+    private boolean silentExitStatus = false
 
     // They are used as System.xxx
     final InputStream ins
@@ -70,7 +71,15 @@ class ClientConnection implements Closeable {
      */
     InvocationRequest openSession() {
         checkAllowedClientAddress()
-        ClientProtocols.readInvocationRequest(this)
+        def request = ClientProtocols.readInvocationRequest(this)
+        DebugUtils.verboseLog "${id}: Protocol: ${request.protocol}"
+        if (request.protocol == "simple") {
+            DebugUtils.verboseLog "${id}: Detected 'simple' protocol"
+            silentExitStatus = true
+            this.out.out.noHeader = true
+            this.err.out.noHeader = true
+        }
+        request
     }
 
     /**
@@ -99,6 +108,7 @@ class ClientConnection implements Closeable {
      * @throws GServIOException
      */
     void sendExit(int status, String message = null) {
+        if (silentExitStatus) return
         try {
             socketOutputStream.with { // not to close yet
                 def data = ClientProtocols.formatAsExitHeader(status, message)
