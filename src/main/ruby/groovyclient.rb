@@ -29,6 +29,9 @@ AUTHTOKEN_FILE_BASE = HOME_DIR + "/.groovy/groovyserv/authtoken"
 GROOVYSERVER_CMD = File.expand_path(ENV.fetch("GROOVYSERV_HOME", File.dirname($0)+"/..") + "/bin/groovyserver")
 VERSION_MESSAGE = "GroovyServ Version: Client: @GROOVYSERV_VERSION@ (.ruby)"
 
+ERROR_INVALID_AUTHTOKEN = 201
+ERROR_CLIENT_NOT_ALLOWED = 202
+
 #-------------------------------------------
 # Classes
 #-------------------------------------------
@@ -38,7 +41,9 @@ class Options
   def initialize
     @client = {
       :without_invoking_server => false,
+      :host => DESTHOST,
       :port => DESTPORT,
+      :authtoken => nil,
       :quiet => false,
       :env_all => false,
       :env_include_mask => [],
@@ -74,7 +79,9 @@ def usage()
 usage: groovyclient.rb -C[option for groovyclient] [args/options for groovy]
 options:
   -Ch,-Chelp                       show this usage
+  -Cs,-Chost                       specify the host to connect to groovyserver
   -Cp,-Cport <port>                specify the port to connect to groovyserver
+  -Ca,-Cauthtoken <authtoken>      specify the authtoken
   -Ck,-Ckill-server                kill the running groovyserver
   -Cr,-Crestart-server             restart the running groovyserver
   -Cq,-Cquiet                      suppress statring messages
@@ -126,18 +133,20 @@ end
 def send_command(socket, args)
   socket.puts "Cwd: #{current_dir}"
   args.each do |arg|
-    # why using gsub? because Base64.encode64 happens to break lines automatically.
+    # why using gsub? It's because Base64.encode64 happens to break lines automatically.
     # TODO using default encoding.
     socket.puts "Arg: #{Base64.encode64(arg).gsub(/\s/, '')}"
   end
-  File.open(AUTHTOKEN_FILE_BASE + "-" + $options.client[:port].to_s) { |f|
-    socket.puts "AuthToken: #{f.read}"
-  }
+  socket.puts "AuthToken: #{authtoken}"
   send_envvars(socket)
   if ENV['CLASSPATH']
     socket.puts "Cp: #{ENV['CLASSPATH']}"
   end
   socket.puts ""
+end
+
+def authtoken
+  $options.client[:authtoken] || File.open(AUTHTOKEN_FILE_BASE + "-" + $options.client[:port].to_s) { |f| f.read }
 end
 
 def current_dir()
@@ -162,7 +171,13 @@ def handle_socket(socket)
     if $options.server[:version]
       puts VERSION_MESSAGE
     end
-    exit headers['Status'].to_i
+    status_code = headers['Status'].to_i
+    if status_code == ERROR_INVALID_AUTHTOKEN
+      STDERR.puts "ERROR: rejected by groovyserv because of invalid authtoken"
+    elsif status_code == ERROR_CLIENT_NOT_ALLOWED
+      STDERR.puts "ERROR: rejected by groovyserv because of not allowed client address"
+    end
+    exit status_code
   end
   data = socket.read(headers['Size'].to_i)
   return unless data
@@ -211,12 +226,16 @@ def parse_option(args)
     case arg
     when "-Cwithout-invoking-server"
       options.client[:without_invoking_server] = true
+    when "-Ch", "-Chost"
+      options.client[:host] = args.delete_at(i + 1)
     when "-Cp", "-Cport"
       port = args.delete_at(i + 1)
       unless port =~ /^[0-9]+$/
         raise "Invalid port number #{port} for #{arg}"
       end
       options.client[:port] = port
+    when "-Ca", "-Cauthtoken"
+      options.client[:authtoken] = args.delete_at(i + 1)
     when "-Ck" , "-Ckill-server"
       options.client[:groovyserver_opt] << "-k"
     when "-Cr", "-Crestart-server"
@@ -299,7 +318,7 @@ end
 # Invoke script (before, start server if down)
 failCount = 0
 begin
-  TCPSocket.open(DESTHOST, $options.client[:port]) { |socket|
+  TCPSocket.open($options.client[:host], $options.client[:port]) { |socket|
     Signal.trap(:INT) {
       send_interrupt(socket)
       exit 8
