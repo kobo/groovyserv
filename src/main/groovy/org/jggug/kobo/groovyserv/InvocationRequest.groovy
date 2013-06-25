@@ -50,7 +50,7 @@ class InvocationRequest {
             throw new InvalidRequestHeaderException("'Cwd' header is not found: ${port}")
         }
         if (!clientAuthToken || !serverAuthToken.isValid(clientAuthToken)) {
-            Thread.sleep(5000) // to prevent from brute force atack
+            Thread.sleep(5000) // to prevent from brute force attack
             DebugUtils.errorLog "Authentication failed. AuthToken is unmatched: ${clientAuthToken} <=> ${serverAuthToken.token}"
             throw new InvalidAuthTokenException("Authentication failed. AuthToken is unmatched: ${clientAuthToken} <=> ******")
         }

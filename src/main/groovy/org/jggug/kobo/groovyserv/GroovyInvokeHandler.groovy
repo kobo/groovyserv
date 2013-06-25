@@ -39,10 +39,10 @@ class GroovyInvokeHandler implements Runnable {
     /**
      * @throws SystemExitException
      *              When user code called System.exit().
-     *              Acutally this exception is wrapped by ExecutionException.
+     *              Actually this exception is wrapped by ExecutionException.
      * @throws InvalidRequestHeaderException
      *              When classpath option is invalid.
-     *              Acutally this exception is wrapped by ExecutionException.
+     *              Actually this exception is wrapped by ExecutionException.
      * @throws GServIllegalStateException
      *              When changed current directory after set different directory by another session
      */
