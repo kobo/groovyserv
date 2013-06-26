@@ -109,7 +109,7 @@ def executablesSpec = copySpec {
     into('bin') { // scripts with filter
         fileMode = 0755
         from "$projectDir/src/main/ruby"
-        from "$projectDir/src/main/sh", { include "groovyserver" }
+        from "$projectDir/src/main/sh"
         from "$projectDir/src/main/bat"
         filter(ReplaceTokens, tokens: ["GROOVYSERV_VERSION": project.version])
     }
@@ -179,22 +179,30 @@ task unitTest(type: Test) {
 
 // integrationTest tasks
 def integrationTestSpecs = new IntegrationTestSpecFactory(executables.groovyclientBasePath).createSpecs([
-    [id: 'Java', include: '**/DirectAccessIT.class', exclude: '', always: true],
+    [id: 'Java', includes: ['**/DirectAccessIT.class'], excludes: [], always: true],
     [id: 'CUnix'],
     [id: 'CWin', extension: '.exe'],
     [id: 'Ruby', extension: '.rb', invoker: 'ruby'],
+    [id: 'Shell', extension: '.sh', excludes: [
+        '**/DirectAccessIT.class',
+        '**/EnvPropagateIT.class',
+        '**/ExecIT.class',
+        '**/ExitIT.class',
+    ]],
 ])
 integrationTestSpecs.each { spec ->
     task "${spec.taskName}"(type: Test, dependsOn: 'executables') {
         onlyIf { spec.shouldRun() }
 
+        // FIXME conditional test is ugly, but I can't help it...
+        systemProperty 'groovyserv.test.id', spec.id
 
         // Support for -Dtest.single
         if (System.properties['test.single']) {
             include "**/${System.properties['test.single']}.*"
         } else {
-            include spec.include
-            exclude spec.exclude
+            include spec.includes
+            exclude spec.excludes
         }
         testReportDir = file("$buildDir/reports/integration-${spec.id}")
         testResultsDir = file("$buildDir/test-results/integration-${spec.id}")
@@ -303,8 +311,8 @@ class IntegrationTestSpec {
     def extension = ''
     def invoker
     def clientBasePath
-    def include = '**/*IT.class'
-    def exclude = '**/DirectAccessIT.class'
+    def includes = ['**/*IT.class']
+    def excludes = ['**/DirectAccessIT.class']
     def always = false
 
     def getGroovyclientPath() {

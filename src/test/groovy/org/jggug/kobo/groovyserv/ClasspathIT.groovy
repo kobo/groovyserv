@@ -55,8 +55,16 @@ class ClasspathIT extends GroovyTestCase {
         def command = TestUtils.getCommand(["-e", '"new ArgEcho().echo(\'hello\')"']) as String[]
         def p = Runtime.runtime.exec(command)
         p.waitFor()
-        assert p.in.text == ""
-        assert p.err.text.contains("org.codehaus.groovy.control.MultipleCompilationErrorsException")
+
+        // FIXME conditional test is ugly, but I can't help it...
+        println System.properties['groovyserv.test.id']
+        if (System.properties['groovyserv.test.id'] == "Shell") {
+            assert p.err.text == ""
+            assert p.in.text.contains("org.codehaus.groovy.control.MultipleCompilationErrorsException")
+        } else {
+            assert p.in.text == ""
+            assert p.err.text.contains("org.codehaus.groovy.control.MultipleCompilationErrorsException")
+        }
     }
 
     private resolvePath(jarFileName) {
