@@ -219,6 +219,12 @@ while [ $# -gt 0 ]; do
             ENV_EXCLUDES+=("$1")
             shift
             ;;
+        -Ckill-server | -Ck)
+            die "Unsupported in limited script"
+            ;;
+        -Crestart-server | -Cr)
+            die "Unsupported in limited script"
+            ;;
         *)
             SERVER_OPTIONS+=("$1")
             shift
