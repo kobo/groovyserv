@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 package org.jggug.kobo.groovyserv
-
 /**
  * Tests for the {@code groovyclient}.
  * Before running this, you must start groovyserver.
@@ -25,7 +24,7 @@ package org.jggug.kobo.groovyserv
  * Each env key includes test method name because
  * avoiding effect of a previous test case.
  */
-class EnvPropagationIT extends GroovyTestCase {
+class EnvPropagateIT extends GroovyTestCase {
 
    private static void assertEnvPropagation(List env, List command) {
        TestUtils.executeClientOkWithEnv(command, env) {
