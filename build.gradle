@@ -116,7 +116,7 @@ def executablesSpec = copySpec {
         filter(ReplaceTokens, tokens: ["GROOVYSERV_VERSION": project.version])
     }
 }
-task executables(type: Copy, dependsOn: ['jar', 'compileC']) {
+task executables(type: Copy, dependsOn: ['assemble']) {
     // construct file tree
     destinationDir = file("$buildDir/executables")
     with executablesSpec
@@ -127,12 +127,14 @@ task executables(type: Copy, dependsOn: ['jar', 'compileC']) {
     ext.groovyserverPath = convertMixedPath(file("${binDir}/groovyserver"))
 }
 
+task assemble(overwrite: true, dependsOn: ['jar', 'compileC'])
+
 //----------------------------------
 // Distribution
 
 task dist(dependsOn: ['distBin', 'distSrc'])
 
-task distBin(type: Zip, dependsOn: ['jar', 'compileC']) {
+task distBin(type: Zip, dependsOn: ['assemble']) {
     baseName = project.name
     classifier = getOsSuffix() + '-bin'
     into "$baseName-$version"
