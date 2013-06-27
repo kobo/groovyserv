@@ -132,7 +132,7 @@ task assemble(overwrite: true, dependsOn: ['jar', 'compileC'])
 //----------------------------------
 // Distribution
 
-task dist(dependsOn: ['distBin', 'distSrc'])
+task dist(dependsOn: ['distBin', 'distSrc', 'distPlatformIndependentBin'])
 
 task distBin(type: Zip, dependsOn: ['assemble']) {
     baseName = project.name
@@ -168,6 +168,32 @@ task distSrc(type: Zip) {
     classifier = 'src'
     into "$baseName-$version"
     with srcSpec
+}
+
+def platformIndependentBinSpec = copySpec {
+    from("$projectDir") {
+        include "*.txt"
+    }
+    into('lib') {
+        from configurations.archives
+        from "$buildDir/libs"
+    }
+    into('bin') { // scripts with filter
+        fileMode = 0755
+        from "$projectDir/src/main/ruby"
+        from "$projectDir/src/main/sh", {
+            rename 'groovyclient.sh', 'groovyclient'
+            rename 'groovyserver.sh', 'groovyserver'
+        }
+        from "$projectDir/src/main/bat"
+        filter(ReplaceTokens, tokens: ["GROOVYSERV_VERSION": project.version])
+    }
+}
+task distPlatformIndependentBin(type: Zip) {
+    baseName = project.name
+    classifier = 'platform-independent-bin'
+    into "$baseName-$version"
+    with platformIndependentBinSpec
 }
 
 //----------------------------------
