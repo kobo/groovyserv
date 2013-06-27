@@ -231,6 +231,11 @@ while [ $# -gt 0 ]; do
     esac
 done
 
+# Display additionally client's usage at the end of session
+if [ "${#SERVER_OPTIONS[@]}" -eq 0 ]; then
+    SHOULD_SHOW_USAGE_LATER=true
+fi
+
 #-------------------------------------------
 # Core functions
 #-------------------------------------------
