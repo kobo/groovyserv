@@ -109,7 +109,9 @@ def executablesSpec = copySpec {
     into('bin') { // scripts with filter
         fileMode = 0755
         from "$projectDir/src/main/ruby"
-        from "$projectDir/src/main/sh"
+        from "$projectDir/src/main/sh", {
+            rename 'groovyserver.sh', 'groovyserver'
+        }
         from "$projectDir/src/main/bat"
         filter(ReplaceTokens, tokens: ["GROOVYSERV_VERSION": project.version])
     }
