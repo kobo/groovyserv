@@ -63,13 +63,21 @@ usage() {
     echo "                                   name includes specified substr"
     echo "  -Cv,-Cversion                    display the GroovyServ version"
     echo
-    echo "*** NOTE ***"
+    echo "********************************** NOTE ***************************************"
     echo "  This client scirpt is LIMITED EDITION. So following features are unavailable:"
-    echo "    * Transparent server invocation (only starting server is available)"
+    echo "    * Transparent server operations (only starting server is available)"
     echo "    * Signal handling on client side (Ctrl+C)"
     echo "    * System.in from client"
     echo "    * Distinguishable stdout from stderr on client (all responses to stdout)"
-    echo "    * Status code from server ($?)"
+    echo "    * Status code from server (\$?)"
+    echo
+    echo "  If you want to use a client of FULL EDITION:"
+    echo "    * Use a ruby client 'groovyclient.rb'"
+    echo "    * Download a native client for your environment:"
+    echo "        http://kobo.github.io/groovyserv/download.html"
+    echo "    * Build a naitive client on your own:"
+    echo "        http://kobo.github.io/groovyserv/howtobuild.html"
+    echo "*******************************************************************************"
 }
 
 version() {
