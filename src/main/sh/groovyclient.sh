@@ -295,7 +295,7 @@ send_request() {
 
     # Arguments for groovy command
     for arg in "${SERVER_OPTIONS[@]}"; do
-        echo "Arg: $(printf "%s" "$arg" | base64)"
+        echo "Arg: $(printf "%s" "$arg" | base64 | tr -d '\n')"
     done
 
     # End Of Request
