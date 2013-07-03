@@ -272,7 +272,7 @@ send_request() {
 
     # Environment variable
     if [ -n "$ENV_ALL" ] || [ "${#ENV_INCLUDES[@]}" -gt 0 ]; then
-        env | while read env_item
+        env | while read -r env_item
         do
             array=($(echo $env_item | sed -e "s/=/ /"))
             env_name=${array[0]}
