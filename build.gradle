@@ -241,14 +241,10 @@ integrationTestSpecs.each { spec ->
         systemProperties 'groovyservClientExecutable': spec.executableExpression
 
         doFirst {
-            if (isFirstIntegrationTest()) {
-                startGroovyServer()
-            }
+            startGroovyServer()
         }
         doLast {
-            if (isLastIntegrationTest()) {
-                shutdownGroovyServer()
-            }
+            shutdownGroovyServer()
         }
     }
 }
@@ -305,16 +301,6 @@ def executeCommand(command, arguments) {
         }
         println os.toString()
     }
-}
-
-def isFirstIntegrationTest() {
-    def allIntTestTasks = gradle.taskGraph.allTasks.findAll { it.name =~ /^integrationTestFor.+/ }
-    return allIntTestTasks.findAll { !it.state.skipped }.every { !it.state.executed }
-}
-
-def isLastIntegrationTest() {
-    def allIntTestTasks = gradle.taskGraph.allTasks.findAll { it.name =~ /^integrationTestFor.+/ }
-    return allIntTestTasks.every { it.state.executed || it.state.executing }
 }
 
 def convertMixedPath(File file) {
