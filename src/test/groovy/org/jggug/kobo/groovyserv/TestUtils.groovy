@@ -56,13 +56,21 @@ class TestUtils {
         def clientExecs = System.properties.'groovyservClientExecutable'.split(" ") as List
         ProcessBuilder processBuilder = new ProcessBuilder()
         def command = processBuilder.command()
+
+        // This doesn't work on cygwin/windows. command line is somehow split by white space.
+//        def env = processBuilder.environment()
+//        envMap.each { key, value ->
+//            env.put(key.toString(), value.toString()) // without this, ArrayStoreException may occur
+//        }
+        command << "env"
+        envMap.each { key, value ->
+            command << "${key}=${value}".toString() // without this, ArrayStoreException may occur
+        }
+
         [* clientExecs, * args].each { arg ->
             command << arg.toString() // without this, ArrayStoreException may occur
         }
-        def env = processBuilder.environment()
-        envMap.each { key, value ->
-            env.put(key.toString(), value.toString()) // without this, ArrayStoreException may occur
-        }
+
         return processBuilder
     }
 
