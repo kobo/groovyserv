@@ -21,39 +21,35 @@ package org.jggug.kobo.groovyserv
  */
 class ClasspathIT extends GroovyTestCase {
 
-    static final String EOP = System.getProperty("path.separator")
-
     void testEnvironmentVariable() {
-        def command = TestUtils.getCommand(["-e", '"new EnvEcho().echo(\'hello\')"']) as String[]
-        def env = System.env.collect { it.key + "=" + it.value }
-        env << "CLASSPATH=${resolvePath('ForClasspathIT_env.jar')}"
-        def p = Runtime.runtime.exec(command, env as String[])
+        def args = ["-e", '"new EnvEcho().echo(\'hello\')"']
+        def env = [CLASSPATH: resolvePath('ForClasspathIT_env.jar')]
+        def p = TestUtils.createProcessBuilder(args, env).start()
         p.waitFor()
         assert p.err.text == ""
         assert p.in.text.contains("Env:hello")
     }
 
     void testArguments() {
-        def command = TestUtils.getCommand(["--classpath", resolvePath("ForClasspathIT_arg.jar"), "-e", '"new ArgEcho().echo(\'hello\')"']) as String[]
-        def p = Runtime.runtime.exec(command)
+        def args = ["--classpath", resolvePath("ForClasspathIT_arg.jar"), "-e", '"new ArgEcho().echo(\'hello\')"']
+        def p = TestUtils.createProcessBuilder(args).start()
         p.waitFor()
         assert p.err.text == ""
         assert p.in.text.contains("Arg:hello")
     }
 
     void testArguments_withEnvironmentVariables_usingArgIsHigherPriorityThanEnv() {
-        def command = TestUtils.getCommand(["--classpath", resolvePath("ForClasspathIT_arg.jar"), "-e", '"new ArgEcho().echo(\'hello\')"']) as String[]
-        def env = System.env.collect { it.key + "=" + it.value }
-        env << "CLASSPATH=${resolvePath('ForClasspathIT_env.jar')}"
-        def p = Runtime.runtime.exec(command, env as String[])
+        def args = ["--classpath", resolvePath("ForClasspathIT_arg.jar"), "-e", '"new ArgEcho().echo(\'hello\')"']
+        def env = [CLASSPATH: resolvePath('ForClasspathIT_env.jar')]
+        def p = TestUtils.createProcessBuilder(args, env).start()
         p.waitFor()
         assert p.err.text == ""
         assert p.in.text.contains("Arg:hello")
     }
 
     void testVolatileOfClasspath() {
-        def command = TestUtils.getCommand(["-e", '"new ArgEcho().echo(\'hello\')"']) as String[]
-        def p = Runtime.runtime.exec(command)
+        def args = ["-e", '"new ArgEcho().echo(\'hello\')"']
+        def p = TestUtils.createProcessBuilder(args).start()
         p.waitFor()
 
         // FIXME conditional test is ugly, but I can't help it...

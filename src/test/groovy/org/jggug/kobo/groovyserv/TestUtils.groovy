@@ -31,44 +31,39 @@ class TestUtils {
     }
 
     static executeClient(args, closure = null) {
-        def command = getCommand(args)
-        def p = command.execute()
+        def p = createProcessBuilder(args).start()
         if (closure) closure.call(p)
         p.waitFor()
-        //println "${command.join(' ')} => ${p.exitValue()}"
         return p
     }
 
-    static executeClientOkWithEnv(args, env, closure = null) {
-        def p = executeClientWithEnv(args, env, closure)
+    static executeClientOkWithEnv(args, Map envMap, closure = null) {
+        def p = executeClientWithEnv(args, envMap, closure)
         if (p.exitValue() != 0) {
             fail "ERROR: exitValue:${p.exitValue()}, in:[${p.in.text}], err:[${p.err.text}]"
         }
         return p
     }
 
-    static executeClientWithEnv(args, env, closure = null) {
-        def command = getCommandWithEnv(args, env)
-        def p = command.execute()
+    static executeClientWithEnv(args, Map envMap, closure = null) {
+        def p = createProcessBuilder(args, envMap).start()
         if (closure) closure.call(p)
         p.waitFor()
-        //println "${command.join(' ')} => ${p.exitValue()}"
         return p
     }
 
-    static getCommand(args) {
+    static createProcessBuilder(args, Map envMap = [:]) {
         def clientExecs = System.properties.'groovyservClientExecutable'.split(" ") as List
-        return clientExecs + args
-    }
-
-    /**
-     * Get a groovyclient command line which can invoke a groovycient instance with specified
-     * environment variable(s).
-     */
-    static getCommandWithEnv(args, env) {
-        def clientExecs = System.properties.'groovyservClientExecutable'.split(" ") as List
-        def result = ["env", *env, *clientExecs, *args ]
-        return result
+        ProcessBuilder processBuilder = new ProcessBuilder()
+        def command = processBuilder.command()
+        [* clientExecs, * args].each { arg ->
+            command << arg.toString() // without this, ArrayStoreException may occur
+        }
+        def env = processBuilder.environment()
+        envMap.each { key, value ->
+            env.put(key.toString(), value.toString()) // without this, ArrayStoreException may occur
+        }
+        return processBuilder
     }
 
     /**
