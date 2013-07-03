@@ -271,22 +271,38 @@ send_request() {
     fi
 
     # Environment variable
-    if [ -n "$ENV_ALL" ]; then
-        local env_names=$(env | awk -F= '{ print $1 }')
-    elif [ ${#ENV_INCLUDES[@]} -gt 0 ]; then
-        local env_names=${ENV_INCLUDES[@]}
-    fi
-    if [ -n "$env_names" ]; then
-        for env_name in $env_names; do
+    if [ -n "$ENV_ALL" ] || [ "${#ENV_INCLUDES[@]}" -gt 0 ]; then
+        env | while read env_item
+        do
+            array=($(echo $env_item | sed -e "s/=/ /"))
+            env_name=${array[0]}
+            #env_value=${array[1]}
+
+            # -Cenv-exclude
             local excluded=false
-            for excluded_key in "${ENV_EXCLUDES[@]}"; do
-                if [ "$env_name" == "$excluded_key" ]; then
+            for should_exclude_key in "${ENV_EXCLUDES[@]}"; do
+                if [[ "$env_name" = *"$should_exclude_key"* ]]; then
                     excluded=true
+                    break
                 fi
             done
-            if ! $excluded; then
-                echo "Env: $(env | grep -E "^$env_name=")"
+            $excluded && continue
+
+            # -Cenv-all / -Cenv
+            local included=false
+            if [ -n "$ENV_ALL" ]; then
+                included=true
+            else
+                for should_include_key in "${ENV_INCLUDES[@]}"; do
+                    if [[ "$env_name" = *"$should_include_key"* ]]; then
+                        included=true
+                        break
+                    fi
+                done
             fi
+            $included || continue
+
+            echo "Env: $env_item"
         done
     fi
 

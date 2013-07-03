@@ -215,7 +215,6 @@ def integrationTestSpecs = new IntegrationTestSpecFactory(executables.groovyclie
     [id: 'Ruby', extension: '.rb', invoker: 'ruby'],
     [id: 'Shell', extension: '.sh', excludes: [
         '**/DirectAccessIT.class',
-        '**/EnvPropagateIT.class',
         '**/ExecIT.class',
         '**/ExitIT.class',
     ]],
