@@ -3,6 +3,8 @@ Community
 
 We welcome your contact and feedback!
 
+.. _ref-community-ml:
+
 Mailing List (Google Group)
 ---------------------------
 

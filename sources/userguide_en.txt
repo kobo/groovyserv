@@ -15,13 +15,13 @@ Try-and-run cycles is repeated frequently than static-type languages, so sometim
 
 GroovyServ reduces the startup time of JVM and Groovy runtime significantly.
 In most situations it is 10 to 20 times faster than regular Groovy.
-The following times are averages of 5 times which measured invocation in Groovy 1.8.0 on Mac OS X (Core(TM) 2 Duo 2.53GHz).
+The following times are averages of 5 times which measured invocation in Groovy 2.1.5 on Mac OS X 10.8.4 (2.3GHz Intel Core i7).
 
     ==================  ===========
     Command             Result(sec)
     ==================  ===========
-    Groovy              1.1058
-    GroovyServ          0.0412
+    Groovy              0.803
+    GroovyServ          0.023
     ==================  ===========
 
 Requirements
@@ -38,7 +38,7 @@ GroovyServ is developed for following environment/OS.
 
 Version of JDK using at build is following:
 
-  - JDK 7u11
+  - JDK 7u25
 
 Version of Groovy is following:
 
@@ -70,8 +70,8 @@ It's useful to analyze a problem about invoking server::
 
 About groovyserver command options, refer to "groovyserver's option" section.
 
-Restriction/Differences
------------------------
+Differences from normal Groovy
+------------------------------
 
 * You can't concurrently use different current directory on a server.
   It also meets conditions if you invoke groovyclient simultaneously from two or more consoles.
@@ -153,11 +153,11 @@ groovyclient's options start with "-C".
 Those options are analyzed and consumed by groovyclient, and aren't passed to groovy command::
 
   -Ch,-Chelp                       show this usage
-  -Cs,-Chost                       specify the host to connect to groovyserver
+  -Cs,-Chost <address>             specify the host to connect to groovyserver
   -Cp,-Cport <port>                specify the port to connect to groovyserver
   -Ca,-Cauthtoken <authtoken>      specify the authtoken
-  -Ck,-Ckill-server                kill the running groovyserver
-  -Cr,-Crestart-server             restart the running groovyserver
+  -Ck,-Ckill-server                kill the running groovyserver (unsupported in groovyclient.sh)
+  -Cr,-Crestart-server             restart the running groovyserver (unsupported in groovyclient.sh)
   -Cq,-Cquiet                      suppress statring messages
   -Cenv <substr>                   pass environment variables of which a name
                                    includes specified substr
@@ -166,6 +166,22 @@ Those options are analyzed and consumed by groovyclient, and aren't passed to gr
                                    name includes specified substr
   -Cv,-Cversion                    display the GroovyServ version
 
+.. _ref-userguide-groovyclient-bash:
+
+Since v0.12, groovyclient.sh written by bash script has been added.
+Now you can easily use GroovyServ on the environment where there is no appropriate native client and ruby isn't installed.
+But there are some restrictions due to the limitation of the power of bash.
+
+ - Transparent server operations (only starting server is available)
+ - Signal handling on client side (Ctrl+C)
+ - System.in from client
+ - Distinguishable stdout from stderr on client (all responses to stdout)
+ - Status code from server ($?)
+
+They may be improved at future version.
+If you want to use a full featured client, instead, try groovyclient.rb which supports full features and is bundled under bin directory.
+You can also build it by yourself. See :ref:`Build from source code in User Guide <ref-howtobuild>`.
+
 groovyserver's option
 ---------------------
 
@@ -173,8 +189,8 @@ groovyserver's options are as follows::
 
   -v                       verbose output to the log file
   -q                       suppress starting messages
-  -k                       kill the running groovyserver
-  -r                       restart the running groovyserver
+  -k                       kill the running groovyserver (unsupported in groovyserver.bat)
+  -r                       restart the running groovyserver (unsupported in groovyserver.bat)
   -p <port>                specify the port to listen
   --allow-from <addresses> specify optional acceptable client addresses (delimiter: comma)
   --authtoken <authtoken>  specify authtoken (which is automatically generated if not specified)
@@ -225,7 +241,7 @@ Propagation of environment variable
 
 With -Cenv option of groovyclient, you can pass environment variables of which a name includes the specified substring to groovyserver.
 The values of those variables on the client process are sent to the server process, and the values of same environment variables on the server are set to or overwritten by the passed values.
-This feature is especially useful for tools (e.g. IDE, TextMate) which invoke an external command written by Groovy, and which uses environment variables to pass parameters to the command.
+This feature is especially useful for tools (e.g. IDE, TextMate, Sublime Text 2) which invoke an external command written by Groovy, and which uses environment variables to pass parameters to the command.
 
 When you specify the option -Cenv-all, all environment variables of the groovyclient process are sent to the groovyserver. Additionally with the option -Cenv-exclude, the variables of which a name includes specified substring are excluded.
 
