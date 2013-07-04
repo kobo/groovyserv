@@ -15,6 +15,21 @@ Change Log
 NOTICE
 ------
 
+Version 0.12 (2013-07-04)
+-------------------------
+New Features:
+    - [Client] groovyclient.sh is added. In the platform-independent binary package, its name is just 'groovyclient.'
+      It has some restrictions.  See :ref:`groovyclient's option in User Guide <ref-userguide-groovyclient-bash>`.
+
+Improvements:
+    - groovyclient.rb supports -Chost and -Cauthtoken
+
+Bug Fixes:
+    - Fixed 47: Command line parameters --allow-from and --authtoken do not work on Windows 7
+
+        - https://github.com/kobo/groovyserv/issues/47
+
+
 Version 0.11 (2013-02-01)
 -------------------------
 New Features:

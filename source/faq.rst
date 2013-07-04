@@ -47,7 +47,7 @@ Q:
     Are there packages for MacPorts, \*.deb, \*.rpm?
 
 A:
-    Partially Yes! GroovyServ is now available on the MacPorts, Homebrew.
+    Partially Yes! GroovyServ is now available on the MacPorts and Homebrew.
     The others may be under construction... We hope you'll do it!
 
 Does GroovyServ for Windows require Cygwin?

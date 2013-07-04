@@ -47,8 +47,8 @@ You can easily build a groovyclient binary file as follows::
 
 The binary file is created in build directory. You can copy it whereever you want::
 
-    ~/opt/src/groovyserv-0.12/build/groovyclient      (for Linux / Mac OS X)
-    ~/opt/src/groovyserv-0.12/build/groovyclient.exe  (for Windows)
+    ~/opt/src/groovyserv-0.12/build/natives/groovyclient      (for Linux / Mac OS X)
+    ~/opt/src/groovyserv-0.12/build/natives/groovyclient.exe  (for Windows)
 
 
 .. _ref-howtobuild-rpm:
