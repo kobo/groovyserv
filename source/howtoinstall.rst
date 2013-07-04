@@ -31,32 +31,34 @@ Only for Windows
 Install from binary package
 ---------------------------
 
-Download and expand GroovyServ distribution package from :ref:`Download page <ref-download>`, e.g. groovyserv-0.11-macosx-bin.zip to any directory::
+Download and expand GroovyServ distribution package from :ref:`Download page <ref-download>`, e.g. groovyserv-0.12-macosx-bin.zip to any directory::
 
     $ mkdir ~/opt
     $ cd ~/opt
-    $ unzip groovyserv-0.11-macosx-bin.zip
+    $ unzip groovyserv-0.12-macosx-x86_64-bin.zip
 
 And add bin directory to PATH environment variable.
 For example in bash/bourne shell::
 
-    export PATH=~/opt/groovyserv-0.11/bin:$PATH
+    export PATH=~/opt/groovyserv-0.12/bin:$PATH
 
 That's all for preparing.
 When you invoke groovyclient, groovyserver automatically starts in background.
 At first, you might have to wait for a few seconds to startup::
 
     $ groovyclient -v
-    Invoking server: '/opt/groovyserv-0.11/bin/groovyserver' -p 1961
+    Invoking server: '/opt/groovyserv-0.12/bin/groovyserver' -p 1961
     Groovy home directory: (none)
-    Groovy command path: /usr/local/bin/groovy (found at PATH)
-    GroovyServ home directory: /opt/groovyserv-0.11
-    GroovyServ work directory: /Users/ynak/.groovy/groovyserv
+    Groovy command path: /Users/nobeans/.gvm/groovy/current/bin/groovy (found at PATH)
+    GroovyServ home directory: /opt/groovyserv-0.12
+    GroovyServ work directory: /Users/nobeans/.groovy/groovyserv
     Original classpath: (none)
-    GroovyServ default classpath: /opt/groovyserv-0.11/lib/*
-    Starting...
-    groovyserver 75808(1961) is successfully started
-    Groovy Version: 1.8.0 JVM: 1.6.0_24
+    GroovyServ default classpath: /opt/groovyserv-0.12/lib/*
+    Starting..
+    groovyserver 24008(1961) is successfully started
+    Groovy Version: 2.1.5 JVM: 1.7.0_25 Vendor: Oracle Corporation OS: Mac OS X
+    GroovyServ Version: Server: 0.12
+    GroovyServ Version: Client: 0.12 (.c)
 
 If the binary downloaded doesn't work, try to build it from source code, according to :ref:`Build from source code <ref-howtobuild>`.
 
