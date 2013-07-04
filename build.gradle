@@ -96,6 +96,7 @@ task compileC << {
 def executablesSpec = copySpec {
     from("$projectDir") {
         include "*.txt"
+        include "*.md"
     }
     into('lib') {
         from configurations.archives
@@ -144,6 +145,7 @@ task distBin(type: Zip, dependsOn: ['assemble']) {
 def srcSpec = copySpec {
     from("$projectDir") {
         include "*.txt"
+        include "*.md"
         include "settings.gradle"
         include "build.gradle"
         include "gradle.properties"
@@ -173,6 +175,7 @@ task distSrc(type: Zip) {
 def platformIndependentBinSpec = copySpec {
     from("$projectDir") {
         include "*.txt"
+        include "*.md"
     }
     into('lib') {
         from configurations.archives
