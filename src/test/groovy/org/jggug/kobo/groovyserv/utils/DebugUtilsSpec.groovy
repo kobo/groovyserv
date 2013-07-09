@@ -24,6 +24,8 @@ import spock.lang.Specification
 @UnitTest
 class DebugUtilsSpec extends Specification {
 
+    private static final SEP = System.getProperty("line.separator")
+
     def setup() {
         System.properties.remove("groovyserver.verbose")
     }
@@ -41,7 +43,7 @@ class DebugUtilsSpec extends Specification {
             '''+-----------+-----------+-----------+-----------+----------------+
               |30 31 32 33 34 35 36 37 38 39 61 62 63 64 65 66 | 0123456789abcdef
               |30 31 32 33 34 35 36 37 38 39 41 42 43 44 45 46 | 0123456789ABCDEF
-              |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin()
+              |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin().replaceAll(/\r?\n/, SEP)
     }
 
     def "dump() with string which size is 31"() {
@@ -53,7 +55,7 @@ class DebugUtilsSpec extends Specification {
             '''+-----------+-----------+-----------+-----------+----------------+
               |30 31 32 33 34 35 36 37 38 39 61 62 63 64 65 66 | 0123456789abcdef
               |30 31 32 33 34 35 36 37 38 39 41 42 43 44 45    | 0123456789ABCDE
-              |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin()
+              |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin().replaceAll(/\r?\n/, SEP)
     }
 
     def "dump() with string which size is 17"() {
@@ -65,7 +67,7 @@ class DebugUtilsSpec extends Specification {
             '''+-----------+-----------+-----------+-----------+----------------+
               |30 31 32 33 34 35 36 37 38 39 61 62 63 64 65 66 | 0123456789abcdef
               |30                                              | 0
-              |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin()
+              |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin().replaceAll(/\r?\n/, SEP)
     }
 
     def "dump() with string which size is 16"() {
@@ -76,7 +78,7 @@ class DebugUtilsSpec extends Specification {
         DebugUtils.dump(data, 0, data.size()) ==
             '''+-----------+-----------+-----------+-----------+----------------+
               |30 31 32 33 34 35 36 37 38 39 61 62 63 64 65 66 | 0123456789abcdef
-              |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin()
+              |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin().replaceAll(/\r?\n/, SEP)
     }
 
     def "dump() with string which size is 15"() {
@@ -87,7 +89,7 @@ class DebugUtilsSpec extends Specification {
         DebugUtils.dump(data, 0, data.size()) ==
             '''+-----------+-----------+-----------+-----------+----------------+
               |30 31 32 33 34 35 36 37 38 39 61 62 63 64 65    | 0123456789abcde
-              |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin()
+              |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin().replaceAll(/\r?\n/, SEP)
     }
 
     def "dump() with string which size is 1"() {
@@ -98,7 +100,7 @@ class DebugUtilsSpec extends Specification {
         DebugUtils.dump(data, 0, data.size()) ==
             '''+-----------+-----------+-----------+-----------+----------------+
               |30                                              | 0
-              |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin()
+              |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin().replaceAll(/\r?\n/, SEP)
     }
 
     def "dump() with string which size is 0"() {
@@ -108,7 +110,7 @@ class DebugUtilsSpec extends Specification {
         expect:
         DebugUtils.dump(data, 0, data.size()) ==
             '''+-----------+-----------+-----------+-----------+----------------+
-              |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin()
+              |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin().replaceAll(/\r?\n/, SEP)
     }
 
     def "dump() with string which size is 32 and from offset 1"() {
@@ -120,7 +122,7 @@ class DebugUtilsSpec extends Specification {
             '''+-----------+-----------+-----------+-----------+----------------+
               |31 32 33 34 35 36 37 38 39 61 62 63 64 65 66 30 | 123456789abcdef0
               |31 32 33 34 35 36 37 38 39 41 42 43 44 45 46    | 123456789ABCDEF
-              |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin()
+              |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin().replaceAll(/\r?\n/, SEP)
     }
 
     def "dump() with string which size is 32 and from offset 31"() {
@@ -131,7 +133,7 @@ class DebugUtilsSpec extends Specification {
         DebugUtils.dump(data, 31, data.size()) ==
             '''+-----------+-----------+-----------+-----------+----------------+
               |46                                              | F
-              |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin()
+              |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin().replaceAll(/\r?\n/, SEP)
     }
 
     def "dump() with string which size is 32 and from offset 32"() {
@@ -141,7 +143,7 @@ class DebugUtilsSpec extends Specification {
         expect:
         DebugUtils.dump(data, 32, data.size()) ==
             '''+-----------+-----------+-----------+-----------+----------------+
-              |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin()
+              |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin().replaceAll(/\r?\n/, SEP)
     }
 
     def "dump() with string which size is 32 and from offset 33"() {
@@ -151,7 +153,7 @@ class DebugUtilsSpec extends Specification {
         expect:
         DebugUtils.dump(data, 33, data.size()) ==
             '''+-----------+-----------+-----------+-----------+----------------+
-              |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin()
+              |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin().replaceAll(/\r?\n/, SEP)
     }
 
     def "dump() with string which size is 1 and from offset 1"() {
@@ -161,7 +163,7 @@ class DebugUtilsSpec extends Specification {
         expect:
         DebugUtils.dump(data, 1, data.size()) ==
             '''+-----------+-----------+-----------+-----------+----------------+
-              |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin()
+              |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin().replaceAll(/\r?\n/, SEP)
     }
 
     def "dump() with string which size is 32 but specified length 16 as 3rd argument"() {
@@ -172,7 +174,7 @@ class DebugUtilsSpec extends Specification {
         DebugUtils.dump(data, 0, 16) ==
             '''+-----------+-----------+-----------+-----------+----------------+
               |30 31 32 33 34 35 36 37 38 39 61 62 63 64 65 66 | 0123456789abcdef
-              |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin()
+              |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin().replaceAll(/\r?\n/, SEP)
     }
 
     def "dump() with string which size is 32 but specified length 1 as 3rd argument"() {
@@ -183,7 +185,7 @@ class DebugUtilsSpec extends Specification {
         DebugUtils.dump(data, 0, 1) ==
             '''+-----------+-----------+-----------+-----------+----------------+
               |30                                              | 0
-              |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin()
+              |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin().replaceAll(/\r?\n/, SEP)
     }
 
     def "dump() with string which size is 32 but specified length 0 as 3rd argument"() {
@@ -193,7 +195,7 @@ class DebugUtilsSpec extends Specification {
         expect:
         DebugUtils.dump(data, 0, 0) ==
             '''+-----------+-----------+-----------+-----------+----------------+
-              |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin()
+              |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin().replaceAll(/\r?\n/, SEP)
     }
 
     def "dump() with string which size is 1 but specified length 0 as 3rd argument"() {
@@ -204,7 +206,7 @@ class DebugUtilsSpec extends Specification {
         DebugUtils.dump(data, 0, 16) ==
             '''+-----------+-----------+-----------+-----------+----------------+
               |30                                              | 0
-              |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin()
+              |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin().replaceAll(/\r?\n/, SEP)
     }
 
     def "dump() with string which size is 32 from offset 8 but specified length 16 as 3rd argument"() {
@@ -215,7 +217,7 @@ class DebugUtilsSpec extends Specification {
         DebugUtils.dump(data, 8, 16) ==
             '''+-----------+-----------+-----------+-----------+----------------+
               |38 39 61 62 63 64 65 66 30 31 32 33 34 35 36 37 | 89abcdef01234567
-              |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin()
+              |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin().replaceAll(/\r?\n/, SEP)
     }
 
     def "dump() with string which size is 32 from offset 8 but specified length 15 as 3rd argument"() {
@@ -226,7 +228,7 @@ class DebugUtilsSpec extends Specification {
         DebugUtils.dump(data, 8, 15) ==
             '''+-----------+-----------+-----------+-----------+----------------+
               |38 39 61 62 63 64 65 66 30 31 32 33 34 35 36    | 89abcdef0123456
-              |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin()
+              |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin().replaceAll(/\r?\n/, SEP)
     }
 
     def "dump() with negative offset value"() {
