@@ -223,6 +223,7 @@ def integrationTestSpecs = new IntegrationTestSpecFactory(executables.groovyclie
 integrationTestSpecs.each { spec ->
     task "${spec.taskName}"(type: Test, dependsOn: 'executables') {
         onlyIf { spec.shouldRun() }
+        mustRunAfter "unitTest"
 
         def testId = "integration-${spec.id}"
         testReportDir = file("$buildDir/reports/${testId}")
