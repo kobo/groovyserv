@@ -15,48 +15,58 @@
  */
 package org.jggug.kobo.groovyserv.platform
 
-/**
- * Tests for the {@link org.jggug.kobo.groovyserv.platform.EnvironmentVariables} class.
- */
-class EnvironmentVariablesTest extends GroovyTestCase {
+import org.jggug.kobo.groovyserv.test.UnitTest
+import spock.lang.Specification
 
-    void setUp() {
+/**
+ * Specifications for the {@link org.jggug.kobo.groovyserv.platform.EnvironmentVariables} class.
+ */
+@UnitTest
+class EnvironmentVariablesSpec extends Specification {
+
+    def setup() {
         EnvironmentVariables.setUp()
     }
 
-    void testPutAndGetenvWithName() {
-        // Before
+    def "put() set a specified environment variable and then it's visible for getenv(name)"() {
+        given:
         assert System.getenv("ENV_TEST_1_NAME") == null
-        // Exercise
+
+        when:
         EnvironmentVariables.instance.put("ENV_TEST_1_NAME=ENV_TEST_1_VALUE")
-        // Verify
-        assert System.getenv("ENV_TEST_1_NAME") == "ENV_TEST_1_VALUE"
+
+        then:
+        System.getenv("ENV_TEST_1_NAME") == "ENV_TEST_1_VALUE"
     }
 
-    void testPutAndGetenvWithNoArg() {
-        // Before
+    def "put() set a specified environment variable and then it's visible for getenv() with no argument"() {
+        given:
         assert System.getenv()["ENV_TEST_2_NAME"] == null
         assert System.getenv().ENV_TEST_2_NAME == null
         int beforeEnvCount = System.getenv().size()
-        // Exercise
+
+        when:
         EnvironmentVariables.instance.put("ENV_TEST_2_NAME=ENV_TEST_2_VALUE")
-        // Verify
-        assert System.getenv()["ENV_TEST_2_NAME"] == "ENV_TEST_2_VALUE"
-        assert System.getenv().ENV_TEST_2_NAME == "ENV_TEST_2_VALUE"
-        assert System.getenv().size() == beforeEnvCount + 1
+
+        then:
+        System.getenv()["ENV_TEST_2_NAME"] == "ENV_TEST_2_VALUE"
+        System.getenv().ENV_TEST_2_NAME == "ENV_TEST_2_VALUE"
+        System.getenv().size() == beforeEnvCount + 1
     }
 
-    void testPutAndEnvProperty() {
-        // Before
+    def "put() set a specified environment variable and then it's visible for 'env' property"() {
+        given:
         assert System.env["ENV_TEST_3_NAME"] == null
         assert System.env.ENV_TEST_3_NAME == null
         int beforeEnvCount = System.env.size()
-        // Exercise
+
+        when:
         EnvironmentVariables.instance.put("ENV_TEST_3_NAME=ENV_TEST_3_VALUE")
-        // Verify
-        assert System.env["ENV_TEST_3_NAME"] == "ENV_TEST_3_VALUE"
-        assert System.env.ENV_TEST_3_NAME == "ENV_TEST_3_VALUE"
-        assert System.env.size() == beforeEnvCount + 1
+
+        then:
+        System.env["ENV_TEST_3_NAME"] == "ENV_TEST_3_VALUE"
+        System.env.ENV_TEST_3_NAME == "ENV_TEST_3_VALUE"
+        System.env.size() == beforeEnvCount + 1
     }
 
 }

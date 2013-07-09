@@ -15,29 +15,31 @@
  */
 package org.jggug.kobo.groovyserv
 
+import org.jggug.kobo.groovyserv.test.IntegrationTest
+import org.jggug.kobo.groovyserv.test.TestUtils
+import spock.lang.Specification
+
 /**
- * Tests for the {@code groovyclient}.
+ * Specifications for the {@code groovyclient}.
  * Before running this, you must start groovyserver.
  */
-class ThreadIT extends GroovyTestCase {
+@IntegrationTest
+class ThreadSpec extends Specification {
 
     static final String SEP = System.getProperty("line.separator")
 
-    void testExecOneliner() {
-        assertEquals(
-            'output from thread' + SEP,
-            TestUtils.executeClientOk(["-e", '"(new Thread({-> println(\'output from thread\') } as Runnable)).start()"']).text
-        )
+    def "using a thread"() {
+        when:
+        def p = TestUtils.executeClientOk(["-e", '"(new Thread({-> println(\'output from thread\') } as Runnable)).start()"'])
+        p.waitFor()
+
+        then:
+        p.in.text == 'output from thread' + SEP
+        p.err.text == ''
     }
 
-    void testExecFile() {
-        assertEquals(
-            'output from thread' + SEP,
-            TestUtils.executeClientOk(["-c", "UTF-8", "src/test/resources/forThreadTest.groovy"]).text
-        )
-    }
-
-    void testInfinteLoopInThread_Interruptable() {
+    def "interruptable infinite loop in a thread"() {
+        given:
         def script = """\
             Thread.start {
                 println('started')
@@ -49,13 +51,17 @@ class ThreadIT extends GroovyTestCase {
             Thread.sleep 1000
             Thread.currentThread().interrupt()
         """.replaceAll(/\n/, '; ').replaceAll(/ +/, ' ').trim()
-        assertEquals(
-            'started' + SEP,
-            TestUtils.executeClientOk(["-e", "$script"]).text
-        )
+
+        when:
+        def p = TestUtils.executeClientOk(["-e", "$script"])
+
+        then:
+        p.in.text == 'started' + SEP
+        p.err.text == ''
     }
 
-    void testInfinteLoopInThread_Uninterruptable() {
+    def "uninterruptable infinite loop in a thread"() {
+        given:
         def script = """\
             Thread.start {
                 println('started')
@@ -67,10 +73,12 @@ class ThreadIT extends GroovyTestCase {
             Thread.sleep 1000
             Thread.currentThread().interrupt()
         """.replaceAll(/\n/, '; ').replaceAll(/ +/, ' ').trim()
-        assertEquals(
-            'started' + SEP,
-            TestUtils.executeClientOk(["-e", "$script"]).text
-        )
-    }
 
+        when:
+        def p = TestUtils.executeClientOk(["-e", "$script"])
+
+        then:
+        p.in.text == 'started' + SEP
+        p.err.text == ''
+    }
 }

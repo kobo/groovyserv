@@ -15,56 +15,89 @@
  */
 package org.jggug.kobo.groovyserv
 
+import org.jggug.kobo.groovyserv.test.IgnoreForShell
+import org.jggug.kobo.groovyserv.test.IntegrationTest
+import org.jggug.kobo.groovyserv.test.OnlyForShell
+import org.jggug.kobo.groovyserv.test.TestUtils
+import spock.lang.Specification
+
 /**
- * Tests for the {@code groovyclient}.
+ * Specifications for the {@code groovyclient}.
  * Before running this, you must start groovyserver.
  */
-class ClasspathIT extends GroovyTestCase {
+@IntegrationTest
+class ClasspathSpec extends Specification {
 
-    void testEnvironmentVariable() {
+    def "passing classpath from environment variables"() {
+        given:
         def args = ["-e", '"new EnvEcho().echo(\'hello\')"']
         def env = [CLASSPATH: resolvePath('ForClasspathIT_env.jar')]
+
+        when:
         def p = TestUtils.createProcessBuilder(args, env).start()
         p.waitFor()
-        assert p.err.text == ""
-        assert p.in.text.contains("Env:hello")
+
+        then:
+        p.in.text.contains("Env:hello")
+        p.err.text == ""
     }
 
-    void testArguments() {
+    def "passing classpath from arguments"() {
+        given:
         def args = ["--classpath", resolvePath("ForClasspathIT_arg.jar"), "-e", '"new ArgEcho().echo(\'hello\')"']
+
+        when:
         def p = TestUtils.createProcessBuilder(args).start()
         p.waitFor()
-        assert p.err.text == ""
-        assert p.in.text.contains("Arg:hello")
+
+        then:
+        p.in.text.contains("Arg:hello")
+        p.err.text == ""
     }
 
-    void testArguments_withEnvironmentVariables_usingArgIsHigherPriorityThanEnv() {
+    def "using argument when classpath is passed from both environment variables and arguments"() {
+        given:
         def args = ["--classpath", resolvePath("ForClasspathIT_arg.jar"), "-e", '"new ArgEcho().echo(\'hello\')"']
         def env = [CLASSPATH: resolvePath('ForClasspathIT_env.jar')]
+
+        when:
         def p = TestUtils.createProcessBuilder(args, env).start()
         p.waitFor()
-        assert p.err.text == ""
-        assert p.in.text.contains("Arg:hello")
+
+        then:
+        p.in.text.contains("Arg:hello")
+        p.err.text == ""
     }
 
-    void testVolatileOfClasspath() {
+    @IgnoreForShell
+    def "propagated classpath is disposed each invocation (except for shell client)"() {
+        given:
         def args = ["-e", '"new ArgEcho().echo(\'hello\')"']
+
+        when:
         def p = TestUtils.createProcessBuilder(args).start()
         p.waitFor()
 
-        // FIXME conditional test is ugly, but I can't help it...
-        println System.properties['groovyserv.test.id']
-        if (System.properties['groovyserv.test.id'] == "Shell") {
-            assert p.err.text == ""
-            assert p.in.text.contains("org.codehaus.groovy.control.MultipleCompilationErrorsException")
-        } else {
-            assert p.in.text == ""
-            assert p.err.text.contains("org.codehaus.groovy.control.MultipleCompilationErrorsException")
-        }
+        then:
+        p.in.text == ""
+        p.err.text.contains("org.codehaus.groovy.control.MultipleCompilationErrorsException")
     }
 
-    private resolvePath(jarFileName) {
+    @OnlyForShell
+    def "propagated classpath is disposed each invocation (only for shell client)"() {
+        given:
+        def args = ["-e", '"new ArgEcho().echo(\'hello\')"']
+
+        when:
+        def p = TestUtils.createProcessBuilder(args).start()
+        p.waitFor()
+
+        then:
+        p.in.text.contains("org.codehaus.groovy.control.MultipleCompilationErrorsException")
+        p.err.text == ""
+    }
+
+    private static resolvePath(jarFileName) {
         "${System.properties.'user.dir'}/src/test/resources/${jarFileName}"
     }
-
 }

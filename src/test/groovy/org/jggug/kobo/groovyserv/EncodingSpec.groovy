@@ -15,26 +15,28 @@
  */
 package org.jggug.kobo.groovyserv
 
+
+import org.jggug.kobo.groovyserv.test.IntegrationTest
+import org.jggug.kobo.groovyserv.test.TestUtils
+import spock.lang.Specification
+
 /**
- * Tests for the {@code groovyclient}.
+ * Specifications for the {@code groovyclient}.
  * Before running this, you must start groovyserver.
  */
-class EncodingIT extends GroovyTestCase {
+@IntegrationTest
+class EncodingSpec extends Specification {
 
     static final String SEP = System.getProperty("line.separator")
 
-// FIXME When running with a ruby client in my Windows PC, this fails every time.
-//       But in other environments it works well.
-//    void testExecOneliner() {
-//        assertEquals "あいうえお" + SEP, TestUtils.executeClientOk(["-e", '"println(\'あいうえお\')"']).text
-//    }
-
-    void testExecFile_UTF8() {
-        assertEquals "あいうえお" + SEP, TestUtils.executeClientOk(["-c", "UTF-8", "src/test/resources/forEncodingTest_UTF8.groovy"]).text
+    def "executes a file written by UTF-8"() {
+        expect:
+        TestUtils.executeClientOk(["-c", "UTF-8", "src/test/resources/forEncodingTest_UTF8.groovy"]).text == "あいうえお" + SEP
     }
 
-    void testExecFile_SJIS() {
-        assertEquals "あいうえお" + SEP, TestUtils.executeClientOk(["-c", "Shift_JIS", "src/test/resources/forEncodingTest_SJIS.groovy"]).text
+    def "executes a file written by Shift_JIS"() {
+        expect:
+        TestUtils.executeClientOk(["-c", "Shift_JIS", "src/test/resources/forEncodingTest_SJIS.groovy"]).text == "あいうえお" + SEP
     }
 
 }

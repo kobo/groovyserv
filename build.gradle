@@ -35,7 +35,7 @@ repositories {
 }
 
 configurations {
-    // dependencies for archives are picked at compile configration
+    // dependencies for archives are picked at compile configuration
     compile.extendsFrom archives
 }
 
@@ -205,44 +205,40 @@ task distPlatformIndependentBin(type: Zip) {
 task test(overwrite: true, dependsOn: ['unitTest', 'integrationTest'])
 
 task unitTest(type: Test) {
-    include '**/*Test.class'
     testReportDir = file("$buildDir/reports/unit")
     testResultsDir = file("$buildDir/test-results/unit")
+    doFirst {
+        systemProperty 'spock.configuration', file("${projectDir}/spock/unit.groovy")
+    }
 }
 
 // integrationTest tasks
 def integrationTestSpecs = new IntegrationTestSpecFactory(executables.groovyclientBasePath).createSpecs([
-    [id: 'Java', includes: ['**/DirectAccessIT.class'], excludes: [], always: true],
+    [id: 'Java', always: true],
     [id: 'CUnix'],
     [id: 'CWin', extension: '.exe'],
     [id: 'Ruby', extension: '.rb', invoker: 'ruby'],
-    [id: 'Shell', extension: '.sh', excludes: [
-        '**/DirectAccessIT.class',
-        '**/ExecIT.class',
-        '**/ExitIT.class',
-    ]],
+    [id: 'Shell', extension: '.sh'],
 ])
 integrationTestSpecs.each { spec ->
     task "${spec.taskName}"(type: Test, dependsOn: 'executables') {
         onlyIf { spec.shouldRun() }
 
-        // FIXME conditional test is ugly, but I can't help it...
-        systemProperty 'groovyserv.test.id', spec.id
-
-        // Support for -Dtest.single
-        if (System.properties['test.single']) {
-            include "**/${System.properties['test.single']}.*"
-        } else {
-            include spec.includes
-            exclude spec.excludes
-        }
-        testReportDir = file("$buildDir/reports/integration-${spec.id}")
-        testResultsDir = file("$buildDir/test-results/integration-${spec.id}")
-
-        // prop for TestUtils
-        systemProperties 'groovyservClientExecutable': spec.executableExpression
+        def testId = "integration-${spec.id}"
+        testReportDir = file("$buildDir/reports/${testId}")
+        testResultsDir = file("$buildDir/test-results/${testId}")
 
         doFirst {
+            // Support for -Dtest.single
+            if (System.properties['test.single']) {
+                include "**/${System.properties['test.single']}.*"
+            } else {
+                systemProperty 'spock.configuration', file("${projectDir}/spock/${testId}.groovy")
+            }
+
+            // prop for TestUtils
+            systemProperties 'groovyservClientExecutable': spec.executableExpression
+
             startGroovyServer()
         }
         doLast {
@@ -329,8 +325,6 @@ class IntegrationTestSpec {
     def extension = ''
     def invoker
     def clientBasePath
-    def includes = ['**/*IT.class']
-    def excludes = ['**/DirectAccessIT.class']
     def always = false
 
     def getGroovyclientPath() {

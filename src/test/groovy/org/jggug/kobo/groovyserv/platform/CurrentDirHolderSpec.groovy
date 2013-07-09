@@ -13,54 +13,74 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jggug.kobo.groovyserv
+package org.jggug.kobo.groovyserv.platform
 
 import org.jggug.kobo.groovyserv.exception.GServIllegalStateException
-import org.jggug.kobo.groovyserv.platform.CurrentDirHolder
+import org.jggug.kobo.groovyserv.test.UnitTest
+import spock.lang.Specification
 
 /**
- * Tests for the {@link org.jggug.kobo.groovyserv.platform.CurrentDirHolder} class.
+ * Specifications for the {@link org.jggug.kobo.groovyserv.platform.CurrentDirHolder} class.
  */
-class CurrentDirHolderTest extends GroovyTestCase {
+@UnitTest
+class CurrentDirHolderSpec extends Specification {
 
     CurrentDirHolder holder = CurrentDirHolder.instance
     String workDir
 
-    void setUp() {
+    def setup() {
         holder.reset()
         workDir = File.createTempFile("groovyserv-", "-dummy").parent
     }
 
-    void tearDown() {
+    def cleanup() {
         holder.reset()
     }
 
-    void testSet_notSetYet() {
+    void "setDir() set currentDir when not set nothing yet"() {
+        when:
         holder.setDir(workDir)
+
+        then:
         assertCurrentDir(workDir)
     }
 
-    void testSet_alreadySet_sameDir() {
+    void "setDir() set currentDir when already set a same directory"() {
+        given:
         holder.setDir(workDir)
         assertCurrentDir(workDir)
 
+        when:
         holder.setDir(workDir)
+
+        then:
         assertCurrentDir(workDir)
     }
 
-    void testSet_alreadySet_differentDir() {
+    def "setDir() set currentDir when already set a different directory"() {
+        given:
         holder.setDir(workDir)
-        shouldFail(GServIllegalStateException) {
-            holder.setDir(workDir + "DIFFERENT")
-        }
+
+        when:
+        holder.setDir(workDir + "DIFFERENT")
+
+        then:
+        thrown GServIllegalStateException
+
+        and: "previous dir remains"
         assertCurrentDir(workDir)
     }
 
-    void testSet_reset() {
+    def "reset() clears currentDir"() {
+        given:
         holder.setDir(workDir)
         assertCurrentDir(workDir)
+
+        when:
         holder.reset()
-        assertReset(workDir)
+
+        then:
+        assertReset()
     }
 
     private void assertCurrentDir(dir) {
@@ -68,7 +88,7 @@ class CurrentDirHolderTest extends GroovyTestCase {
         assert System.properties['user.dir'] == dir
     }
 
-    private void assertReset(dir) {
+    private void assertReset() {
         assert holder.currentDir == null
         assert System.properties['user.dir'] == CurrentDirHolder.ORIGINAL_USER_DIR
     }

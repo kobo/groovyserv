@@ -13,27 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jggug.kobo.groovyserv
+package org.jggug.kobo.groovyserv.test
 
-/**
- * Tests for the {@code groovyclient}.
- * Before running this, you must start groovyserver.
- */
-class MultilineArgsIT extends GroovyTestCase {
+import java.lang.annotation.ElementType
+import java.lang.annotation.Retention
+import java.lang.annotation.RetentionPolicy
+import java.lang.annotation.Target
 
-    void testMultilineArgs() {
-        def script = """\
-            |print('start:')
-            |print('''line1
-            |line2
-            |line3''')
-            |print(':end')""".stripMargin()
-        assertEquals(
-            """start:line1
-              |line2
-              |line3:end""".stripMargin(),
-            TestUtils.executeClientOk(["-e", "\"$script\""]).text
-        )
-    }
-
+@Target([ElementType.TYPE, ElementType.METHOD])
+@Retention(RetentionPolicy.RUNTIME)
+@interface IgnoreForShell {
 }

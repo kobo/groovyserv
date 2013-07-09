@@ -14,26 +14,26 @@
  * limitations under the License.
  */
 package org.jggug.kobo.groovyserv
+
+import org.jggug.kobo.groovyserv.test.IntegrationTest
+import org.jggug.kobo.groovyserv.test.TestUtils
+import spock.lang.Specification
+
 /**
- * Tests for the {@code groovyclient}.
+ * Specifications for the {@code groovyclient}.
  * Before running this, you must start groovyserver.
  *
  * Because running this test method is too slow,
  * some test cases aggregated to one test method.
  *
  * Each env key includes test method name because
- * avoiding effect of a previous test case.
+ * avoiding side effects of a previous test case.
  */
-class EnvPropagateIT extends GroovyTestCase {
+@IntegrationTest
+class EnvPropagateSpec extends Specification {
 
-    private static void assertEnvPropagation(Map envMap, List command) {
-        TestUtils.executeClientOkWithEnv(command, envMap) {
-            assert it.err.text == ""
-            assert it.text == "OK"
-        }
-    }
-
-    void testEnv() {
+    def "specifying -Cenv allows you propagating specified environment variables"() {
+        expect:
         assertEnvPropagation([
             // Env of client side
             "HOGE___testEnv_singleOption___KEY1___FOO": "111",
@@ -64,7 +64,8 @@ class EnvPropagateIT extends GroovyTestCase {
         ])
     }
 
-    void testEnvAll() {
+    def "specifying -Cenv-all allows you propagating ALL environment variables"() {
+        expect:
         assertEnvPropagation([
             // Env of client side
             "HOGE___testEnvAll___KEY___FOO": "111",
@@ -89,7 +90,8 @@ class EnvPropagateIT extends GroovyTestCase {
         ])
     }
 
-    void testEnv_withEnvExclude() {
+    def "specifying -Cenv-exclude prohibits specified environment variables from being propagated (with -Cenv)"() {
+        expect:
         assertEnvPropagation([
             // Env of client side
             "EXCLUDE1___testEnv_withEnvExclude___KEY___": "111",
@@ -120,7 +122,8 @@ class EnvPropagateIT extends GroovyTestCase {
         ])
     }
 
-    void testEnvAll_withEnvExclude() {
+    def "specifying -Cenv-exclude prohibits specified environment variables from being propagated (with -Cenv-all)"() {
+        expect:
         assertEnvPropagation([
             // Env of client side
             "EXCLUDE___testEnvAll_withEnvExclude___KEY___": "111",
@@ -146,7 +149,8 @@ class EnvPropagateIT extends GroovyTestCase {
         ])
     }
 
-    void testKeepOnServer() {
+    def "propagated environment variables isn't disposed on server"() {
+        expect:
         assertEnvPropagation([
             "___testKeepOnServer___KEY1___": "111",
             "___testKeepOnServer___KEY2___": "222"
@@ -159,24 +163,31 @@ class EnvPropagateIT extends GroovyTestCase {
                |"""'''.stripMargin()
         ])
 
-        // overwrite
+        and: "can overwrite it"
         assertEnvPropagation([
             "___testKeepOnServer___KEY1___": "XYZ",
         ], [
             "-Cenv-all",
             "-e", '''"""
                |assert System.getenv('___testKeepOnServer___KEY1___') == 'XYZ' // override
-               |assert System.getenv('___testKeepOnServer___KEY2___') == '222' // keep
+               |assert System.getenv('___testKeepOnServer___KEY2___') == '222' // the propagated value is kept
                |print('OK')
                |"""'''.stripMargin()
         ])
     }
 
-    void testAccessableToOriginalEnvironmentOnServerSides() {
-        TestUtils.executeClientOk(["-e", '"print(System.getenv(\'PWD\'))"']) {
+    def "you can access to environment variables which is originally existed at server process"() {
+        expect:
+        TestUtils.executeClientOk(["-e", '"print(System.getenv(\'USER\'))"']) {
             assert it.in.text != "null"
             assert it.err.text == ""
         }
     }
 
+    private static void assertEnvPropagation(Map envMap, List command) {
+        TestUtils.executeClientOkWithEnv(command, envMap) {
+            assert it.err.text == ""
+            assert it.text == "OK"
+        }
+    }
 }

@@ -13,20 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jggug.kobo.groovyserv
 
-/**
- * Tests for the {@code groovyclient}.
- * Before running this, you must start groovyserver.
- */
-class ExitIT extends GroovyTestCase {
+import org.jggug.kobo.groovyserv.DirectAccessSpec
+import org.jggug.kobo.groovyserv.test.IntegrationTest
+import org.jggug.kobo.groovyserv.test.OnlyForShell
 
-    void testExit1() {
-        assertEquals 1,  TestUtils.executeClient(['-e', '"System.exit(1)"']).exitValue()
-    }
-
-    void testExit33() {
-        assertEquals 33, TestUtils.executeClient(['-e', '"System.exit(33)"']).exitValue()
-    }
-
+runner {
+    include IntegrationTest
+    exclude DirectAccessSpec, OnlyForShell
 }
