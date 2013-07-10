@@ -183,9 +183,9 @@ task executablesPlatformIndependentBin(type: Copy, dependsOn: ['assemble']) {
 //----------------------------------
 // Distribution
 
-task dist(dependsOn: ['distBin', 'distSrc', 'distPlatformIndependentBin'])
+task dist(dependsOn: ['distNativeBin', 'distPlatformIndependentBin', 'distSrc'])
 
-task distBin(type: Zip, dependsOn: ['assemble']) {
+task distNativeBin(type: Zip, dependsOn: ['assemble']) {
     baseName = project.name
     classifier = getOsSuffix() + '-bin'
     into "$baseName-$version"
