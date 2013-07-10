@@ -239,7 +239,7 @@ integrationTestSpecs.each { spec ->
         testResultsDir = file("$buildDir/test-results/${testId}")
 
         def type = (spec.asPlatformIndependent) ? "platformIndependent" : "native"
-        def binDir = "${buildDir}/executables/${type}/bin"
+        def binDir = convertMixedPath(file("${buildDir}/executables/${type}/bin"))
         def clientExecutableExpression = "${spec.invoker ?: ''} ${binDir}/groovyclient${spec.extension}".trim()
         def serverExecutableExpression = "$binDir/groovyserver"
 
@@ -309,6 +309,10 @@ def executeCommand(command, arguments) {
         }
         println os.toString()
     }
+}
+
+def convertMixedPath(File file) {
+    file.canonicalPath.replaceAll('\\\\', '/')
 }
 
 def getOsSuffix() {
