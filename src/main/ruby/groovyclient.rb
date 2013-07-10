@@ -40,7 +40,6 @@ class Options
   attr_reader :client, :server
   def initialize
     @client = {
-      :without_invoking_server => false,
       :host => DESTHOST,
       :port => DESTPORT,
       :authtoken => nil,
@@ -59,7 +58,6 @@ class Options
     }
   end
   def need_to_invoke_server?
-    return false if @client[:without_invoking_server]
     @client[:groovyserver_opt].any? {|v| ['-k', '-r'].include?(v) }
   end
 end
@@ -224,8 +222,6 @@ def parse_option(args)
   options = Options.new
   args.each_with_index do |arg, i|
     case arg
-    when "-Cwithout-invoking-server"
-      options.client[:without_invoking_server] = true
     when "-Ch", "-Chost"
       options.client[:host] = args.delete_at(i + 1)
     when "-Cp", "-Cport"
@@ -326,10 +322,6 @@ begin
     session(socket, $options.server[:args])
   }
 rescue Errno::ECONNREFUSED
-  if $options.client[:without_invoking_server]
-    STDERR.puts "ERROR: groovyserver isn't running"
-    exit 9
-  end
   if failCount >= 3
     STDERR.puts "ERROR: Failed to start up groovyserver: #{GROOVYSERVER_CMD}"
     exit 1
