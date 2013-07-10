@@ -177,17 +177,16 @@ class EnvPropagateSpec extends Specification {
     }
 
     def "you can access to environment variables which is originally existed at server process"() {
-        expect:
-        TestUtils.executeClientOk(["-e", '"print(System.getenv(\'USER\'))"']) {
-            assert it.in.text != "null"
-            assert it.err.text == ""
+        TestUtils.executeClientOkWithEnv(["-e", '"print(System.getenv(\'USER\'))"'], [:]) { p ->
+            p.in.text != "null"
+            p.err.text == ""
         }
     }
 
     private static void assertEnvPropagation(Map envMap, List command) {
-        TestUtils.executeClientOkWithEnv(command, envMap) {
-            assert it.err.text == ""
-            assert it.text == "OK"
+        TestUtils.executeClientOkWithEnv(command, envMap) { p ->
+            assert p.err.text == ""
+            assert p.text == "OK"
         }
     }
 }

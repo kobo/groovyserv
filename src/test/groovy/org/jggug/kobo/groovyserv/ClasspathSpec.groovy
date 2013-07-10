@@ -34,7 +34,7 @@ class ClasspathSpec extends Specification {
         def env = [CLASSPATH: resolvePath('ForClasspathIT_env.jar')]
 
         when:
-        def p = TestUtils.createProcessBuilder(args, env).start()
+        def p = TestUtils.executeClientWithEnv(args, env)
         p.waitFor()
 
         then:
@@ -47,7 +47,7 @@ class ClasspathSpec extends Specification {
         def args = ["--classpath", resolvePath("ForClasspathIT_arg.jar"), "-e", '"new ArgEcho().echo(\'hello\')"']
 
         when:
-        def p = TestUtils.createProcessBuilder(args).start()
+        def p = TestUtils.executeClient(args)
         p.waitFor()
 
         then:
@@ -61,7 +61,7 @@ class ClasspathSpec extends Specification {
         def env = [CLASSPATH: resolvePath('ForClasspathIT_env.jar')]
 
         when:
-        def p = TestUtils.createProcessBuilder(args, env).start()
+        def p = TestUtils.executeClientWithEnv(args, env)
         p.waitFor()
 
         then:
@@ -75,7 +75,7 @@ class ClasspathSpec extends Specification {
         def args = ["-e", '"new ArgEcho().echo(\'hello\')"']
 
         when:
-        def p = TestUtils.createProcessBuilder(args).start()
+        def p = TestUtils.executeClient(args)
         p.waitFor()
 
         then:
@@ -89,7 +89,7 @@ class ClasspathSpec extends Specification {
         def args = ["-e", '"new ArgEcho().echo(\'hello\')"']
 
         when:
-        def p = TestUtils.createProcessBuilder(args).start()
+        def p = TestUtils.executeClient(args)
         p.waitFor()
 
         then:

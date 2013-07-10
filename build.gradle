@@ -238,7 +238,8 @@ integrationTestSpecs.each { spec ->
             }
 
             // prop for TestUtils
-            systemProperties 'groovyservClientExecutable': spec.executableExpression
+            systemProperties 'groovyserv.executable.client': spec.executableExpression
+            systemProperties 'groovyserv.executable.server': executables.groovyserverPath
 
             startGroovyServer()
         }

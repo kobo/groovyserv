@@ -22,22 +22,23 @@ import static org.junit.Assert.*
  */
 class TestUtils {
 
-    static executeClientOk(args, closure = null) {
-        def p = executeClient(args, closure)
-        if (p.exitValue() != 0) {
-            fail "ERROR: exitValue:${p.exitValue()}, in:[${p.in.text}], err:[${p.err.text}]"
-        }
-        return p
+    static Process executeClient(args, closure = null) {
+        executeClientWithEnv(args, null, closure)
     }
 
-    static executeClient(args, closure = null) {
-        def p = createProcessBuilder(args).start()
+    static Process executeClientOk(args, closure = null) {
+        executeClientOkWithEnv(args, null, closure)
+    }
+
+    static Process executeClientWithEnv(args, Map envMap, closure = null) {
+        def client = clientExecutablePath.split(" ") as List
+        def p = createProcessBuilder([* client, * args], envMap).start()
         if (closure) closure.call(p)
         p.waitFor()
         return p
     }
 
-    static executeClientOkWithEnv(args, Map envMap, closure = null) {
+    static Process executeClientOkWithEnv(args, Map envMap, closure = null) {
         def p = executeClientWithEnv(args, envMap, closure)
         if (p.exitValue() != 0) {
             fail "ERROR: exitValue:${p.exitValue()}, in:[${p.in.text}], err:[${p.err.text}]"
@@ -45,33 +46,55 @@ class TestUtils {
         return p
     }
 
-    static executeClientWithEnv(args, Map envMap, closure = null) {
-        def p = createProcessBuilder(args, envMap).start()
-        if (closure) closure.call(p)
+    static startServer(verbose = false) {
+        def p = createProcessBuilder(["sh", serverExecutablePath, "-r", "-v"]).start()
         p.waitFor()
-        return p
+        if (verbose) {
+            def inText = p.in.text
+            if (inText) System.out.println inText
+            def errText = p.err.text
+            if (errText) System.err.println errText
+        }
     }
 
-    static createProcessBuilder(args, Map envMap = [:]) {
-        def clientExecs = System.properties.'groovyservClientExecutable'.split(" ") as List
+    static shutdownServer(verbose = false) {
+        def p = createProcessBuilder(["sh", serverExecutablePath, "-k"]).start()
+        p.waitFor()
+        if (verbose) {
+            def inText = p.in.text
+            if (inText) System.out.println inText
+            def errText = p.err.text
+            if (errText) System.err.println errText
+        }
+    }
+
+    private static createProcessBuilder(List commandLine, Map envMap = [:]) {
         ProcessBuilder processBuilder = new ProcessBuilder()
-        def command = processBuilder.command()
+        def actualCommand = processBuilder.command()
 
         // This doesn't work on cygwin/windows. command line is somehow split by white space.
 //        def env = processBuilder.environment()
 //        envMap.each { key, value ->
 //            env.put(key.toString(), value.toString()) // without this, ArrayStoreException may occur
 //        }
-        command << "env"
+        actualCommand << "env"
         envMap.each { key, value ->
-            command << "${key}=${value}".toString() // without this, ArrayStoreException may occur
+            actualCommand << "${key}=${value}".toString() // without this, ArrayStoreException may occur
         }
 
-        [* clientExecs, * args].each { arg ->
-            command << arg.toString() // without this, ArrayStoreException may occur
+        commandLine.each { arg ->
+            actualCommand << arg.toString() // without this, ArrayStoreException may occur
         }
 
         return processBuilder
+    }
+
+    private static getClientExecutablePath() {
+        System.getProperty("groovyserv.executable.client")
+    }
+
+    private static getServerExecutablePath() {
+        System.getProperty("groovyserv.executable.server")
     }
 
     /**
