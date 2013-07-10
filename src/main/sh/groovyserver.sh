@@ -147,6 +147,11 @@ expand_path() {
     fi
 }
 
+is_server_available() {
+    local port=$1
+    netstat -an | grep "[.:]${port} .* LISTEN" >/dev/null 2>&1
+}
+
 #-------------------------------------------
 # Find groovy command
 #-------------------------------------------
@@ -189,16 +194,6 @@ if [ ! $? -eq 0 ]; then
 fi
 info_log "GroovyServ home directory: $GROOVYSERV_HOME"
 
-#-------------------------------------------
-# Find groovyclient command
-#-------------------------------------------
-
-GROOVYCLIENT_BIN="$GROOVYSERV_HOME/bin/groovyclient"
-if [ ! -x "$GROOVYCLIENT_BIN" ]; then
-    error_log "ERROR: Not found a groovyclient command in GROOVYSERV_HOME: $GROOVYCLIENT_BIN"
-    exit 1
-fi
-
 # ------------------------------------------
 # GroovyServ's work directory
 # ------------------------------------------
@@ -213,12 +208,11 @@ info_log "GroovyServ work directory: $GROOVYSERV_WORK_DIR"
 # Port and PID and AuthToken
 #-------------------------------------------
 
-PORT=${GROOVYSERVER_PORT:-1961}
-GROOVYSERV_OPTS="$GROOVYSERV_OPTS -Dgroovyserver.port=$PORT"
-GROOVYSERV_PID_FILE="$GROOVYSERV_WORK_DIR/pid-$PORT"
-GROOVYSERV_AUTHTOKEN_FILE="$GROOVYSERV_WORK_DIR/authtoken-$PORT"
-IS_SERVER_AVAILABLE="env GROOVYSERVER_PORT=$PORT $GROOVYCLIENT_BIN -Cwithout-invoking-server -e \"\""
-EXPIRED_PID_FILE="( cd \"$GROOVYSERV_WORK_DIR\" && find . -name pid-$PORT -mmin +1 )"
+GROOVYSERVER_PORT=${GROOVYSERVER_PORT:-1961}
+GROOVYSERV_OPTS="$GROOVYSERV_OPTS -Dgroovyserver.port=$GROOVYSERVER_PORT"
+GROOVYSERV_PID_FILE="$GROOVYSERV_WORK_DIR/pid-$GROOVYSERVER_PORT"
+GROOVYSERV_AUTHTOKEN_FILE="$GROOVYSERV_WORK_DIR/authtoken-$GROOVYSERVER_PORT"
+EXPIRED_PID_FILE="( cd \"$GROOVYSERV_WORK_DIR\" && find . -name pid-$GROOVYSERVER_PORT -mmin +1 )"
 
 #-------------------------------------------
 # Setup classpath
@@ -249,9 +243,9 @@ if [ "$DO_KILL" != "" ]; then
         ps -p $EXISTED_PID >/dev/null 2>&1
         if [ $? -eq 0 ]; then
             kill -9 $EXISTED_PID
-            info_log "Killed groovyserver of $EXISTED_PID($PORT)"
+            info_log "Killed groovyserver of $EXISTED_PID($GROOVYSERVER_PORT)"
         else
-            info_log "Process of groovyserver of $EXISTED_PID($PORT) not found"
+            info_log "Process of groovyserver of $EXISTED_PID($GROOVYSERVER_PORT) not found"
         fi
         rm -f "$GROOVYSERV_PID_FILE"
         rm -f "$GROOVYSERV_AUTHTOKEN_FILE"
@@ -272,9 +266,8 @@ if [ -f "$GROOVYSERV_PID_FILE" ]; then
     EXISTED_PID=`cat "$GROOVYSERV_PID_FILE"`
 
     # if connecting to server is succeed, return with warning message
-    $IS_SERVER_AVAILABLE > /dev/null 2>&1
-    if [ $? -eq 0 ]; then
-        error_log "WARN: groovyserver is already running as $EXISTED_PID($PORT)"
+    if is_server_available $GROOVYSERVER_PORT; then
+        error_log "WARN: groovyserver is already running as $EXISTED_PID($GROOVYSERVER_PORT)"
         exit 1
     fi
 
@@ -334,18 +327,17 @@ while true; do
     fi
 
     # if connecting to server is succeed, return successfully
-    $IS_SERVER_AVAILABLE > /dev/null 2>&1
-    if [ $? -eq 0 ]; then
+    if is_server_available $GROOVYSERVER_PORT; then
         break
     fi
 
     # if PID file was expired while to connect to server is failing, error
     if [ "`sh -c \"$EXPIRED_PID_FILE\"`" != "" ]; then
-        error_log "ERROR: Timeout. Confirm if groovyserver $PID($PORT) is running."
+        error_log "ERROR: Timeout. Confirm if groovyserver $PID($GROOVYSERVER_PORT) is running."
         exit 1
     fi
 done
 
 info_log
-info_log "groovyserver $PID($PORT) is successfully started"
+info_log "groovyserver $PID($GROOVYSERVER_PORT) is successfully started"
 
