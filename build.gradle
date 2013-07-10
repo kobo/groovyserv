@@ -135,7 +135,15 @@ jar {
 
     // appending the commit id as suffix to the jar file's name of SNAPSHOT
     if (project.version ==~ /.*SNAPSHOT/) {
-        def commitId = 'git log --no-color --oneline -1 HEAD'.execute().text.split()[0]
+        def commitId = "xxxxxx"
+        try  {
+            commitId = executeCommand('git', ['log', '--no-color', '--oneline', '-1', 'HEAD']).split()[0]
+        } catch (e) {
+            assert e.cause instanceof IOException
+            assert e.cause.message.startsWith("Cannot run program")
+            println "WARN: Not found command: git"
+            println "WARN: use snapshot classifier: ${commitId}"
+        }
         classifier = commitId
     }
 }
@@ -308,6 +316,7 @@ def executeCommand(command, arguments) {
             standardOutput = os
         }
         println os.toString()
+        return os.toString()
     }
 }
 
