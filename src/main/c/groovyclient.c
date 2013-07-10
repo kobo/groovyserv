@@ -239,10 +239,6 @@ static int connect_server(char* argv0, char* host, int port, char* authtoken)
     int failCount = 0;
 
     while ((fd = open_socket(host, port)) == -1) {
-        if (client_option.without_invocation_server == TRUE) {
-            fprintf(stderr, "ERROR: groovyserver isn't running\n");
-            exit(9);
-        }
         if (failCount >= 3) {
             fprintf(stderr, "ERROR: failed to start up groovyserver\n");
             exit(1);

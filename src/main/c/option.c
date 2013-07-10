@@ -25,7 +25,6 @@
 #include "config.h"
 
 struct option_info_t option_info[] = {
-    { "without-invoking-server", OPT_WITHOUT_INVOCATION_SERVER, FALSE },
     { "s", OPT_HOST, TRUE },
     { "host", OPT_HOST, TRUE },
     { "p", OPT_PORT, TRUE },
@@ -49,7 +48,6 @@ struct option_info_t option_info[] = {
 };
 
 struct option_t client_option = {
-    FALSE,  // without_invocation_server
     NULL,   // host
     PORT_NOT_SPECIFIED, // port
     NULL,   // authtoken
@@ -173,9 +171,6 @@ void scan_options(struct option_t* option, int argc, char **argv)
             }
 
             switch (opt->type) {
-            case OPT_WITHOUT_INVOCATION_SERVER:
-                option->without_invocation_server = TRUE;
-                break;
             case OPT_HOST:
                 assert(opt->take_value == TRUE);
                 option->host = value;

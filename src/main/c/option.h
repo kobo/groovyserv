@@ -24,7 +24,6 @@
 #define PORT_NOT_SPECIFIED -1
 
 struct option_t {
-    BOOL without_invocation_server;
     char* host;
     int port;
     char* authtoken;
@@ -39,7 +38,6 @@ struct option_t {
 };
 
 enum OPTION_TYPE {
-    OPT_WITHOUT_INVOCATION_SERVER,
     OPT_HOST,
     OPT_PORT,
     OPT_AUTHTOKEN,
