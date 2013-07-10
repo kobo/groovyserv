@@ -55,6 +55,79 @@ tasks.withType(GroovyCompile) each { it.groovyOptions.encoding = defaultEncoding
 //===========================================
 
 //----------------------------------
+// copySpec
+
+def nativeBinSpec = copySpec {
+    from("$projectDir") {
+        include "*.txt"
+        include "*.md"
+    }
+    into('lib') {
+        from configurations.archives
+        from "$buildDir/libs"
+    }
+    into('bin') {
+        fileMode = 0755
+        from "$buildDir/natives/groovyclient"     // ignored if not exists
+        from "$buildDir/natives/groovyclient.exe" // ignored if not exists
+    }
+    into('bin') { // scripts with filter
+        fileMode = 0755
+        from "$projectDir/src/main/ruby"
+        from "$projectDir/src/main/sh", {
+            rename 'groovyserver.sh', 'groovyserver'
+        }
+        from "$projectDir/src/main/bat"
+        filter(ReplaceTokens, tokens: ["GROOVYSERV_VERSION": project.version])
+    }
+}
+
+def platformIndependentBinSpec = copySpec {
+    from("$projectDir") {
+        include "*.txt"
+        include "*.md"
+    }
+    into('lib') {
+        from configurations.archives
+        from "$buildDir/libs"
+    }
+    into('bin') { // scripts with filter
+        fileMode = 0755
+        from "$projectDir/src/main/ruby"
+        from "$projectDir/src/main/sh", {
+            rename 'groovyclient.sh', 'groovyclient'
+            rename 'groovyserver.sh', 'groovyserver'
+        }
+        from "$projectDir/src/main/bat"
+        filter(ReplaceTokens, tokens: ["GROOVYSERV_VERSION": project.version])
+    }
+}
+
+def srcSpec = copySpec {
+    from("$projectDir") {
+        include "*.txt"
+        include "*.md"
+        include "settings.gradle"
+        include "build.gradle"
+        include "gradle.properties"
+        include "Makefile"
+    }
+    into("src") {
+        from "$projectDir/src"
+    }
+    into("contrib") {
+        from "$projectDir/contrib"
+    }
+    from("$projectDir") {
+        fileMode = 0755
+        include "gradlew*"
+    }
+    into("gradle") {
+        from "$projectDir/gradle"
+    }
+}
+
+//----------------------------------
 // Build
 
 jar {
@@ -93,42 +166,19 @@ task compileC << {
     executeCommand('make', options)
 }
 
-def executablesSpec = copySpec {
-    from("$projectDir") {
-        include "*.txt"
-        include "*.md"
-    }
-    into('lib') {
-        from configurations.archives
-        from "$buildDir/libs"
-    }
-    into('bin') {
-        fileMode = 0755
-        from "$buildDir/natives/groovyclient"     // ignored if not exists
-        from "$buildDir/natives/groovyclient.exe" // ignored if not exists
-    }
-    into('bin') { // scripts with filter
-        fileMode = 0755
-        from "$projectDir/src/main/ruby"
-        from "$projectDir/src/main/sh", {
-            rename 'groovyserver.sh', 'groovyserver'
-        }
-        from "$projectDir/src/main/bat"
-        filter(ReplaceTokens, tokens: ["GROOVYSERV_VERSION": project.version])
-    }
-}
-task executables(type: Copy, dependsOn: ['assemble']) {
-    // construct file tree
-    destinationDir = file("$buildDir/executables")
-    with executablesSpec
-
-    // to use later
-    def binDir = "${destinationDir}/bin"
-    ext.groovyclientBasePath = convertMixedPath(file("${binDir}/groovyclient"))
-    ext.groovyserverPath = convertMixedPath(file("${binDir}/groovyserver"))
-}
-
 task assemble(overwrite: true, dependsOn: ['jar', 'compileC'])
+
+task executables(dependsOn: ['executablesNativeBin', 'executablesPlatformIndependentBin'])
+
+task executablesNativeBin(type: Copy, dependsOn: ['assemble']) {
+    destinationDir = file("$buildDir/executables/native")
+    with nativeBinSpec
+}
+
+task executablesPlatformIndependentBin(type: Copy, dependsOn: ['assemble']) {
+    destinationDir = file("$buildDir/executables/platformIndependent")
+    with platformIndependentBinSpec
+}
 
 //----------------------------------
 // Distribution
@@ -139,64 +189,21 @@ task distBin(type: Zip, dependsOn: ['assemble']) {
     baseName = project.name
     classifier = getOsSuffix() + '-bin'
     into "$baseName-$version"
-    with executablesSpec
+    with nativeBinSpec
 }
 
-def srcSpec = copySpec {
-    from("$projectDir") {
-        include "*.txt"
-        include "*.md"
-        include "settings.gradle"
-        include "build.gradle"
-        include "gradle.properties"
-        include "Makefile"
-    }
-    into("src") {
-        from "$projectDir/src"
-    }
-    into("contrib") {
-        from "$projectDir/contrib"
-    }
-    from("$projectDir") {
-        fileMode = 0755
-        include "gradlew*"
-    }
-    into("gradle") {
-        from "$projectDir/gradle"
-    }
-}
-task distSrc(type: Zip) {
-    baseName = project.name
-    classifier = 'src'
-    into "$baseName-$version"
-    with srcSpec
-}
-
-def platformIndependentBinSpec = copySpec {
-    from("$projectDir") {
-        include "*.txt"
-        include "*.md"
-    }
-    into('lib') {
-        from configurations.archives
-        from "$buildDir/libs"
-    }
-    into('bin') { // scripts with filter
-        fileMode = 0755
-        from "$projectDir/src/main/ruby"
-        from "$projectDir/src/main/sh", {
-            rename 'groovyclient.sh', 'groovyclient'
-            rename 'groovyserver.sh', 'groovyserver'
-        }
-        from "$projectDir/src/main/bat"
-        filter(ReplaceTokens, tokens: ["GROOVYSERV_VERSION": project.version])
-    }
-}
 task distPlatformIndependentBin(type: Zip) {
     baseName = project.name
     classifier = 'platform-independent-bin'
     into "$baseName-$version"
     with platformIndependentBinSpec
+}
+
+task distSrc(type: Zip) {
+    baseName = project.name
+    classifier = 'src'
+    into "$baseName-$version"
+    with srcSpec
 }
 
 //----------------------------------
@@ -213,38 +220,45 @@ task unitTest(type: Test) {
 }
 
 // integrationTest tasks
-def integrationTestSpecs = new IntegrationTestSpecFactory(executables.groovyclientBasePath).createSpecs([
-    [id: 'Java', always: true],
-    [id: 'CUnix'],
-    [id: 'CWin', extension: '.exe'],
+def integrationTestSpecs = [
+    [id: 'Java'],
+    [id: 'CUnix', targetOs: ["macosx", "linux"]],
+    [id: 'CWin', extension: '.exe', targetOs: ["windowsxp", "windows7"]],
     [id: 'Ruby', extension: '.rb', invoker: 'ruby'],
-    [id: 'Shell', extension: '.sh'],
-])
+    [id: 'Shell', asPlatformIndependent: true],
+].collect { new IntegrationTestSpec(it) }
 integrationTestSpecs.each { spec ->
+    // generate dynamically
     task "${spec.taskName}"(type: Test, dependsOn: 'executables') {
-        onlyIf { spec.shouldRun() }
         mustRunAfter "unitTest"
+
+        onlyIf { spec.shouldRun() }
 
         def testId = "integration-${spec.id}"
         testReportDir = file("$buildDir/reports/${testId}")
         testResultsDir = file("$buildDir/test-results/${testId}")
+
+        def type = (spec.asPlatformIndependent) ? "platformIndependent" : "native"
+        def binDir = "${buildDir}/executables/${type}/bin"
+        def clientExecutableExpression = "${spec.invoker ?: ''} ${binDir}/groovyclient${spec.extension}".trim()
+        def serverExecutableExpression = "$binDir/groovyserver"
 
         doFirst {
             // Support for -Dtest.single
             if (System.properties['test.single']) {
                 include "**/${System.properties['test.single']}.*"
             } else {
-                systemProperty 'spock.configuration', file("${projectDir}/spock/${testId}.groovy")
+                systemProperty 'spock.configuration', "${projectDir}/spock/${testId}.groovy"
             }
 
             // prop for TestUtils
-            systemProperties 'groovyserv.executable.client': spec.executableExpression
-            systemProperties 'groovyserv.executable.server': executables.groovyserverPath
+            systemProperties 'groovyserv.executable.client': clientExecutableExpression
+            systemProperties 'groovyserv.executable.server': serverExecutableExpression
 
-            startGroovyServer()
+            startGroovyServer(serverExecutableExpression)
         }
         doLast {
-            shutdownGroovyServer()
+            shutdownGroovyServer(serverExecutableExpression)
         }
     }
 }
@@ -274,20 +288,14 @@ task docs << {
 // Helper
 //===========================================
 
-def startGroovyServer() {
+def startGroovyServer(groovyserverPath) {
     println ">> Starting groovyserver..."
-    executeCommand("sh", ['-c', "${executables.groovyserverPath} -r -v"])
+    executeCommand("sh", ['-c', "${groovyserverPath} -r -v"])
 }
 
-def shutdownGroovyServer() {
+def shutdownGroovyServer(groovyserverPath) {
     println ">> Shutting down groovyserver..."
-    executeCommand("sh", ['-c', "${executables.groovyserverPath} -k"])
-}
-
-def getOsSuffix() {
-    def osName = System.properties['os.name'].replaceAll(' ', '').toLowerCase()
-    def osArch = System.properties['os.arch']
-    return "${osName}-${osArch}"
+    executeCommand("sh", ['-c', "${groovyserverPath} -k"])
 }
 
 def executeCommand(command, arguments) {
@@ -303,46 +311,29 @@ def executeCommand(command, arguments) {
     }
 }
 
-def convertMixedPath(File file) {
-    file.canonicalPath.replaceAll('\\\\', '/')
-}
-
-class IntegrationTestSpecFactory {
-    def clientBasePath
-
-    def IntegrationTestSpecFactory(path) {
-        clientBasePath = path
-    }
-
-    def createSpecs(list) {
-        list.collect { map ->
-            map.clientBasePath = clientBasePath
-            map as IntegrationTestSpec
-        }
-    }
+def getOsSuffix() {
+    def osName = System.properties['os.name'].replaceAll(' ', '').toLowerCase()
+    def osArch = System.properties['os.arch']
+    return "${osName}-${osArch}"
 }
 
 class IntegrationTestSpec {
     def id
     def extension = ''
     def invoker
-    def clientBasePath
-    def always = false
-
-    def getGroovyclientPath() {
-        clientBasePath + extension
-    }
-
-    def getExecutableExpression() {
-        (invoker ? "$invoker " : '') + getGroovyclientPath()
-    }
+    def asPlatformIndependent = false
+    def targetOs = ["*"]
 
     def getTaskName() {
         "integrationTestFor" + id
     }
 
     def shouldRun() {
-        always || new File(getGroovyclientPath()).exists()
+        targetOs.contains("*") || targetOs.contains(osName)
+    }
+
+    private getOsName() {
+        System.properties['os.name'].replaceAll(' ', '').toLowerCase()
     }
 }
 
