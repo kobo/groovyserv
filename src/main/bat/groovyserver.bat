@@ -107,16 +107,6 @@ if not exist "%GROOVYSERV_HOME%\lib\groovyserv-*.jar" (
 call :info_log GroovyServ home directory: "%GROOVYSERV_HOME%"
 
 @rem ----------------------------------------
-@rem Find groovyclient command
-@rem ----------------------------------------
-
-set GROOVYCLIENT_BIN=%GROOVYSERV_HOME%\bin\groovyclient.exe
-if not exist "%GROOVYCLIENT_BIN%" (
-    echo ERROR: Not found a groovyclient command in GROOVYSERV_HOME: "%GROOVYCLIENT_BIN%" >&2
-    goto end
-)
-
-@rem ----------------------------------------
 @rem GroovyServ's work directory
 @rem ----------------------------------------
 
@@ -249,7 +239,7 @@ exit /B
 
 @rem ERRORLEVEL will be modified
 :is_server_available
-    "%GROOVYCLIENT_BIN%" %GROOVYSERV_OPTS% -Cwithout-invoking-server -e "" > NUL 2>&1
+    netstat -an | find ":%GROOVYSERVER_PORT% " | find "LISTENING" > NUL 2>&1
 exit /B %ERRORLEVEL%
 
 @rem GROOVY_BIN will be modified
