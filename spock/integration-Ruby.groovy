@@ -15,10 +15,24 @@
  */
 
 import org.jggug.kobo.groovyserv.DirectAccessSpec
+import org.jggug.kobo.groovyserv.ServerOperationFromClientSpec
 import org.jggug.kobo.groovyserv.test.IntegrationTest
 import org.jggug.kobo.groovyserv.test.OnlyForShellClient
 
 runner {
     include IntegrationTest
-    exclude DirectAccessSpec, OnlyForShellClient
+
+    def excludesList = [DirectAccessSpec, OnlyForShellClient]
+    if (isWindows()) {
+        excludesList << ServerOperationFromClientSpec
+    }
+    exclude(*excludesList)
+}
+
+private static String getOsName() {
+    System.properties['os.name'].replaceAll(' ', '').toLowerCase()
+}
+
+private static boolean isWindows() {
+    getOsName().startsWith("windows")
 }

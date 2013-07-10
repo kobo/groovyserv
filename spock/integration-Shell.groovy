@@ -14,13 +14,28 @@
  * limitations under the License.
  */
 
+
 import org.jggug.kobo.groovyserv.DirectAccessSpec
 import org.jggug.kobo.groovyserv.ExecScriptSpec
+import org.jggug.kobo.groovyserv.ServerOperationFromClientSpec
 import org.jggug.kobo.groovyserv.SystemExitSpec
 import org.jggug.kobo.groovyserv.test.IgnoreForShellClient
 import org.jggug.kobo.groovyserv.test.IntegrationTest
 
 runner {
     include IntegrationTest
-    exclude DirectAccessSpec, ExecScriptSpec, SystemExitSpec, IgnoreForShellClient
+
+    def excludesList = [DirectAccessSpec, ExecScriptSpec, SystemExitSpec, IgnoreForShellClient]
+    if (isWindows()) {
+        excludesList << ServerOperationFromClientSpec
+    }
+    exclude(*excludesList)
+}
+
+private static String getOsName() {
+    System.properties['os.name'].replaceAll(' ', '').toLowerCase()
+}
+
+private static boolean isWindows() {
+    getOsName().startsWith("windows")
 }
