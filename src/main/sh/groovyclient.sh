@@ -142,7 +142,7 @@ expand_path() {
     fi
 }
 
-check_port() {
+is_server_available() {
     local port=$1
     netstat -an | grep "[.:]${port} .* LISTEN" >/dev/null 2>&1
 }
@@ -158,7 +158,7 @@ fi
 debug_log "GroovyServ work directory: $GROOVYSERV_WORK_DIR"
 
 #-------------------------------------------
-# Port and PID and AuthToken
+# Port and AuthToken
 #-------------------------------------------
 
 GROOVYSERVER_HOST=localhost
@@ -252,9 +252,13 @@ start_server() {
     # To try only for localhost
     [ "$GROOVYSERVER_HOST" != "localhost" ] && return
 
-    if ! check_port $GROOVYSERVER_PORT; then
+    if ! is_server_available $GROOVYSERVER_PORT; then
         info_log "Invoking server: '$GROOVYSERVER_CMD' -p $GROOVYSERVER_PORT"
         $GROOVYSERVER_CMD
+        if [ ! $? -eq 0 ]; then
+            echo "ERROR: Sorry, unexpected error occurs"
+            exit 1
+        fi
     fi
 }
 
