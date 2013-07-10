@@ -38,6 +38,7 @@ ERROR_CLIENT_NOT_ALLOWED = 202
 
 class Options
   attr_reader :client, :server
+
   def initialize
     @client = {
       :host => DESTHOST,
@@ -57,8 +58,9 @@ class Options
       :args => [],
     }
   end
+
   def need_to_invoke_server?
-    @client[:groovyserver_opt].any? {|v| ['-k', '-r'].include?(v) }
+    @client[:groovyserver_opt].any? { |v| ['-k', '-r'].include?(v) }
   end
 end
 
@@ -66,7 +68,7 @@ end
 # Global variables
 #-------------------------------------------
 
-$options = nil    # FIXME shouldn't use global variables
+$options = nil # FIXME shouldn't use global variables
 
 #-------------------------------------------
 # Functions
@@ -119,9 +121,9 @@ def session(socket, args)
 end
 
 def send_envvars(socket)
-  ENV.each{|key,value|
-    if $options.client[:env_all] || $options.client[:env_include_mask].any?{|item| key.include?(item) }
-      if !$options.client[:env_exclude_mask].any?{|item| key.include?(item) }
+  ENV.each { |key, value|
+    if $options.client[:env_all] || $options.client[:env_include_mask].any? { |item| key.include?(item) }
+      if !$options.client[:env_exclude_mask].any? { |item| key.include?(item) }
         socket.puts "Env: #{key}=#{value}"
       end
     end
@@ -204,8 +206,8 @@ def handle_stdin(socket)
 end
 
 def send_interrupt(socket)
-    socket.write "Size: -1\n\n"
-    socket.close()
+  socket.write "Size: -1\n\n"
+  socket.close()
 end
 
 def read_headers(socket)
@@ -222,51 +224,51 @@ def parse_option(args)
   options = Options.new
   args.each_with_index do |arg, i|
     case arg
-    when "-Ch", "-Chost"
-      options.client[:host] = args.delete_at(i + 1)
-    when "-Cp", "-Cport"
-      port = args.delete_at(i + 1)
-      unless port =~ /^[0-9]+$/
-        raise "Invalid port number #{port} for #{arg}"
-      end
-      options.client[:port] = port
-    when "-Ca", "-Cauthtoken"
-      options.client[:authtoken] = args.delete_at(i + 1)
-    when "-Ck" , "-Ckill-server"
-      options.client[:groovyserver_opt] << "-k"
-    when "-Cr", "-Crestart-server"
-      options.client[:groovyserver_opt] << "-r"
-    when "-Cq", "-Cquiet"
-      options.client[:groovyserver_opt] << "-q"
-      options.client[:quiet] = true
-    when "-Cenv-all"
-      options.client[:env_all] = true
-    when "-Cenv"
-      val = args.delete_at(i + 1)
-      unless val
-        raise "Invalid mask string #{val} for #{arg}"
-      end
-      options.client[:env_include_mask] << val
-    when "-Cenv-exclude"
-      val = args.delete_at(i + 1)
-      unless val
-        raise "Invalid mask string #{val} for #{arg}"
-      end
-      options.client[:env_exclude_mask] << val
-    when "-Ch", "-Chelp"
-      options.client[:help] = true
-    when "--help", "-help", "-h"
-      options.server[:help] = true
-      options.server[:args] << arg
-    when "-Cv", "-Cversion"
-      options.client[:version] = true
-    when "--version", /^-v/
-      options.server[:version] = true
-      options.server[:args] << arg
-    when /-C.*/
-      raise "Unknown option #{arg}"
-    else
-      options.server[:args] << arg
+      when "-Ch", "-Chost"
+        options.client[:host] = args.delete_at(i + 1)
+      when "-Cp", "-Cport"
+        port = args.delete_at(i + 1)
+        unless port =~ /^[0-9]+$/
+          raise "Invalid port number #{port} for #{arg}"
+        end
+        options.client[:port] = port
+      when "-Ca", "-Cauthtoken"
+        options.client[:authtoken] = args.delete_at(i + 1)
+      when "-Ck", "-Ckill-server"
+        options.client[:groovyserver_opt] << "-k"
+      when "-Cr", "-Crestart-server"
+        options.client[:groovyserver_opt] << "-r"
+      when "-Cq", "-Cquiet"
+        options.client[:groovyserver_opt] << "-q"
+        options.client[:quiet] = true
+      when "-Cenv-all"
+        options.client[:env_all] = true
+      when "-Cenv"
+        val = args.delete_at(i + 1)
+        unless val
+          raise "Invalid mask string #{val} for #{arg}"
+        end
+        options.client[:env_include_mask] << val
+      when "-Cenv-exclude"
+        val = args.delete_at(i + 1)
+        unless val
+          raise "Invalid mask string #{val} for #{arg}"
+        end
+        options.client[:env_exclude_mask] << val
+      when "-Ch", "-Chelp"
+        options.client[:help] = true
+      when "--help", "-help", "-h"
+        options.server[:help] = true
+        options.server[:args] << arg
+      when "-Cv", "-Cversion"
+        options.client[:version] = true
+      when "--version", /^-v/
+        options.server[:version] = true
+        options.server[:args] << arg
+      when /-C.*/
+        raise "Unknown option #{arg}"
+      else
+        options.server[:args] << arg
     end
   end
   if options.server[:args].empty?
@@ -299,7 +301,7 @@ end
 
 # Only show version (highest priority)
 if $options.client[:version]
-    puts VERSION_MESSAGE
+  puts VERSION_MESSAGE
   exit 0
 end
 
