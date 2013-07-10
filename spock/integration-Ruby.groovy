@@ -16,9 +16,9 @@
 
 import org.jggug.kobo.groovyserv.DirectAccessSpec
 import org.jggug.kobo.groovyserv.test.IntegrationTest
-import org.jggug.kobo.groovyserv.test.OnlyForShell
+import org.jggug.kobo.groovyserv.test.OnlyForShellClient
 
 runner {
     include IntegrationTest
-    exclude DirectAccessSpec, OnlyForShell
+    exclude DirectAccessSpec, OnlyForShellClient
 }
