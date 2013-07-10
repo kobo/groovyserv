@@ -17,6 +17,7 @@ package org.jggug.kobo.groovyserv
 
 import org.jggug.kobo.groovyserv.test.IntegrationTest
 import org.jggug.kobo.groovyserv.test.TestUtils
+import spock.lang.IgnoreIf
 import spock.lang.Specification
 
 /**
@@ -24,6 +25,7 @@ import spock.lang.Specification
  * Before running this, you must start groovyserver.
  */
 @IntegrationTest
+@IgnoreIf({ properties["os.name"].startsWith("Windows") })
 class ServerOperationFromClientSpec extends Specification {
 
     def setup() {
