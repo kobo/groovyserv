@@ -225,6 +225,9 @@ task unitTest(type: Test) {
     doFirst {
         systemProperty 'spock.configuration', file("${projectDir}/spock/unit.groovy")
     }
+    afterTest { desc, result -> 
+        println """Executing test: (${desc.className}) "${desc.name}" => ${result.resultType}"""
+    }
 }
 
 // integrationTest tasks
@@ -267,6 +270,9 @@ integrationTestSpecs.each { spec ->
         }
         doLast {
             shutdownGroovyServer(serverExecutableExpression)
+        }
+        afterTest { desc, result -> 
+            println """Executing test: (${desc.className}) "${desc.name}" => ${result.resultType}"""
         }
     }
 }
