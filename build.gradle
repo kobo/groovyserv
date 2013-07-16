@@ -148,10 +148,9 @@ jar {
         try  {
             commitId = executeCommand('git', ['log', '--no-color', '--oneline', '-1', 'HEAD']).split()[0]
         } catch (e) {
-            assert e.cause instanceof IOException
-            assert e.cause.message.startsWith("Cannot run program")
-            AnsiColor.printlnAsYellow "WARN: Not found command: git"
-            AnsiColor.printlnAsYellow "WARN: use snapshot classifier: ${commitId}"
+            AnsiColor.printlnAsError "ERROR: Cannot run git command: ${e.message}"
+            e.printStackTrace()
+            AnsiColor.printlnAsWarn "WARN: use snapshot classifier: ${commitId}"
         }
         classifier = commitId
     }
@@ -175,7 +174,7 @@ task copyGroovyIntoMain(type: Copy) {
 }
 
 task compileC << {
-    AnsiColor.printlnAsCyan ">> Compiling C sources..."
+    AnsiColor.printlnAsInfo ">> Compiling C sources..."
     def options = ['-e', "GROOVYSERV_VERSION=${project.version}"]
     if (Boolean.valueOf(System.properties['debug'])) {
         options << 'DEBUG=true'
@@ -312,18 +311,18 @@ task docs << {
 //===========================================
 
 def startGroovyServer(groovyserverPath) {
-    AnsiColor.printlnAsCyan ">> Starting groovyserver..."
+    AnsiColor.printlnAsInfo ">> Starting groovyserver..."
     executeCommand("sh", ['-c', "${groovyserverPath} -r -v"])
 }
 
 def shutdownGroovyServer(groovyserverPath) {
-    AnsiColor.printlnAsCyan ">> Shutting down groovyserver..."
+    AnsiColor.printlnAsInfo ">> Shutting down groovyserver..."
     executeCommand("sh", ['-c', "${groovyserverPath} -k"])
 }
 
 def executeCommand(command, arguments) {
-    AnsiColor.printlnAsCyan ">> Executing command..."
-    AnsiColor.printlnAsCyan "\$ $command ${arguments.join(' ')}"
+    AnsiColor.printlnAsInfo ">> Executing command..."
+    AnsiColor.printlnAsInfo "\$ $command ${arguments.join(' ')}"
     new ByteArrayOutputStream().withStream { os ->
         def result = exec {
             executable = command
@@ -373,12 +372,16 @@ class AnsiColor {
         AnsiConsole.systemInstall()
     }
 
-    static printlnAsCyan(text) {
+    static printlnAsInfo(text) {
         println(ansi().fg(CYAN).a(text).reset())
     }
 
-    static printlnAsYellow(text) {
+    static printlnAsWarn(text) {
         println(ansi().fg(YELLOW).a(text).reset())
+    }
+
+    static printlnAsError(text) {
+        println(ansi().fg(RED).a(text).reset())
     }
 
     static printlnAsTestResult(text) {
