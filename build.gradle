@@ -143,23 +143,6 @@ jar {
     baseName = project.name
     inputs.dir file("$projectDir/src/main")
     outputs.dir file("$buildDir/libs")
-
-    doFirst {
-        // appending the commit id as suffix to the jar file's name of SNAPSHOT
-        if (project.version ==~ /.*SNAPSHOT/) {
-            def commitId = "xxxxxx"
-            try  {
-                commitId = executeCommand('git', ['log', '--no-color', '--oneline', '-1', 'HEAD']).split()[0]
-            } catch (e) {
-                AnsiColor.printlnAsError "ERROR: Cannot run git command: ${e.message}"
-                e.printStackTrace()
-                AnsiColor.printlnAsWarn "WARN: use snapshot classifier: ${commitId}"
-            }
-            // FIXME it never results in skipping as UP-TO-DATE if classifier is assigned in doFirst,
-            // even though there is no different in both inputs and outputs.
-            classifier = commitId
-        }
-    }
 }
 
 compileGroovy {
