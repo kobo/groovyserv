@@ -141,8 +141,8 @@ jar {
         } catch (e) {
             assert e.cause instanceof IOException
             assert e.cause.message.startsWith("Cannot run program")
-            println "WARN: Not found command: git"
-            println "WARN: use snapshot classifier: ${commitId}"
+            AnsiColor.printlnAsYellow "WARN: Not found command: git"
+            AnsiColor.printlnAsYellow "WARN: use snapshot classifier: ${commitId}"
         }
         classifier = commitId
     }
@@ -166,7 +166,7 @@ task copyGroovyIntoMain(type: Copy) {
 }
 
 task compileC << {
-    println ">> Compiling C sources..."
+    AnsiColor.printlnAsCyan ">> Compiling C sources..."
     def options = ['-e', "GROOVYSERV_VERSION=${project.version}"]
     if (Boolean.valueOf(System.properties['debug'])) {
         options << 'DEBUG=true'
@@ -226,7 +226,7 @@ task unitTest(type: Test) {
         systemProperty 'spock.configuration', file("${projectDir}/spock/unit.groovy")
     }
     afterTest { desc, result -> 
-        println """Executing test: (${desc.className}) "${desc.name}" => ${result.resultType}"""
+        AnsiColor.printlnAsTestResult """Executing test: (${desc.className}) "${desc.name}" => ${result.resultType}"""
     }
 }
 
@@ -272,7 +272,7 @@ integrationTestSpecs.each { spec ->
             shutdownGroovyServer(serverExecutableExpression)
         }
         afterTest { desc, result -> 
-            println """Executing test: (${desc.className}) "${desc.name}" => ${result.resultType}"""
+            AnsiColor.printlnAsTestResult """Executing test: (${desc.className}) "${desc.name}" => ${result.resultType}"""
         }
     }
 }
@@ -303,18 +303,18 @@ task docs << {
 //===========================================
 
 def startGroovyServer(groovyserverPath) {
-    println ">> Starting groovyserver..."
+    AnsiColor.printlnAsCyan ">> Starting groovyserver..."
     executeCommand("sh", ['-c', "${groovyserverPath} -r -v"])
 }
 
 def shutdownGroovyServer(groovyserverPath) {
-    println ">> Shutting down groovyserver..."
+    AnsiColor.printlnAsCyan ">> Shutting down groovyserver..."
     executeCommand("sh", ['-c', "${groovyserverPath} -k"])
 }
 
 def executeCommand(command, arguments) {
-    println ">> Executing command..."
-    println "\$ $command ${arguments.join(' ')}"
+    AnsiColor.printlnAsCyan ">> Executing command..."
+    AnsiColor.printlnAsCyan "\$ $command ${arguments.join(' ')}"
     new ByteArrayOutputStream().withStream { os ->
         def result = exec {
             executable = command
@@ -353,6 +353,31 @@ class IntegrationTestSpec {
 
     private getOsName() {
         System.properties['os.name'].replaceAll(' ', '').toLowerCase()
+    }
+}
+
+class AnsiColor {
+    static final String RESET = "\u001B[0m"
+    static final String BLACK = "\u001B[30m"
+    static final String RED = "\u001B[31m"
+    static final String GREEN = "\u001B[32m"
+    static final String YELLOW = "\u001B[33m"
+    static final String BLUE = "\u001B[34m"
+    static final String PURPLE = "\u001B[35m"
+    static final String CYAN = "\u001B[36m"
+    static final String WHITE = "\u001B[37m"
+
+    static printlnAsCyan(text) {
+        println CYAN + text + RESET
+    }
+
+    static printlnAsYellow(text) {
+        println YELLOW + text + RESET
+    }
+
+    static printlnAsTestResult(text) {
+        println text.replaceAll(/(SUCCESS)/, "${GREEN}\$1${RESET}").
+            replaceAll(/(ERROR|FAILURE)/, "${RED}\$1${RESET}")
     }
 }
 
