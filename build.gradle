@@ -200,11 +200,17 @@ task executables(dependsOn: ['executablesNativeBin', 'executablesPlatformIndepen
 task executablesNativeBin(type: Copy, dependsOn: ['assemble']) {
     destinationDir = file("$buildDir/executables/native")
     with nativeBinSpec
+
+    inputs.dir file("$projectDir/src/main")
+    outputs.dir destinationDir
 }
 
 task executablesPlatformIndependentBin(type: Copy, dependsOn: ['assemble']) {
     destinationDir = file("$buildDir/executables/platformIndependent")
     with platformIndependentBinSpec
+
+    inputs.dir file("$projectDir/src/main")
+    outputs.dir destinationDir
 }
 
 //----------------------------------
