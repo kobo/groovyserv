@@ -31,12 +31,15 @@ class EncodingSpec extends Specification {
 
     def "executes a file written by UTF-8"() {
         expect:
-        TestUtils.executeClientOk(["-c", "UTF-8", "src/test/resources/forEncodingTest_UTF8.groovy"]).text == "あいうえお" + SEP
+        TestUtils.executeClientOk(["-c", "UTF-8", canonicalize("src/test/resources/forEncodingTest_UTF8.groovy")]).text == "あいうえお" + SEP
     }
 
     def "executes a file written by Shift_JIS"() {
         expect:
-        TestUtils.executeClientOk(["-c", "Shift_JIS", "src/test/resources/forEncodingTest_SJIS.groovy"]).text == "あいうえお" + SEP
+        TestUtils.executeClientOk(["-c", "Shift_JIS", canonicalize("src/test/resources/forEncodingTest_SJIS.groovy")]).text == "あいうえお" + SEP
     }
 
+    private static canonicalize(path) {
+        new File(path).canonicalPath
+    }
 }
