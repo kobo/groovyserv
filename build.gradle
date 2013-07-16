@@ -396,7 +396,7 @@ class AnsiColor {
     }
 
     static printlnAsTestResult(text) {
-        println ansi().render(text.replaceAll(/(SUCCESS)/, "@|green \$1|@").replaceAll(/(ERROR|FAILURE)/, "@|red \$1|@"))
+        println ansi().render(text.replaceAll(/(SUCCESS)/, "@|green \$1|@").replaceAll(/(ERROR|FAILURE|FAILED)/, "@|red \$1|@"))
     }
 }
 
