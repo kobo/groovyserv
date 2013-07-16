@@ -141,18 +141,24 @@ def srcSpec = copySpec {
 
 jar {
     baseName = project.name
+    inputs.dir file("$projectDir/src/main")
+    outputs.dir file("$buildDir/libs")
 
-    // appending the commit id as suffix to the jar file's name of SNAPSHOT
-    if (project.version ==~ /.*SNAPSHOT/) {
-        def commitId = "xxxxxx"
-        try  {
-            commitId = executeCommand('git', ['log', '--no-color', '--oneline', '-1', 'HEAD']).split()[0]
-        } catch (e) {
-            AnsiColor.printlnAsError "ERROR: Cannot run git command: ${e.message}"
-            e.printStackTrace()
-            AnsiColor.printlnAsWarn "WARN: use snapshot classifier: ${commitId}"
+    doFirst {
+        // appending the commit id as suffix to the jar file's name of SNAPSHOT
+        if (project.version ==~ /.*SNAPSHOT/) {
+            def commitId = "xxxxxx"
+            try  {
+                commitId = executeCommand('git', ['log', '--no-color', '--oneline', '-1', 'HEAD']).split()[0]
+            } catch (e) {
+                AnsiColor.printlnAsError "ERROR: Cannot run git command: ${e.message}"
+                e.printStackTrace()
+                AnsiColor.printlnAsWarn "WARN: use snapshot classifier: ${commitId}"
+            }
+            // FIXME it never results in skipping as UP-TO-DATE if classifier is assigned in doFirst,
+            // even though there is no different in both inputs and outputs.
+            classifier = commitId
         }
-        classifier = commitId
     }
 }
 
@@ -173,13 +179,18 @@ task copyGroovyIntoMain(type: Copy) {
     filter(ReplaceTokens, tokens: ["GROOVYSERV_VERSION": project.version])
 }
 
-task compileC << {
-    AnsiColor.printlnAsInfo ">> Compiling C sources..."
-    def options = ['-e', "GROOVYSERV_VERSION=${project.version}"]
-    if (Boolean.valueOf(System.properties['debug'])) {
-        options << 'DEBUG=true'
+task compileC {
+    inputs.dir file("$projectDir/src/main/c")
+    outputs.dir file("$buildDir/natives")
+
+    doLast {
+        AnsiColor.printlnAsInfo ">> Compiling C sources..."
+        def options = ['-e', "GROOVYSERV_VERSION=${project.version}"]
+        if (Boolean.valueOf(System.properties['debug'])) {
+            options << 'DEBUG=true'
+        }
+        executeCommand('make', options)
     }
-    executeCommand('make', options)
 }
 
 task assemble(overwrite: true, dependsOn: ['jar', 'compileC'])
