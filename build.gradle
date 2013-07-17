@@ -377,27 +377,29 @@ class IntegrationTestSpec {
 }
 
 import org.fusesource.jansi.AnsiConsole
-import static org.fusesource.jansi.Ansi.*
-import static org.fusesource.jansi.Ansi.Color.*
+import org.fusesource.jansi.Ansi
 class AnsiColor {
     static init() {
         AnsiConsole.systemInstall()
+        if (Boolean.valueOf(System.properties['no.color'] ?: false)) {
+            Ansi.enabled = false
+        }
     }
 
     static printlnAsInfo(text) {
-        println(ansi().fg(CYAN).a(text).reset())
+        println Ansi.ansi().fg(Ansi.Color.CYAN).a(text).reset()
     }
 
     static printlnAsWarn(text) {
-        println(ansi().fg(YELLOW).a(text).reset())
+        println Ansi.ansi().fg(Ansi.Color.YELLOW).a(text).reset()
     }
 
     static printlnAsError(text) {
-        println(ansi().fg(RED).a(text).reset())
+        println Ansi.ansi().fg(Ansi.Color.RED).a(text).reset()
     }
 
     static printlnAsTestResult(text, noLF = false) {
-        def message = ansi().render(text.replaceAll(/(SUCCESS)/, "@|green \$1|@").replaceAll(/(ERROR|FAILURE|FAILED)/, "@|red \$1|@").replaceAll(/org.jggug.kobo.groovyserv/, 'o.j.k.g'))
+        def message = Ansi.ansi().render(text.replaceAll(/(SUCCESS)/, "@|green \$1|@").replaceAll(/(ERROR|FAILURE|FAILED)/, "@|red \$1|@").replaceAll(/org.jggug.kobo.groovyserv/, 'o.j.k.g'))
         if (noLF) {
             print message
             System.out.flush()
