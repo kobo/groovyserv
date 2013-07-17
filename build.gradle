@@ -234,7 +234,7 @@ task unitTest(type: Test) {
         systemProperty 'spock.configuration', file("${projectDir}/spock/unit.groovy")
     }
     beforeTest { desc ->
-        AnsiColor.printlnAsTestResult """Test: (${desc.className}) "${desc.name}" """, true
+        AnsiColor.printlnAsTestResult """ - (${desc.className}) "${desc.name}" """, true
     }
     afterTest { desc, result -> 
         AnsiColor.printlnAsTestResult "=> ${result.resultType}"
@@ -285,10 +285,10 @@ integrationTestSpecs.each { spec ->
             shutdownGroovyServer(serverExecutableExpression)
         }
         beforeTest { desc ->
-            AnsiColor.printlnAsTestResult """Test: (${desc.className}) "${desc.name}" """, true
+            AnsiColor.printlnAsTestResult """ - (${desc.className}) "${desc.name}" => """, true
         }
         afterTest { desc, result -> 
-            AnsiColor.printlnAsTestResult "=> ${result.resultType}"
+            AnsiColor.printlnAsTestResult "${result.resultType}"
         }
     }
 }
