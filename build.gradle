@@ -87,6 +87,7 @@ def nativeBinSpec = copySpec {
         from "$projectDir/src/main/ruby"
         from "$projectDir/src/main/sh", {
             rename 'groovyserver.sh', 'groovyserver'
+            exclude 'groovyserv-install-nativeclient.sh'
         }
         from "$projectDir/src/main/bat"
         filter(ReplaceTokens, tokens: ["GROOVYSERV_VERSION": project.version])
@@ -109,8 +110,15 @@ def platformIndependentBinSpec = copySpec {
             rename 'groovyclient.sh', 'groovyclient'
             rename 'groovyserver.sh', 'groovyserver'
         }
+        from "$projectDir/src/main/sh/groovyclient.sh" // for using after 'groovyclient' is replaced by native client
         from "$projectDir/src/main/bat"
         filter(ReplaceTokens, tokens: ["GROOVYSERV_VERSION": project.version])
+    }
+    into('native') {
+        from "$projectDir/Makefile"
+        into('src/main/c') {
+            from "$projectDir/src/main/c"
+        }
     }
 }
 
