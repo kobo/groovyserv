@@ -63,6 +63,8 @@ tasks.withType(GroovyCompile) each { it.groovyOptions.encoding = defaultEncoding
 // Tasks
 //===========================================
 
+AnsiColor.init()
+
 //----------------------------------
 // copySpec
 
@@ -368,7 +370,7 @@ import org.fusesource.jansi.AnsiConsole
 import static org.fusesource.jansi.Ansi.*
 import static org.fusesource.jansi.Ansi.Color.*
 class AnsiColor {
-    static {
+    static init() {
         AnsiConsole.systemInstall()
     }
 
