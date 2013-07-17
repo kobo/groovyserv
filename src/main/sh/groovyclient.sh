@@ -42,20 +42,11 @@ DIRNAME=`dirname "$PRG"`
 
 GROOVYSERVER_CMD="$GROOVYSERV_HOME/bin/groovyserver"
 if ! is_command_avaiable "$GROOVYSERVER_CMD"; then
-    error_log "ERROR: Not found 'groovyserver' command: $GROOVYSERVER_CMD"
-    exit 1
-fi
-
-# ------------------------------------------
-# GroovyServ's work directory
-# ------------------------------------------
-
-if [ ! -d "$GROOVYSERV_WORK_DIR" ]; then
-    mkdir -p "$GROOVYSERV_WORK_DIR"
+    die "ERROR: Not found 'groovyserver' command: $GROOVYSERVER_CMD"
 fi
 
 #-------------------------------------------
-# Common functions
+# Functions
 #-------------------------------------------
 
 usage() {
@@ -65,8 +56,8 @@ usage() {
     echo "  -Cs,-Chost                       specify the host to connect to groovyserver"
     echo "  -Cp,-Cport <port>                specify the port to connect to groovyserver"
     echo "  -Ca,-Cauthtoken <authtoken>      specify the authtoken"
-    echo " (-Ck,-Ckill-server                unsupported in limited script)"
-    echo " (-Cr,-Crestart-server             unsupported in limited script)"
+    echo "  -Ck,-Ckill-server                kill the running groovyserver"
+    echo "  -Cr,-Crestart-server             restart the running groovyserver"
     echo "  -Cq,-Cquiet                      suppress statring messages"
     echo "  -Cenv <substr>                   pass environment variables of which a name"
     echo "                                   includes specified substr"
@@ -77,18 +68,15 @@ usage() {
     echo
     echo "********************************** NOTE ***************************************"
     echo "  This client scirpt is LIMITED EDITION. So following features are unavailable:"
-    echo "    * Transparent server operations (only starting server is available)"
     echo "    * Signal handling on client side (Ctrl+C)"
     echo "    * System.in from client"
     echo "    * Distinguishable stdout from stderr on client (all responses to stdout)"
     echo "    * Status code from server (\$?)"
     echo
     echo "  If you want to use a client of FULL EDITION:"
+    echo "    * Run 'groovyserv-install-native.sh' if you have make and gcc,"
+    echo "      to build a native client and replace 'groovyclient' with it"
     echo "    * Use a ruby client 'groovyclient.rb'"
-    echo "    * Download a native client for your environment:"
-    echo "        http://kobo.github.io/groovyserv/download.html"
-    echo "    * Build a naitive client on your own:"
-    echo "        http://kobo.github.io/groovyserv/howtobuild.html"
     echo "*******************************************************************************"
 }
 
@@ -96,17 +84,30 @@ version() {
     echo "GroovyServ Version: Client: @GROOVYSERV_VERSION@ (.sh) [Limited Edition]"
 }
 
+invoke_server_command() {
+    info_log "Invoking server: '$GROOVYSERVER_CMD' -p $GROOVYSERVER_PORT ${SERVER_OPTIONS[@]}"
+    "$GROOVYSERVER_CMD" -p $GROOVYSERVER_PORT ${SERVER_OPTIONS[@]} || die "ERROR: Sorry, unexpected error occurs"
+}
+
 start_server() {
     # To try only for localhost
     [ "$GROOVYSERVER_HOST" != "localhost" ] && return
 
-    if ! is_port_listened $GROOVYSERVER_PORT; then
-        info_log "Invoking server: '$GROOVYSERVER_CMD' -p $GROOVYSERVER_PORT"
-        $GROOVYSERVER_CMD
-        if [ ! $? -eq 0 ]; then
-            echo "ERROR: Sorry, unexpected error occurs"
-            exit 1
-        fi
+    if $NEED_TO_INVOKE_SERVER; then
+        local shoud_stop=false
+
+        invoke_server_command
+
+        for should_stop_key in "${SERVER_OPTIONS[@]}"; do
+            if [[ "$should_stop_key" = "-k" ]]; then
+                shoud_stop=true
+                break
+            fi
+        done
+        $shoud_stop && exit 0
+
+    elif ! is_port_listened $GROOVYSERVER_PORT; then
+        invoke_server_command
     fi
 }
 
@@ -159,10 +160,10 @@ send_request() {
     fi
 
     # Authtoken
-    echo "AuthToken: ${AUTHTOKEN:-$(cat "$GROOVYSERV_AUTHTOKEN_FILE")}"
+    echo "AuthToken: ${AUTHTOKEN:-$(cat "$(get_authtoken_file)")}"
 
     # Arguments for groovy command
-    for arg in "${SERVER_OPTIONS[@]}"; do
+    for arg in "${SERVER_ARGS[@]}"; do
         echo "Arg: $(printf "%s" "$arg" | base64 | tr -d '\n')"
     done
 
@@ -175,7 +176,7 @@ start_session() {
     exec 5<> /dev/tcp/$GROOVYSERVER_HOST/$GROOVYSERVER_PORT
 
     # Send request
-    [ -n "$DEBUG" ] && send_request
+    $DEBUG && send_request
     send_request >&5
 
     # Output response
@@ -183,19 +184,31 @@ start_session() {
     cat <&5
 
     # For combination of groovyserver and groovyclient
-    if [ -n "$SHOULD_SHOW_VERSION_LATER" ]; then version; fi
-    if [ -n "$SHOULD_SHOW_USAGE_LATER" ];   then echo; usage; fi
+    $SHOULD_SHOW_VERSION_LATER && version
+    $SHOULD_SHOW_USAGE_LATER && (echo ; usage)
+
+    # fixed at 0
+    return 0
 }
 
+# ------------------------------------------
+# Setup global variables only for here
+# ------------------------------------------
+
+NEED_TO_INVOKE_SERVER=false
+SHOULD_SHOW_USAGE_LATER=false
+SHOULD_SHOW_VERSION_LATER=false
+unset AUTHTOKEN
+SERVER_ARGS=()
+SERVER_OPTIONS=()
+ENV_INCLUDES=()
+ENV_EXCLUDES=()
 
 #-------------------------------------------
 # Main
 #-------------------------------------------
 
 # Parse arguments
-SERVER_OPTIONS=()
-ENV_INCLUDES=()
-ENV_EXCLUDES=()
 while [ $# -gt 0 ]; do
     case $1 in
         -Chelp | -Ch)
@@ -203,22 +216,8 @@ while [ $# -gt 0 ]; do
             exit 0
             ;;
         --help | -h)
-            SERVER_OPTIONS+=("$1")
+            SERVER_ARGS+=("$1")
             SHOULD_SHOW_USAGE_LATER=true
-            shift
-            ;;
-        -Cversion | -Cv)
-            version
-            exit 0
-            ;;
-        --version | -v*)
-            SERVER_OPTIONS+=("$1")
-            SHOULD_SHOW_VERSION_LATER=true
-            shift
-            ;;
-        -q)
-            SERVER_OPTIONS+=("$1")
-            QUIET=true
             shift
             ;;
         -Chost | -Cs)
@@ -236,8 +235,19 @@ while [ $# -gt 0 ]; do
             AUTHTOKEN=$1
             shift
             ;;
-        -Cenv-all)
-            ENV_ALL=true
+        -Ckill-server | -Ck)
+            SERVER_OPTIONS+=("-k")
+            NEED_TO_INVOKE_SERVER=true
+            shift
+            ;;
+        -Crestart-server | -Cr)
+            SERVER_OPTIONS+=("-r")
+            NEED_TO_INVOKE_SERVER=true
+            shift
+            ;;
+        -Cquiet | -Cq)
+            SERVER_OPTIONS+=("-q")
+            QUIET=true
             shift
             ;;
         -Cenv)
@@ -245,29 +255,36 @@ while [ $# -gt 0 ]; do
             ENV_INCLUDES+=("$1")
             shift
             ;;
+        -Cenv-all)
+            ENV_ALL=true
+            shift
+            ;;
         -Cenv-exclude)
             shift
             ENV_EXCLUDES+=("$1")
             shift
             ;;
-        -Ckill-server | -Ck)
-            die "Unsupported in limited script"
+        -Cversion | -Cv)
+            version
+            exit 0
             ;;
-        -Crestart-server | -Cr)
-            die "Unsupported in limited script"
+        --version | -v*)
+            SERVER_ARGS+=("$1")
+            SHOULD_SHOW_VERSION_LATER=true
+            shift
             ;;
         *)
-            SERVER_OPTIONS+=("$1")
+            SERVER_ARGS+=("$1")
             shift
     esac
 done
 
-# Display additionally client's usage at the end of session
-if [ "${#SERVER_OPTIONS[@]}" -eq 0 ]; then
+# Display additionally client's usage at the end of session when no arguments for server
+if [ "${#SERVER_ARGS[@]}" -eq 0 ]; then
     SHOULD_SHOW_USAGE_LATER=true
 fi
 
-# Start server if necessary
+# Start or stop server when specified
 start_server
 
 # Request to server

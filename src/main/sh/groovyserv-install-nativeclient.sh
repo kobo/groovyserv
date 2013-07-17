@@ -37,43 +37,55 @@ DIRNAME=`dirname "$PRG"`
 . "$DIRNAME/_common.sh"
 
 #-------------------------------------------
-# Check GROOVYSERV_HOME
+# Functions
 #-------------------------------------------
 
-if ! is_file_exists "$GROOVYSERV_HOME/native/src/main/c"; then
-    error_log "ERROR: Not found a valid GROOVYSERV_HOME directory: $GROOVYSERV_HOME"
-    exit 1
-fi
+check_groovyserv_home() {
+    if ! is_file_exists "$GROOVYSERV_HOME/native/src/main/c"; then
+        die "ERROR: Not found a valid GROOVYSERV_HOME directory: $GROOVYSERV_HOME"
+    fi
+}
 
-#-------------------------------------------
-# Check make command
-#-------------------------------------------
+check_make_command() {
+    if ! is_command_avaiable make; then
+        die "ERROR: Not found 'make' command. This script is required 'make' and 'gcc' command to build a native client from source."
+    fi
+}
 
-if ! is_command_avaiable make; then
-    die "ERROR: Not found 'make' command. This script is required 'make' and 'gcc' command to build a native client from source."
-fi
+build_nativeclient() {
+    local src_dir="$GROOVYSERV_HOME/native"
+    info_log "Source directory: $src_dir"
+
+    cd "$src_dir"
+    make clean
+    make -e GROOVYSERV_VERSION="@GROOVYSERV_VERSION@"
+}
+
+install_nativeclient() {
+    local src_dir="$GROOVYSERV_HOME/native"
+    local built_client_path="$src_dir/build/natives/groovyclient"
+    local bin_client_path="$GROOVYSERV_HOME/bin/groovyclient"
+
+    if [ -f "$bin_client_path" ]; then
+        # explicitly delete the 'groovyclinet' file because 'groovyclient.exe' cannot overwrite the file in windows
+        rm -f "$bin_client_path"
+    fi
+    cp "$built_client_path" "$bin_client_path"
+    chmod +x "$bin_client_path"
+
+    info_log
+    info_log "Successfully installed: $bin_client_path"
+}
 
 #-------------------------------------------
 # Main
 #-------------------------------------------
 
-# Build
-SRC_DIR="$GROOVYSERV_HOME/native"
-info_log "Source directory: $SRC_DIR"
-cd $SRC_DIR
-make clean
-make -e GROOVYSERV_VERSION="@GROOVYSERV_VERSION@"
+# Pre-processing
+check_groovyserv_home
+check_make_command
 
-# Install
-BUILT_CLIENT_PATH="$SRC_DIR/build/natives/groovyclient"
-BIN_CLIENT_PATH="$GROOVYSERV_HOME/bin/groovyclient"
-if [ -f "$BIN_CLIENT_PATH" ]; then
-    # explicitly delete the 'groovyclinet' file because 'groovyclient.exe' cannot overwrite the file in windows
-    rm -f "$BIN_CLIENT_PATH"
-fi
-cp "$BUILT_CLIENT_PATH" "$BIN_CLIENT_PATH"
-chmod +x "$BIN_CLIENT_PATH"
-
-info_log
-info_log "Successfully installed: $BIN_CLIENT_PATH"
+# Building and installing
+build_nativeclient
+install_nativeclient
 

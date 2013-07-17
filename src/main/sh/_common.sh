@@ -15,6 +15,9 @@
 # limitations under the License.
 #
 
+QUIET=false
+DEBUG=${DEBUG:-false}
+
 #-------------------------------------------
 # OS specific support
 #-------------------------------------------
@@ -34,10 +37,10 @@ case "`uname`" in
     ;;
 esac
 
-# For Cygwin, ensure paths are in UNIX format before anything is touched.
-# When they are used by Groovy, Groovy's script will convert them appropriately.
+# For Cygwin, ensure that paths are in UNIX format before anything is touched.
+# When they are used by Groovy, Groovy will convert them appropriately.
 if $OS_CYGWIN; then
-    # Original Groovy's shell scirpt uses only HOME instead of USERPROFILE.
+    # Original Groovy's shell script uses only HOME instead of USERPROFILE.
     # In GroovyServ, let it be in order to unify the work directory for both cygwin and BAT.
     HOME=`cygpath --unix --ignore "$USERPROFILE"`
 fi
@@ -53,20 +56,20 @@ usage() {
 }
 
 error_log() {
-    local message="$1"
+    local message="$*"
     /bin/echo "$message" 1>&2
 }
 
 info_log() {
-    local message="$1"
-    if [ ! $QUIET ]; then
+    local message="$*"
+    if ! $QUIET; then
         /bin/echo "$message" 1>&2
     fi
 }
 
 debug_log() {
-    local message="$1"
-    if [ $DEBUG ]; then
+    local message="$*"
+    if $DEBUG; then
         /bin/echo "DEBUG: $message" 1>&2
     fi
 }
@@ -74,7 +77,6 @@ debug_log() {
 die() {
     local message="$*"
     error_log "$message"
-    usage
     exit 1
 }
 
@@ -125,23 +127,30 @@ expand_path() {
     fi
 }
 
+get_pid_file() {
+    echo "$GROOVYSERV_WORK_DIR/pid-$GROOVYSERVER_PORT"
+}
+
+get_authtoken_file() {
+    echo "$GROOVYSERV_WORK_DIR/authtoken-$GROOVYSERVER_PORT"
+}
+
 #-------------------------------------------
 # Common variables
 #-------------------------------------------
 
-GROOVYSERV_HOME=$(expand_path "$(dirname $0)/..") # convert to absolute path just in case
-GROOVYSERV_WORK_DIR="$HOME/.groovy/groovyserv"
-
-GROOVYSERVER_HOST=localhost
-GROOVYSERVER_PORT=${GROOVYSERVER_PORT:-1961}
-
-GROOVYSERV_PID_FILE="$GROOVYSERV_WORK_DIR/pid-$GROOVYSERVER_PORT"
-GROOVYSERV_AUTHTOKEN_FILE="$GROOVYSERV_WORK_DIR/authtoken-$GROOVYSERVER_PORT"
-
+GROOVYSERV_HOME=${GROOVYSERV_HOME:-$(expand_path "$(dirname $0)/..")} # convert to absolute path just in case
 debug_log "GROOVYSERV_HOME: $GROOVYSERV_HOME"
+
+GROOVYSERV_WORK_DIR=${GROOVYSERV_WORK_DIR:-"$HOME/.groovy/groovyserv"}
+if [ ! -d "$GROOVYSERV_WORK_DIR" ]; then
+    mkdir -p "$GROOVYSERV_WORK_DIR"
+fi
 debug_log "GROOVYSERV_WORK_DIR: $GROOVYSERV_WORK_DIR"
+
+GROOVYSERVER_HOST=${GROOVYSERVER_HOST:-localhost}
 debug_log "GROOVYSERVER_HOST: $GROOVYSERVER_HOST"
+
+GROOVYSERVER_PORT=${GROOVYSERVER_PORT:-1961}
 debug_log "GROOVYSERVER_PORT: $GROOVYSERVER_PORT"
-debug_log "GROOVYSERV_PID_FILE: $GROOVYSERV_PID_FILE"
-debug_log "GROOVYSERV_AUTHTOKEN_FILE: $GROOVYSERV_AUTHTOKEN_FILE"
 

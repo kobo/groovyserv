@@ -36,7 +36,7 @@ DIRNAME=`dirname "$PRG"`
 
 . "$DIRNAME/_common.sh"
 
-# only for groovyserver
+# only for groovyserver on cygwin
 if $OS_CYGWIN; then
     GROOVY_HOME=`cygpath --unix --ignore "$GROOVY_HOME"`
     GROOVYSERV_HOME=`cygpath --unix --ignore "$GROOVYSERV_HOME"`
@@ -44,53 +44,7 @@ if $OS_CYGWIN; then
 fi
 
 #-------------------------------------------
-# Find groovy command
-#-------------------------------------------
-
-if [ "$GROOVY_HOME" != "" ]; then
-    info_log "Groovy home directory: $GROOVY_HOME"
-    GROOVY_BIN="$GROOVY_HOME/bin/groovy"
-    if [ ! -x "$GROOVY_BIN" ]; then
-        error_log "ERROR: Not found a groovy command in GROOVY_HOME: $GROOVY_BIN"
-        exit 1
-    fi
-    info_log "Groovy command path: $GROOVY_BIN (found at GROOVY_HOME)"
-elif is_command_avaiable groovy; then
-    info_log "Groovy home directory: (none)"
-    GROOVY_BIN=`which groovy`
-    info_log "Groovy command path: $GROOVY_BIN (found at PATH)"
-else
-    error_log "ERROR: Not found a groovy command. Required either PATH having groovy command or GROOVY_HOME"
-    exit 1
-fi
-
-#-------------------------------------------
-# Check GROOVYSERV_HOME
-#-------------------------------------------
-
-if ! is_file_exists "$GROOVYSERV_HOME/lib/groovyserv-*.jar"; then
-    error_log "ERROR: Not found a valid GROOVYSERV_HOME directory: $GROOVYSERV_HOME"
-    exit 1
-fi
-info_log "GroovyServ home directory: $GROOVYSERV_HOME"
-
-# ------------------------------------------
-# GroovyServ's work directory
-# ------------------------------------------
-
-if [ ! -d "$GROOVYSERV_WORK_DIR" ]; then
-    mkdir -p "$GROOVYSERV_WORK_DIR"
-fi
-info_log "GroovyServ work directory: $GROOVYSERV_WORK_DIR"
-
-#-------------------------------------------
-# Port and PID and AuthToken
-#-------------------------------------------
-
-GROOVYSERV_OPTS="$GROOVYSERV_OPTS -Dgroovyserver.port=$GROOVYSERVER_PORT"
-
-#-------------------------------------------
-# Common functions
+# Functions
 #-------------------------------------------
 
 usage() {
@@ -110,10 +64,149 @@ is_pid_file_expired() {
     [ "$result" != "" ]
 }
 
+find_groovy_command() {
+    unset GROOVY_BIN
+    if [ "$GROOVY_HOME" != "" ]; then
+        info_log "Groovy home directory: $GROOVY_HOME"
+        GROOVY_BIN="$GROOVY_HOME/bin/groovy"
+        if [ ! -x "$GROOVY_BIN" ]; then
+            die "ERROR: Not found a groovy command in GROOVY_HOME: $GROOVY_BIN"
+        fi
+        info_log "Groovy command path: $GROOVY_BIN (found at GROOVY_HOME)"
+    elif is_command_avaiable groovy; then
+        info_log "Groovy home directory: (none)"
+        GROOVY_BIN=`which groovy`
+        info_log "Groovy command path: $GROOVY_BIN (found at PATH)"
+    else
+        die "ERROR: Not found a groovy command. Required either PATH having groovy command or GROOVY_HOME"
+    fi
+}
+
+check_groovyserv_home() {
+    if ! is_file_exists "$GROOVYSERV_HOME/lib/groovyserv-*.jar"; then
+        die "ERROR: Not found a valid GROOVYSERV_HOME directory: $GROOVYSERV_HOME"
+    fi
+    info_log "GroovyServ home directory: $GROOVYSERV_HOME"
+    info_log "GroovyServ work directory: $GROOVYSERV_WORK_DIR"
+}
+
+setup_classpath() {
+    info_log "Original classpath: ${CLASSPATH:-(none)}"
+    if [ "$CLASSPATH" = "" ]; then
+        export CLASSPATH="$GROOVYSERV_HOME/lib/*"
+    else
+        export CLASSPATH="${GROOVYSERV_HOME}/lib/*:${CLASSPATH}"
+    fi
+    info_log "GroovyServ default classpath: $CLASSPATH"
+}
+
+setup_java_opts() {
+    # -server option for JVM (for performance) (experimental)
+    export JAVA_OPTS="$JAVA_OPTS -server"
+}
+
+kill_process_if_specified() {
+    unset EXISTED_PID
+    if $DO_KILL || $DO_RESTART; then
+        if [ -f "$GROOVYSERV_PID_FILE" ]; then
+            EXISTED_PID=`cat "$GROOVYSERV_PID_FILE"`
+            ps -p $EXISTED_PID >/dev/null 2>&1
+            if [ $? -eq 0 ]; then
+                kill -9 $EXISTED_PID
+                info_log "Killed groovyserver of $EXISTED_PID($GROOVYSERVER_PORT)"
+            else
+                info_log "Process of groovyserver of $EXISTED_PID($GROOVYSERVER_PORT) not found"
+            fi
+            rm -f "$GROOVYSERV_PID_FILE"
+            rm -f "$GROOVYSERV_AUTHTOKEN_FILE"
+        else
+            info_log "PID file $GROOVYSERV_PID_FILE not found"
+        fi
+        if $DO_KILL; then
+            exit 0
+        fi
+        info_log "Restarting groovyserver"
+    fi
+}
+
+check_duplicated_invoking() {
+    if [ -f "$GROOVYSERV_PID_FILE" ]; then
+        EXISTED_PID=`cat "$GROOVYSERV_PID_FILE"`
+
+        # if connecting to server is succeed, return with warning message
+        if is_port_listened $GROOVYSERVER_PORT; then
+            die "WARN: groovyserver is already running as $EXISTED_PID($GROOVYSERVER_PORT)"
+        fi
+
+        # if PID file doesn't expired, terminate the sequence of invoking server
+        if ! is_pid_file_expired; then
+            die "WARN: Another process may be starting groovyserver."
+        fi
+    fi
+}
+
+invoke_server() {
+    if $DEBUG; then
+        echo "Invoking server for DEBUG..."
+        echo "$GROOVY_BIN" $GROOVYSERV_OPTS -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)"
+        "$GROOVY_BIN" $GROOVYSERV_OPTS -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)"
+        exit 0
+    else
+        nohup "$GROOVY_BIN" $GROOVYSERV_OPTS -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)" > /dev/null 2>&1 &
+    fi
+}
+
+store_pid() {
+    sleep 1
+    local my_pid=$!
+    ps -p $my_pid | grep $my_pid > /dev/null
+    if [ $? -eq 0 ]; then
+        echo $my_pid > "$GROOVYSERV_PID_FILE"
+    else
+        error_log "ERROR: Failed to store PID into file $GROOVYSERV_PID_FILE"
+        error_log "Rerun for debug..."
+        "$GROOVY_BIN" $GROOVYSERV_OPTS -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)" &
+        exit 1
+    fi
+}
+
+wait_for_server_available() {
+    if ! ${QUIET}; then
+        /bin/echo -n "Starting" 1>&2
+    fi
+
+    while true; do
+        if ! ${QUIET}; then
+            /bin/echo -n "." 1>&2
+        fi
+        sleep 1
+
+        # waiting until authToken filed is created
+        [ ! -f "$GROOVYSERV_AUTHTOKEN_FILE" ] && continue
+
+        # if connecting to server is succeed, return successfully
+        is_port_listened $GROOVYSERVER_PORT && break
+
+        # if PID file was expired while to connect to server is failing, error
+        is_pid_file_expired && die "ERROR: Timeout. Confirm if groovyserver $PID($GROOVYSERVER_PORT) is running."
+    done
+
+    info_log
+    info_log "groovyserver $(cat "$GROOVYSERV_PID_FILE")($GROOVYSERVER_PORT) is successfully started"
+}
+
+# ------------------------------------------
+# Setup global variables only for here
+# ------------------------------------------
+
+DO_KILL=false
+DO_RESTART=false
+
 #-------------------------------------------
-# Parse arguments
+# Main
 #-------------------------------------------
 
+# Parse arguments
 while [ $# -gt 0 ]; do
     case $1 in
         -v)
@@ -130,11 +223,11 @@ while [ $# -gt 0 ]; do
             shift
             ;;
         -k)
-            DO_KILL=KILL_ONLY
+            DO_KILL=true
             shift
             ;;
         -r)
-            DO_KILL=RESTART
+            DO_RESTART=true
             shift
             ;;
         --allow-from)
@@ -154,130 +247,23 @@ while [ $# -gt 0 ]; do
     esac
 done
 
-#-------------------------------------------
-# Setup classpath
-#-------------------------------------------
+# Decide Port/PID/AuthToken (it must be after resolving port number from arguments)
+GROOVYSERV_OPTS="$GROOVYSERV_OPTS -Dgroovyserver.port=${GROOVYSERVER_PORT}"
+GROOVYSERV_PID_FILE=$(get_pid_file)
+GROOVYSERV_AUTHTOKEN_FILE=$(get_authtoken_file)
 
-info_log "Original classpath: ${CLASSPATH:-(none)}"
-if [ "$CLASSPATH" = "" ]; then
-    export CLASSPATH="$GROOVYSERV_HOME/lib/*"
-else
-    export CLASSPATH="${GROOVYSERV_HOME}/lib/*:${CLASSPATH}"
-fi
-info_log "GroovyServ default classpath: $CLASSPATH"
+# Pre-processing
+find_groovy_command
+check_groovyserv_home
+setup_classpath
+setup_java_opts
 
-#-------------------------------------------
-# Setup other variables
-#-------------------------------------------
+# Server operation
+kill_process_if_specified
+check_duplicated_invoking
+invoke_server
 
-# -server option for JVM (for performance) (experimental)
-export JAVA_OPTS="$JAVA_OPTS -server"
-
-#-------------------------------------------
-# Kill process if specified
-#-------------------------------------------
-
-if [ "$DO_KILL" != "" ]; then
-    if [ -f "$GROOVYSERV_PID_FILE" ]; then
-        EXISTED_PID=`cat "$GROOVYSERV_PID_FILE"`
-        ps -p $EXISTED_PID >/dev/null 2>&1
-        if [ $? -eq 0 ]; then
-            kill -9 $EXISTED_PID
-            info_log "Killed groovyserver of $EXISTED_PID($GROOVYSERVER_PORT)"
-        else
-            info_log "Process of groovyserver of $EXISTED_PID($GROOVYSERVER_PORT) not found"
-        fi
-        rm -f "$GROOVYSERV_PID_FILE"
-        rm -f "$GROOVYSERV_AUTHTOKEN_FILE"
-    else
-        info_log "PID file $GROOVYSERV_PID_FILE not found"
-    fi
-    if [ "$DO_KILL" = "KILL_ONLY" ]; then
-        exit 0
-    fi
-    info_log "Restarting groovyserver"
-fi
-
-#-------------------------------------------
-# Check duplicated invoking
-#-------------------------------------------
-
-if [ -f "$GROOVYSERV_PID_FILE" ]; then
-    EXISTED_PID=`cat "$GROOVYSERV_PID_FILE"`
-
-    # if connecting to server is succeed, return with warning message
-    if is_port_listened $GROOVYSERVER_PORT; then
-        error_log "WARN: groovyserver is already running as $EXISTED_PID($GROOVYSERVER_PORT)"
-        exit 1
-    fi
-
-    # if PID file doesn't expired, terminate the sequence of invoking server
-    if ! is_pid_file_expired; then
-        error_log "WARN: Another process may be starting groovyserver."
-        exit 1
-    fi
-fi
-
-#-------------------------------------------
-# Invoke server
-#-------------------------------------------
-
-if [ "$DEBUG" != "" ]; then
-    echo "Invoking server for DEBUG..."
-    echo "$GROOVY_BIN" $GROOVYSERV_OPTS -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)"
-    "$GROOVY_BIN" $GROOVYSERV_OPTS -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)"
-    exit 0
-else
-    nohup "$GROOVY_BIN" $GROOVYSERV_OPTS -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)" > /dev/null 2>&1 &
-fi
-
-#-------------------------------------------
-# Store PID
-#-------------------------------------------
-
-sleep 1
-PID=$!
-ps -p $PID | grep $PID > /dev/null
-if [ $? -eq 0 ]; then
-    echo $PID > "$GROOVYSERV_PID_FILE"
-else
-    error_log "ERROR: Failed to store PID into file $GROOVYSERV_PID_FILE"
-    error_log "Rerun for debug..."
-    "$GROOVY_BIN" $GROOVYSERV_OPTS -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)" &
-    exit 1
-fi
-
-#-------------------------------------------
-# Wait for available
-#-------------------------------------------
-
-if [ ! $QUIET ]; then
-    /bin/echo -n "Starting" 1>&2
-fi
-
-while true; do
-    if [ ! $QUIET ]; then
-        /bin/echo -n "." 1>&2
-    fi
-    sleep 1
-
-    # waiting until authToken filed is created
-    if [ ! -f "$GROOVYSERV_AUTHTOKEN_FILE" ]; then
-        continue
-    fi
-
-    # if connecting to server is succeed, return successfully
-    if is_port_listened $GROOVYSERVER_PORT; then
-        break
-    fi
-
-    # if PID file was expired while to connect to server is failing, error
-    if is_pid_file_expired; then
-        error_log "ERROR: Timeout. Confirm if groovyserver $PID($GROOVYSERVER_PORT) is running."
-        exit 1
-    fi
-done
-
-info_log
-info_log "groovyserver $PID($GROOVYSERVER_PORT) is successfully started"
+# Post-processing
+store_pid
+wait_for_server_available
 
