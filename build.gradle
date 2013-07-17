@@ -147,18 +147,12 @@ jar {
     outputs.dir file("$buildDir/libs")
 }
 
-compileGroovy {
-    dependsOn 'copyGroovyIntoMain'
-
+task compileGroovy(overwrite: true, type: Copy) {
     // Groovy sources shouldn't be compiled in order to avoid a trouble
     // of unmatch of Java version between compile-time and runtime.
-    // Compiled groovy classes are used only by unit tests.
-    // Instead, groovy sources in jar under executables dir are used
-    // for integration test.
-    exclude "**/*.groovy"
-}
-
-task copyGroovyIntoMain(type: Copy) {
+    // Compiled Groovy classes under src/main/groovy directory are used only by unit tests.
+    // Instead, Groovy sources including JAR file under build/executables directory
+    // are used by integration tests.
     into "$buildDir/classes/main"
     from "$projectDir/src/main/groovy"
     filter(ReplaceTokens, tokens: ["GROOVYSERV_VERSION": project.version])
@@ -184,18 +178,16 @@ task executables(dependsOn: ['executablesNativeBin', 'executablesPlatformIndepen
 
 task executablesNativeBin(type: Copy, dependsOn: ['assemble']) {
     destinationDir = file("$buildDir/executables/native")
-    with nativeBinSpec
-
     inputs.dir file("$projectDir/src/main")
     outputs.dir destinationDir
+    with nativeBinSpec
 }
 
 task executablesPlatformIndependentBin(type: Copy, dependsOn: ['assemble']) {
     destinationDir = file("$buildDir/executables/platformIndependent")
-    with platformIndependentBinSpec
-
     inputs.dir file("$projectDir/src/main")
     outputs.dir destinationDir
+    with platformIndependentBinSpec
 }
 
 //----------------------------------
@@ -232,11 +224,20 @@ task test(overwrite: true, dependsOn: ['unitTest', 'integrationTest'])
 task unitTest(type: Test) {
     testReportDir = file("$buildDir/reports/unit")
     testResultsDir = file("$buildDir/test-results/unit")
+
+    // Unfortunatelly, these cause no effect for UP-TO-DATE skipping due to systemProperty call in doFirst.
+    inputs.dir file("$projectDir/src/main/groovy")
+    outputs.dir testResultsDir
+
     doFirst {
+        // This causes running this task even though UP-TO-DATE skipping condition is met.
         systemProperty 'spock.configuration', file("${projectDir}/spock/unit.groovy")
     }
+    beforeTest { desc ->
+        AnsiColor.printlnAsTestResult """Test: (${desc.className}) "${desc.name}" """, true
+    }
     afterTest { desc, result -> 
-        AnsiColor.printlnAsTestResult """Executing test: (${desc.className}) "${desc.name}" => ${result.resultType}"""
+        AnsiColor.printlnAsTestResult "=> ${result.resultType}"
     }
 }
 
@@ -252,12 +253,14 @@ integrationTestSpecs.each { spec ->
     // generate dynamically
     task "${spec.taskName}"(type: Test, dependsOn: 'executables') {
         mustRunAfter "unitTest"
-
         onlyIf { spec.shouldRun() }
 
-        def testId = "integration-${spec.id}"
-        testReportDir = file("$buildDir/reports/${testId}")
-        testResultsDir = file("$buildDir/test-results/${testId}")
+        // Unfortunatelly, these cause no effect for UP-TO-DATE skipping due to systemProperty call in doFirst.
+        inputs.dir file("$projectDir/src")
+        outputs.dir file("$buildDir/test-results/${spec.taskId}")
+
+        testReportDir = file("$buildDir/reports/${spec.taskId}")
+        testResultsDir = file("$buildDir/test-results/${spec.taskId}")
 
         def type = (spec.asPlatformIndependent) ? "platformIndependent" : "native"
         def binDir = convertMixedPath(file("${buildDir}/executables/${type}/bin"))
@@ -269,7 +272,7 @@ integrationTestSpecs.each { spec ->
             if (System.properties['test.single']) {
                 include "**/${System.properties['test.single']}.*"
             } else {
-                systemProperty 'spock.configuration', "${projectDir}/spock/${testId}.groovy"
+                systemProperty 'spock.configuration', "${projectDir}/spock/${spec.taskId}.groovy"
             }
 
             // prop for TestUtils
@@ -281,8 +284,11 @@ integrationTestSpecs.each { spec ->
         doLast {
             shutdownGroovyServer(serverExecutableExpression)
         }
+        beforeTest { desc ->
+            AnsiColor.printlnAsTestResult """Test: (${desc.className}) "${desc.name}" """, true
+        }
         afterTest { desc, result -> 
-            AnsiColor.printlnAsTestResult """Executing test: (${desc.className}) "${desc.name}" => ${result.resultType}"""
+            AnsiColor.printlnAsTestResult "=> ${result.resultType}"
         }
     }
 }
@@ -353,8 +359,12 @@ class IntegrationTestSpec {
     def asPlatformIndependent = false
     def targetOs = ["*"]
 
+    def getTaskId() {
+        "integration-${id}"
+    }
+
     def getTaskName() {
-        "integrationTestFor" + id
+        "integrationTestFor${id}"
     }
 
     def shouldRun() {
@@ -386,8 +396,14 @@ class AnsiColor {
         println(ansi().fg(RED).a(text).reset())
     }
 
-    static printlnAsTestResult(text) {
-        println ansi().render(text.replaceAll(/(SUCCESS)/, "@|green \$1|@").replaceAll(/(ERROR|FAILURE|FAILED)/, "@|red \$1|@"))
+    static printlnAsTestResult(text, noLF = false) {
+        def message = ansi().render(text.replaceAll(/(SUCCESS)/, "@|green \$1|@").replaceAll(/(ERROR|FAILURE|FAILED)/, "@|red \$1|@").replaceAll(/org.jggug.kobo.groovyserv/, 'o.j.k.g'))
+        if (noLF) {
+            print message
+            System.out.flush()
+        } else {
+            println message
+        }
     }
 }
 
