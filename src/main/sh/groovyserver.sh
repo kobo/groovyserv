@@ -36,6 +36,13 @@ DIRNAME=`dirname "$PRG"`
 
 . "$DIRNAME/_common.sh"
 
+# only for groovyserver
+if $OS_CYGWIN; then
+    GROOVY_HOME=`cygpath --unix --ignore "$GROOVY_HOME"`
+    GROOVYSERV_HOME=`cygpath --unix --ignore "$GROOVYSERV_HOME"`
+    CLASSPATH=`cygpath --unix --ignore --path "$CLASSPATH"`
+fi
+
 #-------------------------------------------
 # Find groovy command
 #-------------------------------------------

@@ -37,11 +37,7 @@ esac
 # For Cygwin, ensure paths are in UNIX format before anything is touched.
 # When they are used by Groovy, Groovy's script will convert them appropriately.
 if $OS_CYGWIN; then
-    GROOVY_HOME=`cygpath --unix --ignore "$GROOVY_HOME"`
-    GROOVYSERV_HOME=`cygpath --unix --ignore "$GROOVYSERV_HOME"`
-    CLASSPATH=`cygpath --unix --ignore --path "$CLASSPATH"`
-
-    # TODO Original Groovy's shell scirpt uses only HOME instead of USERPROFILE.
+    # Original Groovy's shell scirpt uses only HOME instead of USERPROFILE.
     # In GroovyServ, let it be in order to unify the work directory for both cygwin and BAT.
     HOME=`cygpath --unix --ignore "$USERPROFILE"`
 fi
