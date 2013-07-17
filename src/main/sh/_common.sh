@@ -1,0 +1,151 @@
+#!/bin/bash
+#
+# Copyright 2009-2013 the original author or authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+#-------------------------------------------
+# OS specific support
+#-------------------------------------------
+
+OS_CYGWIN=false
+OS_MSYS=false
+OS_DARWIN=false
+case "`uname`" in
+  CYGWIN* )
+    OS_CYGWIN=true
+    ;;
+  Darwin* )
+    OS_DARWIN=true
+    ;;
+  MINGW* )
+    OS_MSYS=true
+    ;;
+esac
+
+# For Cygwin, ensure paths are in UNIX format before anything is touched.
+# When they are used by Groovy, Groovy's script will convert them appropriately.
+if $OS_CYGWIN; then
+    GROOVY_HOME=`cygpath --unix --ignore "$GROOVY_HOME"`
+    GROOVYSERV_HOME=`cygpath --unix --ignore "$GROOVYSERV_HOME"`
+    CLASSPATH=`cygpath --unix --ignore --path "$CLASSPATH"`
+
+    # TODO Original Groovy's shell scirpt uses only HOME instead of USERPROFILE.
+    # In GroovyServ, let it be in order to unify the work directory for both cygwin and BAT.
+    HOME=`cygpath --unix --ignore "$USERPROFILE"`
+fi
+
+#-------------------------------------------
+# Common functions
+#-------------------------------------------
+
+# should be overridden
+usage() {
+    echo "usage: `basename $0`"
+    exit 1
+}
+
+error_log() {
+    local message="$1"
+    /bin/echo "$message" 1>&2
+}
+
+info_log() {
+    local message="$1"
+    if [ ! $QUIET ]; then
+        /bin/echo "$message" 1>&2
+    fi
+}
+
+debug_log() {
+    local message="$1"
+    if [ $DEBUG ]; then
+        /bin/echo "DEBUG: $message" 1>&2
+    fi
+}
+
+die() {
+    local message="$*"
+    error_log "$message"
+    usage
+    exit 1
+}
+
+is_file_exists() {
+    local file=$1
+    ls $file >/dev/null 2>&1
+}
+
+is_command_avaiable() {
+    local command=$1
+    which $command >/dev/null 2>&1
+}
+
+is_port_listened() {
+    local port=$1
+    netstat -an | grep "[.:]${port} .* LISTEN" >/dev/null 2>&1
+}
+
+resolve_symlink() {
+    local target=$1
+
+    # if target is symbolic link
+    if [ -L $target ]; then
+        local original_filepath=`readlink $target`
+
+        # if original is specified as absolute path
+        if [ $(echo $original_filepath | cut -c 1) = "/" ]; then
+            echo "$original_filepath"
+        else
+            echo "$(dirname $target)/$original_filepath"
+        fi
+    else
+        echo "$target"
+    fi
+}
+
+expand_path() {
+    local target=$1
+    if [ -d "$target" ]; then
+        echo $(cd $target && pwd -P)
+    elif [ -f "$target" ]; then
+        local target_resolved=$(resolve_symlink $target)
+        local filename=$(basename $target_resolved)
+        local dir_expanded="$(expand_path $(dirname $target_resolved))"
+        echo "$dir_expanded/$filename"
+    else
+        echo "$target"
+    fi
+}
+
+#-------------------------------------------
+# Common variables
+#-------------------------------------------
+
+GROOVYSERV_HOME=$(expand_path "$(dirname $0)/..") # convert to absolute path just in case
+GROOVYSERV_WORK_DIR="$HOME/.groovy/groovyserv"
+
+GROOVYSERVER_HOST=localhost
+GROOVYSERVER_PORT=${GROOVYSERVER_PORT:-1961}
+
+GROOVYSERV_PID_FILE="$GROOVYSERV_WORK_DIR/pid-$GROOVYSERVER_PORT"
+GROOVYSERV_AUTHTOKEN_FILE="$GROOVYSERV_WORK_DIR/authtoken-$GROOVYSERVER_PORT"
+
+debug_log "GROOVYSERV_HOME: $GROOVYSERV_HOME"
+debug_log "GROOVYSERV_WORK_DIR: $GROOVYSERV_WORK_DIR"
+debug_log "GROOVYSERVER_HOST: $GROOVYSERVER_HOST"
+debug_log "GROOVYSERVER_PORT: $GROOVYSERVER_PORT"
+debug_log "GROOVYSERV_PID_FILE: $GROOVYSERV_PID_FILE"
+debug_log "GROOVYSERV_AUTHTOKEN_FILE: $GROOVYSERV_AUTHTOKEN_FILE"
+

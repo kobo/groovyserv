@@ -15,31 +15,43 @@
 # limitations under the License.
 #
 
+# resolve links - $0 may be a soft-link
+PRG="$0"
+
+while [ -h "$PRG" ] ; do
+    ls=`ls -ld "$PRG"`
+    link=`expr "$ls" : '.*-> \(.*\)$'`
+    if expr "$link" : '/.*' > /dev/null; then
+        PRG="$link"
+    else
+        PRG=`dirname "$PRG"`/"$link"
+    fi
+done
+
+DIRNAME=`dirname "$PRG"`
+
 #-------------------------------------------
-# OS specific support
+# Load common settings
 #-------------------------------------------
 
-OS_CYGWIN=false
-OS_MSYS=false
-OS_DARWIN=false
-case "`uname`" in
-  CYGWIN* )
-    OS_CYGWIN=true
-    ;;
-  Darwin* )
-    OS_DARWIN=true
-    ;;
-  MINGW* )
-    OS_MSYS=true
-    ;;
-esac
+. "$DIRNAME/_common.sh"
 
-# For Cygwin, ensure paths are in UNIX format before anything is touched.
-# When they are used by Groovy, Groovy's script will convert them appropriately.
-if $OS_CYGWIN; then
-    # TODO Original Groovy's shell scirpt uses only HOME instead of USERPROFILE.
-    # In GroovyServ, let it be in order to unify the work directory for both cygwin and BAT.
-    HOME=`cygpath --unix --ignore "$USERPROFILE"`
+#-------------------------------------------
+# Check GROOVYSERV_HOME and GROOVYSERVER_CMD
+#-------------------------------------------
+
+GROOVYSERVER_CMD="$GROOVYSERV_HOME/bin/groovyserver"
+if ! is_command_avaiable "$GROOVYSERVER_CMD"; then
+    error_log "ERROR: Not found 'groovyserver' command: $GROOVYSERVER_CMD"
+    exit 1
+fi
+
+# ------------------------------------------
+# GroovyServ's work directory
+# ------------------------------------------
+
+if [ ! -d "$GROOVYSERV_WORK_DIR" ]; then
+    mkdir -p "$GROOVYSERV_WORK_DIR"
 fi
 
 #-------------------------------------------
@@ -84,175 +96,11 @@ version() {
     echo "GroovyServ Version: Client: @GROOVYSERV_VERSION@ (.sh) [Limited Edition]"
 }
 
-error_log() {
-    local message="$1"
-    /bin/echo "ERROR: $message" 1>&2
-}
-
-info_log() {
-    local message="$1"
-    if [ ! $QUIET ]; then
-        /bin/echo "$message" 1>&2
-    fi
-}
-
-debug_log() {
-    local message="$1"
-    if [ $DEBUG ]; then
-        /bin/echo "DEBUG: $message" 1>&2
-    fi
-}
-
-die() {
-    local message="$*"
-    error_log "$message"
-    usage
-    exit 1
-}
-
-resolve_symlink() {
-    local target=$1
-
-    # if target is symbolic link
-    if [ -L $target ]; then
-        local ORIGINAL_FILEPATH=`readlink $target`
-
-        # if original is specified as absolute path
-        if [ $(echo $ORIGINAL_FILEPATH | cut -c 1) = "/" ]; then
-            echo "$ORIGINAL_FILEPATH"
-        else
-            echo "$(dirname $target)/$ORIGINAL_FILEPATH"
-        fi
-    else
-        echo "$target"
-    fi
-}
-
-expand_path() {
-    local target=$1
-    if [ -d "$target" ]; then
-        echo $(cd $target && pwd -P)
-    elif [ -f "$target" ]; then
-        local TARGET_RESOLVED=$(resolve_symlink $target)
-        local FILENAME=$(basename $TARGET_RESOLVED)
-        local DIR_EXPANDED="$(expand_path $(dirname $TARGET_RESOLVED))"
-        echo "$DIR_EXPANDED/$FILENAME"
-    else
-        echo "$target"
-    fi
-}
-
-is_server_available() {
-    local port=$1
-    netstat -an | grep "[.:]${port} .* LISTEN" >/dev/null 2>&1
-}
-
-# ------------------------------------------
-# GroovyServ's work directory
-# ------------------------------------------
-
-GROOVYSERV_WORK_DIR="$HOME/.groovy/groovyserv"
-if [ ! -d "$GROOVYSERV_WORK_DIR" ]; then
-    mkdir -p "$GROOVYSERV_WORK_DIR"
-fi
-debug_log "GroovyServ work directory: $GROOVYSERV_WORK_DIR"
-
-#-------------------------------------------
-# Port and AuthToken
-#-------------------------------------------
-
-GROOVYSERVER_HOST=localhost
-GROOVYSERVER_PORT=${GROOVYSERVER_PORT:-1961}
-GROOVYSERV_AUTHTOKEN_FILE="$GROOVYSERV_WORK_DIR/authtoken-$GROOVYSERVER_PORT"
-GROOVYSERVER_CMD=$(expand_path $(dirname $0)/groovyserver)
-
-#-------------------------------------------
-# Parse arguments
-#-------------------------------------------
-
-SERVER_OPTIONS=()
-ENV_INCLUDES=()
-ENV_EXCLUDES=()
-while [ $# -gt 0 ]; do
-    case $1 in
-        -Chelp | -Ch)
-            usage
-            exit 0
-            ;;
-        --help | -h)
-            SERVER_OPTIONS+=("$1")
-            SHOULD_SHOW_USAGE_LATER=true
-            shift
-            ;;
-        -Cversion | -Cv)
-            version
-            exit 0
-            ;;
-        --version | -v*)
-            SERVER_OPTIONS+=("$1")
-            SHOULD_SHOW_VERSION_LATER=true
-            shift
-            ;;
-        -q)
-            SERVER_OPTIONS+=("$1")
-            QUIET=true
-            shift
-            ;;
-        -Chost | -Cs)
-            shift
-            GROOVYSERVER_HOST=$1
-            shift
-            ;;
-        -Cport | -Cp)
-            shift
-            GROOVYSERVER_PORT=$1
-            shift
-            ;;
-        -Cauthtoken | -Ca)
-            shift
-            AUTHTOKEN=$1
-            shift
-            ;;
-        -Cenv-all)
-            ENV_ALL=true
-            shift
-            ;;
-        -Cenv)
-            shift
-            ENV_INCLUDES+=("$1")
-            shift
-            ;;
-        -Cenv-exclude)
-            shift
-            ENV_EXCLUDES+=("$1")
-            shift
-            ;;
-        -Ckill-server | -Ck)
-            die "Unsupported in limited script"
-            ;;
-        -Crestart-server | -Cr)
-            die "Unsupported in limited script"
-            ;;
-        *)
-            SERVER_OPTIONS+=("$1")
-            shift
-    esac
-done
-
-# Display additionally client's usage at the end of session
-if [ "${#SERVER_OPTIONS[@]}" -eq 0 ]; then
-    SHOULD_SHOW_USAGE_LATER=true
-fi
-
-#-------------------------------------------
-# Core functions
-#-------------------------------------------
-
 start_server() {
     # To try only for localhost
     [ "$GROOVYSERVER_HOST" != "localhost" ] && return
 
-    if ! is_server_available $GROOVYSERVER_PORT; then
+    if ! is_port_listened $GROOVYSERVER_PORT; then
         info_log "Invoking server: '$GROOVYSERVER_CMD' -p $GROOVYSERVER_PORT"
         $GROOVYSERVER_CMD
         if [ ! $? -eq 0 ]; then
@@ -344,6 +192,84 @@ start_session() {
 # Main
 #-------------------------------------------
 
+# Parse arguments
+SERVER_OPTIONS=()
+ENV_INCLUDES=()
+ENV_EXCLUDES=()
+while [ $# -gt 0 ]; do
+    case $1 in
+        -Chelp | -Ch)
+            usage
+            exit 0
+            ;;
+        --help | -h)
+            SERVER_OPTIONS+=("$1")
+            SHOULD_SHOW_USAGE_LATER=true
+            shift
+            ;;
+        -Cversion | -Cv)
+            version
+            exit 0
+            ;;
+        --version | -v*)
+            SERVER_OPTIONS+=("$1")
+            SHOULD_SHOW_VERSION_LATER=true
+            shift
+            ;;
+        -q)
+            SERVER_OPTIONS+=("$1")
+            QUIET=true
+            shift
+            ;;
+        -Chost | -Cs)
+            shift
+            GROOVYSERVER_HOST=$1
+            shift
+            ;;
+        -Cport | -Cp)
+            shift
+            GROOVYSERVER_PORT=$1
+            shift
+            ;;
+        -Cauthtoken | -Ca)
+            shift
+            AUTHTOKEN=$1
+            shift
+            ;;
+        -Cenv-all)
+            ENV_ALL=true
+            shift
+            ;;
+        -Cenv)
+            shift
+            ENV_INCLUDES+=("$1")
+            shift
+            ;;
+        -Cenv-exclude)
+            shift
+            ENV_EXCLUDES+=("$1")
+            shift
+            ;;
+        -Ckill-server | -Ck)
+            die "Unsupported in limited script"
+            ;;
+        -Crestart-server | -Cr)
+            die "Unsupported in limited script"
+            ;;
+        *)
+            SERVER_OPTIONS+=("$1")
+            shift
+    esac
+done
+
+# Display additionally client's usage at the end of session
+if [ "${#SERVER_OPTIONS[@]}" -eq 0 ]; then
+    SHOULD_SHOW_USAGE_LATER=true
+fi
+
+# Start server if necessary
 start_server
+
+# Request to server
 start_session
 

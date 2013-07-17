@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Copyright 2009-2013 the original author or authors.
 #
@@ -15,42 +15,98 @@
 # limitations under the License.
 #
 
+# resolve links - $0 may be a soft-link
+PRG="$0"
+
+while [ -h "$PRG" ] ; do
+    ls=`ls -ld "$PRG"`
+    link=`expr "$ls" : '.*-> \(.*\)$'`
+    if expr "$link" : '/.*' > /dev/null; then
+        PRG="$link"
+    else
+        PRG=`dirname "$PRG"`/"$link"
+    fi
+done
+
+DIRNAME=`dirname "$PRG"`
+
 #-------------------------------------------
-# OS specific support
+# Load common settings
 #-------------------------------------------
 
-OS_CYGWIN=false
-OS_MSYS=false
-OS_DARWIN=false
-case "`uname`" in
-  CYGWIN* )
-    OS_CYGWIN=true
-    ;;
-  Darwin* )
-    OS_DARWIN=true
-    ;;
-  MINGW* )
-    OS_MSYS=true
-    ;;
-esac
+. "$DIRNAME/_common.sh"
 
-# For Cygwin, ensure paths are in UNIX format before anything is touched.
-# When they are used by Groovy, Groovy's script will convert them appropriately.
-if $OS_CYGWIN; then
-    GROOVY_HOME=`cygpath --unix --ignore "$GROOVY_HOME"`
-    GROOVYSERV_HOME=`cygpath --unix --ignore "$GROOVYSERV_HOME"`
-    CLASSPATH=`cygpath --unix --ignore --path "$CLASSPATH"`
+#-------------------------------------------
+# Find groovy command
+#-------------------------------------------
 
-    # TODO Original Groovy's shell scirpt uses only HOME instead of USERPROFILE.
-    # In GroovyServ, let it be in order to unify the work directory for both cygwin and BAT.
-    HOME=`cygpath --unix --ignore "$USERPROFILE"`
+if [ "$GROOVY_HOME" != "" ]; then
+    info_log "Groovy home directory: $GROOVY_HOME"
+    GROOVY_BIN="$GROOVY_HOME/bin/groovy"
+    if [ ! -x "$GROOVY_BIN" ]; then
+        error_log "ERROR: Not found a groovy command in GROOVY_HOME: $GROOVY_BIN"
+        exit 1
+    fi
+    info_log "Groovy command path: $GROOVY_BIN (found at GROOVY_HOME)"
+elif is_command_avaiable groovy; then
+    info_log "Groovy home directory: (none)"
+    GROOVY_BIN=`which groovy`
+    info_log "Groovy command path: $GROOVY_BIN (found at PATH)"
+else
+    error_log "ERROR: Not found a groovy command. Required either PATH having groovy command or GROOVY_HOME"
+    exit 1
 fi
+
+#-------------------------------------------
+# Check GROOVYSERV_HOME
+#-------------------------------------------
+
+if ! is_file_exists "$GROOVYSERV_HOME/lib/groovyserv-*.jar"; then
+    error_log "ERROR: Not found a valid GROOVYSERV_HOME directory: $GROOVYSERV_HOME"
+    exit 1
+fi
+info_log "GroovyServ home directory: $GROOVYSERV_HOME"
+
+# ------------------------------------------
+# GroovyServ's work directory
+# ------------------------------------------
+
+if [ ! -d "$GROOVYSERV_WORK_DIR" ]; then
+    mkdir -p "$GROOVYSERV_WORK_DIR"
+fi
+info_log "GroovyServ work directory: $GROOVYSERV_WORK_DIR"
+
+#-------------------------------------------
+# Port and PID and AuthToken
+#-------------------------------------------
+
+GROOVYSERV_OPTS="$GROOVYSERV_OPTS -Dgroovyserver.port=$GROOVYSERVER_PORT"
+
+#-------------------------------------------
+# Common functions
+#-------------------------------------------
+
+usage() {
+    echo "usage: `basename $0` [options]"
+    echo "options:"
+    echo "  -v                       verbose output to the log file"
+    echo "  -q                       suppress starting messages"
+    echo "  -k                       kill the running groovyserver"
+    echo "  -r                       restart the running groovyserver"
+    echo "  -p <port>                specify the port to listen"
+    echo "  --allow-from <addresses> specify optional acceptable client addresses (delimiter: comma)"
+    echo "  --authtoken <authtoken>  specify authtoken (which is automatically generated if not specified)"
+}
+
+is_pid_file_expired() {
+    local result=$(cd "$GROOVYSERV_WORK_DIR" && find . -name $(basename $GROOVYSERV_PID_FILE) -mmin +1)
+    [ "$result" != "" ]
+}
 
 #-------------------------------------------
 # Parse arguments
 #-------------------------------------------
 
-VERSION_MESSAGE="GroovyServ Version: Server: @GROOVYSERV_VERSION@"
 while [ $# -gt 0 ]; do
     case $1 in
         -v)
@@ -85,134 +141,11 @@ while [ $# -gt 0 ]; do
             shift
             ;;
         *)
-            echo "usage: `basename $0` [options]"
-            echo "options:"
-            echo "  -v                       verbose output to the log file"
-            echo "  -q                       suppress starting messages"
-            echo "  -k                       kill the running groovyserver"
-            echo "  -r                       restart the running groovyserver"
-            echo "  -p <port>                specify the port to listen"
-            echo "  --allow-from <addresses> specify optional acceptable client addresses (delimiter: comma)"
-            echo "  --authtoken <authtoken>  specify authtoken (which is automatically generated if not specified)"
+            usage
             exit 1
             ;;
     esac
 done
-
-#-------------------------------------------
-# Common function
-#-------------------------------------------
-
-error_log() {
-    local MESSAGE="$1"
-    /bin/echo "$MESSAGE" 1>&2
-}
-
-info_log() {
-    local MESSAGE="$1"
-    if [ ! $QUIET ]; then
-        /bin/echo "$MESSAGE" 1>&2
-    fi
-}
-
-resolve_symlink() {
-    local TARGET=$1
-
-    # if target is symbolic link
-    if [ -L $TARGET ]; then
-        local ORIGINAL_FILEPATH=`readlink $TARGET`
-
-        # if original is specified as absolute path
-        if [ $(echo $ORIGINAL_FILEPATH | cut -c 1) = "/" ]; then
-            echo "$ORIGINAL_FILEPATH"
-        else
-            echo "$(dirname $TARGET)/$ORIGINAL_FILEPATH"
-        fi
-    else
-        echo "$TARGET"
-    fi
-}
-
-expand_path() {
-    local TARGET=$1
-    if [ -d "$TARGET" ]; then
-        echo $(cd $TARGET && pwd -P)
-    elif [ -f "$TARGET" ]; then
-        local TARGET_RESOLVED=$(resolve_symlink $TARGET)
-        local FILENAME=$(basename $TARGET_RESOLVED)
-        local DIR_EXPANDED="$(expand_path $(dirname $TARGET_RESOLVED))"
-        echo "$DIR_EXPANDED/$FILENAME"
-    else
-        echo "$TARGET"
-    fi
-}
-
-is_server_available() {
-    local port=$1
-    netstat -an | grep "[.:]${port} .* LISTEN" >/dev/null 2>&1
-}
-
-#-------------------------------------------
-# Find groovy command
-#-------------------------------------------
-
-if [ "$GROOVY_HOME" != "" ]; then
-    info_log "Groovy home directory: $GROOVY_HOME"
-    GROOVY_BIN="$GROOVY_HOME/bin/groovy"
-    if [ ! -x "$GROOVY_BIN" ]; then
-        error_log "ERROR: Not found a groovy command in GROOVY_HOME: $GROOVY_BIN"
-        exit 1
-    fi
-    info_log "Groovy command path: $GROOVY_BIN (found at GROOVY_HOME)"
-elif which groovy >/dev/null 2>&1; then
-    info_log "Groovy home directory: (none)"
-    GROOVY_BIN=`which groovy`
-    info_log "Groovy command path: $GROOVY_BIN (found at PATH)"
-else
-    error_log "ERROR: Not found a groovy command. Required either PATH having groovy command or GROOVY_HOME"
-    exit 1
-fi
-
-#-------------------------------------------
-# Resolve GROOVYSERV_HOME
-#-------------------------------------------
-
-if [ "$GROOVYSERV_HOME" = "" ]; then
-    GROOVYSERV_HOME="$(dirname $(dirname $(expand_path $0)))"
-
-    # for Homebrew in Mac OS X
-    if [ -d $GROOVYSERV_HOME/libexec ]; then
-        GROOVYSERV_HOME="$GROOVYSERV_HOME/libexec"
-    fi
-else
-    GROOVYSERV_HOME=`expand_path "$GROOVYSERV_HOME"`
-fi
-ls $GROOVYSERV_HOME/lib/groovyserv-*.jar >/dev/null 2>&1
-if [ ! $? -eq 0 ]; then
-    error_log "ERROR: Not found a valid GROOVYSERV_HOME directory: $GROOVYSERV_HOME"
-    exit 1
-fi
-info_log "GroovyServ home directory: $GROOVYSERV_HOME"
-
-# ------------------------------------------
-# GroovyServ's work directory
-# ------------------------------------------
-
-GROOVYSERV_WORK_DIR="$HOME/.groovy/groovyserv"
-if [ ! -d "$GROOVYSERV_WORK_DIR" ]; then
-    mkdir -p "$GROOVYSERV_WORK_DIR"
-fi
-info_log "GroovyServ work directory: $GROOVYSERV_WORK_DIR"
-
-#-------------------------------------------
-# Port and PID and AuthToken
-#-------------------------------------------
-
-GROOVYSERVER_PORT=${GROOVYSERVER_PORT:-1961}
-GROOVYSERV_OPTS="$GROOVYSERV_OPTS -Dgroovyserver.port=$GROOVYSERVER_PORT"
-GROOVYSERV_PID_FILE="$GROOVYSERV_WORK_DIR/pid-$GROOVYSERVER_PORT"
-GROOVYSERV_AUTHTOKEN_FILE="$GROOVYSERV_WORK_DIR/authtoken-$GROOVYSERVER_PORT"
-EXPIRED_PID_FILE="( cd \"$GROOVYSERV_WORK_DIR\" && find . -name pid-$GROOVYSERVER_PORT -mmin +1 )"
 
 #-------------------------------------------
 # Setup classpath
@@ -266,13 +199,13 @@ if [ -f "$GROOVYSERV_PID_FILE" ]; then
     EXISTED_PID=`cat "$GROOVYSERV_PID_FILE"`
 
     # if connecting to server is succeed, return with warning message
-    if is_server_available $GROOVYSERVER_PORT; then
+    if is_port_listened $GROOVYSERVER_PORT; then
         error_log "WARN: groovyserver is already running as $EXISTED_PID($GROOVYSERVER_PORT)"
         exit 1
     fi
 
     # if PID file doesn't expired, terminate the sequence of invoking server
-    if [ "`sh -c \"$EXPIRED_PID_FILE\"`" = "" ]; then
+    if ! is_pid_file_expired; then
         error_log "WARN: Another process may be starting groovyserver."
         exit 1
     fi
@@ -327,12 +260,12 @@ while true; do
     fi
 
     # if connecting to server is succeed, return successfully
-    if is_server_available $GROOVYSERVER_PORT; then
+    if is_port_listened $GROOVYSERVER_PORT; then
         break
     fi
 
     # if PID file was expired while to connect to server is failing, error
-    if [ "`sh -c \"$EXPIRED_PID_FILE\"`" != "" ]; then
+    if is_pid_file_expired; then
         error_log "ERROR: Timeout. Confirm if groovyserver $PID($GROOVYSERVER_PORT) is running."
         exit 1
     fi
