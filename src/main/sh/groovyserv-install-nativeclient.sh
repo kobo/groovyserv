@@ -67,7 +67,11 @@ make -e GROOVYSERV_VERSION="@GROOVYSERV_VERSION@"
 # Install
 BUILT_CLIENT_PATH="$SRC_DIR/build/natives/groovyclient"
 BIN_CLIENT_PATH="$GROOVYSERV_HOME/bin/groovyclient"
-cp -f "$BUILT_CLIENT_PATH" "$BIN_CLIENT_PATH"
+if [ -f "$BIN_CLIENT_PATH" ]; then
+    # explicitly delete the 'groovyclinet' file because 'groovyclient.exe' cannot overwrite the file in windows
+    rm -f "$BIN_CLIENT_PATH"
+fi
+cp "$BUILT_CLIENT_PATH" "$BIN_CLIENT_PATH"
 chmod +x "$BIN_CLIENT_PATH"
 
 info_log
