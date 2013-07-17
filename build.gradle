@@ -234,7 +234,7 @@ task unitTest(type: Test) {
 
     doFirst {
         // This causes running this task even though UP-TO-DATE skipping condition is met.
-        systemProperty 'spock.configuration', file("${projectDir}/spock/unit.groovy")
+        systemProperty 'spock.configuration', "spock/unit.groovy"
     }
     beforeTest { desc ->
         AnsiColor.printlnAsTestResult """ - (${desc.className}) "${desc.name}" => """, true
@@ -277,7 +277,7 @@ integrationTestSpecs.each { spec ->
             if (System.properties['test.single']) {
                 include "**/${System.properties['test.single']}.*"
             } else {
-                systemProperty 'spock.configuration', "${projectDir}/spock/${spec.taskId}.groovy"
+                systemProperty 'spock.configuration', "spock/${spec.taskId}.groovy"
             }
 
             // prop for TestUtils
