@@ -229,15 +229,18 @@ task unitTest(type: Test) {
     inputs.dir file("$projectDir/src/main/groovy")
     outputs.dir testResultsDir
 
+    // show standard out and standard error of the test JVM(s) on the console
+    testLogging.showStandardStreams = true
+
     doFirst {
         // This causes running this task even though UP-TO-DATE skipping condition is met.
         systemProperty 'spock.configuration', file("${projectDir}/spock/unit.groovy")
     }
     beforeTest { desc ->
-        AnsiColor.printlnAsTestResult """ - (${desc.className}) "${desc.name}" """, true
+        AnsiColor.printlnAsTestResult """ - (${desc.className}) "${desc.name}" => """, true
     }
     afterTest { desc, result -> 
-        AnsiColor.printlnAsTestResult "=> ${result.resultType}"
+        AnsiColor.printlnAsTestResult "${result.resultType}"
     }
 }
 
@@ -262,8 +265,10 @@ integrationTestSpecs.each { spec ->
         testReportDir = file("$buildDir/reports/${spec.taskId}")
         testResultsDir = file("$buildDir/test-results/${spec.taskId}")
 
-        def type = (spec.asPlatformIndependent) ? "platformIndependent" : "native"
-        def binDir = convertMixedPath(file("${buildDir}/executables/${type}/bin"))
+        // show standard out and standard error of the test JVM(s) on the console
+        testLogging.showStandardStreams = true
+
+        def binDir = convertMixedPath(file("${buildDir}/executables/${(spec.asPlatformIndependent) ? "platformIndependent" : "native"}/bin"))
         def clientExecutableExpression = "${spec.invoker ?: ''} ${binDir}/groovyclient${spec.extension}".trim()
         def serverExecutableExpression = "$binDir/groovyserver"
 
