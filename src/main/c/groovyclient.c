@@ -215,13 +215,6 @@ static char* get_authtoken_specified_by_client(int port)
     if (client_option.authtoken != NULL) {
         return client_option.authtoken;
     }
-
-    static char* authtoken_env;
-    authtoken_env = getenv("GROOVYSERVER_AUTHTOKEN");
-    if (authtoken_env != NULL) {
-        return authtoken_env;
-    }
-
     return NULL;
 }
 
