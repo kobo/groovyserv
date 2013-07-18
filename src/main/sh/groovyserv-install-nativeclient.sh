@@ -58,7 +58,7 @@ build_nativeclient() {
 
     cd "$src_dir"
     make clean
-    make -e GROOVYSERV_VERSION="@GROOVYSERV_VERSION@"
+    make -e GROOVYSERV_VERSION="@GROOVYSERV_VERSION@" || die "ERROR: unexpected error occurs"
 }
 
 install_nativeclient() {
