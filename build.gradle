@@ -237,18 +237,9 @@ task unitTest(type: Test) {
     inputs.dir file("$projectDir/src/main/groovy")
     outputs.dir testResultsDir
 
-    // show standard out and standard error of the test JVM(s) on the console
-    testLogging.showStandardStreams = true
-
     doFirst {
         // This causes running this task even though UP-TO-DATE skipping condition is met.
         systemProperty 'spock.configuration', "spock/unit.groovy"
-    }
-    beforeTest { desc ->
-        AnsiColor.printlnAsTestResult """ - (${desc.className}) "${desc.name}" => """, true
-    }
-    afterTest { desc, result -> 
-        AnsiColor.printlnAsTestResult "${result.resultType}"
     }
 }
 
@@ -273,9 +264,6 @@ integrationTestSpecs.each { spec ->
         testReportDir = file("$buildDir/reports/${spec.taskId}")
         testResultsDir = file("$buildDir/test-results/${spec.taskId}")
 
-        // show standard out and standard error of the test JVM(s) on the console
-        testLogging.showStandardStreams = true
-
         def binDir = convertMixedPath(file("${buildDir}/executables/${(spec.asPlatformIndependent) ? "platformIndependent" : "native"}/bin"))
         def clientExecutableExpression = "${spec.invoker ?: ''} ${binDir}/groovyclient${spec.extension}".trim()
         def serverExecutableExpression = "$binDir/groovyserver"
@@ -297,15 +285,24 @@ integrationTestSpecs.each { spec ->
         doLast {
             shutdownGroovyServer(serverExecutableExpression)
         }
-        beforeTest { desc ->
-            AnsiColor.printlnAsTestResult """ - (${desc.className}) "${desc.name}" => """, true
-        }
-        afterTest { desc, result -> 
-            AnsiColor.printlnAsTestResult "${result.resultType}"
-        }
     }
 }
 task integrationTest(dependsOn: ['executables', integrationTestSpecs*.taskName])
+
+// Common configuration for unitTest and integrationTest
+tasks.withType(Test) each {
+    // show standard out and standard error of the test JVM(s) on the console
+    it.testLogging.showStandardStreams = true
+
+
+    it.beforeTest { desc ->
+        AnsiColor.printlnAsTestResult """ - (${desc.className}) "${desc.name}" => """, true
+        ext.watch = StopWatch.start()
+    }
+    it.afterTest { desc, result ->
+        AnsiColor.printlnAsTestResult "${result.resultType} (${String.format('%.3f', ext.watch.wrap())} sec)"
+    }
+}
 
 //------------------------
 // Gradle wrapper
@@ -419,6 +416,20 @@ class AnsiColor {
         } else {
             println message
         }
+    }
+}
+
+class StopWatch {
+    def startTime
+
+    static start() { new StopWatch() }
+
+    private StopWatch() {
+        this.startTime = System.currentTimeMillis()
+    }
+
+    def wrap() {
+        (System.currentTimeMillis() - startTime) / 1000
     }
 }
 
