@@ -21,8 +21,9 @@ require 'base64'
 # Constants
 #-------------------------------------------
 
-DESTHOST = "127.0.0.1" # for security
+DESTHOST = ENV.fetch("GROOVYSERVER_HOST", "localhost")
 DESTPORT = ENV.fetch("GROOVYSERVER_PORT", 1961)
+
 IS_WINDOWS = RUBY_PLATFORM.downcase =~ /mswin(?!ce)|mingw|cygwin|bccwin/
 HOME_DIR = IS_WINDOWS ? ENV['USERPROFILE'] : ENV['HOME']
 AUTHTOKEN_FILE_BASE = HOME_DIR + "/.groovy/groovyserv/authtoken"
