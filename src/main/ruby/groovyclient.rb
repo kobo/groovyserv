@@ -21,13 +21,13 @@ require 'base64'
 # Constants
 #-------------------------------------------
 
-DESTHOST = ENV.fetch("GROOVYSERVER_HOST", "localhost")
-DESTPORT = ENV.fetch("GROOVYSERVER_PORT", 1961)
+SERVER_HOST = ENV.fetch("GROOVYSERVER_HOST", "localhost")
+SERVER_PORT = ENV.fetch("GROOVYSERVER_PORT", 1961)
+SERVER_CMD = File.expand_path(ENV.fetch("GROOVYSERV_HOME", File.dirname($0)+"/..") + "/bin/groovyserver")
 
 IS_WINDOWS = RUBY_PLATFORM.downcase =~ /mswin(?!ce)|mingw|cygwin|bccwin/
 HOME_DIR = IS_WINDOWS ? ENV['USERPROFILE'] : ENV['HOME']
 AUTHTOKEN_FILE_BASE = HOME_DIR + "/.groovy/groovyserv/authtoken"
-GROOVYSERVER_CMD = File.expand_path(ENV.fetch("GROOVYSERV_HOME", File.dirname($0)+"/..") + "/bin/groovyserver")
 VERSION_MESSAGE = "GroovyServ Version: Client: @GROOVYSERV_VERSION@ (.ruby)"
 
 ERROR_INVALID_AUTHTOKEN = 201
@@ -42,8 +42,8 @@ class Options
 
   def initialize
     @client = {
-      :host => DESTHOST,
-      :port => DESTPORT,
+      :host => SERVER_HOST,
+      :port => SERVER_PORT,
       :authtoken => nil,
       :quiet => false,
       :env_all => false,
@@ -95,17 +95,17 @@ options:
 end
 
 def start_server(args)
-  unless FileTest.executable? GROOVYSERVER_CMD
-    STDERR.puts "ERROR: Command not found: #{GROOVYSERVER_CMD}"
+  unless FileTest.executable? SERVER_CMD
+    STDERR.puts "ERROR: Command not found: #{SERVER_CMD}"
     exit 1
   end
   if $options.client[:quiet]
     args << "-q"
   else
-    command_str = "'#{GROOVYSERVER_CMD}' -p #{$options.client[:port]} #{args.join(' ')}"
+    command_str = "'#{SERVER_CMD}' -p #{$options.client[:port]} #{args.join(' ')}"
     STDERR.printf "Invoking server: %s\n", command_str
   end
-  system(GROOVYSERVER_CMD, "-p", $options.client[:port].to_s, *args)
+  system(SERVER_CMD, "-p", $options.client[:port].to_s, *args)
 end
 
 def session(socket, args)
@@ -326,7 +326,7 @@ begin
   }
 rescue Errno::ECONNREFUSED
   if failCount >= 3
-    STDERR.puts "ERROR: Failed to start up groovyserver: #{GROOVYSERVER_CMD}"
+    STDERR.puts "ERROR: Failed to start up groovyserver: #{SERVER_CMD}"
     exit 1
   end
   start_server([])

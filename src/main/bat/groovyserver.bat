@@ -85,11 +85,11 @@ call :expand_path CLASSPATH "%CLASSPATH%"
 
 if defined GROOVY_HOME (
     call :info_log Groovy home directory: "%GROOVY_HOME%"
-    call :setup_GROOVY_BIN_from_GROOVY_HOME
+    call :setup_GROOVY_CMD_from_GROOVY_HOME
     if errorlevel 1 goto end
 ) else (
     call :info_log Groovy home directory: ^(none^)
-    call :setup_GROOVY_BIN_from_PATH
+    call :setup_GROOVY_CMD_from_PATH
     if errorlevel 1 goto end
 )
 
@@ -171,7 +171,7 @@ if not errorlevel 1 (
 
 if exist "%GROOVYSERV_AUTHTOKEN_FILE%" del "%GROOVYSERV_AUTHTOKEN_FILE%"
 if defined DEBUG (
-    %GROOVY_BIN% %GROOVYSERV_OPTS% -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)"
+    %GROOVY_CMD% %GROOVYSERV_OPTS% -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)"
     goto end
 ) else (
     @rem The start command somehow doesn't update errorleve when it's succeed.
@@ -180,7 +180,7 @@ if defined DEBUG (
     start ^
         "groovyserver[port:%GROOVYSERVER_PORT%]" ^
         /MIN ^
-        %GROOVY_BIN% ^
+        %GROOVY_CMD% ^
         %GROOVYSERV_OPTS% ^
         -e "println('Groovyserver^(port %GROOVYSERVER_PORT%^) is running');println('Close this window to stop');org.jggug.kobo.groovyserv.GroovyServer.main(args)"
     if errorlevel 1 (
@@ -242,30 +242,30 @@ exit /B
     netstat -an | find ":%GROOVYSERVER_PORT% " | find "LISTENING" > NUL 2>&1
 exit /B %ERRORLEVEL%
 
-@rem GROOVY_BIN will be modified
-:setup_GROOVY_BIN_from_GROOVY_HOME
-    set GROOVY_BIN=%GROOVY_HOME%\bin\groovy.bat
-    if not exist "%GROOVY_BIN%" (
+@rem GROOVY_CMD will be modified
+:setup_GROOVY_CMD_from_GROOVY_HOME
+    set GROOVY_CMD=%GROOVY_HOME%\bin\groovy.bat
+    if not exist "%GROOVY_CMD%" (
         echo ERROR: Not found a valid GROOVY_HOME directory: "%GROOVY_HOME%" >&2
         exit /B 1
     )
-    call :info_log Groovy command path: "%GROOVY_BIN%" ^(found at GROOVY_HOME^)
+    call :info_log Groovy command path: "%GROOVY_CMD%" ^(found at GROOVY_HOME^)
 exit /B
 
-@rem GROOVY_BIN will be modified
-:setup_GROOVY_BIN_from_PATH
-    call :find_groovy_from_path_and_setup_GROOVY_BIN groovy.bat
-    if not defined GROOVY_BIN (
+@rem GROOVY_CMD will be modified
+:setup_GROOVY_CMD_from_PATH
+    call :find_groovy_from_path_and_setup_GROOVY_CMD groovy.bat
+    if not defined GROOVY_CMD (
         echo ERROR: Not found a groovy command. Required either PATH having groovy command or GROOVY_HOME >&2
         exit /B 1
     )
-    call :info_log Groovy command path: "%GROOVY_BIN%" ^(found at PATH^)
+    call :info_log Groovy command path: "%GROOVY_CMD%" ^(found at PATH^)
 exit /B
 
-@rem GROOVY_BIN will be modified
-:find_groovy_from_path_and_setup_GROOVY_BIN
+@rem GROOVY_CMD will be modified
+:find_groovy_from_path_and_setup_GROOVY_CMD
     @rem Replace long name to short name for start command
-    set GROOVY_BIN=%~s$PATH:1
+    set GROOVY_CMD=%~s$PATH:1
 exit /B
 
 @rem ERRORLEVEL will be modified

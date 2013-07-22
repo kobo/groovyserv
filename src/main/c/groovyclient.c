@@ -188,7 +188,7 @@ static char* get_host()
         return host_env;
     }
 
-    return DESTHOST;
+    return SERVER_HOST;
 }
 
 static int get_port()
@@ -207,7 +207,7 @@ static int get_port()
         return port;
     }
 
-    return DESTPORT;
+    return SERVER_PORT;
 }
 
 static char* get_authtoken_specified_by_client(int port)

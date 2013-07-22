@@ -37,15 +37,6 @@ DIRNAME=`dirname "$PRG"`
 . "$DIRNAME/_common.sh"
 
 #-------------------------------------------
-# Check GROOVYSERV_HOME and GROOVYSERVER_CMD
-#-------------------------------------------
-
-GROOVYSERVER_CMD="$GROOVYSERV_HOME/bin/groovyserver"
-if ! is_command_avaiable "$GROOVYSERVER_CMD"; then
-    die "ERROR: Not found 'groovyserver' command: $GROOVYSERVER_CMD"
-fi
-
-#-------------------------------------------
 # Functions
 #-------------------------------------------
 
@@ -84,9 +75,16 @@ version() {
     echo "GroovyServ Version: Client: @GROOVYSERV_VERSION@ (.sh) [Limited Edition]"
 }
 
+check_environment() {
+    SERVER_CMD="$GROOVYSERV_HOME/bin/groovyserver"
+    if ! is_command_avaiable "$SERVER_CMD"; then
+        die "ERROR: Not found 'groovyserver' command: $SERVER_CMD"
+    fi
+}
+
 invoke_server_command() {
-    info_log "Invoking server: '$GROOVYSERVER_CMD' -p $GROOVYSERVER_PORT ${SERVER_OPTIONS[@]}"
-    "$GROOVYSERVER_CMD" -p $GROOVYSERVER_PORT ${SERVER_OPTIONS[@]} || die "ERROR: Sorry, unexpected error occurs"
+    info_log "Invoking server: '$SERVER_CMD' -p $GROOVYSERVER_PORT ${SERVER_OPTIONS[@]}"
+    "$SERVER_CMD" -p $GROOVYSERVER_PORT ${SERVER_OPTIONS[@]} || die "ERROR: Sorry, unexpected error occurs"
 }
 
 start_server() {
@@ -207,6 +205,9 @@ ENV_EXCLUDES=()
 #-------------------------------------------
 # Main
 #-------------------------------------------
+
+# Pre-processing
+check_environment
 
 # Parse arguments
 while [ $# -gt 0 ]; do

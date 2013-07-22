@@ -23,8 +23,8 @@
 #define UNIX
 #endif
 
-#define DESTHOST "localhost"
-#define DESTPORT 1961
+#define SERVER_HOST "localhost"
+#define SERVER_PORT 1961
 
 #define ERROR_INVALID_AUTHTOKEN 201
 #define ERROR_CLIENT_NOT_ALLOWED 202

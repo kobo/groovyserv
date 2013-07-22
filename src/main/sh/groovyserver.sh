@@ -65,18 +65,18 @@ is_pid_file_expired() {
 }
 
 find_groovy_command() {
-    unset GROOVY_BIN
+    unset GROOVY_CMD
     if [ "$GROOVY_HOME" != "" ]; then
         info_log "Groovy home directory: $GROOVY_HOME"
-        GROOVY_BIN="$GROOVY_HOME/bin/groovy"
-        if [ ! -x "$GROOVY_BIN" ]; then
-            die "ERROR: Not found a groovy command in GROOVY_HOME: $GROOVY_BIN"
+        GROOVY_CMD="$GROOVY_HOME/bin/groovy"
+        if [ ! -x "$GROOVY_CMD" ]; then
+            die "ERROR: Not found a groovy command in GROOVY_HOME: $GROOVY_CMD"
         fi
-        info_log "Groovy command path: $GROOVY_BIN (found at GROOVY_HOME)"
+        info_log "Groovy command path: $GROOVY_CMD (found at GROOVY_HOME)"
     elif is_command_avaiable groovy; then
         info_log "Groovy home directory: (none)"
-        GROOVY_BIN=`which groovy`
-        info_log "Groovy command path: $GROOVY_BIN (found at PATH)"
+        GROOVY_CMD=`which groovy`
+        info_log "Groovy command path: $GROOVY_CMD (found at PATH)"
     else
         die "ERROR: Not found a groovy command. Required either PATH having groovy command or GROOVY_HOME"
     fi
@@ -148,11 +148,11 @@ check_duplicated_invoking() {
 invoke_server() {
     if $DEBUG; then
         echo "Invoking server for DEBUG..."
-        echo "$GROOVY_BIN" $GROOVYSERV_OPTS -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)"
-        "$GROOVY_BIN" $GROOVYSERV_OPTS -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)"
+        echo "$GROOVY_CMD" $GROOVYSERV_OPTS -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)"
+        "$GROOVY_CMD" $GROOVYSERV_OPTS -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)"
         exit 0
     else
-        nohup "$GROOVY_BIN" $GROOVYSERV_OPTS -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)" > /dev/null 2>&1 &
+        nohup "$GROOVY_CMD" $GROOVYSERV_OPTS -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)" > /dev/null 2>&1 &
     fi
 }
 
@@ -165,7 +165,7 @@ store_pid() {
     else
         error_log "ERROR: Failed to store PID into file $GROOVYSERV_PID_FILE"
         error_log "Rerun for debug..."
-        "$GROOVY_BIN" $GROOVYSERV_OPTS -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)" &
+        "$GROOVY_CMD" $GROOVYSERV_OPTS -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)" &
         exit 1
     fi
 }
