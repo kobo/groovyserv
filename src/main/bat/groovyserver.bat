@@ -239,7 +239,8 @@ exit /B
 
 @rem ERRORLEVEL will be modified
 :is_server_available
-    netstat -an | find ":%GROOVYSERVER_PORT% " | find "LISTENING" > NUL 2>&1
+    set FIND_CMD=C:\Windows\system32\find
+    netstat -an | "%FIND_CMD%" ":%GROOVYSERVER_PORT% " | "%FIND_CMD%" "LISTENING" > NUL 2>&1
 exit /B %ERRORLEVEL%
 
 @rem GROOVY_CMD will be modified
