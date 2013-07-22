@@ -20,8 +20,9 @@
 
 UNAME := $(shell uname)
 ifeq ($(OS), Windows_NT)
-	CC = gcc-3
-	CFLAGS = -mno-cygwin -Wall -g
+	# only 32bit binary
+	CC = i686-pc-mingw32-gcc
+	CFLAGS = -Wall -g
 	LDFLAGS = -lws2_32
 else ifeq ($(UNAME), Darwin)
 	CC = clang
