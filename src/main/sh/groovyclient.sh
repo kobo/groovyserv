@@ -91,19 +91,12 @@ start_server() {
     # To try only for localhost
     [ "$GROOVYSERVER_HOST" != "localhost" ] && return
 
-    if $NEED_TO_INVOKE_SERVER; then
-        local shoud_stop=false
-
+    # Specified
+    if $DO_RESTART || $DO_KILL; then
         invoke_server_command
+        $DO_KILL && exit 0
 
-        for should_stop_key in "${SERVER_OPTIONS[@]}"; do
-            if [[ "$should_stop_key" = "-k" ]]; then
-                shoud_stop=true
-                break
-            fi
-        done
-        $shoud_stop && exit 0
-
+    # Automatically
     elif ! is_port_listened $GROOVYSERVER_PORT; then
         invoke_server_command
     fi
@@ -193,12 +186,13 @@ start_session() {
 # Setup global variables only for here
 # ------------------------------------------
 
-NEED_TO_INVOKE_SERVER=false
 SHOULD_SHOW_USAGE_LATER=false
 SHOULD_SHOW_VERSION_LATER=false
 unset AUTHTOKEN
 SERVER_ARGS=()
 SERVER_OPTIONS=()
+DO_KILL=false
+DO_RESTART=false
 ENV_INCLUDES=()
 ENV_EXCLUDES=()
 
@@ -238,12 +232,12 @@ while [ $# -gt 0 ]; do
             ;;
         -Ckill-server | -Ck)
             SERVER_OPTIONS+=("-k")
-            NEED_TO_INVOKE_SERVER=true
+            DO_KILL=true
             shift
             ;;
         -Crestart-server | -Cr)
             SERVER_OPTIONS+=("-r")
-            NEED_TO_INVOKE_SERVER=true
+            DO_RESTART=true
             shift
             ;;
         -Cquiet | -Cq)
