@@ -46,25 +46,21 @@ class TestUtils {
         return p
     }
 
-    static startServer(verbose = false) {
+    static startServer() {
         def p = createProcessBuilder(["sh", serverExecutablePath, "-r", "-v"]).start()
         p.waitFor()
-        if (verbose) {
-            def inText = p.in.text
-            if (inText) System.out.println inText
-            def errText = p.err.text
-            if (errText) System.err.println errText
+        if (p.exitValue() != 0) {
+            fail "ERROR: exitValue:${p.exitValue()}, in:[${p.in.text}], err:[${p.err.text}]"
+            System.exit(88)
         }
     }
 
-    static shutdownServer(verbose = false) {
+    static shutdownServer() {
         def p = createProcessBuilder(["sh", serverExecutablePath, "-k"]).start()
         p.waitFor()
-        if (verbose) {
-            def inText = p.in.text
-            if (inText) System.out.println inText
-            def errText = p.err.text
-            if (errText) System.err.println errText
+        if (p.exitValue() != 0) {
+            fail "ERROR: exitValue:${p.exitValue()}, in:[${p.in.text}], err:[${p.err.text}]"
+            System.exit(87)
         }
     }
 
