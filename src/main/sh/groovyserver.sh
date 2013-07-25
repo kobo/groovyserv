@@ -59,11 +59,6 @@ usage() {
     echo "  --authtoken <authtoken>  specify authtoken (which is automatically generated if not specified)"
 }
 
-is_pid_file_expired() {
-    local result=$(cd "$GROOVYSERV_WORK_DIR" && find . -name $(basename $GROOVYSERV_PID_FILE) -mmin +1)
-    [ "$result" != "" ]
-}
-
 find_groovy_command() {
     unset GROOVY_CMD
     if [ "$GROOVY_HOME" != "" ]; then
@@ -130,18 +125,9 @@ kill_process_if_specified() {
 }
 
 check_duplicated_invoking() {
-    if [ -f "$GROOVYSERV_PID_FILE" ]; then
-        EXISTED_PID=`cat "$GROOVYSERV_PID_FILE"`
-
-        # if connecting to server is succeed, return with warning message
-        if is_port_listened $GROOVYSERVER_PORT; then
-            die "WARN: groovyserver is already running as $EXISTED_PID($GROOVYSERVER_PORT)"
-        fi
-
-        # if PID file doesn't expired, terminate the sequence of invoking server
-        if ! is_pid_file_expired; then
-            die "WARN: Another process may be starting groovyserver."
-        fi
+    # if connecting to server is succeed, return with warning message
+    if is_port_listened $GROOVYSERVER_PORT; then
+        die "WARN: groovyserver is already running on port $GROOVYSERVER_PORT"
     fi
 }
 
@@ -186,9 +172,6 @@ wait_for_server_available() {
 
         # if connecting to server is succeed, return successfully
         is_port_listened $GROOVYSERVER_PORT && break
-
-        # if PID file was expired while to connect to server is failing, error
-        is_pid_file_expired && die "ERROR: Timeout. Confirm if groovyserver $PID($GROOVYSERVER_PORT) is running."
     done
 
     info_log
