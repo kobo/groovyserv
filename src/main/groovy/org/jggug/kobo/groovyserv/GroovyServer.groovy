@@ -47,9 +47,12 @@ class GroovyServer {
             setupRunningMode()
 
             // The order is important.
-            // If an error occurs when startServer, authtoken file shouldn't be created.
-            startServer()
+            // groovyclient uses a port for checking whether server is available.
+            // If port was opened before creating authtoken, checking availability was passed.
+            // But on too slow machine, client may access authtoken file before it's created.
+            // So authtoken file should be created before port is opened.
             setupAuthToken()
+            startServer()
 
             handleRequest()
         }
@@ -60,6 +63,9 @@ class GroovyServer {
         catch (Throwable e) {
             DebugUtils.errorLog("Unexpected error: GroovyServer", e)
             System.exit(ExitStatus.UNEXPECTED_ERROR.code)
+        } finally {
+            // including tha case that an error occurs when startServer, authtoken file should be deleted.
+            authToken.delete()
         }
     }
 

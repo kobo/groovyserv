@@ -46,6 +46,10 @@ class AuthToken {
         }
     }
 
+    void delete() {
+        WorkFiles.AUTHTOKEN_FILE.delete()
+    }
+
     boolean isValid(given) {
         token == given
     }
