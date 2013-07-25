@@ -132,10 +132,6 @@ class ServerOperationFromClientSpec extends Specification {
 
     private static createDummyPidFile() {
         new File(WorkFiles.DATA_DIR, "pid-1961") << "DUMMY_PID_FOR_TEST"
-
-        // If lastUpdated is within 1 minute, the invocation process think that another process has just been run.
-        // Here doesn't want the behavior. So lastUpdated of the file is set to 1 day ago.
-        new File(WorkFiles.DATA_DIR, "pid-1961").setLastModified((new Date() - 1).time)
     }
 
     private static deleteAuthTokenFile() {
