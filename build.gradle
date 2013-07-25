@@ -109,6 +109,7 @@ def platformIndependentBinSpec = copySpec {
         from "$projectDir/src/main/sh", {
             rename 'groovyclient.sh', 'groovyclient'
             rename 'groovyserver.sh', 'groovyserver'
+            rename 'groovyserv-install-nativeclient.sh', 'groovyserv-install-nativeclient'
         }
         from "$projectDir/src/main/sh/groovyclient.sh" // for using after 'groovyclient' is replaced by native client
         from "$projectDir/src/main/bat"
