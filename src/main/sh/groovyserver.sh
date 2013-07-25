@@ -108,6 +108,7 @@ kill_process_if_specified() {
             ps -p $EXISTED_PID >/dev/null 2>&1
             if [ $? -eq 0 ]; then
                 kill -9 $EXISTED_PID
+                sleep 1
                 info_log "Killed groovyserver of $EXISTED_PID($GROOVYSERVER_PORT)"
             else
                 info_log "Process of groovyserver of $EXISTED_PID($GROOVYSERVER_PORT) not found"
