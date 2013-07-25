@@ -65,7 +65,7 @@ usage() {
     echo "    * Status code from server (\$?)"
     echo
     echo "  If you want to use a client of FULL EDITION:"
-    echo "    * Run 'groovyserv-install-native.sh' if you installed 'make' and 'gcc',"
+    echo "    * Run 'groovyserv-install-nativeclient' if you installed 'make' and 'gcc',"
     echo "      to build a native client and replace 'groovyclient' with it"
     echo "    * Use a ruby client 'groovyclient.rb'"
     echo "*******************************************************************************"
