@@ -12,7 +12,6 @@ For Anywhere
 Only for Mac OS X
 ^^^^^^^^^^^^^^^^^
 
-- :ref:`Macports <ref-howtoinstall-macports>`
 - :ref:`Homebrew <ref-howtoinstall-homebrew>`
 
 Only for Linux
@@ -61,17 +60,6 @@ At first, you might have to wait for a few seconds to startup::
     GroovyServ Version: Client: 0.13 (.c)
 
 If the binary downloaded doesn't work, try to build it from source code, according to :ref:`Build from source code <ref-howtobuild>`.
-
-.. _ref-howtoinstall-macports:
-
-Install via Macports
---------------------
-
-To install::
-
-    $ sudo port install groovyserv
-
-See: http://www.macports.org/ (thanx, breskeby!)
 
 
 .. _ref-howtoinstall-homebrew:
