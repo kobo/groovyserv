@@ -9,6 +9,11 @@ For Anywhere
 
 - :ref:`binary package (bin.zip) <ref-howtoinstall-binary>`
 
+For all UNIX platform
+^^^^^^^^^^^^^^^^^^^^^
+
+- :ref:`GVM <ref-howtoinstall-gvm>`
+
 Only for Mac OS X
 ^^^^^^^^^^^^^^^^^
 
@@ -30,13 +35,13 @@ Only for Windows
 Install from binary package
 ---------------------------
 
-Download and expand GroovyServ distribution package from :ref:`Download page <ref-download>`, e.g. groovyserv-0.13-macosx-bin.zip to any directory::
+Download and expand GroovyServ distribution package from :ref:`Download page <ref-download>`, e.g. `groovyserv-0.13-macosx-bin.zip` to any directory::
 
     $ mkdir ~/opt
     $ cd ~/opt
     $ unzip groovyserv-0.13-macosx-x86_64-bin.zip
 
-And add bin directory to PATH environment variable.
+And add bin directory to `PATH` environment variable.
 For example in bash/bourne shell::
 
     export PATH=~/opt/groovyserv-0.13/bin:$PATH
@@ -47,13 +52,7 @@ At first, you might have to wait for a few seconds to startup::
 
     $ groovyclient -v
     Invoking server: '/opt/groovyserv-0.13/bin/groovyserver' -p 1961
-    Groovy home directory: (none)
-    Groovy command path: /Users/nobeans/.gvm/groovy/current/bin/groovy (found at PATH)
-    GroovyServ home directory: /opt/groovyserv-0.13
-    GroovyServ work directory: /Users/nobeans/.groovy/groovyserv
-    Original classpath: (none)
-    GroovyServ default classpath: /opt/groovyserv-0.13/lib/*
-    Starting..
+    ...
     groovyserver 24008(1961) is successfully started
     Groovy Version: 2.1.5 JVM: 1.7.0_25 Vendor: Oracle Corporation OS: Mac OS X
     GroovyServ Version: Server: 0.13
@@ -62,9 +61,21 @@ At first, you might have to wait for a few seconds to startup::
 If the binary downloaded doesn't work, try to build it from source code, according to :ref:`Build from source code <ref-howtobuild>`.
 
 
+.. _ref-howtoinstall-gvm:
+
+Install by GVM
+--------------
+
+To install::
+
+    $ gvm install groovyserv
+
+See: http://gvmtool.net/
+
+
 .. _ref-howtoinstall-homebrew:
 
-Install via Homebrew
+Install by Homebrew
 --------------------
 
 To install::
@@ -79,7 +90,7 @@ See: http://mxcl.github.com/homebrew/
 Install from RPM package
 ------------------------
 
-Currently we don't produce a RPM package officially. But there is the contributed SPEC file which is need to buld a RPM file. So you can try to build it by yourself ;-)
+Currently we don't produce a RPM package officially. But there is the contributed SPEC file which is need to buld a RPM file.
+So you can try to build it by yourself ;-)
 
 See: :ref:`Build RPM file <ref-howtobuild-rpm>`
-
