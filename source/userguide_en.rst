@@ -123,9 +123,13 @@ GroovyServ uses the following environment variables in runtime.
     It's used to specify groovy command path.
     If you've set GROOVY_HOME environment variable, GroovyServ uses it in order to find a groovy command, so you don't have to set the groovy command path to PATH.
 
+  GROOVYSERVER_HOST (optional)
+    It's used to specify the host address for client.
+    Alternately, you can specify it as a command option.
+
   GROOVYSERVER_PORT (optional)
     It's used to specify the port number for server or client.
-    Alternately, you can specify the port as a command option.
+    Alternately, you can specify it as a command option.
 
   CLASSPATH (optional)
     CLASSPATH environment variable on where groovyserver starts up composes the environment variable of the groovyserver process, with Jars of GroovyServ.
