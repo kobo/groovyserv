@@ -12,9 +12,6 @@
 Change Log
 ==========
 
-NOTICE
-------
-
 Version 0.13 (2013-07-26)
 -------------------------
 New Features:

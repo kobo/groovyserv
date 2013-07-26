@@ -23,5 +23,5 @@ Previous versions
 Download old versions from:
 
 - `GitHub <http://github.com/kobo/groovyserv/downloads>`_ (Before v0.10)
-- `BitBicket <https://bitbucket.org/kobo/groovyserv-mirror/downloads#download-205066>`_ (After v0.11)
+- `BitBucket <https://bitbucket.org/kobo/groovyserv-mirror/downloads#download-205066>`_ (After v0.11)
 
