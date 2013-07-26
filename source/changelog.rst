@@ -15,6 +15,30 @@ Change Log
 NOTICE
 ------
 
+Version 0.13 (2013-07-26)
+-------------------------
+New Features:
+    - [Client] `groovyclient(.sh)` supports server operations by `-Cr/-Ck` options
+    - [Install] `groovyserv-setup-nativeclient` command is added to platform independent package to build a native `groovyclient` and replace `groovyclient(.sh)` shell script with it.
+
+Improvements:
+    - `groovyclient.rb` supports `-Chost` and `-Cauthtoken`
+    - `GROOVYSERVER_HOST` environment variable is supported to specify server address from client
+    - (Improved some checks when starting server)
+    - (Spock-nized all tests)
+    - (Improved build system)
+    - (Thoroughly refactored shell scripts)
+
+Bug Fixes:
+    - Fixed 48: `groovyclient(.sh)` installed by GVM causes an error
+
+        - https://github.com/kobo/groovyserv/issues/48
+
+    - Fixed 49: `groovyclient` doesn't work with non-default ports
+
+        - https://github.com/kobo/groovyserv/issues/49
+
+
 Version 0.12 (2013-07-04)
 -------------------------
 New Features:
