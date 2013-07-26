@@ -70,7 +70,11 @@ To install::
 
     $ gvm install groovyserv
 
-See: http://gvmtool.net/
+`groovyclient` command installed by GVM is a limitted shell version.
+If you have `make` and `gcc`, you can easily replace it with a native client built by yourself.
+See :ref:`'Build native groovyclient on GVM' <ref-howtobuild-gvm-nativeclient>`.
+
+See also: http://gvmtool.net/
 
 
 .. _ref-howtoinstall-homebrew:
@@ -82,7 +86,7 @@ To install::
 
     $ brew install groovyserv
 
-See: http://mxcl.github.com/homebrew/
+See also: http://mxcl.github.com/homebrew/
 
 
 .. _ref-howtoinstall-rpm:
@@ -92,5 +96,4 @@ Install from RPM package
 
 Currently we don't produce a RPM package officially. But there is the contributed SPEC file which is need to buld a RPM file.
 So you can try to build it by yourself ;-)
-
-See: :ref:`Build RPM file <ref-howtobuild-rpm>`
+See :ref:`'Build RPM file' <ref-howtobuild-rpm>`.
