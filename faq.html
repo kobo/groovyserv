@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.12',
+        VERSION:     '0.13',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -51,19 +51,18 @@
 <li><a class="reference internal" href="#why-does-groovyserv-use-jna-java-native-access" id="id2">Why does GroovyServ use JNA(Java Native Access)?</a></li>
 <li><a class="reference internal" href="#what-happens-if-i-invoke-two-groovy-scripts-which-have-different-current-working-directory-at-the-same-time" id="id3">What happens if I invoke two Groovy scripts which have different current working directory at the same time?</a></li>
 <li><a class="reference internal" href="#what-environments-are-supported" id="id4">What environments are supported?</a></li>
-<li><a class="reference internal" href="#are-there-packages-for-macports-deb-rpm" id="id5">Are there packages for MacPorts, *.deb, *.rpm?</a></li>
-<li><a class="reference internal" href="#does-groovyserv-for-windows-require-cygwin" id="id6">Does GroovyServ for Windows require Cygwin?</a></li>
-<li><a class="reference internal" href="#why-is-groovyclient-written-in-c-why-isn-t-it-written-in-java" id="id7">Why is groovyclient written in C? Why isn&#8217;t it written in Java?</a></li>
-<li><a class="reference internal" href="#what-is-the-server-client-communication-protocol" id="id8">What is the server-client communication protocol?</a></li>
-<li><a class="reference internal" href="#if-the-jvm-process-is-shared-by-each-script-session-static-variables-are-shared-too" id="id9">If the JVM process is shared by each script session, static variables are shared too?</a></li>
-<li><a class="reference internal" href="#how-can-i-invoke-the-original-groovy-command-when-groovy-has-been-aliased-to-groovyclient" id="id10">How can I invoke the original groovy command when &#8216;groovy&#8217; has been aliased to groovyclient?</a></li>
-<li><a class="reference internal" href="#where-is-there-a-log-file" id="id11">Where is there a log file?</a></li>
-<li><a class="reference internal" href="#how-can-i-restart-or-kill-groovyserver" id="id12">How can I restart or kill groovyserver?</a></li>
-<li><a class="reference internal" href="#why-is-the-name-of-this-software-groovyserv" id="id13">Why is the name of this software &#8216;GroovyServ&#8217;?</a></li>
-<li><a class="reference internal" href="#can-i-use-groovyserv-with-grape-s-grab-annotation" id="id14">Can I use GroovyServ with Grape&#8217;s &#64;Grab annotation?</a></li>
-<li><a class="reference internal" href="#can-i-use-jqs-java-quick-start-with-groovyserv-at-the-same-time" id="id15">Can I use JQS(Java Quick Start) with GroovyServ at the same time?</a></li>
-<li><a class="reference internal" href="#i-installed-groovyserv-but-it-doesn-t-work" id="id16">I installed GroovyServ, but it doesn&#8217;t work.</a></li>
-<li><a class="reference internal" href="#when-i-built-groovyserv-by-myself-in-windows-some-errors-occured-what-s-required" id="id17">When I built GroovyServ by myself in Windows, some errors occured. What&#8217;s required?</a></li>
+<li><a class="reference internal" href="#does-groovyserv-for-windows-require-cygwin" id="id5">Does GroovyServ for Windows require Cygwin?</a></li>
+<li><a class="reference internal" href="#why-is-groovyclient-written-in-c-why-isn-t-it-written-in-java" id="id6">Why is groovyclient written in C? Why isn&#8217;t it written in Java?</a></li>
+<li><a class="reference internal" href="#what-is-the-server-client-communication-protocol" id="id7">What is the server-client communication protocol?</a></li>
+<li><a class="reference internal" href="#if-the-jvm-process-is-shared-by-each-script-session-static-variables-are-shared-too" id="id8">If the JVM process is shared by each script session, static variables are shared too?</a></li>
+<li><a class="reference internal" href="#how-can-i-invoke-the-original-groovy-command-when-groovy-has-been-aliased-to-groovyclient" id="id9">How can I invoke the original groovy command when &#8216;groovy&#8217; has been aliased to groovyclient?</a></li>
+<li><a class="reference internal" href="#where-is-there-a-log-file" id="id10">Where is there a log file?</a></li>
+<li><a class="reference internal" href="#how-can-i-restart-or-kill-groovyserver" id="id11">How can I restart or kill groovyserver?</a></li>
+<li><a class="reference internal" href="#why-is-the-name-of-this-software-groovyserv" id="id12">Why is the name of this software &#8216;GroovyServ&#8217;?</a></li>
+<li><a class="reference internal" href="#can-i-use-groovyserv-with-grape-s-grab-annotation" id="id13">Can I use GroovyServ with Grape&#8217;s &#64;Grab annotation?</a></li>
+<li><a class="reference internal" href="#can-i-use-jqs-java-quick-start-with-groovyserv-at-the-same-time" id="id14">Can I use JQS(Java Quick Start) with GroovyServ at the same time?</a></li>
+<li><a class="reference internal" href="#i-installed-groovyserv-but-it-doesn-t-work" id="id15">I installed GroovyServ, but it doesn&#8217;t work.</a></li>
+<li><a class="reference internal" href="#when-i-built-groovyserv-by-myself-in-windows-some-errors-occured-what-s-required" id="id16">When I built GroovyServ by myself in Windows, some errors occured. What&#8217;s required?</a></li>
 </ul>
 </li>
 </ul>
@@ -108,18 +107,8 @@ For example, using sub-shell and pipe, two Groovy scripts concurrently are invok
 Basically, GroovyServ can run on the environment which supports JDK and JNA.</dd>
 </dl>
 </div>
-<div class="section" id="are-there-packages-for-macports-deb-rpm">
-<h2><a class="toc-backref" href="#id5">Are there packages for MacPorts, *.deb, *.rpm?</a><a class="headerlink" href="#are-there-packages-for-macports-deb-rpm" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>Q:</dt>
-<dd>Are there packages for MacPorts, *.deb, *.rpm?</dd>
-<dt>A:</dt>
-<dd>Partially Yes! GroovyServ is now available on the MacPorts and Homebrew.
-The others may be under construction... We hope you&#8217;ll do it!</dd>
-</dl>
-</div>
 <div class="section" id="does-groovyserv-for-windows-require-cygwin">
-<h2><a class="toc-backref" href="#id6">Does GroovyServ for Windows require Cygwin?</a><a class="headerlink" href="#does-groovyserv-for-windows-require-cygwin" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id5">Does GroovyServ for Windows require Cygwin?</a><a class="headerlink" href="#does-groovyserv-for-windows-require-cygwin" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils">
 <dt>Q:</dt>
 <dd>Does GroovyServ for Windows require Cygwin?</dd>
@@ -131,7 +120,7 @@ New groovyserver.bat are provided instead of groovyserver shell script.</dd>
 </dl>
 </div>
 <div class="section" id="why-is-groovyclient-written-in-c-why-isn-t-it-written-in-java">
-<h2><a class="toc-backref" href="#id7">Why is groovyclient written in C? Why isn&#8217;t it written in Java?</a><a class="headerlink" href="#why-is-groovyclient-written-in-c-why-isn-t-it-written-in-java" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id6">Why is groovyclient written in C? Why isn&#8217;t it written in Java?</a><a class="headerlink" href="#why-is-groovyclient-written-in-c-why-isn-t-it-written-in-java" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils">
 <dt>Q:</dt>
 <dd>Why is groovyclient written in C? Why isn&#8217;t it written in Java?</dd>
@@ -141,7 +130,7 @@ So we could not use Java for groovyclient.</dd>
 </dl>
 </div>
 <div class="section" id="what-is-the-server-client-communication-protocol">
-<h2><a class="toc-backref" href="#id8">What is the server-client communication protocol?</a><a class="headerlink" href="#what-is-the-server-client-communication-protocol" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id7">What is the server-client communication protocol?</a><a class="headerlink" href="#what-is-the-server-client-communication-protocol" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils">
 <dt>Q:</dt>
 <dd>What is the server-client communication protocol?</dd>
@@ -151,7 +140,7 @@ please read comments in ClientProtocols.groovy or groovyclient.rb for details.</
 </dl>
 </div>
 <div class="section" id="if-the-jvm-process-is-shared-by-each-script-session-static-variables-are-shared-too">
-<h2><a class="toc-backref" href="#id9">If the JVM process is shared by each script session, static variables are shared too?</a><a class="headerlink" href="#if-the-jvm-process-is-shared-by-each-script-session-static-variables-are-shared-too" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id8">If the JVM process is shared by each script session, static variables are shared too?</a><a class="headerlink" href="#if-the-jvm-process-is-shared-by-each-script-session-static-variables-are-shared-too" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils">
 <dt>Q:</dt>
 <dd>If the JVM process is shared by each script session, static variables are shared too?</dd>
@@ -165,7 +154,7 @@ For example, the values which you stored in System.getProperties() are shared am
 </dl>
 </div>
 <div class="section" id="how-can-i-invoke-the-original-groovy-command-when-groovy-has-been-aliased-to-groovyclient">
-<h2><a class="toc-backref" href="#id10">How can I invoke the original groovy command when &#8216;groovy&#8217; has been aliased to groovyclient?</a><a class="headerlink" href="#how-can-i-invoke-the-original-groovy-command-when-groovy-has-been-aliased-to-groovyclient" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id9">How can I invoke the original groovy command when &#8216;groovy&#8217; has been aliased to groovyclient?</a><a class="headerlink" href="#how-can-i-invoke-the-original-groovy-command-when-groovy-has-been-aliased-to-groovyclient" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils">
 <dt>Q:</dt>
 <dd>How can I invoke the original groovy command when &#8216;groovy&#8217; has been aliased to groovyclient?</dd>
@@ -174,7 +163,7 @@ For example, the values which you stored in System.getProperties() are shared am
 </dl>
 </div>
 <div class="section" id="where-is-there-a-log-file">
-<h2><a class="toc-backref" href="#id11">Where is there a log file?</a><a class="headerlink" href="#where-is-there-a-log-file" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id10">Where is there a log file?</a><a class="headerlink" href="#where-is-there-a-log-file" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils">
 <dt>Q:</dt>
 <dd>Where is there a log file?</dd>
@@ -189,7 +178,7 @@ For example, the values which you stored in System.getProperties() are shared am
 </dl>
 </div>
 <div class="section" id="how-can-i-restart-or-kill-groovyserver">
-<h2><a class="toc-backref" href="#id12">How can I restart or kill groovyserver?</a><a class="headerlink" href="#how-can-i-restart-or-kill-groovyserver" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id11">How can I restart or kill groovyserver?</a><a class="headerlink" href="#how-can-i-restart-or-kill-groovyserver" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils">
 <dt>Q:</dt>
 <dd>How can I restart or kill groovyserver?</dd>
@@ -200,7 +189,7 @@ groovyserver.bat, groovyserver create a new minimum window for control the serve
 </dl>
 </div>
 <div class="section" id="why-is-the-name-of-this-software-groovyserv">
-<h2><a class="toc-backref" href="#id13">Why is the name of this software &#8216;GroovyServ&#8217;?</a><a class="headerlink" href="#why-is-the-name-of-this-software-groovyserv" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id12">Why is the name of this software &#8216;GroovyServ&#8217;?</a><a class="headerlink" href="#why-is-the-name-of-this-software-groovyserv" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils">
 <dt>Q:</dt>
 <dd>Why is the name of this software &#8216;GroovyServ&#8217;?</dd>
@@ -209,7 +198,7 @@ groovyserver.bat, groovyserver create a new minimum window for control the serve
 </dl>
 </div>
 <div class="section" id="can-i-use-groovyserv-with-grape-s-grab-annotation">
-<h2><a class="toc-backref" href="#id14">Can I use GroovyServ with Grape&#8217;s &#64;Grab annotation?</a><a class="headerlink" href="#can-i-use-groovyserv-with-grape-s-grab-annotation" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id13">Can I use GroovyServ with Grape&#8217;s &#64;Grab annotation?</a><a class="headerlink" href="#can-i-use-groovyserv-with-grape-s-grab-annotation" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils">
 <dt>Q:</dt>
 <dd>Can I use Grape&#8217;s &#64;Grab annotation in GroovyServ?</dd>
@@ -225,7 +214,7 @@ You can avoid this error by specify SystemClassLoader to use:</p>
 </dl>
 </div>
 <div class="section" id="can-i-use-jqs-java-quick-start-with-groovyserv-at-the-same-time">
-<h2><a class="toc-backref" href="#id15">Can I use JQS(Java Quick Start) with GroovyServ at the same time?</a><a class="headerlink" href="#can-i-use-jqs-java-quick-start-with-groovyserv-at-the-same-time" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id14">Can I use JQS(Java Quick Start) with GroovyServ at the same time?</a><a class="headerlink" href="#can-i-use-jqs-java-quick-start-with-groovyserv-at-the-same-time" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils">
 <dt>Q:</dt>
 <dd>Can I use JQS(Java Quick Start) with GroovyServ at the same time?</dd>
@@ -234,7 +223,7 @@ You can avoid this error by specify SystemClassLoader to use:</p>
 </dl>
 </div>
 <div class="section" id="i-installed-groovyserv-but-it-doesn-t-work">
-<h2><a class="toc-backref" href="#id16">I installed GroovyServ, but it doesn&#8217;t work.</a><a class="headerlink" href="#i-installed-groovyserv-but-it-doesn-t-work" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id15">I installed GroovyServ, but it doesn&#8217;t work.</a><a class="headerlink" href="#i-installed-groovyserv-but-it-doesn-t-work" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils">
 <dt>Q:</dt>
 <dd>I installed GroovyServ, but it doesn&#8217;t work.</dd>
@@ -250,7 +239,7 @@ See <a class="reference internal" href="howtobuild.html#ref-howtobuild"><em>Buil
 </dl>
 </div>
 <div class="section" id="when-i-built-groovyserv-by-myself-in-windows-some-errors-occured-what-s-required">
-<h2><a class="toc-backref" href="#id17">When I built GroovyServ by myself in Windows, some errors occured. What&#8217;s required?</a><a class="headerlink" href="#when-i-built-groovyserv-by-myself-in-windows-some-errors-occured-what-s-required" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id16">When I built GroovyServ by myself in Windows, some errors occured. What&#8217;s required?</a><a class="headerlink" href="#when-i-built-groovyserv-by-myself-in-windows-some-errors-occured-what-s-required" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils">
 <dt>Q:</dt>
 <dd>When I built GroovyServ by myself on Windows, some errors occured. What&#8217;s required?</dd>
@@ -307,7 +296,6 @@ See <a class="reference internal" href="howtobuild.html#ref-howtobuild"><em>Buil
 <li><a class="reference internal" href="#why-does-groovyserv-use-jna-java-native-access">Why does GroovyServ use JNA(Java Native Access)?</a></li>
 <li><a class="reference internal" href="#what-happens-if-i-invoke-two-groovy-scripts-which-have-different-current-working-directory-at-the-same-time">What happens if I invoke two Groovy scripts which have different current working directory at the same time?</a></li>
 <li><a class="reference internal" href="#what-environments-are-supported">What environments are supported?</a></li>
-<li><a class="reference internal" href="#are-there-packages-for-macports-deb-rpm">Are there packages for MacPorts, *.deb, *.rpm?</a></li>
 <li><a class="reference internal" href="#does-groovyserv-for-windows-require-cygwin">Does GroovyServ for Windows require Cygwin?</a></li>
 <li><a class="reference internal" href="#why-is-groovyclient-written-in-c-why-isn-t-it-written-in-java">Why is groovyclient written in C? Why isn&#8217;t it written in Java?</a></li>
 <li><a class="reference internal" href="#what-is-the-server-client-communication-protocol">What is the server-client communication protocol?</a></li>

@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.12',
+        VERSION:     '0.13',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -48,7 +48,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="index.html">Welcome!</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="index.html#overview">Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="index.html#feature">Feature</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#features">Features</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="document.html">Documentation</a><ul>
@@ -56,14 +56,15 @@
 <li class="toctree-l3"><a class="reference internal" href="howtoinstall.html">How to Install</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="howtoinstall.html#for-each-environment">For each environment</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="howtoinstall.html#for-anywhere">For Anywhere</a></li>
+<li class="toctree-l5"><a class="reference internal" href="howtoinstall.html#for-all-unix-platform">For all UNIX platform</a></li>
 <li class="toctree-l5"><a class="reference internal" href="howtoinstall.html#only-for-mac-os-x">Only for Mac OS X</a></li>
 <li class="toctree-l5"><a class="reference internal" href="howtoinstall.html#only-for-linux">Only for Linux</a></li>
 <li class="toctree-l5"><a class="reference internal" href="howtoinstall.html#only-for-windows">Only for Windows</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="howtoinstall.html#install-from-binary-package">Install from binary package</a></li>
-<li class="toctree-l4"><a class="reference internal" href="howtoinstall.html#install-via-macports">Install via Macports</a></li>
-<li class="toctree-l4"><a class="reference internal" href="howtoinstall.html#install-via-homebrew">Install via Homebrew</a></li>
+<li class="toctree-l4"><a class="reference internal" href="howtoinstall.html#install-by-gvm">Install by GVM</a></li>
+<li class="toctree-l4"><a class="reference internal" href="howtoinstall.html#install-by-homebrew">Install by Homebrew</a></li>
 <li class="toctree-l4"><a class="reference internal" href="howtoinstall.html#install-from-rpm-package">Install from RPM package</a></li>
 </ul>
 </li>
@@ -83,7 +84,6 @@
 <li class="toctree-l3"><a class="reference internal" href="userguide_en.html">User Guide</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="userguide_en.html#introduction">Introduction</a></li>
 <li class="toctree-l4"><a class="reference internal" href="userguide_en.html#requirements">Requirements</a></li>
-<li class="toctree-l4"><a class="reference internal" href="userguide_en.html#language">Language</a></li>
 <li class="toctree-l4"><a class="reference internal" href="userguide_en.html#how-to-use">How to use</a></li>
 <li class="toctree-l4"><a class="reference internal" href="userguide_en.html#differences-from-normal-groovy">Differences from normal Groovy</a></li>
 <li class="toctree-l4"><a class="reference internal" href="userguide_en.html#security">Security</a></li>
@@ -101,24 +101,25 @@
 <li class="toctree-l3"><a class="reference internal" href="userguide_ja.html">ユーザガイド</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="userguide_ja.html#id2">はじめに</a></li>
 <li class="toctree-l4"><a class="reference internal" href="userguide_ja.html#id3">動作環境</a></li>
-<li class="toctree-l4"><a class="reference internal" href="userguide_ja.html#id4">実装言語</a></li>
-<li class="toctree-l4"><a class="reference internal" href="userguide_ja.html#id5">使い方</a></li>
+<li class="toctree-l4"><a class="reference internal" href="userguide_ja.html#id4">使い方</a></li>
 <li class="toctree-l4"><a class="reference internal" href="userguide_ja.html#groovy">普通のGroovyとの違い</a></li>
-<li class="toctree-l4"><a class="reference internal" href="userguide_ja.html#id6">セキュリティ</a></li>
-<li class="toctree-l4"><a class="reference internal" href="userguide_ja.html#id7">環境変数</a></li>
+<li class="toctree-l4"><a class="reference internal" href="userguide_ja.html#id5">セキュリティ</a></li>
+<li class="toctree-l4"><a class="reference internal" href="userguide_ja.html#id6">環境変数</a></li>
 <li class="toctree-l4"><a class="reference internal" href="userguide_ja.html#groovyclient">groovyclientのオプション</a></li>
 <li class="toctree-l4"><a class="reference internal" href="userguide_ja.html#groovyserver">groovyserverのオプション</a></li>
-<li class="toctree-l4"><a class="reference internal" href="userguide_ja.html#id8">groovyserverの起動と停止</a></li>
-<li class="toctree-l4"><a class="reference internal" href="userguide_ja.html#id9">環境変数の伝搬</a></li>
-<li class="toctree-l4"><a class="reference internal" href="userguide_ja.html#id10">ポート番号</a></li>
-<li class="toctree-l4"><a class="reference internal" href="userguide_ja.html#id11">ログファイル</a></li>
-<li class="toctree-l4"><a class="reference internal" href="userguide_ja.html#id12">リモートアクセス</a></li>
+<li class="toctree-l4"><a class="reference internal" href="userguide_ja.html#id7">groovyserverの起動と停止</a></li>
+<li class="toctree-l4"><a class="reference internal" href="userguide_ja.html#id8">環境変数の伝搬</a></li>
+<li class="toctree-l4"><a class="reference internal" href="userguide_ja.html#id9">ポート番号</a></li>
+<li class="toctree-l4"><a class="reference internal" href="userguide_ja.html#id10">ログファイル</a></li>
+<li class="toctree-l4"><a class="reference internal" href="userguide_ja.html#id11">リモートアクセス</a></li>
 <li class="toctree-l4"><a class="reference internal" href="userguide_ja.html#tips">Tips</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="howtobuild.html">How to Build</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="howtobuild.html#requirements">Requirements</a></li>
 <li class="toctree-l4"><a class="reference internal" href="howtobuild.html#build-binary-zip-by-gradle">Build binary zip by Gradle</a></li>
 <li class="toctree-l4"><a class="reference internal" href="howtobuild.html#build-only-native-groovyclient">Build only native groovyclient</a></li>
+<li class="toctree-l4"><a class="reference internal" href="howtobuild.html#build-native-groovyclient-on-gvm">Build native groovyclient on GVM</a></li>
 <li class="toctree-l4"><a class="reference internal" href="howtobuild.html#build-rpm-file">Build RPM file</a></li>
 </ul>
 </li>
@@ -126,7 +127,6 @@
 <li class="toctree-l4"><a class="reference internal" href="faq.html#why-does-groovyserv-use-jna-java-native-access">Why does GroovyServ use JNA(Java Native Access)?</a></li>
 <li class="toctree-l4"><a class="reference internal" href="faq.html#what-happens-if-i-invoke-two-groovy-scripts-which-have-different-current-working-directory-at-the-same-time">What happens if I invoke two Groovy scripts which have different current working directory at the same time?</a></li>
 <li class="toctree-l4"><a class="reference internal" href="faq.html#what-environments-are-supported">What environments are supported?</a></li>
-<li class="toctree-l4"><a class="reference internal" href="faq.html#are-there-packages-for-macports-deb-rpm">Are there packages for MacPorts, *.deb, *.rpm?</a></li>
 <li class="toctree-l4"><a class="reference internal" href="faq.html#does-groovyserv-for-windows-require-cygwin">Does GroovyServ for Windows require Cygwin?</a></li>
 <li class="toctree-l4"><a class="reference internal" href="faq.html#why-is-groovyclient-written-in-c-why-isn-t-it-written-in-java">Why is groovyclient written in C? Why isn&#8217;t it written in Java?</a></li>
 <li class="toctree-l4"><a class="reference internal" href="faq.html#what-is-the-server-client-communication-protocol">What is the server-client communication protocol?</a></li>
@@ -147,6 +147,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="changelog.html">Change Log</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="changelog.html#notice">NOTICE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="changelog.html#version-0-13-2013-07-26">Version 0.13 (2013-07-26)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="changelog.html#version-0-12-2013-07-04">Version 0.12 (2013-07-04)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="changelog.html#version-0-11-2013-02-01">Version 0.11 (2013-02-01)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="changelog.html#version-0-10-2012-03-30">Version 0.10 (2012-03-30)</a></li>
@@ -166,7 +167,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="download.html">Download</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="download.html#groovyserv-0-12">GroovyServ 0.12</a></li>
+<li class="toctree-l2"><a class="reference internal" href="download.html#groovyserv-0-13">GroovyServ 0.13</a></li>
 <li class="toctree-l2"><a class="reference internal" href="download.html#previous-versions">Previous versions</a></li>
 </ul>
 </li>

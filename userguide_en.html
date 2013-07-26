@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.12',
+        VERSION:     '0.13',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -77,15 +77,13 @@ The following times are averages of 5 times which measured invocation in Groovy 
 </div>
 <div class="section" id="requirements">
 <h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
-<p>GroovyServ is developed for following environment/OS.</p>
+<p>GroovyServ can be used in following environment/OS.</p>
 <blockquote>
 <div><ul class="simple">
 <li>Mac OS X 10.8 (Intel Mac)</li>
 <li>Ubuntu Linux 10.04</li>
-<li>Windows XP + Cygwin 1.7.x</li>
-<li>Windows XP without Cygwin</li>
-<li>Windows 7(64bit) + Cygwin 1.7.x</li>
-<li>Windows 7(64bit) without Cygwin</li>
+<li>Windows XP/7 with/without Cygwin</li>
+<li>And more</li>
 </ul>
 </div></blockquote>
 <p>Version of JDK using at build is following:</p>
@@ -101,14 +99,9 @@ The following times are averages of 5 times which measured invocation in Groovy 
 </ul>
 </div></blockquote>
 </div>
-<div class="section" id="language">
-<h2>Language<a class="headerlink" href="#language" title="Permalink to this headline">¶</a></h2>
-<p>The Server is written in Java and Groovy with JNA(Java Native Access).
-There are two types of clients, one is written in C and another is written in Ruby.</p>
-</div>
 <div class="section" id="how-to-use">
 <h2>How to use<a class="headerlink" href="#how-to-use" title="Permalink to this headline">¶</a></h2>
-<p>You can use &#8220;groovyclient&#8221; command instead of &#8220;groovy&#8221; command.
+<p>You can use <cite>groovyclient</cite> command instead of <cite>groovy</cite> command.
 If the server is not running yet, it automatically starts.:</p>
 <div class="highlight-python"><pre>$ groovyclient -e "println('Hello, GroovyServ.')"
 Hello, GroovyServ.</pre>
@@ -120,15 +113,15 @@ Hello, GroovyServ.</pre>
 It&#8217;s useful to analyze a problem about invoking server:</p>
 <div class="highlight-python"><pre>$ groovyserver -v</pre>
 </div>
-<p>About groovyserver command options, refer to &#8220;groovyserver&#8217;s option&#8221; section.</p>
+<p>About <cite>groovyserver</cite> command options, refer to <a class="reference internal" href="#ref-userguide-groovyserver-option"><em>&#8220;groovyserver&#8217;s option&#8221; section</em></a>.</p>
 </div>
 <div class="section" id="differences-from-normal-groovy">
 <h2>Differences from normal Groovy<a class="headerlink" href="#differences-from-normal-groovy" title="Permalink to this headline">¶</a></h2>
 <ul>
 <li><p class="first">You can&#8217;t concurrently use different current directory on a server.
-It also meets conditions if you invoke groovyclient simultaneously from two or more consoles.
-But if the running periods of each groovyclient are not overlapping, it can run without exception.</p>
-<p>If needed, you can simultaneously run multiple groovyservers with different ports.</p>
+It also meets conditions if you invoke <cite>groovyclient</cite> simultaneously from two or more consoles.
+But if the running periods of each <cite>groovyclient</cite> are not overlapping, it can run without exception.</p>
+<p>If needed, you can simultaneously run multiple servers with different ports.</p>
 </li>
 <li><p class="first">A static variable is shared among Groovy program invocations.
 For instance, the system properties are shared:</p>
@@ -138,22 +131,22 @@ abc</pre>
 </div>
 <p>However, System.out, System.in and System.err are rightly used which are individually prepared for each invocation.</p>
 </li>
-<li><p class="first">Normally, environment variables of when groovyserver was invoked are used instead of those of groovyclient side.
-But if you specify -Cenv/-Cenv-all option, you can reflect the values of environment variables of client to the server.</p>
-<p>Only the CLASSPATH environment variable, however, whichever with or without those options, is always reflected to the server.
-The values are cleared at the end of each client invocation. It doesn&#8217;t affect to next invocation.</p>
+<li><p class="first">Normally, environment variables of when <cite>groovyserver</cite> was invoked are used instead of those of <cite>groovyclient</cite> side.
+But if you specify <cite>-Cenv/-Cenv-all</cite> option, you can reflect the values of environment variables of client to the server.</p>
+<p>Only the <cite>CLASSPATH</cite> environment variable, however, whichever with or without those options, is always reflected to the server.
+The values are cleared at the end of each client invocation.
+It doesn&#8217;t affect to next invocation.</p>
 </li>
 </ul>
 </div>
 <div class="section" id="security">
 <h2>Security<a class="headerlink" href="#security" title="Permalink to this headline">¶</a></h2>
-<p>GroovyServ has a possibility to run any groovy script from client at default.
+<p>GroovyServ has a possibility to run any Groovy script from client at default.
 So server-client connection is limited to the connection from the same machine (localhost).
 And the connection is authenticated by simple authtoken mechanism.
-The authtoken file is stored at ~/.groovy/groovyserv/authtoken-&lt;port&gt; and the file mode set to 0600.
+The authtoken file is stored at <cite>~/.groovy/groovyserv/authtoken-&lt;port&gt;</cite> and the file mode set to <cite>0600</cite>.
 But in Windows environment, it is not effective.
 So appropriately protect access to the file in Windows if needed.</p>
-<p>Since v0.11, groovyserver can accept a request from other client machines.</p>
 </div>
 <div class="section" id="environment-variables">
 <span id="ref-userguide-env"></span><h2>Environment variables<a class="headerlink" href="#environment-variables" title="Permalink to this headline">¶</a></h2>
@@ -174,9 +167,12 @@ If you&#8217;ve set groovy command into PATH environment variable, GroovyServ ca
 <dt>A path of a groovy command in PATH (optional)</dt>
 <dd>It&#8217;s used to specify groovy command path.
 If you&#8217;ve set GROOVY_HOME environment variable, GroovyServ uses it in order to find a groovy command, so you don&#8217;t have to set the groovy command path to PATH.</dd>
+<dt>GROOVYSERVER_HOST (optional)</dt>
+<dd>It&#8217;s used to specify the host address for client.
+Alternately, you can specify it as a command option.</dd>
 <dt>GROOVYSERVER_PORT (optional)</dt>
 <dd>It&#8217;s used to specify the port number for server or client.
-Alternately, you can specify the port as a command option.</dd>
+Alternately, you can specify it as a command option.</dd>
 <dt>CLASSPATH (optional)</dt>
 <dd><p class="first">CLASSPATH environment variable on where groovyserver starts up composes the environment variable of the groovyserver process, with Jars of GroovyServ.
 It&#8217;s used as &#8220;default classpath&#8221; and affects invocations of every script.</p>
@@ -197,8 +193,8 @@ Those options are analyzed and consumed by groovyclient, and aren&#8217;t passed
 -Cs,-Chost &lt;address&gt;             specify the host to connect to groovyserver
 -Cp,-Cport &lt;port&gt;                specify the port to connect to groovyserver
 -Ca,-Cauthtoken &lt;authtoken&gt;      specify the authtoken
--Ck,-Ckill-server                kill the running groovyserver (unsupported in groovyclient.sh)
--Cr,-Crestart-server             restart the running groovyserver (unsupported in groovyclient.sh)
+-Ck,-Ckill-server                kill the running groovyserver
+-Cr,-Crestart-server             restart the running groovyserver
 -Cq,-Cquiet                      suppress statring messages
 -Cenv &lt;substr&gt;                   pass environment variables of which a name
                                  includes specified substr
@@ -212,7 +208,6 @@ Now you can easily use GroovyServ on the environment where there is no appropria
 But there are some restrictions due to the limitation of the power of bash.</p>
 <blockquote>
 <div><ul class="simple">
-<li>Transparent server operations (only starting server is available)</li>
 <li>Signal handling on client side (Ctrl+C)</li>
 <li>System.in from client</li>
 <li>Distinguishable stdout from stderr on client (all responses to stdout)</li>
@@ -220,11 +215,12 @@ But there are some restrictions due to the limitation of the power of bash.</p>
 </ul>
 </div></blockquote>
 <p>They may be improved at future version.
-If you want to use a full featured client, instead, try groovyclient.rb which supports full features and is bundled under bin directory.
-You can also build it by yourself. See <a class="reference internal" href="howtobuild.html#ref-howtobuild"><em>Build from source code in User Guide</em></a>.</p>
+If you want to use a full featured client, use <cite>groovyclient.rb</cite>.
+Or, run <cite>groovyserv-setup-nativeclient</cite> command including platform independent package in order to build a native client and replace <cite>groovyclient</cite> with it.
+See <a class="reference internal" href="howtobuild.html#ref-howtobuild"><em>Build from source code in User Guide</em></a>.</p>
 </div>
 <div class="section" id="groovyserver-s-option">
-<h2>groovyserver&#8217;s option<a class="headerlink" href="#groovyserver-s-option" title="Permalink to this headline">¶</a></h2>
+<span id="ref-userguide-groovyserver-option"></span><h2>groovyserver&#8217;s option<a class="headerlink" href="#groovyserver-s-option" title="Permalink to this headline">¶</a></h2>
 <p>groovyserver&#8217;s options are as follows:</p>
 <div class="highlight-python"><pre>-v                       verbose output to the log file
 -q                       suppress starting messages
@@ -237,14 +233,14 @@ You can also build it by yourself. See <a class="reference internal" href="howto
 </div>
 <div class="section" id="start-and-stop-groovyserver">
 <h2>Start and stop groovyserver<a class="headerlink" href="#start-and-stop-groovyserver" title="Permalink to this headline">¶</a></h2>
-<p>There are two ways to invoke groovyserver; the one is, called &#8220;explicit server invocation&#8221;, the way of using &#8220;groovyserver&#8221; or &#8220;groovyserver.bat&#8221;.
-The another is, called &#8220;transparent server invocation&#8221;,the way of just using groovyclient.
-If groovyserver hasn&#8217;t run yet, groovyclient automatically invokes groovyserver at the background.</p>
+<p>There are two ways to invoke <cite>groovyserver</cite>; the one is, called &#8220;explicit server invocation&#8221;, the way of using <cite>groovyserver</cite> or <cite>groovyserver.bat</cite>.
+The another is, called &#8220;transparent server invocation&#8221;, the way of just using <cite>groovyclient</cite>.
+If <cite>groovyserver</cite> hasn&#8217;t run yet, <cite>groovyclient</cite> automatically invokes <cite>groovyserver</cite> at the background.</p>
 <p>The commands for explicit server invocation are:</p>
 <blockquote>
 <div><ul class="simple">
-<li>groovyserver      (for Mac OS X, Linux, Windows with Cygwin)</li>
-<li>groovyserver.bat  (for Windows without Cygwin)</li>
+<li><cite>groovyserver</cite>      (for Mac OS X, Linux, Windows with Cygwin)</li>
+<li><cite>groovyserver.bat</cite>  (for Windows without Cygwin)</li>
 </ul>
 </div></blockquote>
 <p>Following table shows the availability of those commands: (OK: Available, N/A: Not available)</p>
@@ -277,28 +273,30 @@ If groovyserver hasn&#8217;t run yet, groovyclient automatically invokes groovys
 </tbody>
 </table>
 </div></blockquote>
-<p>groovyserver.bat doesn&#8217;t support -r and -k options for technical reasons.
-So, on the command line, You can neither stop nor restart the groovyserver started by groovyserver.bat.
-Instead, a minimized window is shown when groovyserver is started by groovyserver.bat.
-You can stop the groovyserver by closing the window. As a result, then you can restart groovyserver by invoking groovyclient as transparent server invocation.</p>
-<p>On Cygwin, groovyclient internally uses groovyserver.bat for transparent server invocation.
+<p><cite>groovyserver.bat</cite> doesn&#8217;t support <cite>-r</cite> and <cite>-k</cite> options for technical reasons.
+So, on the command line, You can neither stop nor restart the server started by <cite>groovyserver.bat</cite>.
+Instead, a minimized window is shown when server is started by <cite>groovyserver.bat</cite>.
+You can stop the server by closing the window.
+As a result, then you can restart server by invoking <cite>groovyclient</cite> as transparent server invocation.</p>
+<p>On Cygwin, <cite>groovyclient</cite> internally uses <cite>groovyserver.bat</cite> for transparent server invocation.
 Therefore, the behavior on Cygwin is as follows:</p>
 <ul class="simple">
-<li>In the case of groovyserver explicitly invoked by groovyserver shell script, you can stop or restart the server by invoking groovyserver shell script with -k or -r options.</li>
-<li>In the case of groovyserver explicitly invoked by groovyserver.bat (bat file), you can stop the server by closing the window of the groovyserver.</li>
-<li>In the case of groovyserver transparently invoked by groovyclient.exe, you can stop the server by closing the window of the groovyserver.</li>
+<li>In the case of server explicitly invoked by <cite>groovyserver</cite> shell script, you can stop or restart the server by invoking <cite>groovyserver</cite> shell script with <cite>-k</cite> or <cite>-r</cite> options.</li>
+<li>In the case of server explicitly invoked by <cite>groovyserver.bat</cite> (bat file), you can stop the server by closing the window of the server.</li>
+<li>In the case of groovyserver transparently invoked by <cite>groovyclient.exe</cite>, you can stop the server by closing the window of the server.</li>
 </ul>
 <p>It seems be confusing enough.
-So, we are considering to support -r and -k options of groovyserver.bat.</p>
-<p>In transparent server invocation, you cannot supply options(e.g. -v) for groovyserver or groovyserver.bat which is invoked internally by groovyclient.
-If you need, explicitly invoke groovyserver with options.</p>
+So, we are considering to support <cite>-r</cite> and <cite>-k</cite> options of groovyserver.bat.</p>
+<p>In transparent server invocation, you cannot supply options(e.g. <cite>-v</cite>) for <cite>groovyserver</cite> or <cite>groovyserver.bat</cite> which is invoked internally by <cite>groovyclient</cite>.
+If you need, explicitly invoke <cite>groovyserver</cite> with options.</p>
 </div>
 <div class="section" id="propagation-of-environment-variable">
 <h2>Propagation of environment variable<a class="headerlink" href="#propagation-of-environment-variable" title="Permalink to this headline">¶</a></h2>
-<p>With -Cenv option of groovyclient, you can pass environment variables of which a name includes the specified substring to groovyserver.
+<p>With <cite>-Cenv</cite> option of <cite>groovyclient</cite>, you can pass environment variables of which a name includes the specified substring to <cite>groovyserver</cite>.
 The values of those variables on the client process are sent to the server process, and the values of same environment variables on the server are set to or overwritten by the passed values.
 This feature is especially useful for tools (e.g. IDE, TextMate, Sublime Text 2) which invoke an external command written by Groovy, and which uses environment variables to pass parameters to the command.</p>
-<p>When you specify the option -Cenv-all, all environment variables of the groovyclient process are sent to the groovyserver. Additionally with the option -Cenv-exclude, the variables of which a name includes specified substring are excluded.</p>
+<p>When you specify the option <cite>-Cenv-all</cite>, all environment variables of the <cite>groovyclient</cite> process are sent to the groovyserver.
+Additionally with the option <cite>-Cenv-exclude</cite>, the variables of which a name includes specified substring are excluded.</p>
 <p>If you specify option:</p>
 <div class="highlight-python"><pre>-Cenv SUBSTRING</pre>
 </div>
@@ -307,12 +305,12 @@ This feature is especially useful for tools (e.g. IDE, TextMate, Sublime Text 2)
   it.name.contains("SUBSTRING")
 }</pre>
 </div>
-<p>Consider the combination of Cenv, -Cenv-all and -Cenv-exclude, like:</p>
+<p>Consider the combination of <cite>-Cenv</cite>, <cite>-Cenv-all</cite> and <cite>-Cenv-exclude</cite>, like:</p>
 <div class="highlight-python"><pre>-Cenv SUBSTRING
 -Cenv-all
 -Cenv-exclude EXCLUDE_SUBSTRING</pre>
 </div>
-<p>The result of the following pseudo code are sent to the groovyserver:</p>
+<p>The result of the following pseudo code are sent to the server:</p>
 <div class="highlight-python"><pre>allEnvironmentVariables.entrySet().findAll {
   if (isSpecifiedEnvAll || it.name.contains("SUBSTRING")) {
     if (!it.name.contains("EXCLUDE_SUBSTRING")) {
@@ -322,38 +320,39 @@ This feature is especially useful for tools (e.g. IDE, TextMate, Sublime Text 2)
   return false
 }</pre>
 </div>
-<p>Note that the environment variables which is set to the groovyserver remain after the groovyclient terminates. And modifying an environment variable on a server are not thread-safe.
-So when multiple groovyclient instances are invoked simultaneously, a variable which one of them needs might be overwritten by another groovyclient subsequently invoked.</p>
+<p>Note that the environment variables which is set to the server remain after the <cite>groovyclient</cite> terminates.
+And modifying an environment variable on a server are not thread-safe.
+So when multiple <cite>groovyclient</cite> instances are invoked simultaneously, a variable which one of them needs might be overwritten by another client subsequently invoked.</p>
 </div>
 <div class="section" id="port-number">
 <h2>Port number<a class="headerlink" href="#port-number" title="Permalink to this headline">¶</a></h2>
-<p>As a default, TCP port number which is used for communication between a groovyserver and a groovyclient is 1961.
-To change a port number used by a groovyserver, you can use GROOVYSERVER_PORT environment variable or -p option.
-The -p option is used more prior than GROOVYSERVER_PORT environment variable:</p>
+<p>As a default, TCP port number which is used for communication between a server and a client is <cite>1961</cite>.
+To change a port number used by a server, you can use <cite>GROOVYSERVER_PORT</cite> environment variable or <cite>-p</cite> option.
+The <cite>-p</cite> option is used more prior than <cite>GROOVYSERVER_PORT</cite> environment variable:</p>
 <div class="highlight-python"><pre>$ export GROOVYSERVER_PORT=1963
 $ groovyserver</pre>
 </div>
 <p>or:</p>
 <div class="highlight-python"><pre>$ groovyserver -p 1963</pre>
 </div>
-<p>On the other hand, for a groovyclient, you can use -Cp option instead of -p which is used by Groovy and GROOVYSERVER_PORT environment variable.
-In transparent server invocation, the port number is also supplied to the server with -p option:</p>
+<p>On the other hand, for a groovyclient, you can use <cite>-Cp</cite> option instead of <cite>-p</cite> which is used by Groovy and <cite>GROOVYSERVER_PORT</cite> environment variable.
+In transparent server invocation, the port number is also supplied to the server with <cite>-p</cite> option:</p>
 <div class="highlight-python"><pre>$ groovyclient -Cp 1963 -e '...'</pre>
 </div>
 </div>
 <div class="section" id="log-file">
 <h2>Log file<a class="headerlink" href="#log-file" title="Permalink to this headline">¶</a></h2>
-<p>The output from groovyserver is written to the following file:</p>
+<p>The output from server is written to the following file:</p>
 <div class="highlight-python"><pre>~/.groovy/groovyserv/groovyserver-&lt;port&gt;.log</pre>
 </div>
 </div>
 <div class="section" id="remote-access">
 <h2>Remote access<a class="headerlink" href="#remote-access" title="Permalink to this headline">¶</a></h2>
-<p>When invoking groovyserver, you specify a client address as a parameter.
-For example, assume that the server&#8217;s ip address is 192.168.1.1 and the client&#8217;s one is 192.168.1.2:</p>
+<p>When invoking <cite>groovyserver</cite>, you specify a client address as a parameter.
+For example, assume that the server&#8217;s ip address is <cite>192.168.1.1</cite> and the client&#8217;s one is <cite>192.168.1.2</cite>:</p>
 <div class="highlight-python"><pre>server$ groovyserver --allow-from 192.168.1.2</pre>
 </div>
-<p>When invoking groovyclient on the client, the authtoken which is stored in ~/.groovy/groovyserv/authtoken-&lt;port&gt; must be specified:</p>
+<p>When invoking <cite>groovyclient</cite> on the client, the authtoken which is stored in <cite>~/.groovy/groovyserv/authtoken-&lt;port&gt;</cite> must be specified:</p>
 <div class="highlight-python"><pre>server$ cat ~/.groovy/groovyserv/authtoken-1961
 7d3dc4d7a2b8b5ca
 
@@ -368,8 +367,8 @@ GROOVYSERV
 client$ groovyclient -Chost 192.168.1.1 -Cauthtoken GROOVYSERV -e "println('Hello from remote client.')"
 Hello from remote client.</pre>
 </div>
-<p>When invoking groovyclient with -Chost option, you cannot use options to control groovyserver process in localhost like -Cr option.
-You can provide multi ip addresses of clients to &#8211;allow-from option with a comma as a delimiter.</p>
+<p>When invoking groovyclient with <cite>-Chost</cite> option, you cannot use options to control server process in localhost like <cite>-Cr</cite> option.
+You can provide multi ip addresses of clients to <cite>&#8211;allow-from</cite> option with a comma as a delimiter.</p>
 </div>
 <div class="section" id="tips">
 <h2>Tips<a class="headerlink" href="#tips" title="Permalink to this headline">¶</a></h2>
@@ -427,7 +426,6 @@ You can provide multi ip addresses of clients to &#8211;allow-from option with a
 <li><a class="reference internal" href="#">User Guide</a><ul>
 <li><a class="reference internal" href="#introduction">Introduction</a></li>
 <li><a class="reference internal" href="#requirements">Requirements</a></li>
-<li><a class="reference internal" href="#language">Language</a></li>
 <li><a class="reference internal" href="#how-to-use">How to use</a></li>
 <li><a class="reference internal" href="#differences-from-normal-groovy">Differences from normal Groovy</a></li>
 <li><a class="reference internal" href="#security">Security</a></li>

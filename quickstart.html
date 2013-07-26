@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.12',
+        VERSION:     '0.13',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -46,7 +46,7 @@
 <h1>Quick Start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="after-installing-groovyserv">
 <h2>After Installing GroovyServ<a class="headerlink" href="#after-installing-groovyserv" title="Permalink to this headline">¶</a></h2>
-<p>Now if you want to use GroovyServ, you can use the groovyclient command instead of an original groovy command:</p>
+<p>Now, you can use <cite>groovyclient</cite> command instead of an original <cite>groovy</cite> command:</p>
 <div class="highlight-python"><pre>$ groovy -e "println('Hello, Groovy.')"
 $ groovyclient -e "println('Hello, GroovyServ.')"</pre>
 </div>
@@ -54,11 +54,12 @@ $ groovyclient -e "println('Hello, GroovyServ.')"</pre>
 </div>
 <div class="section" id="two-commands-for-you">
 <h2>Two commands for you<a class="headerlink" href="#two-commands-for-you" title="Permalink to this headline">¶</a></h2>
-<p>GroovyServ has two commands, groovyclient and groovyserver.</p>
+<p>GroovyServ has two main commands, <cite>groovyclient</cite> and <cite>groovyserver</cite>.</p>
 <div class="section" id="groovyclient">
 <h3>groovyclient<a class="headerlink" href="#groovyclient" title="Permalink to this headline">¶</a></h3>
-<p>The groovyclient is a front controller for user. When you invoke it, it passed the arguments and standard input stream to the back-end&#8217;s groovyserver (which is automatically invoked if not exists).</p>
-<p>In many cases, groovy command can be just replaced with groovyclient:</p>
+<p>The <cite>groovyclient</cite> is a front controller for user.
+When you invoke it, it passed the arguments and standard input stream to the back-end&#8217;s <cite>groovyserver</cite> (which is automatically invoked if not exists).</p>
+<p>In many cases, <cite>groovy</cite> command can be simply replaced with <cite>groovyclient</cite>:</p>
 <div class="highlight-python"><pre>$ groovy -e "println('Hello, Groovy.')"
 $ groovyclient -e "println('Hello, GroovyServ.')"</pre>
 </div>
@@ -66,19 +67,21 @@ $ groovyclient -e "println('Hello, GroovyServ.')"</pre>
 <div class="highlight-python"><pre>$ groovy hello.groovy
 $ groovyclient hello.groovy</pre>
 </div>
-<p>For more topics, read the <a class="reference internal" href="userguide_en.html#ref-userguide"><em>User Guide</em></a>.</p>
+<p>For further information, read <a class="reference internal" href="userguide_en.html#ref-userguide"><em>User Guide</em></a>.</p>
 </div>
 <div class="section" id="groovyserver">
 <h3>groovyserver<a class="headerlink" href="#groovyserver" title="Permalink to this headline">¶</a></h3>
-<p>The groovyserver is the engine to run your Groovy script. By invoking groovyclient, groovyserver is automatically invoked and stationed permanently. But you can also explicitly invoke it with detail options.</p>
-<p>For example, when you want to kill the groovyserver process (e.g. because there isn&#8217;t enough memory):</p>
+<p>The <cite>groovyserver</cite> is the engine to run your Groovy script.
+By invoking <cite>groovyclient</cite>, <cite>groovyserver</cite> is automatically started up and kept running permanently.
+You can also explicitly run it with detail options.
+For example, when you want to kill the <cite>groovyserver</cite> process because there isn&#8217;t enough memory:</p>
 <div class="highlight-python"><pre>$ groovyserver -k</pre>
 </div>
-<p>Or, when you want to restart the process and turn debug mode on (e.g. because it seems something wrong):</p>
+<p>Or, when you want to restart the process and turn debug mode on because it seems something wrong:</p>
 <div class="highlight-python"><pre>$ groovyserver -r -v</pre>
 </div>
-<p>Of course, in usual case, you don&#8217;t have to use the groovyserver command.
-For more topics, read the <a class="reference internal" href="userguide_en.html#ref-userguide"><em>User Guide</em></a>.</p>
+<p>Of course, in usual case, you don&#8217;t have to use the <cite>groovyserver</cite> command.
+For further information, read <a class="reference internal" href="userguide_en.html#ref-userguide"><em>User Guide</em></a>.</p>
 </div>
 </div>
 </div>

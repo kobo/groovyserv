@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.12',
+        VERSION:     '0.13',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -46,6 +46,45 @@
 <h1>Change Log<a class="headerlink" href="#change-log" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="notice">
 <h2>NOTICE<a class="headerlink" href="#notice" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="version-0-13-2013-07-26">
+<h2>Version 0.13 (2013-07-26)<a class="headerlink" href="#version-0-13-2013-07-26" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>New Features:</dt>
+<dd><ul class="first last simple">
+<li>[Client] <cite>groovyclient(.sh)</cite> supports server operations by <cite>-Cr/-Ck</cite> options</li>
+<li>[Install] <cite>groovyserv-setup-nativeclient</cite> command is added to platform independent package to build a native <cite>groovyclient</cite> and replace <cite>groovyclient(.sh)</cite> shell script with it.</li>
+</ul>
+</dd>
+<dt>Improvements:</dt>
+<dd><ul class="first last simple">
+<li><cite>groovyclient.rb</cite> supports <cite>-Chost</cite> and <cite>-Cauthtoken</cite></li>
+<li><cite>GROOVYSERVER_HOST</cite> environment variable is supported to specify server address from client</li>
+<li>(Improved some checks when starting server)</li>
+<li>(Spock-nized all tests)</li>
+<li>(Improved build system)</li>
+<li>(Thoroughly refactored shell scripts)</li>
+</ul>
+</dd>
+<dt>Bug Fixes:</dt>
+<dd><ul class="first last">
+<li><p class="first">Fixed 48: <cite>groovyclient(.sh)</cite> installed by GVM causes an error</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="https://github.com/kobo/groovyserv/issues/48">https://github.com/kobo/groovyserv/issues/48</a></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">Fixed 49: <cite>groovyclient</cite> doesn&#8217;t work with non-default ports</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="https://github.com/kobo/groovyserv/issues/49">https://github.com/kobo/groovyserv/issues/49</a></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</dd>
+</dl>
 </div>
 <div class="section" id="version-0-12-2013-07-04">
 <h2>Version 0.12 (2013-07-04)<a class="headerlink" href="#version-0-12-2013-07-04" title="Permalink to this headline">¶</a></h2>
@@ -593,6 +632,7 @@ without -s.)</li>
   <ul>
 <li><a class="reference internal" href="#">Change Log</a><ul>
 <li><a class="reference internal" href="#notice">NOTICE</a></li>
+<li><a class="reference internal" href="#version-0-13-2013-07-26">Version 0.13 (2013-07-26)</a></li>
 <li><a class="reference internal" href="#version-0-12-2013-07-04">Version 0.12 (2013-07-04)</a></li>
 <li><a class="reference internal" href="#version-0-11-2013-02-01">Version 0.11 (2013-02-01)</a></li>
 <li><a class="reference internal" href="#version-0-10-2012-03-30">Version 0.10 (2012-03-30)</a></li>

@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.12',
+        VERSION:     '0.13',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -53,23 +53,23 @@ GroovyServ reduces startup time of the JVM and Groovy significantly.
 It&#8217;s of course dependent on environments, but in most case, it is <em>10 to 20 times faster than regular Groovy</em>.</p>
 <p>See also <a class="reference internal" href="userguide_en.html#ref-userguide"><em>User Guide</em></a> (<a class="reference internal" href="userguide_ja.html#ref-userguide-ja"><em>Japanese</em></a>) and <a class="reference internal" href="screencast.html#ref-screencast"><em>Screencast</em></a>.</p>
 </div>
-<div class="section" id="feature">
-<h2>Feature<a class="headerlink" href="#feature" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="features">
+<h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
 <p>GroovyServ supports following features:</p>
 <ul class="simple">
 <li>Faster invocation of Groovy script (about 10 times much).</li>
 <li>Transparent server invocation. If a server is not running when a client is invoked, the client invokes a server in background.</li>
-<li>Connect System.in/out/err through a socket stream.</li>
+<li>Connect <cite>System.in/out/err</cite> through a socket stream.</li>
 <li>Simultaneous execution of scripts. See <a class="reference internal" href="faq.html#ref-faq-simultaneous"><em>FAQ</em></a>.</li>
 <li>Trap a call of System.exit() and send the exit status to the client.</li>
 <li>Signal handling on client side (e.g. Ctrl-C for termination).</li>
-<li>Change current working directory as appropriately as possible. See <a class="reference internal" href="faq.html#ref-faq-cwd"><em>FAQ</em></a>.</li>
-<li>Propagation of a CLASSPATH environment variable.</li>
-<li>C(native binary) and Ruby client, which can start up quickly.</li>
-<li>Available without Cygwin in Windows.</li>
-<li>Show a window to stop server process only in Windows.</li>
+<li>Changes current working directory as appropriately as possible. See <a class="reference internal" href="faq.html#ref-faq-cwd"><em>FAQ</em></a>.</li>
+<li>Propagation of a <cite>CLASSPATH</cite> environment variable.</li>
 <li>Propagation of environment variables from a client to a server.</li>
-<li>Automatic resolution of a &#8220;groovy&#8221; command path (and GROOVYSERV_HOME).</li>
+<li>Shell script (limitted version), C (native binary) and Ruby client.</li>
+<li>Available without Cygwin in Windows.</li>
+<li>Shows a window to stop server process only in Windows.</li>
+<li>Automatic resolution of a &#8220;groovy&#8221; command path.</li>
 </ul>
 </div>
 </div>
@@ -118,7 +118,7 @@ It&#8217;s of course dependent on environments, but in most case, it is <em>10 t
   <ul>
 <li><a class="reference internal" href="#">Welcome!</a><ul>
 <li><a class="reference internal" href="#overview">Overview</a></li>
-<li><a class="reference internal" href="#feature">Feature</a></li>
+<li><a class="reference internal" href="#features">Features</a></li>
 </ul>
 </li>
 </ul>

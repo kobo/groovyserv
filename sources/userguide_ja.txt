@@ -33,10 +33,7 @@ GroovyServを使うことで、Groovyコマンドの起動時間を短縮し、�
 
   - Mac OS X 10.8 (Intel Mac)
   - Ubuntu Linux 10.04
-  - Windows XP + Cygwin 1.7.x
-  - Windows XP (Cygwin無し)
-  - Windows 7 64bit + Cygwin 1.7.x
-  - Windows 7 64bit (Cygwin無し)
+  - Windows XP/7 (+ Cygwin)
 
 ビルド時に利用したJDKのバージョンは以下のとおりです。
 
@@ -45,11 +42,6 @@ GroovyServを使うことで、Groovyコマンドの起動時間を短縮し、�
 Groovyのバージョンは以下のとおりです。
 
   - Groovy 1.8.6以降
-
-実装言語
---------
-
-サーバサイドはJavaとGroovy、クライアントはC言語クライアントおよびRubyのクライアントが現在動作しています。また、サーバサイドではJNA(Java Native Access)を使用しています。
 
 使い方
 ------
@@ -100,8 +92,6 @@ GroovyServサーバへの接続は、デフォルトではlocalhostからのみ�
 なお、この制約は、サーバが実行ごとに生成する秘密の認証トークンファイル~/.groovy/groovyserv/authtoken-<port>の内容を自ユーザのみが読み出せることに依存しています。
 このファイルのアクセス制限を、UNIX環境ではowner以外からは読めないように設定(chmod 0600)していますが、Windows環境ではこの設定が機能しないため、必要に応じて他のユーザから読み出せないように設定してください。
 
-v0.11から指定したクライアントマシンからのコマンド実行要求を受け付けることができるようになりました。
-
 環境変数
 --------
 
@@ -127,6 +117,10 @@ GroovyServは、実行時に以下の環境変数を使用します。
     groovyコマンドのパスを特定するために使用します。
     環境変数GROOVY_HOMEが設定されている場合はそちらが優先して使用されるため、環境変数PATHへのgroovyコマンドの設定は必要ありません。
 
+  GROOVYSERVER_HOST (オプション)
+    クライアントで通信相手のサーバアドレスを指定する場合に使用します。
+    コマンド引数で代替することもできます。
+
   GROOVYSERVER_PORT (オプション)
     サーバやクライアントでポート番号を指定する場合に使用します。
     コマンド引数で代替することもできます。
@@ -149,8 +143,8 @@ groovyclientでは-Cで始まる以下の起動オプションが指定可能で
   -Cs,-Chost                    接続するgroovyserverのネットワークアドレスを指定する
   -Cp,-Cport <port>             接続するgroovyserverのポート番号を指定する
   -Ca,-Cauthtoken <authtoken>   認証トークンを指定する
-  -Ck,-Ckill-server             起動中のgroovyserverを停止する (groovyclient.shでは使えません)
-  -Cr,-Crestart-server          起動中のgroovyserverを再起動する (groovyclient.shでは使えません)
+  -Ck,-Ckill-server             起動中のgroovyserverを停止する
+  -Cr,-Crestart-server          起動中のgroovyserverを再起動する
   -Cq,-Cquiet                   起動時のメッセージを表示しない
   -Cenv <substr>                substrを変数名に含む環境変数をサーバに転送する
   -Cenv-all                     すべての環境変数の値をサーバに転送する
@@ -161,14 +155,14 @@ v0.12からシェルスクリプト(bash)で書かれたgroovyclient.shが追加
 これによって、適切なネイティブバイナリが提供されておらず、かつ、rubyがインストールされていないUNIX環境においても、手軽にGroovyServを利用することができます。
 ただし、シェルスクリプトの機能の限界により、一部の機能に制限があります。
 
- - 透過的サーバ起動機能の内、再起動と停止が使えません (直接groovyserverコマンドで操作してください)
  - Ctrl+Cによるサーバ上の処理の中断ができません
  - クライアントからの標準入力をサーバ側でSystem.inを使って読み込むことができません
  - 標準出力と標準エラー出力を区別できません (すべて標準出力に出力されます)
  - サーバからのステータスコードは無視されます (フル機能版ではクライアント自体のステータスコードに反映されます)
 
 これらは将来のバージョンでは改善される可能性があります。
-機能制限のないクライアントを利用したい場合は、フル機能サポートしているruby版のgroovyclient.rbを利用するか、または、自前でネイティブバイナリをビルドしてご利用ください。
+機能制限のないクライアントを利用したい場合は、フル機能サポートしているruby版のgroovyclient.rbを利用するか、または、:ref:`自前でネイティブバイナリをビルドして <ref-howtobuild>` ご利用ください。
+
 
 groovyserverのオプション
 ------------------------

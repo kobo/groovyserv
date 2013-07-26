@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.12',
+        VERSION:     '0.13',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -44,20 +44,29 @@
             
   <div class="section" id="how-to-build">
 <span id="ref-howtobuild"></span><h1>How to Build<a class="headerlink" href="#how-to-build" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
+<p>To build is required:</p>
+<div class="highlight-python"><pre>- JDK 7u25
+- make
+- gcc4
+- Cygwin/MinGW (only for Windows)</pre>
+</div>
+</div>
 <div class="section" id="build-binary-zip-by-gradle">
 <h2>Build binary zip by Gradle<a class="headerlink" href="#build-binary-zip-by-gradle" title="Permalink to this headline">¶</a></h2>
-<p>Download and expand GroovyServ source package groovyserv-0.12-src.zip to any directory.
-For example:</p>
+<p>Download and expand GroovyServ source package <cite>groovyserv-0.13-src.zip</cite> to any directory:</p>
 <div class="highlight-python"><pre>$ mkdir -p ~/opt/src
 $ cd ~/opt/src
-$ unzip groovyserv-0.12-src.zip</pre>
+$ unzip groovyserv-0.13-src.zip</pre>
 </div>
 <p>Build with Gradle as follows:</p>
-<div class="highlight-python"><pre>$ cd ~/opt/src/groovyserv-0.12
+<div class="highlight-python"><pre>$ cd ~/opt/src/groovyserv-0.13
 $ ./gradlew</pre>
 </div>
-<p>Then some zip files will be generated. According to <a class="reference internal" href="howtoinstall.html#ref-howtoinstall-binary"><em>Install from binary package</em></a>, install the bin package:</p>
-<div class="highlight-python"><pre>~/opt/src/groovyserv-0.12/build/distributions/groovyserv-0.12-&lt;OS&gt;-&lt;arch&gt;-bin.zip</pre>
+<p>Then some zip files will be generated.
+According to <a class="reference internal" href="howtoinstall.html#ref-howtoinstall-binary"><em>Install from binary package</em></a>, install the bin package:</p>
+<div class="highlight-python"><pre>~/opt/src/groovyserv-0.13/build/distributions/groovyserv-0.13-&lt;OS&gt;-&lt;arch&gt;-bin.zip</pre>
 </div>
 <p>If some tests fail, please try again with specifying character encoding as follows:</p>
 <div class="highlight-python"><pre>$ export _JAVA_OPTIONS=-Dfile.encoding=UTF-8
@@ -66,27 +75,51 @@ $ ./gradlew</pre>
 <p>or to skip all tests:</p>
 <div class="highlight-python"><pre>$ ./gradlew clean dist</pre>
 </div>
-<p>To build in Windows, you need gcc-3 and MinGW. You must install them before trying to build.
+<p>To build in Windows, you need gcc(v4) and MinGW.
+You must install them before trying to build.
 Then, execute the above commands on Cygwin.</p>
 </div>
 <div class="section" id="build-only-native-groovyclient">
 <h2>Build only native groovyclient<a class="headerlink" href="#build-only-native-groovyclient" title="Permalink to this headline">¶</a></h2>
-<p>Since v0.8, there is the Makefile which can build a groovyclient from C sources.
-You can easily build a groovyclient binary file as follows:</p>
-<div class="highlight-python"><pre>$ cd ~/opt/src/groovyserv-0.12
+<p>There is the Makefile which can build <cite>groovyclient</cite> from C sources.
+So you can easily build <cite>groovyclient</cite> binary file as follows:</p>
+<div class="highlight-python"><pre>$ cd ~/opt/src/groovyserv-0.13
 $ make clean
 $ make</pre>
 </div>
-<p>The binary file is created in build directory. You can copy it whereever you want:</p>
-<div class="highlight-python"><pre>~/opt/src/groovyserv-0.12/build/natives/groovyclient      (for Linux / Mac OS X)
-~/opt/src/groovyserv-0.12/build/natives/groovyclient.exe  (for Windows)</pre>
+<p>The binary file is created in <cite>build</cite> directory.
+You can copy it whereever you want:</p>
+<div class="highlight-python"><pre>~/opt/src/groovyserv-0.13/build/natives/groovyclient      (for Linux / Mac OS X)
+~/opt/src/groovyserv-0.13/build/natives/groovyclient.exe  (for Windows)</pre>
+</div>
+</div>
+<div class="section" id="build-native-groovyclient-on-gvm">
+<span id="ref-howtobuild-gvm-nativeclient"></span><h2>Build native groovyclient on GVM<a class="headerlink" href="#build-native-groovyclient-on-gvm" title="Permalink to this headline">¶</a></h2>
+<p><cite>groovyclient</cite> command installed by GVM is a limitted shell version.
+If you have <cite>make</cite> and <cite>gcc</cite>, you can easily replace it with a native client built by yourself using <cite>groovyserv-setup-nativeclient</cite> command:</p>
+<div class="highlight-python"><pre>$ groovyclient -v
+Groovy Version: xxxx
+GroovyServ Version: Server: 0.13
+GroovyServ Version: Client: 0.13 (.sh) [Limited Edition]
+
+$ groovyserv-setup-nativeclient
+....
+Successfully installed: /xxxx/.gvm/groovyserv/xxxx/bin/groovyclient
+
+$ groovyclient -v
+Groovy Version: xxxx
+GroovyServ Version: Server: 0.13
+GroovyServ Version: Client: 0.13 (.c)</pre>
 </div>
 </div>
 <div class="section" id="build-rpm-file">
 <span id="ref-howtobuild-rpm"></span><h2>Build RPM file<a class="headerlink" href="#build-rpm-file" title="Permalink to this headline">¶</a></h2>
-<p>If you want to install from RPM package, you can build the RPM package by yourself. The sample SPEC file which is required to build a RPM package was at first contributed by Oliver. And Kazuhisha updated it. Thank you, Oliver and Kazuhisha!</p>
+<p>If you want to install from RPM package, you can build the RPM package by yourself.
+The sample SPEC file which is required to build a RPM package was at first contributed by Oliver.
+And Kazuhisha updated it. Thank you, Oliver and Kazuhisha!</p>
 <p>The samples of SPEC file is in <a class="reference external" href="https://github.com/kobo/groovyserv/tree/master/contrib/rpm">contrib/rpm-spec</a>.</p>
-<p>Well, I don&#8217;t know how to build a RPM package, so I may not be able to support about it. Sorry in advance ;-)</p>
+<p>Well, I don&#8217;t know how to build a RPM package, so I may not be able to support about it.
+Sorry in advance ;-)</p>
 </div>
 </div>
 
@@ -133,8 +166,10 @@ $ make</pre>
   <h3>Contents of This Page</h3>
   <ul>
 <li><a class="reference internal" href="#">How to Build</a><ul>
+<li><a class="reference internal" href="#requirements">Requirements</a></li>
 <li><a class="reference internal" href="#build-binary-zip-by-gradle">Build binary zip by Gradle</a></li>
 <li><a class="reference internal" href="#build-only-native-groovyclient">Build only native groovyclient</a></li>
+<li><a class="reference internal" href="#build-native-groovyclient-on-gvm">Build native groovyclient on GVM</a></li>
 <li><a class="reference internal" href="#build-rpm-file">Build RPM file</a></li>
 </ul>
 </li>

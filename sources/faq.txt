@@ -41,15 +41,6 @@ A:
     So far Ubuntu Linux, Windows and Mac OS X are supported.
     Basically, GroovyServ can run on the environment which supports JDK and JNA.
 
-Are there packages for MacPorts, \*.deb, \*.rpm?
-------------------------------------------------
-Q:
-    Are there packages for MacPorts, \*.deb, \*.rpm?
-
-A:
-    Partially Yes! GroovyServ is now available on the MacPorts and Homebrew.
-    The others may be under construction... We hope you'll do it!
-
 Does GroovyServ for Windows require Cygwin?
 -------------------------------------------
 Q:

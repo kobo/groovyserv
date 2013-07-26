@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.12',
+        VERSION:     '0.13',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -52,10 +52,15 @@
 <li><a class="reference internal" href="#ref-howtoinstall-binary"><em>binary package (bin.zip)</em></a></li>
 </ul>
 </div>
+<div class="section" id="for-all-unix-platform">
+<h3>For all UNIX platform<a class="headerlink" href="#for-all-unix-platform" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><a class="reference internal" href="#ref-howtoinstall-gvm"><em>GVM</em></a></li>
+</ul>
+</div>
 <div class="section" id="only-for-mac-os-x">
 <h3>Only for Mac OS X<a class="headerlink" href="#only-for-mac-os-x" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li><a class="reference internal" href="#ref-howtoinstall-macports"><em>Macports</em></a></li>
 <li><a class="reference internal" href="#ref-howtoinstall-homebrew"><em>Homebrew</em></a></li>
 </ul>
 </div>
@@ -74,52 +79,50 @@
 </div>
 <div class="section" id="install-from-binary-package">
 <span id="ref-howtoinstall-binary"></span><h2>Install from binary package<a class="headerlink" href="#install-from-binary-package" title="Permalink to this headline">¶</a></h2>
-<p>Download and expand GroovyServ distribution package from <a class="reference internal" href="download.html#ref-download"><em>Download page</em></a>, e.g. groovyserv-0.12-macosx-bin.zip to any directory:</p>
+<p>Download and expand GroovyServ distribution package from <a class="reference internal" href="download.html#ref-download"><em>Download page</em></a>, e.g. <cite>groovyserv-0.13-macosx-bin.zip</cite> to any directory:</p>
 <div class="highlight-python"><pre>$ mkdir ~/opt
 $ cd ~/opt
-$ unzip groovyserv-0.12-macosx-x86_64-bin.zip</pre>
+$ unzip groovyserv-0.13-macosx-x86_64-bin.zip</pre>
 </div>
-<p>And add bin directory to PATH environment variable.
+<p>And add bin directory to <cite>PATH</cite> environment variable.
 For example in bash/bourne shell:</p>
-<div class="highlight-python"><pre>export PATH=~/opt/groovyserv-0.12/bin:$PATH</pre>
+<div class="highlight-python"><pre>export PATH=~/opt/groovyserv-0.13/bin:$PATH</pre>
 </div>
 <p>That&#8217;s all for preparing.
 When you invoke groovyclient, groovyserver automatically starts in background.
 At first, you might have to wait for a few seconds to startup:</p>
 <div class="highlight-python"><pre>$ groovyclient -v
-Invoking server: '/opt/groovyserv-0.12/bin/groovyserver' -p 1961
-Groovy home directory: (none)
-Groovy command path: /Users/nobeans/.gvm/groovy/current/bin/groovy (found at PATH)
-GroovyServ home directory: /opt/groovyserv-0.12
-GroovyServ work directory: /Users/nobeans/.groovy/groovyserv
-Original classpath: (none)
-GroovyServ default classpath: /opt/groovyserv-0.12/lib/*
-Starting..
+Invoking server: '/opt/groovyserv-0.13/bin/groovyserver' -p 1961
+...
 groovyserver 24008(1961) is successfully started
 Groovy Version: 2.1.5 JVM: 1.7.0_25 Vendor: Oracle Corporation OS: Mac OS X
-GroovyServ Version: Server: 0.12
-GroovyServ Version: Client: 0.12 (.c)</pre>
+GroovyServ Version: Server: 0.13
+GroovyServ Version: Client: 0.13 (.c)</pre>
 </div>
 <p>If the binary downloaded doesn&#8217;t work, try to build it from source code, according to <a class="reference internal" href="howtobuild.html#ref-howtobuild"><em>Build from source code</em></a>.</p>
 </div>
-<div class="section" id="install-via-macports">
-<span id="ref-howtoinstall-macports"></span><h2>Install via Macports<a class="headerlink" href="#install-via-macports" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="install-by-gvm">
+<span id="ref-howtoinstall-gvm"></span><h2>Install by GVM<a class="headerlink" href="#install-by-gvm" title="Permalink to this headline">¶</a></h2>
 <p>To install:</p>
-<div class="highlight-python"><pre>$ sudo port install groovyserv</pre>
+<div class="highlight-python"><pre>$ gvm install groovyserv</pre>
 </div>
-<p>See: <a class="reference external" href="http://www.macports.org/">http://www.macports.org/</a> (thanx, breskeby!)</p>
+<p><cite>groovyclient</cite> command installed by GVM is a limitted shell version.
+If you have <cite>make</cite> and <cite>gcc</cite>, you can easily replace it with a native client built by yourself.
+See <a class="reference internal" href="howtobuild.html#ref-howtobuild-gvm-nativeclient"><em>&#8216;Build native groovyclient on GVM&#8217;</em></a>.</p>
+<p>See also: <a class="reference external" href="http://gvmtool.net/">http://gvmtool.net/</a></p>
 </div>
-<div class="section" id="install-via-homebrew">
-<span id="ref-howtoinstall-homebrew"></span><h2>Install via Homebrew<a class="headerlink" href="#install-via-homebrew" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="install-by-homebrew">
+<span id="ref-howtoinstall-homebrew"></span><h2>Install by Homebrew<a class="headerlink" href="#install-by-homebrew" title="Permalink to this headline">¶</a></h2>
 <p>To install:</p>
 <div class="highlight-python"><pre>$ brew install groovyserv</pre>
 </div>
-<p>See: <a class="reference external" href="http://mxcl.github.com/homebrew/">http://mxcl.github.com/homebrew/</a></p>
+<p>See also: <a class="reference external" href="http://mxcl.github.com/homebrew/">http://mxcl.github.com/homebrew/</a></p>
 </div>
 <div class="section" id="install-from-rpm-package">
 <span id="ref-howtoinstall-rpm"></span><h2>Install from RPM package<a class="headerlink" href="#install-from-rpm-package" title="Permalink to this headline">¶</a></h2>
-<p>Currently we don&#8217;t produce a RPM package officially. But there is the contributed SPEC file which is need to buld a RPM file. So you can try to build it by yourself ;-)</p>
-<p>See: <a class="reference internal" href="howtobuild.html#ref-howtobuild-rpm"><em>Build RPM file</em></a></p>
+<p>Currently we don&#8217;t produce a RPM package officially. But there is the contributed SPEC file which is need to buld a RPM file.
+So you can try to build it by yourself ;-)
+See <a class="reference internal" href="howtobuild.html#ref-howtobuild-rpm"><em>&#8216;Build RPM file&#8217;</em></a>.</p>
 </div>
 </div>
 
@@ -168,14 +171,15 @@ GroovyServ Version: Client: 0.12 (.c)</pre>
 <li><a class="reference internal" href="#">How to Install</a><ul>
 <li><a class="reference internal" href="#for-each-environment">For each environment</a><ul>
 <li><a class="reference internal" href="#for-anywhere">For Anywhere</a></li>
+<li><a class="reference internal" href="#for-all-unix-platform">For all UNIX platform</a></li>
 <li><a class="reference internal" href="#only-for-mac-os-x">Only for Mac OS X</a></li>
 <li><a class="reference internal" href="#only-for-linux">Only for Linux</a></li>
 <li><a class="reference internal" href="#only-for-windows">Only for Windows</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#install-from-binary-package">Install from binary package</a></li>
-<li><a class="reference internal" href="#install-via-macports">Install via Macports</a></li>
-<li><a class="reference internal" href="#install-via-homebrew">Install via Homebrew</a></li>
+<li><a class="reference internal" href="#install-by-gvm">Install by GVM</a></li>
+<li><a class="reference internal" href="#install-by-homebrew">Install by Homebrew</a></li>
 <li><a class="reference internal" href="#install-from-rpm-package">Install from RPM package</a></li>
 </ul>
 </li>
