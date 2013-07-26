@@ -4,7 +4,7 @@ Quick Start
 After Installing GroovyServ
 ---------------------------
 
-Now, you can use 'groovyclient' command instead of an original 'groovy' command::
+Now, you can use `groovyclient` command instead of an original `groovy` command::
 
     $ groovy -e "println('Hello, Groovy.')"
     $ groovyclient -e "println('Hello, GroovyServ.')"
@@ -15,16 +15,16 @@ How faster is GroovyServ than Groovy?
 Two commands for you
 --------------------
 
-GroovyServ has two main commands, 'groovyclient' and 'groovyserver'.
+GroovyServ has two main commands, `groovyclient` and `groovyserver`.
 
 
 groovyclient
 ^^^^^^^^^^^^
 
-The groovyclient is a front controller for user.
-When you invoke it, it passed the arguments and standard input stream to the back-end's groovyserver (which is automatically invoked if not exists).
+The `groovyclient` is a front controller for user.
+When you invoke it, it passed the arguments and standard input stream to the back-end's `groovyserver` (which is automatically invoked if not exists).
 
-In many cases, groovy command can be simply replaced with groovyclient::
+In many cases, `groovy` command can be simply replaced with `groovyclient`::
 
     $ groovy -e "println('Hello, Groovy.')"
     $ groovyclient -e "println('Hello, GroovyServ.')"
@@ -39,10 +39,10 @@ For further information, read :ref:`User Guide <ref-userguide>`.
 groovyserver
 ^^^^^^^^^^^^
 
-The groovyserver is the engine to run your Groovy script.
-By invoking groovyclient, groovyserver is automatically started up and kept running permanently.
+The `groovyserver` is the engine to run your Groovy script.
+By invoking `groovyclient`, `groovyserver` is automatically started up and kept running permanently.
 You can also explicitly run it with detail options.
-For example, when you want to kill the groovyserver process because there isn't enough memory::
+For example, when you want to kill the `groovyserver` process because there isn't enough memory::
 
     $ groovyserver -k
 
@@ -50,6 +50,6 @@ Or, when you want to restart the process and turn debug mode on because it seems
 
     $ groovyserver -r -v
 
-Of course, in usual case, you don't have to use the groovyserver command.
+Of course, in usual case, you don't have to use the `groovyserver` command.
 For further information, read :ref:`User Guide <ref-userguide>`.
 
