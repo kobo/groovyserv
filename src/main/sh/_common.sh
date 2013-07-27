@@ -139,7 +139,16 @@ get_authtoken_file() {
 # Common variables
 #-------------------------------------------
 
-GROOVYSERV_HOME=${GROOVYSERV_HOME:-$(expand_path "$(dirname $0)/..")} # convert to absolute path just in case
+if [ "$GROOVYSERV_HOME" = "" ]; then
+    GROOVYSERV_HOME="$(dirname $(dirname $(expand_path $0)))"
+
+    # for Homebrew in Mac OS X
+    if [ -d $GROOVYSERV_HOME/libexec ]; then
+        GROOVYSERV_HOME="$GROOVYSERV_HOME/libexec"
+    fi
+else
+    GROOVYSERV_HOME=`expand_path "$GROOVYSERV_HOME"`
+fi
 debug_log "GROOVYSERV_HOME: $GROOVYSERV_HOME"
 
 GROOVYSERV_WORK_DIR=${GROOVYSERV_WORK_DIR:-"$HOME/.groovy/groovyserv"}
