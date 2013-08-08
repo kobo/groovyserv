@@ -15,7 +15,7 @@
  */
 package org.jggug.kobo.groovyserv.stream
 
-import org.jggug.kobo.groovyserv.ClientConnectionRepository
+import org.jggug.kobo.groovyserv.ClientConnection
 
 /**
  * @author NAKANO Yasuharu
@@ -43,15 +43,15 @@ class StandardStreams {
     }
 
     private static InputStream newInAsInputStream() {
-        new DynamicDelegatedInputStream({-> ClientConnectionRepository.instance.currentConnection.ins })
+        new DynamicDelegatedInputStream({-> ClientConnection.currentConnection.ins })
     }
 
     private static PrintStream newOutAsPrintStream() {
-        new DynamicDelegatedPrintStream({-> ClientConnectionRepository.instance.currentConnection.out })
+        new DynamicDelegatedPrintStream({-> ClientConnection.currentConnection.out })
     }
 
     private static PrintStream newErrAsPrintStream() {
-        new DynamicDelegatedPrintStream({-> ClientConnectionRepository.instance.currentConnection.err })
+        new DynamicDelegatedPrintStream({-> ClientConnection.currentConnection.err })
     }
 
 }

@@ -15,7 +15,7 @@
  */
 package org.jggug.kobo.groovyserv.stream
 
-import org.jggug.kobo.groovyserv.ClientConnectionRepository
+import org.jggug.kobo.groovyserv.ClientConnection
 import org.jggug.kobo.groovyserv.utils.DebugUtils
 
 /**
@@ -65,7 +65,7 @@ class StreamRequestInputStream extends InputStream {
     @Override
     void close() {
         closed = true
-        DebugUtils.verboseLog "StreamRequestInputStream is closed: ${ClientConnectionRepository.instance.currentConnection}"
+        DebugUtils.verboseLog "StreamRequestInputStream is closed: ${ClientConnection.currentConnection}"
     }
 
     /**

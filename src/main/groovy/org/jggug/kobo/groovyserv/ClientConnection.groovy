@@ -17,6 +17,7 @@ package org.jggug.kobo.groovyserv
 
 import org.jggug.kobo.groovyserv.exception.ClientNotAllowedException
 import org.jggug.kobo.groovyserv.exception.GServIOException
+import org.jggug.kobo.groovyserv.exception.GServIllegalStateException
 import org.jggug.kobo.groovyserv.exception.InvalidAuthTokenException
 import org.jggug.kobo.groovyserv.exception.InvalidRequestHeaderException
 import org.jggug.kobo.groovyserv.stream.StreamRequestInputStream
@@ -29,10 +30,11 @@ import org.jggug.kobo.groovyserv.utils.IOUtils
  */
 class ClientConnection implements Closeable {
 
+    private static InheritableThreadLocal<ClientConnection> connectionHolder = new InheritableThreadLocal<ClientConnection>()
+
     private String id
     final AuthToken authToken
     private Socket socket
-    private ThreadGroup ownerThreadGroup
 
     private PipedOutputStream pipedOutputStream // to transfer from socket.inputStream
     private PipedInputStream pipedInputStream   // connected to socket.inputStream indirectly via pipedInputStream and used as System.in
@@ -47,11 +49,10 @@ class ClientConnection implements Closeable {
     final PrintStream out
     final PrintStream err
 
-    ClientConnection(authToken, socket, ownerThreadGroup) {
+    ClientConnection(Object authToken, Object socket) {
         this.id = "ClientConnection:${socket.port}"
         this.authToken = authToken
         this.socket = socket
-        this.ownerThreadGroup = ownerThreadGroup
 
         this.pipedOutputStream = new PipedOutputStream()
         this.pipedInputStream = new PipedInputStream(pipedOutputStream)
@@ -61,7 +62,7 @@ class ClientConnection implements Closeable {
         this.out = new PrintStream(StreamResponseOutputStream.newOut(socketOutputStream))
         this.err = new PrintStream(StreamResponseOutputStream.newErr(socketOutputStream))
 
-        ClientConnectionRepository.instance.bind(ownerThreadGroup, this)
+        connectionHolder.set(this)
     }
 
     /**
@@ -143,7 +144,6 @@ class ClientConnection implements Closeable {
             DebugUtils.verboseLog "${id}: Socket is closed"
             socket = null
         }
-        ClientConnectionRepository.instance.unbind(ownerThreadGroup)
         closed = true
     }
 
@@ -171,6 +171,14 @@ class ClientConnection implements Closeable {
 
     @Override
     String toString() { id }
+
+    static getCurrentConnection() {
+        def connection = connectionHolder.get()
+        if (connection == null) {
+            throw new GServIllegalStateException("Not found client connection: ${Thread.currentThread()}")
+        }
+        return connection
+    }
 
     private checkAllowedClientAddress() {
         if (!isAllowedClientAddress(socket)) {

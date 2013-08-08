@@ -49,15 +49,14 @@ class RequestWorker extends ThreadPoolExecutor {
         this.id = "RequestWorker:${socket.port}"
 
         def rootThreadGroup = new GServThreadGroup("GServThreadGroup:${socket.port}")
-        this.conn = new ClientConnection(authToken, socket, rootThreadGroup)
+        this.conn = new ClientConnection(authToken, socket)
 
         // for management sub threads in invoke handler.
         setThreadFactory(new ThreadFactory() {
             def index = new AtomicInteger(0)
 
             Thread newThread(Runnable runnable) {
-                // giving individual sub thread group for each thread
-                // in order to kill invoke handler's sub threads which were started in user scripts.
+                // giving individual sub thread group for each thread in order to handle unexpected exception.
                 def subThreadGroup = new GServThreadGroup(rootThreadGroup, "${rootThreadGroup.name}:${index.getAndIncrement()}")
                 def thread = new Thread(subThreadGroup, runnable)
                 DebugUtils.verboseLog("${id}: Thread is created: $thread")
