@@ -22,14 +22,6 @@ import static org.junit.Assert.*
  */
 class TestUtils {
 
-    static Process executeClient(args, closure = null) {
-        executeClientWithEnv(args, null, closure)
-    }
-
-    static Process executeClientOk(args, closure = null) {
-        executeClientOkWithEnv(args, null, closure)
-    }
-
     static Process executeClientWithEnv(args, Map envMap, closure = null) {
         def client = clientExecutablePath.split(" ") as List
         def p = createProcessBuilder([* client, * args], envMap).start()
@@ -38,12 +30,20 @@ class TestUtils {
         return p
     }
 
+    static Process executeClient(args, closure = null) {
+        executeClientWithEnv(args, null, closure)
+    }
+
     static Process executeClientOkWithEnv(args, Map envMap, closure = null) {
         def p = executeClientWithEnv(args, envMap, closure)
         if (p.exitValue() != 0) {
             fail "ERROR: exitValue:${p.exitValue()}, in:[${p.in.text}], err:[${p.err.text}]"
         }
         return p
+    }
+
+    static Process executeClientOk(args, closure = null) {
+        executeClientOkWithEnv(args, null, closure)
     }
 
     static startServer() {
@@ -77,6 +77,9 @@ class TestUtils {
         envMap.each { key, value ->
             actualCommand << "${key}=${value}".toString() // without this, ArrayStoreException may occur
         }
+
+        // unset GROOVYSERV_HOME (which may be set by GVM) for a process invoked by a test
+        processBuilder.environment().remove('GROOVYSERV_HOME')
 
         commandLine.each { arg ->
             actualCommand << arg.toString() // without this, ArrayStoreException may occur

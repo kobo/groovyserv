@@ -347,6 +347,9 @@ def executeCommand(command, arguments) {
             executable = command
             args = arguments
             standardOutput = os
+
+            // unset GROOVYSERV_HOME (which may be set by GVM) for a process invoked by gradle directly
+            environment.remove('GROOVYSERV_HOME')
         }
         println os.toString()
         return os.toString()
