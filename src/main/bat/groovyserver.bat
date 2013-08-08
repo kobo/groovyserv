@@ -42,7 +42,7 @@ if "%DIRNAME%" == "" set DIRNAME=.\
             echo ERROR: Port number must be specified. >&2
             goto end
         )
-        set GROOVYSERVER_PORT=%2
+        set GROOVYSERV_PORT=%2
         shift
     ) else if "%1" == "-k" (
         echo ERROR: groovyserver.bat does not support %1. >&2
@@ -120,15 +120,15 @@ call :info_log GroovyServ work directory: "%GROOVYSERV_WORK_DIR%"
 @rem Port and PID and AuthToken
 @rem ----------------------------------------
 
-if not defined GROOVYSERVER_PORT (
-    set GROOVYSERVER_PORT=1961
+if not defined GROOVYSERV_PORT (
+    set GROOVYSERV_PORT=1961
 )
 if defined GROOVYSERV_OPTS (
-    set GROOVYSERV_OPTS=%GROOVYSERV_OPTS% -Dgroovyserver.port=%GROOVYSERVER_PORT%
+    set GROOVYSERV_OPTS=%GROOVYSERV_OPTS% -Dgroovyserver.port=%GROOVYSERV_PORT%
 ) else (
-    set GROOVYSERV_OPTS=-Dgroovyserver.port=%GROOVYSERVER_PORT%
+    set GROOVYSERV_OPTS=-Dgroovyserver.port=%GROOVYSERV_PORT%
 )
-set GROOVYSERV_AUTHTOKEN_FILE=%GROOVYSERV_WORK_DIR\%authtoken-%GROOVYSERVER_PORT%
+set GROOVYSERV_AUTHTOKEN_FILE=%GROOVYSERV_WORK_DIR\%authtoken-%GROOVYSERV_PORT%
 
 @rem ----------------------------------------
 @rem Setup classpath
@@ -161,7 +161,7 @@ if defined JAVA_OPT (
 @rem if connecting to server is succeed, return successfully
 call :is_server_available
 if not errorlevel 1 (
-    echo WARN: groovyserver is already running on port %GROOVYSERVER_PORT% >&2
+    echo WARN: groovyserver is already running on port %GROOVYSERV_PORT% >&2
     goto end
 )
 
@@ -178,11 +178,11 @@ if defined DEBUG (
     @rem So before start commaand is invoked, make errorlevel reset explicitly.
     call :reset_errorlevel
     start ^
-        "groovyserver[port:%GROOVYSERVER_PORT%]" ^
+        "groovyserver[port:%GROOVYSERV_PORT%]" ^
         /MIN ^
         %GROOVY_CMD% ^
         %GROOVYSERV_OPTS% ^
-        -e "println('Groovyserver^(port %GROOVYSERVER_PORT%^) is running');println('Close this window to stop');org.jggug.kobo.groovyserv.GroovyServer.main(args)"
+        -e "println('Groovyserver^(port %GROOVYSERV_PORT%^) is running');println('Close this window to stop');org.jggug.kobo.groovyserv.GroovyServer.main(args)"
     if errorlevel 1 (
         echo ERROR: Failed to invoke groovyserver >&2
         goto end
@@ -240,7 +240,7 @@ exit /B
 @rem ERRORLEVEL will be modified
 :is_server_available
     set FIND_CMD=C:\Windows\system32\find
-    netstat -an | "%FIND_CMD%" ":%GROOVYSERVER_PORT% " | "%FIND_CMD%" "LISTENING" > NUL 2>&1
+    netstat -an | "%FIND_CMD%" ":%GROOVYSERV_PORT% " | "%FIND_CMD%" "LISTENING" > NUL 2>&1
 exit /B %ERRORLEVEL%
 
 @rem GROOVY_CMD will be modified

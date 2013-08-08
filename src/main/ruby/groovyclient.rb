@@ -21,8 +21,8 @@ require 'base64'
 # Constants
 #-------------------------------------------
 
-SERVER_HOST = ENV.fetch("GROOVYSERVER_HOST", "localhost")
-SERVER_PORT = ENV.fetch("GROOVYSERVER_PORT", 1961)
+SERVER_HOST = ENV.fetch("GROOVYSERV_HOST", "localhost")
+SERVER_PORT = ENV.fetch("GROOVYSERV_PORT", 1961)
 SERVER_CMD = File.expand_path(ENV.fetch("GROOVYSERV_HOME", File.dirname($0)+"/..") + "/bin/groovyserver")
 
 IS_WINDOWS = RUBY_PLATFORM.downcase =~ /mswin(?!ce)|mingw|cygwin|bccwin/

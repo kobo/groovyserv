@@ -183,7 +183,7 @@ static char* get_host()
     }
 
     static char* host_env;
-    host_env = getenv("GROOVYSERVER_HOST");
+    host_env = getenv("GROOVYSERV_HOST");
     if (host_env != NULL) {
         return host_env;
     }
@@ -197,7 +197,7 @@ static int get_port()
         return client_option.port;
     }
 
-    char* port_str = getenv("GROOVYSERVER_PORT");
+    char* port_str = getenv("GROOVYSERV_PORT");
     if (port_str != NULL) {
         int port;
         if (sscanf(port_str, "%d", &port) != 1) {

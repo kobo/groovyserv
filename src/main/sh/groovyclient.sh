@@ -83,13 +83,13 @@ check_environment() {
 }
 
 invoke_server_command() {
-    info_log "Invoking server: '$SERVER_CMD' -p $GROOVYSERVER_PORT ${SERVER_OPTIONS[@]}"
-    "$SERVER_CMD" -p $GROOVYSERVER_PORT ${SERVER_OPTIONS[@]} || die "ERROR: Sorry, unexpected error occurs"
+    info_log "Invoking server: '$SERVER_CMD' -p $GROOVYSERV_PORT ${SERVER_OPTIONS[@]}"
+    "$SERVER_CMD" -p $GROOVYSERV_PORT ${SERVER_OPTIONS[@]} || die "ERROR: Sorry, unexpected error occurs"
 }
 
 start_server() {
     # To try only for localhost
-    [ "$GROOVYSERVER_HOST" != "localhost" ] && return
+    [ "$GROOVYSERV_HOST" != "localhost" ] && return
 
     # Specified
     if $DO_RESTART || $DO_KILL; then
@@ -97,7 +97,7 @@ start_server() {
         $DO_KILL && exit 0
 
     # Automatically
-    elif ! is_port_listened $GROOVYSERVER_PORT; then
+    elif ! is_port_listened $GROOVYSERV_PORT; then
         invoke_server_command
     fi
 }
@@ -164,7 +164,7 @@ send_request() {
 
 start_session() {
     # Connect to server
-    exec 5<> /dev/tcp/$GROOVYSERVER_HOST/$GROOVYSERVER_PORT
+    exec 5<> /dev/tcp/$GROOVYSERV_HOST/$GROOVYSERV_PORT
 
     # Send request
     $DEBUG && send_request
@@ -217,12 +217,12 @@ while [ $# -gt 0 ]; do
             ;;
         -Chost | -Cs)
             shift
-            GROOVYSERVER_HOST=$1
+            GROOVYSERV_HOST=$1
             shift
             ;;
         -Cport | -Cp)
             shift
-            GROOVYSERVER_PORT=$1
+            GROOVYSERV_PORT=$1
             shift
             ;;
         -Cauthtoken | -Ca)

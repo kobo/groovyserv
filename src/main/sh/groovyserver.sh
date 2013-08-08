@@ -109,9 +109,9 @@ kill_process_if_specified() {
             if [ $? -eq 0 ]; then
                 kill -9 $EXISTED_PID
                 sleep 1
-                info_log "Killed groovyserver of $EXISTED_PID($GROOVYSERVER_PORT)"
+                info_log "Killed groovyserver of $EXISTED_PID($GROOVYSERV_PORT)"
             else
-                info_log "Process of groovyserver of $EXISTED_PID($GROOVYSERVER_PORT) not found"
+                info_log "Process of groovyserver of $EXISTED_PID($GROOVYSERV_PORT) not found"
             fi
             rm -f "$GROOVYSERV_PID_FILE"
             rm -f "$GROOVYSERV_AUTHTOKEN_FILE"
@@ -127,8 +127,8 @@ kill_process_if_specified() {
 
 check_duplicated_invoking() {
     # if connecting to server is succeed, return with warning message
-    if is_port_listened $GROOVYSERVER_PORT; then
-        die "WARN: groovyserver is already running on port $GROOVYSERVER_PORT"
+    if is_port_listened $GROOVYSERV_PORT; then
+        die "WARN: groovyserver is already running on port $GROOVYSERV_PORT"
     fi
 }
 
@@ -172,11 +172,11 @@ wait_for_server_available() {
         [ ! -f "$GROOVYSERV_AUTHTOKEN_FILE" ] && continue
 
         # if connecting to server is succeed, return successfully
-        is_port_listened $GROOVYSERVER_PORT && break
+        is_port_listened $GROOVYSERV_PORT && break
     done
 
     info_log
-    info_log "groovyserver $(cat "$GROOVYSERV_PID_FILE")($GROOVYSERVER_PORT) is successfully started"
+    info_log "groovyserver $(cat "$GROOVYSERV_PID_FILE")($GROOVYSERV_PORT) is successfully started"
 }
 
 # ------------------------------------------
@@ -203,7 +203,7 @@ while [ $# -gt 0 ]; do
             ;;
         -p)
             shift
-            GROOVYSERVER_PORT=$1
+            GROOVYSERV_PORT=$1
             shift
             ;;
         -k)
@@ -232,7 +232,7 @@ while [ $# -gt 0 ]; do
 done
 
 # Decide Port/PID/AuthToken (it must be after resolving port number from arguments)
-GROOVYSERV_OPTS="$GROOVYSERV_OPTS -Dgroovyserver.port=${GROOVYSERVER_PORT}"
+GROOVYSERV_OPTS="$GROOVYSERV_OPTS -Dgroovyserver.port=${GROOVYSERV_PORT}"
 GROOVYSERV_PID_FILE=$(get_pid_file)
 GROOVYSERV_AUTHTOKEN_FILE=$(get_authtoken_file)
 
