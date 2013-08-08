@@ -123,11 +123,11 @@ GroovyServ uses the following environment variables in runtime.
     It's used to specify groovy command path.
     If you've set GROOVY_HOME environment variable, GroovyServ uses it in order to find a groovy command, so you don't have to set the groovy command path to PATH.
 
-  GROOVYSERVER_HOST (optional)
+  GROOVYSERV_HOST (optional)
     It's used to specify the host address for client.
     Alternately, you can specify it as a command option.
 
-  GROOVYSERVER_PORT (optional)
+  GROOVYSERV_PORT (optional)
     It's used to specify the port number for server or client.
     Alternately, you can specify it as a command option.
 
@@ -279,17 +279,17 @@ Port number
 -----------
 
 As a default, TCP port number which is used for communication between a server and a client is `1961`.
-To change a port number used by a server, you can use `GROOVYSERVER_PORT` environment variable or `-p` option.
-The `-p` option is used more prior than `GROOVYSERVER_PORT` environment variable::
+To change a port number used by a server, you can use `GROOVYSERV_PORT` environment variable or `-p` option.
+The `-p` option is used more prior than `GROOVYSERV_PORT` environment variable::
 
-  $ export GROOVYSERVER_PORT=1963
+  $ export GROOVYSERV_PORT=1963
   $ groovyserver
 
 or::
 
   $ groovyserver -p 1963
 
-On the other hand, for a groovyclient, you can use `-Cp` option instead of `-p` which is used by Groovy and `GROOVYSERVER_PORT` environment variable.
+On the other hand, for a groovyclient, you can use `-Cp` option instead of `-p` which is used by Groovy and `GROOVYSERV_PORT` environment variable.
 In transparent server invocation, the port number is also supplied to the server with `-p` option::
 
   $ groovyclient -Cp 1963 -e '...'

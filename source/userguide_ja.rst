@@ -117,11 +117,11 @@ GroovyServは、実行時に以下の環境変数を使用します。
     groovyコマンドのパスを特定するために使用します。
     環境変数GROOVY_HOMEが設定されている場合はそちらが優先して使用されるため、環境変数PATHへのgroovyコマンドの設定は必要ありません。
 
-  GROOVYSERVER_HOST (オプション)
+  GROOVYSERV_HOST (オプション)
     クライアントで通信相手のサーバアドレスを指定する場合に使用します。
     コマンド引数で代替することもできます。
 
-  GROOVYSERVER_PORT (オプション)
+  GROOVYSERV_PORT (オプション)
     サーバやクライアントでポート番号を指定する場合に使用します。
     コマンド引数で代替することもできます。
 
@@ -257,17 +257,17 @@ groovyserverプロセスに設定された環境変数は、groovyclientの終�
 ----------
 
 groovyserverとgroovyclientが通信するTCPポートとして、デフォルトでは、1961番ポートを使用します。
-サーバが通信に使用するポート番号を変更するには、環境変数GROOVYSERVER_PORTを設定するか、-pオプションを指定してください。
+サーバが通信に使用するポート番号を変更するには、環境変数GROOVYSERV_PORTを設定するか、-pオプションを指定してください。
 環境変数と-pオプション両方が指定された場合は、-pオプションの値が優先されます。::
 
-  $ export GROOVYSERVER_PORT=1963
+  $ export GROOVYSERV_PORT=1963
   $ groovyserver
 
 または::
 
   $ groovyserver -p 1963
 
-クライアント側では環境変数GROOVYSERVER_PORT指定にくわえて-Cpオプションでポート番号を指定可能です。
+クライアント側では環境変数GROOVYSERV_PORT指定にくわえて-Cpオプションでポート番号を指定可能です。
 透過的起動を行う場合にはgroovyserverに-pオプションが指定されて起動されます。::
 
   $ groovyclient -Cp 1963 -e '...'
