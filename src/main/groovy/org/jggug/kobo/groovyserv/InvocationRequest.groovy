@@ -24,6 +24,8 @@ import org.jggug.kobo.groovyserv.utils.DebugUtils
  */
 class InvocationRequest {
 
+    private waitTime = 5000 // sec
+
     int port
     String cwd                 // optional
     String classpath           // optional
@@ -37,9 +39,9 @@ class InvocationRequest {
      * @throws InvalidRequestHeaderException
      */
     void check() {
-        if (!clientAuthToken || !serverAuthToken.isValid(clientAuthToken)) {
-            Thread.sleep(5000) // to prevent from brute force attack
-            DebugUtils.errorLog "Authentication failed. AuthToken is unmatched: ${clientAuthToken} <=> ${serverAuthToken.token}"
+        if (!clientAuthToken | !serverAuthToken || !serverAuthToken.isValid(clientAuthToken)) {
+            DebugUtils.errorLog "Authentication failed. AuthToken is unmatched: ${clientAuthToken} <=> ${serverAuthToken?.token}"
+            Thread.sleep(waitTime) // to prevent from brute force attack
             throw new InvalidAuthTokenException("Authentication failed. AuthToken is unmatched: ${clientAuthToken} <=> ******")
         }
     }
