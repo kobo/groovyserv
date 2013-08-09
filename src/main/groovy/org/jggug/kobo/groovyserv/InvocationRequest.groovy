@@ -25,37 +25,22 @@ import org.jggug.kobo.groovyserv.utils.DebugUtils
 class InvocationRequest {
 
     int port
-    String cwd                 // required: current working directory
+    String cwd                 // optional
     String classpath           // optional
-    List<String> args          // required
+    List<String> args          // optional
     String clientAuthToken     // required
     AuthToken serverAuthToken  // required
     List<String> envVars       // optional
     String protocol            // optional
 
-    InvocationRequest(map) {
-        this.port = map.port
-        this.cwd = map.cwd
-        this.classpath = map.classpath
-        this.args = map.args
-        this.clientAuthToken = map.clientAuthToken
-        this.serverAuthToken = map.serverAuthToken
-        this.envVars = map.envVars
-        this.protocol = map.protocol
-    }
-
     /**
      * @throws InvalidRequestHeaderException
      */
     void check() {
-        if (!cwd) {
-            throw new InvalidRequestHeaderException("'Cwd' header is not found: ${port}")
-        }
         if (!clientAuthToken || !serverAuthToken.isValid(clientAuthToken)) {
             Thread.sleep(5000) // to prevent from brute force attack
             DebugUtils.errorLog "Authentication failed. AuthToken is unmatched: ${clientAuthToken} <=> ${serverAuthToken.token}"
             throw new InvalidAuthTokenException("Authentication failed. AuthToken is unmatched: ${clientAuthToken} <=> ******")
         }
     }
-
 }

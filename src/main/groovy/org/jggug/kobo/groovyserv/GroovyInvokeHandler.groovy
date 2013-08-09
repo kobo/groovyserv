@@ -50,9 +50,12 @@ class GroovyInvokeHandler implements Runnable {
     void run() {
         Thread.currentThread().name = id
         DebugUtils.verboseLog("${id}: Thread started")
-        boolean shouldResetCurrentDir = true
+        boolean shouldResetCurrentDir = false
         try {
-            CurrentDirHolder.instance.setDir(request.cwd)
+            if (request.cwd) {
+                shouldResetCurrentDir = true
+                CurrentDirHolder.instance.setDir(request.cwd)
+            }
             setupEnvVars(request.envVars)
             def classpath = removeClasspathFromArgs(request)
             invokeGroovy(request.args, classpath)
