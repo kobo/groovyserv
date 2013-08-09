@@ -34,7 +34,7 @@ class StreamRequestHandler implements Runnable {
 
     /**
      * @throws GServInterruptedException
-     *             Acutally this exception is wrapped by ExecutionException.
+     *             Actually this exception is wrapped by ExecutionException.
      *             When interrupted by client request which has a "Size: -1" header.
      *             When interrupted by receiving invalid request.
      *             When interrupted by EOF of input stream of socket (Half-closed by the client).
