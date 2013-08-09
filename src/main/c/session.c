@@ -52,7 +52,7 @@ const char * const HEADER_KEY_CURRENT_WORKING_DIR = "Cwd";
 const char * const HEADER_KEY_ARG = "Arg";
 const char * const HEADER_KEY_ENV = "Env";
 const char * const HEADER_KEY_CP = "Cp";
-const char * const HEADER_KEY_AUTHTOKEN = "AuthToken";
+const char * const HEADER_KEY_AUTHTOKEN = "Auth";
 
 // response headers
 const char * const HEADER_KEY_CHANNEL = "Channel";

@@ -32,24 +32,24 @@ import org.jggug.kobo.groovyserv.utils.IOUtils
  *    'Cwd:' <cwd> LF
  *    'Arg:' <arg1> LF
  *    'Arg:' <arg2> LF
- *    'Arg:' <arg3> LF
  *      :
+ *    'Arg:' <argN> LF
  *    'Env:' <env1>=<value1> LF
  *    'Env:' <env2>=<value2> LF
- *    'Env:' <env3>=<value3> LF
  *      :
+ *    'Env:' <envN>=<valueN> LF
  *    'Cp:' <classpath> LF
- *    'AuthToken:' <authToken> LF
+ *    'Auth:' <authToken> LF
  *    LF
  *
  *   where:
  *     <protocol> is a type of protocol, like 'simple'. (optional)
  *     <cwd> is current working directory.
- *     <arg1>,<arg2>.. are commandline arguments which must be encoded by Base64. (optional)
- *     <env1>,<env2>.. are environment variable names which sent to the server. (optional)
- *     <value1>,<valeu2>.. are environment variable values which sent to the server. (optional)
+ *     <arg1>,<arg2>..<argN> are commandline arguments which must be encoded by Base64. (optional)
+ *     <env1>,<env2>..<envN> are environment variable names which sent to the server. (optional)
+ *     <value1>,<value2>..<valueN> are environment variable values which sent to the server. (optional)
  *     <classpath> is the value of environment variable CLASSPATH. (optional)
- *     <authToken> is authentication value which certify client is the user who invoked the server.
+ *     <authToken> is authentication value which a request is from a valid user who invoked the server.
  *     LF is line feed (0x0a, '\n').
  *
  * StreamRequest ::=
@@ -91,7 +91,7 @@ class ClientProtocols {
     private final static String HEADER_ARG = "Arg"
     private final static String HEADER_CP = "Cp"
     private final static String HEADER_STATUS = "Status"
-    private final static String HEADER_AUTHTOKEN = "AuthToken"
+    private final static String HEADER_AUTHTOKEN = "Auth"
     private final static String HEADER_STREAM_ID = "Channel"
     private final static String HEADER_SIZE = "Size"
     private final static String HEADER_ENV = "Env"

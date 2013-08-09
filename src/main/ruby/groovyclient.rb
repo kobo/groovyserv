@@ -138,7 +138,7 @@ def send_command(socket, args)
     # TODO using default encoding.
     socket.puts "Arg: #{Base64.encode64(arg).gsub(/\s/, '')}"
   end
-  socket.puts "AuthToken: #{authtoken}"
+  socket.puts "Auth: #{authtoken}"
   send_envvars(socket)
   if ENV['CLASSPATH']
     socket.puts "Cp: #{ENV['CLASSPATH']}"

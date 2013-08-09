@@ -151,7 +151,7 @@ send_request() {
     fi
 
     # Authtoken
-    echo "AuthToken: ${AUTHTOKEN:-$(cat "$(get_authtoken_file)")}"
+    echo "Auth: ${AUTHTOKEN:-$(cat "$(get_authtoken_file)")}"
 
     # Arguments for groovy command
     for arg in "${SERVER_ARGS[@]}"; do

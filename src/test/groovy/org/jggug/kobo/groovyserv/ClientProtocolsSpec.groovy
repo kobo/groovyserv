@@ -31,7 +31,7 @@ class ClientProtocolsSpec extends Specification {
             |Cp: /tmp/cp1:/tmp/cp2
             |Arg: argument_1
             |Arg: argument_2
-            |AuthToken: DUMMY_AUTHTOKEN
+            |Auth: DUMMY_AUTHTOKEN
             |""".stripMargin().bytes)
 
         when:
@@ -41,7 +41,7 @@ class ClientProtocolsSpec extends Specification {
         headers.Cwd == ['/tmp/cwd']
         headers.Cp == ['/tmp/cp1:/tmp/cp2']
         headers.Arg == ['argument_1', 'argument_2']
-        headers.AuthToken == ['DUMMY_AUTHTOKEN']
+        headers.Auth == ['DUMMY_AUTHTOKEN']
         headers.size() == 4
     }
 
@@ -49,7 +49,7 @@ class ClientProtocolsSpec extends Specification {
         given:
         def ins = new ByteArrayInputStream("""\
             |Cwd: /tmp/cwd
-            |AuthToken: DUMMY_AUTHTOKEN
+            |Auth: DUMMY_AUTHTOKEN
             |""".stripMargin().bytes)
 
         when:
@@ -57,7 +57,7 @@ class ClientProtocolsSpec extends Specification {
 
         then:
         headers.Cwd == ['/tmp/cwd']
-        headers.AuthToken == ['DUMMY_AUTHTOKEN']
+        headers.Auth == ['DUMMY_AUTHTOKEN']
         headers.size() == 2
     }
 

@@ -48,7 +48,7 @@ class DirectAccessSpec extends Specification {
             |Cwd: /tmp
             |Arg: ${encodeBase64('-e')}
             |Arg: ${encodeBase64('println("hello")')}
-            |AuthToken: ${WorkFiles.AUTHTOKEN_FILE.text}
+            |Auth: ${WorkFiles.AUTHTOKEN_FILE.text}
             |
             |""".stripMargin()
 
@@ -72,7 +72,7 @@ class DirectAccessSpec extends Specification {
             |Cwd: /tmp
             |Arg: ${encodeBase64('-e')}
             |Arg: ${encodeBase64('System.in.eachLine { line, index -> println(line * 2) }')}
-            |AuthToken: ${WorkFiles.AUTHTOKEN_FILE.text}
+            |Auth: ${WorkFiles.AUTHTOKEN_FILE.text}
             |
             |""".stripMargin()
         Thread.sleep(500)
@@ -119,7 +119,7 @@ class DirectAccessSpec extends Specification {
             |Cwd: /tmp
             |Arg: ${encodeBase64('-e')}
             |Arg: ${encodeBase64('println "BB"; while (true) { sleep 1000 }')}
-            |AuthToken: ${WorkFiles.AUTHTOKEN_FILE.text}
+            |Auth: ${WorkFiles.AUTHTOKEN_FILE.text}
             |
             |""".stripMargin()
         Thread.sleep(1500)
@@ -164,7 +164,7 @@ class DirectAccessSpec extends Specification {
             |Arg: ${encodeBase64('-e')}
             |Arg: ${encodeBase64("""println System.getenv("$envVarName")""")}
             |Env: $envVarName=$envVarValue
-            |AuthToken: ${WorkFiles.AUTHTOKEN_FILE.text}
+            |Auth: ${WorkFiles.AUTHTOKEN_FILE.text}
             |
             |""".stripMargin()
 
