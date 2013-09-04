@@ -16,6 +16,7 @@
 package org.jggug.kobo.groovyserv
 
 import org.jggug.kobo.groovyserv.exception.GServIOException
+import org.jggug.kobo.groovyserv.exception.InvalidAuthTokenException
 import org.jggug.kobo.groovyserv.exception.InvalidRequestHeaderException
 import org.jggug.kobo.groovyserv.utils.DebugUtils
 import org.jggug.kobo.groovyserv.utils.IOUtils
@@ -40,16 +41,18 @@ import org.jggug.kobo.groovyserv.utils.IOUtils
  *    'Env:' <envN>=<valueN> LF
  *    'Cp:' <classpath> LF
  *    'Auth:' <authToken> LF
+ *    'Cmd:' <cmd> LF
  *    LF
  *
  *   where:
  *     <protocol> is a type of protocol, like 'simple'. (optional)
- *     <cwd> is current working directory.
+ *     <cwd> is current working directory. (optional)
  *     <arg1>,<arg2>..<argN> are commandline arguments which must be encoded by Base64. (optional)
  *     <env1>,<env2>..<envN> are environment variable names which sent to the server. (optional)
  *     <value1>,<value2>..<valueN> are environment variable values which sent to the server. (optional)
  *     <classpath> is the value of environment variable CLASSPATH. (optional)
- *     <authToken> is authentication value which a request is from a valid user who invoked the server.
+ *     <authToken> is authentication value which a request is from a valid user who invoked the server. (required)
+ *     <cmd> is a command to operate a server from client via port. (optional)
  *     LF is line feed (0x0a, '\n').
  *
  * StreamRequest ::=
@@ -96,10 +99,11 @@ class ClientProtocols {
     private final static String HEADER_SIZE = "Size"
     private final static String HEADER_ENV = "Env"
     private final static String HEADER_PROTOCOL = "Protocol"
+    private final static String HEADER_COMMAND = "Cmd"
     private final static String LINE_SEPARATOR = "\n"
 
     /**
-     * @Throws InvalidAuthTokenException
+     * @throws InvalidAuthTokenException
      * @throws InvalidRequestHeaderException
      * @throws GServIOException
      */
@@ -115,12 +119,13 @@ class ClientProtocols {
             serverAuthToken: conn.authToken,
             envVars: headers[HEADER_ENV],
             protocol: headers[HEADER_PROTOCOL]?.getAt(0),
+            command: headers[HEADER_COMMAND]?.getAt(0),
         )
         request.check()
         return request
     }
 
-    private static List<String> decodeArgs(id, encoded) {
+    private static List<String> decodeArgs(String id, List<String> encoded) {
         encoded.collect {
             try {
                 new String(it.decodeBase64()) // using default encoding
@@ -138,26 +143,26 @@ class ClientProtocols {
         Map<String, List<String>> headers = readHeaders(conn)
         def request = new StreamRequest(
             port: conn.socket.port,
-            size: headers[HEADER_SIZE]?.getAt(0)
+            size: headers[HEADER_SIZE]?.getAt(0),
+            command: headers[HEADER_COMMAND]?.getAt(0),
         )
+        request.check()
         return request
     }
 
     private static Map<String, List<String>> readHeaders(ClientConnection conn) {
         def id = "ClientProtocols:${conn.socket.port}"
-        def ins = conn.socket.inputStream // raw strem
+        def ins = conn.socket.inputStream // raw stream
         return parseHeaders(id, ins)
     }
 
     private static Map<String, List<String>> parseHeaders(String id, InputStream ins) {
         try {
             def headers = [:]
-            IOUtils.readLines(ins).each { line ->
+            IOUtils.readLines(ins).each { String line ->
                 def tokens = line.split(':', 2)
-                if (tokens.size() != 2) {
-                    throw new InvalidRequestHeaderException("${id}: Found invalid header line: ${line}")
-                }
-                def (key, value) = tokens
+                def key = tokens[0] // exists at least
+                def value = (tokens.size() > 1) ? tokens[1] : ''
                 headers.get(key, []) << value.trim()
             }
             DebugUtils.verboseLog "${id}: Parsed headers: ${headers}"
@@ -195,7 +200,6 @@ class ClientProtocols {
         if (body) {
             buff << body
         }
-        DebugUtils.verboseLog "ClientProtocols: formatAsHeader: ${buff.toString()}"
         buff.toString().bytes
     }
 

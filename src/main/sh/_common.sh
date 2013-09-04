@@ -127,10 +127,6 @@ expand_path() {
     fi
 }
 
-get_pid_file() {
-    echo "$GROOVYSERV_WORK_DIR/pid-$GROOVYSERV_PORT"
-}
-
 get_authtoken_file() {
     echo "$GROOVYSERV_WORK_DIR/authtoken-$GROOVYSERV_PORT"
 }

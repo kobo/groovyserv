@@ -15,34 +15,36 @@
  */
 package org.jggug.kobo.groovyserv
 
+import org.jggug.kobo.groovyserv.exception.InvalidRequestHeaderException
+
 /**
  * @author NAKANO Yasuharu
  */
 class StreamRequest {
 
-    int port
-    private size  // required: size of input stream
-
-    StreamRequest(map) {
-        this.port = map.port
-        this.size = map.size
-    }
-
-    boolean isValid() {
-        size?.isInteger()
-    }
+    int port        // required
+    String size     // optional: size of input stream
+    String command  // optional
 
     boolean isEmpty() {
         getSize() == 0
     }
 
     boolean isInterrupted() {
-        getSize() == -1
+        command == "interrupt"
     }
 
     int getSize() {
-        isValid() ? (size as int) : 0
+        size?.isInteger() ? (size as int) : 0
     }
 
+    /**
+     * @throws InvalidRequestHeaderException
+     */
+    void check() {
+        if ((!empty && command) || (empty && !command)) {
+            throw new InvalidRequestHeaderException("Invalid StreamRequest: size=${size}, command=${command}")
+        }
+    }
 }
 

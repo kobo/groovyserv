@@ -48,6 +48,7 @@ class AuthToken {
 
     void delete() {
         WorkFiles.AUTHTOKEN_FILE.delete()
+        DebugUtils.verboseLog "Deleted authToken: ${token}"
     }
 
     boolean isValid(given) {

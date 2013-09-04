@@ -207,7 +207,7 @@ def handle_stdin(socket)
 end
 
 def send_interrupt(socket)
-  socket.write "Size: -1\n\n"
+  socket.write "Cmd: interrupt\n\n"
   socket.close()
 end
 

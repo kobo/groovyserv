@@ -34,7 +34,7 @@ import java.util.concurrent.atomic.AtomicInteger
  * @author UEHARA Junji
  * @author NAKANO Yasuharu
  */
-class RequestWorker extends ThreadPoolExecutor {
+class RequestWorker extends ThreadPoolExecutor implements Runnable {
 
     private static final int POOL_SIZE = 2
 
@@ -47,8 +47,6 @@ class RequestWorker extends ThreadPoolExecutor {
         // API: ThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue)
         super(POOL_SIZE, POOL_SIZE, 0, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>())
         this.id = "RequestWorker:${socket.port}"
-
-        def rootThreadGroup = new GServThreadGroup("GServThreadGroup:${socket.port}")
         this.conn = new ClientConnection(authToken, socket)
 
         // for management sub threads in invoke handler.
@@ -56,7 +54,9 @@ class RequestWorker extends ThreadPoolExecutor {
             def index = new AtomicInteger(0)
 
             Thread newThread(Runnable runnable) {
-                // giving individual sub thread group for each thread in order to handle unexpected exception.
+                // Giving individual sub thread group for each thread in order to handle unexpected exception
+                // and collect all sub threads from GroovyInvokeHandler to kill.
+                def rootThreadGroup = Thread.currentThread().threadGroup
                 def subThreadGroup = new GServThreadGroup(rootThreadGroup, "${rootThreadGroup.name}:${index.getAndIncrement()}")
                 def thread = new Thread(subThreadGroup, runnable)
                 DebugUtils.verboseLog("${id}: Thread is created: $thread")
@@ -65,19 +65,36 @@ class RequestWorker extends ThreadPoolExecutor {
         })
     }
 
-    void start() {
-        def request
+    @Override
+    void run() {
+        DebugUtils.verboseLog("${id}: Request worker is started")
+
+        InvocationRequest request = parseRequest()
+
+        // handling command
+        if (request.command == 'shutdown') {
+            DebugUtils.verboseLog("${id}: Shutdown command is accepted")
+            GroovyServer.instance.shutdown()
+            // END.
+        }
+
+        handleRequest(request)
+    }
+
+    private InvocationRequest parseRequest() {
         try {
-            request = conn.openSession()
+            return conn.openSession()
         } catch (GServException e) {
             DebugUtils.verboseLog("${id}: Failed to open session: ${e.message}")
             conn.sendExit(e.exitStatus, e.message)
             throw e
         }
+    }
+
+    private void handleRequest(InvocationRequest request) {
         try {
             streamFuture = submit(new StreamRequestHandler(conn))
             invokeFuture = submit(new GroovyInvokeHandler(request))
-            DebugUtils.verboseLog("${id}: Request worker is started")
 
             // when all tasks will finish, executor will be shut down.
             shutdown()

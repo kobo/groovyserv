@@ -29,7 +29,8 @@ public enum ExitStatus {
     TERMINATED(5),
     INVALID_AUTH_TOKEN(201),
     CLIENT_NOT_ALLOWED(202),
-    UNEXPECTED_ERROR(-1)
+    UNEXPECTED_ERROR(-1),
+    FORCELY_SHUTDOWN(99)
 
     int code
 

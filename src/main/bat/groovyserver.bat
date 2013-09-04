@@ -117,7 +117,7 @@ if not exist "%GROOVYSERV_WORK_DIR%" (
 call :info_log GroovyServ work directory: "%GROOVYSERV_WORK_DIR%"
 
 @rem ----------------------------------------
-@rem Port and PID and AuthToken
+@rem Port and AuthToken
 @rem ----------------------------------------
 
 if not defined GROOVYSERV_PORT (

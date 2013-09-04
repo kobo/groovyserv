@@ -100,23 +100,18 @@ setup_java_opts() {
     export JAVA_OPTS="$JAVA_OPTS -server"
 }
 
+send_shutdown_request() {
+    echo "Auth: ${AUTHTOKEN:-$(cat "$GROOVYSERV_AUTHTOKEN_FILE")}"
+    echo "Cmd: shutdown"
+}
+
 kill_process_if_specified() {
-    unset EXISTED_PID
     if $DO_KILL || $DO_RESTART; then
-        if [ -f "$GROOVYSERV_PID_FILE" ]; then
-            EXISTED_PID=`cat "$GROOVYSERV_PID_FILE"`
-            ps -p $EXISTED_PID >/dev/null 2>&1
-            if [ $? -eq 0 ]; then
-                kill -9 $EXISTED_PID
-                sleep 1
-                info_log "Killed groovyserver of $EXISTED_PID($GROOVYSERV_PORT)"
-            else
-                info_log "Process of groovyserver of $EXISTED_PID($GROOVYSERV_PORT) not found"
-            fi
-            rm -f "$GROOVYSERV_PID_FILE"
-            rm -f "$GROOVYSERV_AUTHTOKEN_FILE"
+        if [ -f "$GROOVYSERV_AUTHTOKEN_FILE" ]; then
+            $DEBUG && send_shutdown_request
+            send_shutdown_request | nc localhost $GROOVYSERV_PORT
         else
-            info_log "PID file $GROOVYSERV_PID_FILE not found"
+            info_log "AuthToken file $GROOVYSERV_AUTHTOKEN_FILE not found"
         fi
         if $DO_KILL; then
             exit 0
@@ -143,20 +138,6 @@ invoke_server() {
     fi
 }
 
-store_pid() {
-    sleep 1
-    local my_pid=$!
-    ps -p $my_pid | grep $my_pid > /dev/null
-    if [ $? -eq 0 ]; then
-        echo $my_pid > "$GROOVYSERV_PID_FILE"
-    else
-        error_log "ERROR: Failed to store PID into file $GROOVYSERV_PID_FILE"
-        error_log "Rerun for debug..."
-        "$GROOVY_CMD" $GROOVYSERV_OPTS -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)" &
-        exit 1
-    fi
-}
-
 wait_for_server_available() {
     if ! ${QUIET}; then
         /bin/echo -n "Starting" 1>&2
@@ -176,7 +157,7 @@ wait_for_server_available() {
     done
 
     info_log
-    info_log "groovyserver $(cat "$GROOVYSERV_PID_FILE")($GROOVYSERV_PORT) is successfully started"
+    info_log "groovyserver is successfully started on $GROOVYSERV_PORT port"
 }
 
 # ------------------------------------------
@@ -231,9 +212,8 @@ while [ $# -gt 0 ]; do
     esac
 done
 
-# Decide Port/PID/AuthToken (it must be after resolving port number from arguments)
+# Decide Port/AuthToken (it must be after resolving port number from arguments)
 GROOVYSERV_OPTS="$GROOVYSERV_OPTS -Dgroovyserver.port=${GROOVYSERV_PORT}"
-GROOVYSERV_PID_FILE=$(get_pid_file)
 GROOVYSERV_AUTHTOKEN_FILE=$(get_authtoken_file)
 
 # Pre-processing
@@ -248,6 +228,5 @@ check_duplicated_invoking
 invoke_server
 
 # Post-processing
-store_pid
 wait_for_server_available
 

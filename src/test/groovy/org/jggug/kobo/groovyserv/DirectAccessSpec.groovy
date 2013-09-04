@@ -137,7 +137,7 @@ class DirectAccessSpec extends Specification {
         when:
         Thread.sleep(500)
         out << """\
-            |Size: -1
+            |Cmd: interrupt
             |
             |""".stripMargin()
         Thread.sleep(500)

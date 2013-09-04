@@ -17,6 +17,7 @@ package org.jggug.kobo.groovyserv
 
 import org.jggug.kobo.groovyserv.exception.GServIOException
 import org.jggug.kobo.groovyserv.exception.GServInterruptedException
+import org.jggug.kobo.groovyserv.exception.InvalidRequestHeaderException
 import org.jggug.kobo.groovyserv.utils.DebugUtils
 
 /**
@@ -35,7 +36,7 @@ class StreamRequestHandler implements Runnable {
     /**
      * @throws GServInterruptedException
      *             Actually this exception is wrapped by ExecutionException.
-     *             When interrupted by client request which has a "Size: -1" header.
+     *             When interrupted by client request.
      *             When interrupted by receiving invalid request.
      *             When interrupted by EOF of input stream of socket (Half-closed by the client).
      */
@@ -46,18 +47,14 @@ class StreamRequestHandler implements Runnable {
         try {
             while (true) {
                 def request = conn.readStreamRequest()
-                if (!request.isValid()) {
-                    DebugUtils.verboseLog "${id}: 'Size' header is invalid"
-                    throw new GServInterruptedException("${id}: By receiving invalid request")
+                if (request.isInterrupted()) {
+                    DebugUtils.verboseLog "${id}: Recieved interruption request from client"
+                    throw new GServInterruptedException("${id}: By client request")
                 }
                 if (request.isEmpty()) {
                     DebugUtils.verboseLog "${id}: Recieved empty request from client (Closed stdin on client)"
                     conn.tearDownTransferringPipes()
                     continue // continue to check the client interruption
-                }
-                if (request.isInterrupted()) {
-                    DebugUtils.verboseLog "${id}: Recieved interruption request from client"
-                    throw new GServInterruptedException("${id}: By client request")
                 }
 
                 def buff = new byte[request.size]
@@ -74,6 +71,10 @@ class StreamRequestHandler implements Runnable {
                     conn.transferStreamRequest(buff, offset, result)
                 }
             }
+        }
+        catch (InvalidRequestHeaderException e) {
+            DebugUtils.verboseLog("${id}: Invalid request header: ${e.message}") // ignored details
+            throw new GServInterruptedException("${id}: By receiving invalid request")
         }
         catch (InterruptedException e) {
             DebugUtils.verboseLog("${id}: Thread interrupted: ${e.message}") // ignored details

@@ -42,13 +42,13 @@ class DebugUtils {
         if (!isVerboseMode()) return
 
         // lazy formatting message
-        message = (message instanceof Closure) ? message.call() : message
+        String messageText = (message instanceof Closure) ? message.call() : message
 
         // added prefix for each line
         def formatted = {
             def sw = new StringWriter()
             def pw = new PrintWriter(sw)
-            formatLog(message, e).eachLine { line ->
+            formatLog(messageText, e).eachLine { line ->
                 pw.println(PREFIX_DEBUG_LOG + line)
             }
             sw.toString().trim()
@@ -57,7 +57,7 @@ class DebugUtils {
         writeLog(formatted)
     }
 
-    private static formatLog(message, Throwable e) {
+    private static formatLog(String message, Throwable e) {
         def sw = new StringWriter()
         def pw = new PrintWriter(sw)
         def timestamp = currentTimestamp() // use same timestamp per call of formatLog

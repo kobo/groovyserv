@@ -27,6 +27,7 @@ import org.jggug.kobo.groovyserv.utils.DebugUtils
  * @author UEHARA Junji
  * @author NAKANO Yasuharu
  */
+@Singleton
 class GroovyServer {
 
     private static final int DEFAULT_PORT = 1961
@@ -35,7 +36,7 @@ class GroovyServer {
     private AuthToken authToken
 
     static void main(String[] args) {
-        new GroovyServer().start()
+        GroovyServer.instance.start()
     }
 
     void start() {
@@ -48,9 +49,9 @@ class GroovyServer {
 
             // The order is important.
             // groovyclient uses a port for checking whether server is available.
-            // If port was opened before creating authtoken, checking availability was passed.
-            // But on too slow machine, client may access authtoken file before it's created.
-            // So authtoken file should be created before port is opened.
+            // If a port was opened before creating authtoken, checking availability was passed.
+            // But in too slow machine, client may access an authtoken file before it's created.
+            // So an authtoken file should be created before a port is opened.
             setupAuthToken()
             startServer()
 
@@ -64,9 +65,15 @@ class GroovyServer {
             DebugUtils.errorLog("Unexpected error: GroovyServer", e)
             System.exit(ExitStatus.UNEXPECTED_ERROR.code)
         } finally {
-            // including tha case that an error occurs when startServer, authtoken file should be deleted.
             authToken.delete()
         }
+    }
+
+    void shutdown() {
+        authToken.delete()
+        DebugUtils.infoLog "Server is shut down"
+        System.setSecurityManager(null)
+        System.exit(ExitStatus.FORCELY_SHUTDOWN.code)
     }
 
     private void setupSecurityManager() {
@@ -88,7 +95,7 @@ class GroovyServer {
     private void startServer() {
         int port = getPortNumber()
         serverSocket = new ServerSocket(port)
-        DebugUtils.infoLog "Server started with port: ${port}"
+        DebugUtils.infoLog "Server is started with port: ${port}"
         DebugUtils.infoLog "Default classpath: ${System.getenv('CLASSPATH')}"
     }
 
@@ -96,13 +103,17 @@ class GroovyServer {
         while (true) {
             def socket = serverSocket.accept()
             DebugUtils.verboseLog "Accepted socket: ${socket}"
-            try {
-                // this socket will be closed under a responsibility of RequestWorker
-                new RequestWorker(authToken, socket).start()
-            } catch (e) {
-                DebugUtils.errorLog("Failed to invoke RequestWorker: ${socket}", e)
-            }
+
+            // This socket must be closed under a responsibility of RequestWorker.
+            // RequestWorker must be invoked on the new thread in order to apply new thread group to all sub threads.
+            // It's because ClientConnection is managed for each thread by InheritableThreadLocal.
+            newRequestWorker(socket).start()
         }
+    }
+
+    private Thread newRequestWorker(Socket socket) {
+        def threadGroup = new GServThreadGroup("GServThreadGroup:${socket.port}")
+        new Thread(threadGroup, new RequestWorker(authToken, socket), "RequestWorker:${socket.port}")
     }
 
     static int getPortNumber() {

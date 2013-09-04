@@ -36,13 +36,11 @@ class ServerOperationFromClientSpec extends Specification {
         TestUtils.shutdownServer()
 
         // just in case.
-        deleteDummyPidFile()
         deleteAuthTokenFile()
     }
 
     def cleanup() {
         TestUtils.shutdownServer()
-        deleteDummyPidFile()
         deleteAuthTokenFile()
     }
 
@@ -70,31 +68,6 @@ class ServerOperationFromClientSpec extends Specification {
         then:
         assertIncludingVersion(p.in.text)
         assertNotIncludingServerInvocationLog(p.err.text)
-    }
-
-    def "executes client with no running server when there are previous a pid file and an authtoken file"() {
-        given:
-        createDummyPidFile()
-        createAuthTokenFile()
-
-        when:
-        def p = executeClient()
-
-        then:
-        assertIncludingVersion(p.in.text)
-        assertIncludingServerInvocationLog(p.err.text)
-    }
-
-    def "executes client with no running server when there are previous a pid file"() {
-        given:
-        createDummyPidFile()
-
-        when:
-        def p = executeClient()
-
-        then:
-        assertIncludingVersion(p.in.text)
-        assertIncludingServerInvocationLog(p.err.text)
     }
 
     def "executes client with no running server when there are previous an authtoken file"() {
@@ -134,15 +107,7 @@ class ServerOperationFromClientSpec extends Specification {
         WorkFiles.AUTHTOKEN_FILE << "DUMMY_TOKEN_FOR_TEST"
     }
 
-    private static createDummyPidFile() {
-        new File(WorkFiles.DATA_DIR, "pid-1961") << "DUMMY_PID_FOR_TEST"
-    }
-
     private static deleteAuthTokenFile() {
         WorkFiles.AUTHTOKEN_FILE.delete()
-    }
-
-    private static deleteDummyPidFile() {
-        new File(WorkFiles.DATA_DIR, "pid-1961").delete()
     }
 }

@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 package org.jggug.kobo.groovyserv
-
 import org.jggug.kobo.groovyserv.exception.InvalidAuthTokenException
-import org.jggug.kobo.groovyserv.exception.InvalidRequestHeaderException
 import org.jggug.kobo.groovyserv.utils.DebugUtils
-
 /**
  * @author NAKANO Yasuharu
  */
@@ -34,9 +31,10 @@ class InvocationRequest {
     AuthToken serverAuthToken  // required
     List<String> envVars       // optional
     String protocol            // optional
+    String command             // optional
 
     /**
-     * @throws InvalidRequestHeaderException
+     * @throws InvalidAuthTokenException
      */
     void check() {
         if (!clientAuthToken | !serverAuthToken || !serverAuthToken.isValid(clientAuthToken)) {
