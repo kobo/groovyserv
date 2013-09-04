@@ -26,10 +26,12 @@ import org.jggug.kobo.groovyserv.utils.DebugUtils
  */
 class GroovyInvokeHandler implements Runnable {
 
-    final CLASSPATH_OPTIONS = ["--classpath", "-cp", "-classpath"]
+    private static final long TIMEOUT_FOR_JOINING_SUBTHREADS = 1000 // sec
+    private static final CLASSPATH_OPTIONS = ["--classpath", "-cp", "-classpath"]
 
     private String id
     private InvocationRequest request
+    private boolean interrupted = false
 
     GroovyInvokeHandler(request) {
         this.id = "GroovyInvokeHandler:${request.port}"
@@ -61,7 +63,15 @@ class GroovyInvokeHandler implements Runnable {
             invokeGroovy(request.args, classpath)
             awaitAllSubThreads()
         }
+        catch (RuntimeException e) { // TODO using GServInterruptedException
+            if (e.cause instanceof InterruptedException) {
+                interrupted = true
+                DebugUtils.verboseLog("${id}: Thread interrupted: ${e.message}")
+            }
+            throw e
+        }
         catch (InterruptedException e) {
+            interrupted = true
             DebugUtils.verboseLog("${id}: Thread interrupted: ${e.message}")
         }
         catch (GServIllegalStateException e) {
@@ -142,8 +152,21 @@ class GroovyInvokeHandler implements Runnable {
             return
         }
         DebugUtils.verboseLog("${id}: All sub threads are joining....")
-        threads.each { thread ->
-            if (!thread.isDaemon()) thread.join() // waiting infinitely as original groovy command
+        for (Thread thread in threads) {
+            if (thread.daemon) continue
+            while (thread.alive) {
+                if (interrupted) {
+                    DebugUtils.verboseLog("${id}: Detected interuption while joining ${thread}")
+                    return
+                }
+                DebugUtils.verboseLog("${id}: Joining ${thread}...")
+                try {
+                    thread.join(TIMEOUT_FOR_JOINING_SUBTHREADS)
+                } catch (InterruptedException e) {
+                    DebugUtils.verboseLog("${id}: Interrupted joining ${thread}")
+                    throw e
+                }
+            }
         }
         DebugUtils.verboseLog("${id}: All sub threads joined")
     }

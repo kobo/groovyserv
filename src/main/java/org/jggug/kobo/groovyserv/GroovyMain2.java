@@ -397,6 +397,9 @@ public class GroovyMain2 {
         } catch (SystemExitException e) { // for GroovyServ
             throw e;                      // for GroovyServ
         } catch (Throwable e) {
+            if (e instanceof InterruptedException) {                         // for GroovyServ
+                throw new RuntimeException("Interrupted in user script", e); // for GroovyServ
+            }
             if (e instanceof InvokerInvocationException) {
                 InvokerInvocationException iie = (InvokerInvocationException) e;
                 e = iie.getCause();
