@@ -165,7 +165,9 @@ class ClientProtocols {
                 def value = (tokens.size() > 1) ? tokens[1] : ''
                 headers.get(key, []) << value.trim()
             }
-            DebugUtils.verboseLog "${id}: Parsed headers: ${headers}"
+            DebugUtils.verboseLog """${id}: Parsed headers: ${
+                headers.collectEntries { key, value -> [key, (key == HEADER_AUTHTOKEN) ? '*' * 8 : value] }
+            }"""
             return headers
         }
         catch (InterruptedIOException e) {

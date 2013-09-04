@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 package org.jggug.kobo.groovyserv
-
 import org.jggug.kobo.groovyserv.exception.GServIOException
-import org.jggug.kobo.groovyserv.utils.DebugUtils
-
 /**
  * A connection between client process and server process in localhost
  * is authenticated by simple authToken mechanism.
@@ -40,7 +37,7 @@ class AuthToken {
         try {
             WorkFiles.AUTHTOKEN_FILE.text = token
             setupFilePermission()
-            DebugUtils.verboseLog "Saved authToken: ${token}"
+            //DebugUtils.verboseLog "Saved authToken: ${token}"
         } catch (IOException e) {
             throw new GServIOException("I/O error: AuthToken file cannot be written: ${WorkFiles.AUTHTOKEN_FILE}", e)
         }
@@ -48,7 +45,7 @@ class AuthToken {
 
     void delete() {
         WorkFiles.AUTHTOKEN_FILE.delete()
-        DebugUtils.verboseLog "Deleted authToken: ${token}"
+        //DebugUtils.verboseLog "Deleted authToken: ${token}"
     }
 
     boolean isValid(given) {
