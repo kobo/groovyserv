@@ -135,17 +135,12 @@ class RequestWorker extends ThreadPoolExecutor implements Runnable {
             anotherFuture.cancel(true)
         }
 
-        // When this executor instance is terminated, the terminated() method is called and in there closeSafely() is called too.
-        // If you want to close the socket certainly, it's enough.
+        // When this executor instance is terminated, the terminated() method is called and
+        // in there closeSafely() is called too. If you want to close the socket certainly, it's enough.
         // But if you want to terminate threads of handler, it isn't enough.
-        //
-        // Calling Future#cancel(true) isn't a certain way to stop a running thread to invoke a user script
-        // because the script may not be able to react to an thread's interruption.
-        // So Socket#close is called here in order to force to fail reading/writing of standard streams.
-        // It causes a termination of the running thread, so certainly the invoke handler is terminated.
-        //
-        // When the invoke handler ends before the stream handler, the following closeSafely() is also called.
-        // It causes IOException on the thread of the stream handler. As a result, the stream handler is also terminated.
+        // SocketInputStream#read() is a blocking method and cannot be interrupted.
+        // If the reading socket is closed, it can be forcely interrupt by throwing IOException.
+        // That's why this needs.
         closeSafely(exitStatus)
     }
 
