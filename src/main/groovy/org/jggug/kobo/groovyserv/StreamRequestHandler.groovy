@@ -65,8 +65,8 @@ class StreamRequestHandler implements Runnable {
                     throw new GServInterruptedException("${id}: By EOF of input stream of socket")
                 }
                 readLog(buff, offset, result, request.size)
-                if (conn.tearedDownPipes) {
-                    DebugUtils.errorLog "Already teared down pipes. So the above data is just ignored."
+                if (conn.toreDownPipes) {
+                    DebugUtils.errorLog "Already tore down pipes. So the above data is just ignored."
                 } else {
                     conn.transferStreamRequest(buff, offset, result)
                 }

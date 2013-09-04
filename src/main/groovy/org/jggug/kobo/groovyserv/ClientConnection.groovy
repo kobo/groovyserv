@@ -41,7 +41,7 @@ class ClientConnection implements Closeable {
     private OutputStream socketOutputStream
 
     private boolean closed = false
-    boolean tearedDownPipes = false
+    boolean toreDownPipes = false
     private boolean silentExitStatus = false
 
     // They are used as System.xxx
@@ -158,8 +158,8 @@ class ClientConnection implements Closeable {
      * script after a source of 'stdin' is closed.
      */
     synchronized void tearDownTransferringPipes() {
-        if (tearedDownPipes) {
-            DebugUtils.verboseLog "${id}: Pipes to transfer a stream request already teared down"
+        if (toreDownPipes) {
+            DebugUtils.verboseLog "${id}: Pipes to transfer a stream request already tore down"
             return
         }
         if (pipedOutputStream) {
@@ -167,7 +167,7 @@ class ClientConnection implements Closeable {
             DebugUtils.verboseLog "${id}: PipedOutputStream is closed"
             pipedOutputStream = null
         }
-        tearedDownPipes = true
+        toreDownPipes = true
     }
 
     @Override
