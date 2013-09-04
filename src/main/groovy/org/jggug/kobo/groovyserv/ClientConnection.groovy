@@ -34,14 +34,14 @@ class ClientConnection implements Closeable {
 
     private String id
     final AuthToken authToken
-    private Socket socket
+    Socket socket
 
     private PipedOutputStream pipedOutputStream // to transfer from socket.inputStream
     private PipedInputStream pipedInputStream   // connected to socket.inputStream indirectly via pipedInputStream and used as System.in
     private OutputStream socketOutputStream
 
     private boolean closed = false
-    private boolean tearedDownPipes = false
+    boolean tearedDownPipes = false
     private boolean silentExitStatus = false
 
     // They are used as System.xxx
@@ -49,7 +49,7 @@ class ClientConnection implements Closeable {
     final PrintStream out
     final PrintStream err
 
-    ClientConnection(Object authToken, Object socket) {
+    ClientConnection(AuthToken authToken, Socket socket) {
         this.id = "ClientConnection:${socket.port}"
         this.authToken = authToken
         this.socket = socket
@@ -144,6 +144,7 @@ class ClientConnection implements Closeable {
             DebugUtils.verboseLog "${id}: Socket is closed"
             socket = null
         }
+        connectionHolder.set(null)
         closed = true
     }
 
