@@ -61,9 +61,6 @@ class GroovyInvokeHandler implements Runnable {
             invokeGroovy(request.args, classpath)
             awaitAllSubThreads()
         }
-        catch (GServThreadInterruptedException e) {
-            DebugUtils.verboseLog("${id}: Thread interrupted forcely: ${e.message}")
-        }
         catch (InterruptedException e) {
             DebugUtils.verboseLog("${id}: Thread interrupted: ${e.message}")
         }
@@ -157,7 +154,7 @@ class GroovyInvokeHandler implements Runnable {
             return
         }
         threads.each { thread ->
-            thread.interrupt() // expected it transformed by ThreadInterrupt AST transformation
+            thread.stop() // by force
         }
         DebugUtils.verboseLog("${id}: All sub threads stopped by force")
     }
