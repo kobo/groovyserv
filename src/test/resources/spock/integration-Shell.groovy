@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import org.jggug.kobo.groovyserv.DirectAccessSpec
+import org.jggug.kobo.groovyserv.GroovyClientSpec
 import org.jggug.kobo.groovyserv.ExecScriptSpec
 import org.jggug.kobo.groovyserv.SystemExitSpec
 import org.jggug.kobo.groovyserv.test.IgnoreForShellClient
@@ -22,5 +22,5 @@ import org.jggug.kobo.groovyserv.test.IntegrationTest
 
 runner {
     include IntegrationTest
-    exclude DirectAccessSpec, ExecScriptSpec, SystemExitSpec, IgnoreForShellClient
+    exclude GroovyClientSpec, ExecScriptSpec, SystemExitSpec, IgnoreForShellClient
 }

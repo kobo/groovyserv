@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import org.jggug.kobo.groovyserv.DirectAccessSpec
+import org.jggug.kobo.groovyserv.GroovyClientSpec
 import org.jggug.kobo.groovyserv.test.IntegrationTest
 import org.jggug.kobo.groovyserv.test.OnlyForShellClient
 
 runner {
     include IntegrationTest
-    exclude DirectAccessSpec, OnlyForShellClient
+    exclude GroovyClientSpec, OnlyForShellClient
 }

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import org.jggug.kobo.groovyserv.DirectAccessSpec
+import org.jggug.kobo.groovyserv.GroovyClientSpec
 
 runner {
-    include DirectAccessSpec
+    include GroovyClientSpec
 }

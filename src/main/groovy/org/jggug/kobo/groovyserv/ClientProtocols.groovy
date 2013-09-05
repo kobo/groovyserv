@@ -156,7 +156,7 @@ class ClientProtocols {
         return parseHeaders(id, ins)
     }
 
-    private static Map<String, List<String>> parseHeaders(String id, InputStream ins) {
+    static Map<String, List<String>> parseHeaders(String id, InputStream ins) {
         try {
             def headers = [:]
             IOUtils.readLines(ins).each { String line ->
@@ -178,6 +178,14 @@ class ClientProtocols {
         }
     }
 
+    static byte[] readBody(InputStream inputStream, int size) {
+        def buff = new byte[size]
+        int offset = 0
+        int result = inputStream.read(buff, offset, size) // read from raw stream
+        assert size == result
+        return buff
+    }
+
     static byte[] formatAsResponseHeader(streamId, size) {
         def header = [:]
         header[HEADER_STREAM_ID] = streamId
@@ -195,7 +203,13 @@ class ClientProtocols {
         def buff = new StringBuilder()
         map.each { key, value ->
             if (key) {
-                buff << "$key: $value" << LINE_SEPARATOR
+                if (value instanceof Collection) {
+                    value.each { v ->
+                        buff << "$key: $v" << LINE_SEPARATOR
+                    }
+                } else {
+                    buff << "$key: $value" << LINE_SEPARATOR
+                }
             }
         }
         buff << LINE_SEPARATOR

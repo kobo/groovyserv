@@ -95,25 +95,4 @@ class TestUtils {
     private static getServerExecutablePath() {
         System.getProperty("groovyserv.executable.server")
     }
-
-    /**
-     * Reading and return available bytes.
-     * This method is not blocking.
-     */
-    static getAvailableText(ins) {
-        def byteList = new ArrayList<Byte>()
-        int length
-        while ((length = ins.available()) > 0) {
-            byte[] bytes = new byte[length]
-            int ret = ins.read(bytes, 0, length)
-            if (ret == -1) {
-                break
-            }
-            for (int i = 0; i < ret; i++) {
-                byteList.add(bytes[i])
-            }
-        }
-        return new String(byteList as byte[])
-    }
-
 }
