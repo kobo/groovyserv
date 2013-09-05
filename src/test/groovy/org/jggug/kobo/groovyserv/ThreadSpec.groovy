@@ -28,7 +28,7 @@ class ThreadSpec extends Specification {
 
     static final String SEP = System.getProperty("line.separator")
 
-    def "using a thread"() {
+    def "using a simple thread"() {
         when:
         def p = TestUtils.executeClientOk(["-e", '"(new Thread({-> println(\'output from thread\') } as Runnable)).start()"'])
         p.waitFor()
@@ -38,47 +38,4 @@ class ThreadSpec extends Specification {
         p.err.text == ''
     }
 
-    def "interruptable infinite loop in a thread"() {
-        given:
-        def script = """\
-            Thread.start {
-                println('started')
-                while (true) {
-                    Thread.sleep 100
-                }
-                println("end")
-            }
-            Thread.sleep 1000
-            Thread.currentThread().interrupt()
-        """.replaceAll(/\n/, '; ').replaceAll(/ +/, ' ').trim()
-
-        when:
-        def p = TestUtils.executeClientOk(["-e", "$script"])
-
-        then:
-        p.in.text == 'started' + SEP
-        p.err.text == ''
-    }
-
-    def "uninterruptable infinite loop in a thread"() {
-        given:
-        def script = """\
-            Thread.start {
-                println('started')
-                while (true) {
-                    /* cannot interruptable */
-                }
-                println("end")
-            }
-            Thread.sleep 1000
-            Thread.currentThread().interrupt()
-        """.replaceAll(/\n/, '; ').replaceAll(/ +/, ' ').trim()
-
-        when:
-        def p = TestUtils.executeClientOk(["-e", "$script"])
-
-        then:
-        p.in.text == 'started' + SEP
-        p.err.text == ''
-    }
 }

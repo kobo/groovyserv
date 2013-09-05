@@ -15,7 +15,8 @@
  */
 
 import org.jggug.kobo.groovyserv.GroovyClientSpec
+import org.jggug.kobo.groovyserv.ClientInterruptionSpec
 
 runner {
-    include GroovyClientSpec
+    include GroovyClientSpec, ClientInterruptionSpec
 }

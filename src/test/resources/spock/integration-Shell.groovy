@@ -16,11 +16,12 @@
 
 import org.jggug.kobo.groovyserv.GroovyClientSpec
 import org.jggug.kobo.groovyserv.ExecScriptSpec
+import org.jggug.kobo.groovyserv.ClientInterruptionSpec
 import org.jggug.kobo.groovyserv.SystemExitSpec
 import org.jggug.kobo.groovyserv.test.IgnoreForShellClient
 import org.jggug.kobo.groovyserv.test.IntegrationTest
 
 runner {
     include IntegrationTest
-    exclude GroovyClientSpec, ExecScriptSpec, SystemExitSpec, IgnoreForShellClient
+    exclude GroovyClientSpec, ClientInterruptionSpec, ExecScriptSpec, SystemExitSpec, IgnoreForShellClient
 }

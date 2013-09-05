@@ -15,10 +15,11 @@
  */
 
 import org.jggug.kobo.groovyserv.GroovyClientSpec
+import org.jggug.kobo.groovyserv.ClientInterruptionSpec
 import org.jggug.kobo.groovyserv.test.IntegrationTest
 import org.jggug.kobo.groovyserv.test.OnlyForShellClient
 
 runner {
     include IntegrationTest
-    exclude GroovyClientSpec, OnlyForShellClient
+    exclude GroovyClientSpec, ClientInterruptionSpec, OnlyForShellClient
 }
