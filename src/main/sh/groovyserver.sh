@@ -107,16 +107,26 @@ send_shutdown_request() {
 
 kill_process_if_specified() {
     if $DO_KILL || $DO_RESTART; then
-        if [ -f "$GROOVYSERV_AUTHTOKEN_FILE" ]; then
+        is_port_listened $GROOVYSERV_PORT
+        if [ $? -ne 0 ]; then
+            info_log "WARN: groovyserver is not running"
+        elif [ -f "$GROOVYSERV_AUTHTOKEN_FILE" ]; then
             $DEBUG && send_shutdown_request
             send_shutdown_request | nc localhost $GROOVYSERV_PORT
+            if [ $? -eq 0 ]; then
+                # TODO wait until is_port_listened being false
+                sleep 1
+                info_log "Killed groovyserver successfully"
+            else
+                # TODO check by is_port_listened to make sure the kill result
+                die "ERROR: Fail to kill groovyserver. Isn't the port being used by a non-groovyserv process?"
+            fi
         else
-            info_log "AuthToken file $GROOVYSERV_AUTHTOKEN_FILE not found"
+            die "ERROR: AuthToken file $GROOVYSERV_AUTHTOKEN_FILE is not found. Please kill the process somehow before trying again."
         fi
         if $DO_KILL; then
             exit 0
         fi
-        info_log "Restarting groovyserver"
     fi
 }
 

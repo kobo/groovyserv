@@ -75,6 +75,7 @@ class RequestWorker extends ThreadPoolExecutor implements Runnable {
         if (request.command == 'shutdown') {
             DebugUtils.verboseLog("${id}: Shutdown command is accepted")
             GroovyServer.instance.shutdown()
+            Thread.sleep 10000
             return // END.
         }
 
