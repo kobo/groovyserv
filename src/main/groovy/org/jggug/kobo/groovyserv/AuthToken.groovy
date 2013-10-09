@@ -54,11 +54,13 @@ class AuthToken {
 
     private static setupFilePermission() {
         // as 600 permission
-        WorkFiles.AUTHTOKEN_FILE.setReadable(false, false)
-        WorkFiles.AUTHTOKEN_FILE.setWritable(false, false)
-        WorkFiles.AUTHTOKEN_FILE.setExecutable(false, false)
-        WorkFiles.AUTHTOKEN_FILE.setReadable(true, true)
-        WorkFiles.AUTHTOKEN_FILE.setWritable(true, true)
+        WorkFiles.AUTHTOKEN_FILE.with {
+            setReadable(false, false)
+            setWritable(false, false)
+            setExecutable(false, false)
+            setReadable(true, true)
+            setWritable(true, true)
+        }
     }
 }
 
