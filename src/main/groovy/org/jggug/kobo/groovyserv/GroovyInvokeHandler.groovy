@@ -156,7 +156,7 @@ class GroovyInvokeHandler implements Runnable {
             if (thread.daemon) continue
             while (thread.alive) {
                 if (interrupted) {
-                    DebugUtils.verboseLog("${id}: Detected interuption while joining ${thread}")
+                    DebugUtils.verboseLog("${id}: Detected interruption while joining ${thread}")
                     return
                 }
                 DebugUtils.verboseLog("${id}: Joining ${thread}...")
