@@ -25,7 +25,8 @@ import spock.lang.Specification
 class GroovyClientSpec extends Specification {
 
     static final String SEP = System.getProperty("line.separator")
-
+    static final int WAIT_TIME = 1000
+   
     GroovyClient client
 
     def setup() {
@@ -35,7 +36,7 @@ class GroovyClientSpec extends Specification {
     def "only InvocationRequest"() {
         when:
         client.run('-e', 'println("hello")')
-        Thread.sleep(500)
+        Thread.sleep(WAIT_TIME)
 
         then:
         client.readAll()
@@ -46,11 +47,11 @@ class GroovyClientSpec extends Specification {
     def "using StreamRequest"() {
         when:
         client.run('-e', 'System.in.eachLine { line, index -> println(line * 2) }')
-        Thread.sleep(500)
+        Thread.sleep(WAIT_TIME)
 
         and:
         client.input("A")
-        Thread.sleep(500)
+        Thread.sleep(WAIT_TIME)
 
         then:
         client.readAll()
@@ -59,7 +60,7 @@ class GroovyClientSpec extends Specification {
 
         when:
         client.input("B")
-        Thread.sleep(500)
+        Thread.sleep(WAIT_TIME)
 
         then:
         client.readAll()
@@ -78,14 +79,14 @@ class GroovyClientSpec extends Specification {
         client.errText == ""
 
         when:
-        Thread.sleep(500)
+        Thread.sleep(WAIT_TIME)
         client.interrupt()
-        Thread.sleep(500)
+        Thread.sleep(WAIT_TIME)
 
         then:
         client.readAll()
         client.exitStatus == ExitStatus.INTERRUPTED.code
-        Thread.sleep(500)
+        Thread.sleep(WAIT_TIME)
     }
 
     def "passing environment variables"() {
@@ -96,7 +97,7 @@ class GroovyClientSpec extends Specification {
 
         when:
         client.run('-e', """println "D" + System.getenv("$envVarName") + "D";""")
-        Thread.sleep(500)
+        Thread.sleep(WAIT_TIME)
 
         then:
         client.readAll()
