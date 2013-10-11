@@ -22,7 +22,6 @@ import spock.lang.Specification
 import spock.lang.Timeout
 
 import java.util.concurrent.TimeUnit
-
 /**
  * Specifications for the {@code groovyclient}.
  * Before running this, you must start groovyserver.
@@ -34,14 +33,10 @@ class ServerOperationFromClientSpec extends Specification {
 
     def setup() {
         TestUtils.shutdownServer()
-
-        // just in case.
-        deleteAuthTokenFile()
     }
 
     def cleanup() {
         TestUtils.shutdownServer()
-        deleteAuthTokenFile()
     }
 
     def cleanupSpec() {
@@ -82,15 +77,14 @@ class ServerOperationFromClientSpec extends Specification {
         assertIncludingServerInvocationLog(p.err.text)
     }
 
-    private static executeClient(List options = []) {
-        TestUtils.executeClientOk(["-v"] + options)
+    private static executeClient() {
+        TestUtils.executeClientOk(["-v"])
     }
 
-    private static void assertIncludingServerInvocationLog(text, restart = false) {
+    private static void assertIncludingServerInvocationLog(text) {
         assert text.contains("Invoking server")
-        assert text.contains("Restarting") == restart
-        assert text.contains("Starting")
-        assert text.contains("is successfully started")
+        assert text.contains("Starting server")
+        assert text.contains("Server is successfully started up")
     }
 
     private static void assertNotIncludingServerInvocationLog(text) {
@@ -104,10 +98,6 @@ class ServerOperationFromClientSpec extends Specification {
     }
 
     private static createAuthTokenFile() {
-        WorkFiles.AUTHTOKEN_FILE << "DUMMY_TOKEN_FOR_TEST"
-    }
-
-    private static deleteAuthTokenFile() {
-        WorkFiles.AUTHTOKEN_FILE.delete()
+        WorkFiles.AUTHTOKEN_FILE.text = "DUMMY_TOKEN_FOR_TEST"
     }
 }

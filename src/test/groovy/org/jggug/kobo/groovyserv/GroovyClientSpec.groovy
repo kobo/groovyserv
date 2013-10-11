@@ -26,11 +26,16 @@ class GroovyClientSpec extends Specification {
 
     static final String SEP = System.getProperty("line.separator")
     static final int WAIT_TIME = 1000
-   
+
     GroovyClient client
 
     def setup() {
         client = new GroovyClient("localhost", 1961)
+        client.connect()
+    }
+
+    def cleanup() {
+        client.disconnect()
     }
 
     def "only InvocationRequest"() {
@@ -39,7 +44,7 @@ class GroovyClientSpec extends Specification {
         Thread.sleep(WAIT_TIME)
 
         then:
-        client.readAll()
+        client.readAllAvailable()
         client.outText == "hello" + SEP
         client.errText == ""
     }
@@ -54,7 +59,7 @@ class GroovyClientSpec extends Specification {
         Thread.sleep(WAIT_TIME)
 
         then:
-        client.readAll()
+        client.readAllAvailable()
         client.outText == "AA" + SEP
         client.errText == ""
 
@@ -63,7 +68,7 @@ class GroovyClientSpec extends Specification {
         Thread.sleep(WAIT_TIME)
 
         then:
-        client.readAll()
+        client.readAllAvailable()
         client.outText == "BB" + SEP
         client.errText == ""
     }
@@ -74,7 +79,7 @@ class GroovyClientSpec extends Specification {
         Thread.sleep(1500)
 
         then:
-        client.readAll()
+        client.readAllAvailable()
         client.outText == "CCCC" + SEP
         client.errText == ""
 
@@ -84,7 +89,7 @@ class GroovyClientSpec extends Specification {
         Thread.sleep(WAIT_TIME)
 
         then:
-        client.readAll()
+        client.readAllAvailable()
         client.exitStatus == ExitStatus.INTERRUPTED.code
         Thread.sleep(WAIT_TIME)
     }
@@ -93,14 +98,14 @@ class GroovyClientSpec extends Specification {
         given:
         String envVarName = "TEST_ENV_NAME" + System.currentTimeMillis()
         String envVarValue = "TEST_ENV_VALUE" + System.currentTimeMillis()
-        client.env << "${envVarName}=${envVarValue}"
+        client.environments << "${envVarName}=${envVarValue}"
 
         when:
         client.run('-e', """println "D" + System.getenv("$envVarName") + "D";""")
         Thread.sleep(WAIT_TIME)
 
         then:
-        client.readAll()
+        client.readAllAvailable()
         client.outText == "D${envVarValue}D" + SEP
         client.errText == ""
 

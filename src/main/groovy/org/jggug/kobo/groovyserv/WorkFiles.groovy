@@ -20,9 +20,13 @@ package org.jggug.kobo.groovyserv
  */
 class WorkFiles {
 
-    static final DATA_DIR = new File("${System.getProperty('user.home')}/.groovy/groovyserv")
-    static final LOG_FILE = new File(DATA_DIR, "groovyserver-${GroovyServer.getPortNumber()}.log")
-    static final AUTHTOKEN_FILE = new File(DATA_DIR, "authtoken-${GroovyServer.getPortNumber()}")
+    static final File DATA_DIR = new File("${System.getProperty('user.home')}/.groovy/groovyserv")
+    static File LOG_FILE
+    static File AUTHTOKEN_FILE
+
+    static {
+        setUp(GroovyServer.DEFAULT_PORT)
+    }
 
     private static initWorkDir() {
         if (!DATA_DIR.isDirectory()) {
@@ -30,9 +34,10 @@ class WorkFiles {
         }
     }
 
-    static setUp() {
+    static setUp(int port) {
         initWorkDir()
+        LOG_FILE = new File(DATA_DIR, "groovyserver-${port}.log")
+        AUTHTOKEN_FILE = new File(DATA_DIR, "authtoken-${port}")
     }
-
 }
 

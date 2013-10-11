@@ -15,12 +15,12 @@
  */
 package org.jggug.kobo.groovyserv
 
+import org.jggug.kobo.groovyserv.exception.InvalidAuthTokenException
+import org.jggug.kobo.groovyserv.utils.DebugUtils
 import org.jggug.kobo.groovyserv.utils.IOUtils
 
 /**
  * GroovyServ's client implemented by Groovy.
- * <p>
- * Mainly for testing.
  *
  * @author Yasuharu NAKANO
  */
@@ -32,44 +32,48 @@ class GroovyClient {
     private String host
     private int port
 
+    private String id
+
+    private String authtoken
     private Socket socket
     private InputStream ins
     private OutputStream out
 
-    private List<String> env = []
+    List<String> environments = []
 
     private outBytes = []
     private errBytes = []
     private Integer exitStatus
 
-    def GroovyClient(String host = "localhost", int port = 1961) {
+    GroovyClient(String host = "localhost", int port = GroovyServer.DEFAULT_PORT) {
         this.host = host
         this.port = port
+        this.id = "GroovyClient:$host:$port"
     }
 
-    void run(String... args) {
-        connect()
-
+    GroovyClient run(String... args) {
+        checkActive()
         def headers = [
             Cwd: "/tmp",
-            Auth: WorkFiles.AUTHTOKEN_FILE.text,
+            Auth: authtoken,
         ]
         if (args) headers.Arg = args.collect { it.bytes.encodeBase64() }
-        if (env) headers.Env = env
+        if (environments) headers.Env = environments
         out << ClientProtocols.formatAsHeader(headers)
+        return this // for method-chain
     }
 
-    void input(String text) {
+    GroovyClient input(String text) {
         checkActive()
-
         text += SERVER_SIDE_SEPARATOR
         out << """\
                 |Size: ${text.size()}
                 |
                 |${text}""".stripMargin()
+        return this // for method-chain
     }
 
-    void readAll() {
+    void readAllAvailable() {
         checkActive()
         clearBuffer()
 
@@ -78,10 +82,10 @@ class GroovyClient {
 
         def availableInputStream = new ByteArrayInputStream(availableText.bytes)
         while (true) {
-            def headers = ClientProtocols.parseHeaders("GroovyClient:${socket.port}", availableInputStream)
+            def headers = ClientProtocols.parseHeaders(id, availableInputStream)
             if (!headers) break
 
-            if (headers.Channel?.getAt(0) ==~ /out|err/) {
+            if (headers.Channel?.getAt(0)==~/out|err/) {
                 def buff = this."${headers.Channel?.get(0)}Bytes"
                 int size = headers.Size?.getAt(0) as int
                 buff.addAll ClientProtocols.readBody(availableInputStream, size)
@@ -105,22 +109,65 @@ class GroovyClient {
         exitStatus
     }
 
-    void interrupt() {
+    GroovyClient interrupt() {
         checkActive()
-
-        out << ClientProtocols.formatAsHeader([
-            Auth: WorkFiles.AUTHTOKEN_FILE.text,
+        out << ClientProtocols.formatAsHeader(
+            Auth: authtoken,
             Cmd: "interrupt",
-        ])
+        )
+        return this // for method-chain
     }
 
-    void shutdown() {
+    GroovyClient shutdown() {
         checkActive()
-
-        out << ClientProtocols.formatAsHeader([
-            Auth: WorkFiles.AUTHTOKEN_FILE.text,
+        out << ClientProtocols.formatAsHeader(
+            Auth: authtoken,
             Cmd: "shutdown",
-        ])
+        )
+        return this // for method-chain
+    }
+
+    GroovyClient ping() {
+        checkActive()
+        out << ClientProtocols.formatAsHeader(
+            Auth: authtoken,
+            Cmd: "ping",
+        )
+        return this // for method-chain
+    }
+
+    boolean isServerAvailable() {
+        if (!WorkFiles.AUTHTOKEN_FILE.exists()) {
+            DebugUtils.verboseLog "${id}: No authtoken file"
+            return false
+        }
+        try {
+            if (!isConnected()) connect()
+            ping()
+            while (exitStatus == null) {
+                sleep 500 // wait for server operation
+                readAllAvailable()
+            }
+        }
+        catch (ConnectException e) {
+            DebugUtils.verboseLog "${id}: Caught exception when health-checking", e
+            return false
+        }
+        catch (Exception e) {
+            DebugUtils.errorLog "${id}: Caught exception when health-checking", e
+            return false
+        }
+        finally {
+            disconnect()
+        }
+
+        if (exitStatus == ExitStatus.INVALID_AUTH_TOKEN.code) {
+            throw new InvalidAuthTokenException("${id}: Authentication failed")
+        }
+        if (exitStatus != ExitStatus.SUCCESS.code) {
+            DebugUtils.errorLog "${id}: Exit status for ping seems invalid: $exitStatus"
+        }
+        return true
     }
 
     private void clearBuffer() {
@@ -129,20 +176,45 @@ class GroovyClient {
         exitStatus = null
     }
 
-    private connect() {
+    GroovyClient connect() {
+        checkInactive()
+        if (!WorkFiles.AUTHTOKEN_FILE.exists()) {
+            throw new IllegalStateException("${id}: No authtoken file")
+        }
+        authtoken = WorkFiles.AUTHTOKEN_FILE.text
         socket = new Socket(host, port)
         ins = socket.inputStream
         out = socket.outputStream
+
+        return this // for method-chain
     }
 
-    private disconnect() {
-        socket.close()
+    GroovyClient disconnect() {
+        if (connected) {
+            socket.close()
+        }
         socket = null
         ins = null
         out = null
+
+        return this // for method-chain
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        disconnect()
+        super.finalize()
     }
 
     private void checkActive() {
-        if (socket == null) throw new IllegalStateException("Not started yet")
+        if (!connected) throw new IllegalStateException("${id}: Connection is disabled")
+    }
+
+    private void checkInactive() {
+        if (connected) throw new IllegalStateException("${id}: Already connected to server")
+    }
+
+    private boolean isConnected() {
+        socket != null && !socket.closed
     }
 }

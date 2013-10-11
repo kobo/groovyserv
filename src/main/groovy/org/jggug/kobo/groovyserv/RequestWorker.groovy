@@ -17,7 +17,9 @@ package org.jggug.kobo.groovyserv
 
 import org.jggug.kobo.groovyserv.exception.GServException
 import org.jggug.kobo.groovyserv.exception.GServInterruptedException
+import org.jggug.kobo.groovyserv.exception.InvalidAuthTokenException
 import org.jggug.kobo.groovyserv.utils.DebugUtils
+import org.jggug.kobo.groovyserv.utils.Holders
 import org.jggug.kobo.groovyserv.utils.IOUtils
 
 import java.util.concurrent.CancellationException
@@ -50,45 +52,60 @@ class RequestWorker extends ThreadPoolExecutor implements Runnable {
         this.conn = new ClientConnection(authToken, socket)
 
         // for management sub threads in invoke handler.
-        setThreadFactory(new ThreadFactory() {
-            def index = new AtomicInteger(0)
+        setThreadFactory(
+            new ThreadFactory() {
+                def index = new AtomicInteger(0)
 
-            Thread newThread(Runnable runnable) {
-                // Giving individual sub thread group for each thread in order to handle unexpected exception
-                // and collect all sub threads from GroovyInvokeHandler to kill.
-                def rootThreadGroup = Thread.currentThread().threadGroup
-                def subThreadGroup = new GServThreadGroup(rootThreadGroup, "${rootThreadGroup.name}:${index.getAndIncrement()}")
-                def thread = new Thread(subThreadGroup, runnable)
-                DebugUtils.verboseLog("${id}: Thread is created: $thread")
-                return thread
+                Thread newThread(Runnable runnable) {
+                    // Giving individual sub thread group for each thread in order to handle unexpected exception
+                    // and collect all sub threads from GroovyInvokeHandler to kill.
+                    def rootThreadGroup = Thread.currentThread().threadGroup
+                    def subThreadGroup = new GServThreadGroup(rootThreadGroup, "${rootThreadGroup.name}:${index.getAndIncrement()}")
+                    def thread = new Thread(subThreadGroup, runnable)
+                    DebugUtils.verboseLog("${id}: Thread is created: $thread")
+                    return thread
+                }
             }
-        })
+        )
     }
 
     @Override
     void run() {
         DebugUtils.verboseLog("${id}: Request worker is started")
 
+        // Parse request
         InvocationRequest request = parseRequest()
-
-        // handling command
-        if (request.command == 'shutdown') {
-            DebugUtils.verboseLog("${id}: Shutdown command is accepted")
-            GroovyServer.instance.shutdown()
-            Thread.sleep 10000
-            return // END.
+        if (request == null) {
+            DebugUtils.verboseLog("${id}: Command not found")
+            return
         }
 
+        // Handling built-in commands
+        if (request.command == 'ping') {
+            DebugUtils.verboseLog("${id}: Ping command is accepted. Do nothing")
+            closeSafely(ExitStatus.SUCCESS.code)
+            return
+        }
+        if (request.command == 'shutdown') {
+            DebugUtils.verboseLog("${id}: Shutdown command is accepted")
+            closeSafely(ExitStatus.SUCCESS.code)
+            Holders.groovyServer.shutdown()
+            return
+        }
+
+        // Handling normal invocation request
         handleRequest(request)
     }
 
     private InvocationRequest parseRequest() {
         try {
             return conn.openSession()
-        } catch (GServException e) {
-            DebugUtils.verboseLog("${id}: Failed to open session: ${e.message}")
+        } catch (InvalidAuthTokenException e) {
+            DebugUtils.errorLog "${id}: Invalid authtoken", e
             conn.sendExit(e.exitStatus, e.message)
-            throw e
+        } catch (GServException e) {
+            DebugUtils.verboseLog("${id}: Failed to open session: ${e.message}", e)
+            conn.sendExit(e.exitStatus, e.message)
         }
     }
 

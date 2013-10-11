@@ -23,6 +23,7 @@ import org.jggug.kobo.groovyserv.exception.InvalidRequestHeaderException
 import org.jggug.kobo.groovyserv.stream.StreamRequestInputStream
 import org.jggug.kobo.groovyserv.stream.StreamResponseOutputStream
 import org.jggug.kobo.groovyserv.utils.DebugUtils
+import org.jggug.kobo.groovyserv.utils.Holders
 import org.jggug.kobo.groovyserv.utils.IOUtils
 
 /**
@@ -198,7 +199,7 @@ class ClientConnection implements Closeable {
     }
 
     private static List<String> getAllowedAddresses() {
-        return System.getProperty("groovyserver.allowFrom")?.split(",") ?: []
+        return Holders.groovyServer.allowFrom
     }
 }
 

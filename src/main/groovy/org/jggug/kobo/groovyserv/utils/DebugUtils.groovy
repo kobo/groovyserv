@@ -24,9 +24,7 @@ class DebugUtils {
 
     private static final String PREFIX_DEBUG_LOG = "DEBUG: "
 
-    static isVerboseMode() {
-        Boolean.valueOf(System.getProperty("groovyserver.verbose"))
-    }
+    static boolean verbose = false
 
     static errorLog(message, Throwable e = null) {
         def formatted = formatLog(message, e)
@@ -39,7 +37,7 @@ class DebugUtils {
     }
 
     static verboseLog(message, Throwable e = null) {
-        if (!isVerboseMode()) return
+        if (!verbose) return
 
         // lazy formatting message
         String messageText = (message instanceof Closure) ? message.call() : message
@@ -91,7 +89,7 @@ class DebugUtils {
     private static String sanitizeStackTrace(string) {
         def sw = new StringWriter()
         string.eachLine { line ->
-            if (line =~ /at (sun\.|org.codehaus.groovy)/) return
+            if (line=~/at (sun\.|org.codehaus.groovy)/) return
             sw.println line
         }
         sw.print("\t(sanitized)")
@@ -130,7 +128,7 @@ class DebugUtils {
     private static toDisplayAscii(b) {
         if (b) {
             char c = (char) b
-            return (c ==~ /\p{Print}/) ? c : "?"
+            return (c==~/\p{Print}/) ? c : "?"
         }
         return ""
     }

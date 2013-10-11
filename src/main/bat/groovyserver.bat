@@ -23,6 +23,7 @@ setlocal
 @rem Save script path
 @rem ----------------------------------------
 
+set SCRIPT_PATH=%~f0
 set DIRNAME=%~dp0
 if "%DIRNAME%" == "" set DIRNAME=.\
 
@@ -30,40 +31,19 @@ if "%DIRNAME%" == "" set DIRNAME=.\
 @rem Parse arguments
 @rem ----------------------------------------
 
+set OPT_QUIET=NO
 :loop_args
     if "%1" == "" (
         goto break_loop_args
-    ) else if "%1" == "-v" (
-        set GROOVYSERV_OPTS=%GROOVYSERV_OPTS% -Dgroovyserver.verbose=true
     ) else if "%1" == "-q" (
         set OPT_QUIET=YES
-    ) else if "%1" == "-p" (
-        if "%2" == "" (
-            echo ERROR: Port number must be specified. >&2
-            goto end
-        )
-        set GROOVYSERV_PORT=%2
-        shift
-    ) else if "%1" == "-k" (
-        echo ERROR: groovyserver.bat does not support %1. >&2
+    ) else if "%1" == "--quiet" (
+        set OPT_QUIET=YES
+    ) else if "%1" == "--help" (
+        goto usage
         goto end
-    ) else if "%1" == "-r" (
-        echo ERROR: groovyserver.bat does not support %1. >&2
-        goto end
-    ) else if "%1" == "--allow-from" (
-        set GROOVYSERV_OPTS=%GROOVYSERV_OPTS% -Dgroovyserver.allowFrom=%2
-        shift
-    ) else if "%1" == "--authtoken" (
-        set GROOVYSERV_OPTS=%GROOVYSERV_OPTS% -Dgroovyserver.authtoken=%2
-        shift
-    ) else (
-        echo usage: groovyserver.bat [options]
-        echo options:
-        echo   -v       verbose output to the log file
-        echo   -q       suppress starting messages
-        echo  ^(-k       unsupported in groovyserver.bat^)
-        echo  ^(-r       unsupported in groovyserver.bat^)
-        echo   -p port  specify the port to listen
+    ) else if "%1" == "-h" (
+        goto usage
         goto end
     )
     shift
@@ -117,20 +97,6 @@ if not exist "%GROOVYSERV_WORK_DIR%" (
 call :info_log GroovyServ work directory: "%GROOVYSERV_WORK_DIR%"
 
 @rem ----------------------------------------
-@rem Port and AuthToken
-@rem ----------------------------------------
-
-if not defined GROOVYSERV_PORT (
-    set GROOVYSERV_PORT=1961
-)
-if defined GROOVYSERV_OPTS (
-    set GROOVYSERV_OPTS=%GROOVYSERV_OPTS% -Dgroovyserver.port=%GROOVYSERV_PORT%
-) else (
-    set GROOVYSERV_OPTS=-Dgroovyserver.port=%GROOVYSERV_PORT%
-)
-set GROOVYSERV_AUTHTOKEN_FILE=%GROOVYSERV_WORK_DIR\%authtoken-%GROOVYSERV_PORT%
-
-@rem ----------------------------------------
 @rem Setup classpath
 @rem ----------------------------------------
 
@@ -155,56 +121,15 @@ if defined JAVA_OPT (
 )
 
 @rem -------------------------------------------
-@rem Check duplicated invoking
-@rem -------------------------------------------
-
-@rem if connecting to server is succeed, return successfully
-call :is_server_available
-if not errorlevel 1 (
-    echo WARN: groovyserver is already running on port %GROOVYSERV_PORT% >&2
-    goto end
-)
-
-@rem -------------------------------------------
 @rem Invoke server
 @rem -------------------------------------------
 
-if exist "%GROOVYSERV_AUTHTOKEN_FILE%" del "%GROOVYSERV_AUTHTOKEN_FILE%"
-if defined DEBUG (
-    %GROOVY_CMD% %GROOVYSERV_OPTS% -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)"
+call :reset_errorlevel
+%GROOVY_CMD% %GROOVYSERV_OPTS% -e org.jggug.kobo.groovyserv.ui.ServerCLI.main(args) -- "%SCRIPT_PATH%" %*
+if errorlevel 1 (
+    echo ERROR: Failed to invoke groovyserver >&2
     goto end
-) else (
-    @rem The start command somehow doesn't update errorleve when it's succeed.
-    @rem So before start commaand is invoked, make errorlevel reset explicitly.
-    call :reset_errorlevel
-    start ^
-        "groovyserver[port:%GROOVYSERV_PORT%]" ^
-        /MIN ^
-        %GROOVY_CMD% ^
-        %GROOVYSERV_OPTS% ^
-        -e "println('Groovyserver^(port %GROOVYSERV_PORT%^) is running');println('Close this window to stop');org.jggug.kobo.groovyserv.GroovyServer.main(args)"
-    if errorlevel 1 (
-        echo ERROR: Failed to invoke groovyserver >&2
-        goto end
-    )
 )
-
-@rem -------------------------------------------
-@rem Wait for available
-@rem -------------------------------------------
-
-call :info_log_without_linebreak Starting
-:loop_wait_for_available
-    call :info_log_without_linebreak .
-
-    @rem if connecting to server is succeed, return successfully
-    call :is_server_available
-    if not errorlevel 1 (
-        goto break_check_invocation
-    )
-goto loop_wait_for_available
-:break_check_invocation
-call :info_log_empty
 
 @rem -------------------------------------------
 @rem Endpoint
@@ -223,25 +148,6 @@ setlocal
     if not "%OPT_QUIET%" == "YES" echo %*
 endlocal
 exit /B
-
-:info_log_empty
-setlocal
-    if not "%OPT_QUIET%" == "YES" echo.
-endlocal
-exit /B
-
-:info_log_without_linebreak
-setlocal
-    @rem trickey way to echo without newline
-    if not "%OPT_QUIET%" == "YES" SET /P X=%*< NUL 1>&2
-endlocal
-exit /B
-
-@rem ERRORLEVEL will be modified
-:is_server_available
-    set FIND_CMD=C:\Windows\system32\find
-    netstat -an | "%FIND_CMD%" ":%GROOVYSERV_PORT% " | "%FIND_CMD%" "LISTENING" > NUL 2>&1
-exit /B %ERRORLEVEL%
 
 @rem GROOVY_CMD will be modified
 :setup_GROOVY_CMD_from_GROOVY_HOME
@@ -291,3 +197,16 @@ exit /B 0
     )
 exit /B 0
 
+@rem usage
+:usage
+echo usage: groovyserver.bat [options]
+echo options:
+echo   -h,--help                     show this usage
+echo   -k,--kill                     kill the running groovyserver
+echo   -p,--port ^<port^>              specify the port to listen
+echo   -q,--quiet                    suppress output to console except error message
+echo   -r,--restart                  restart the running groovyserver
+echo   -v,--verbose                  verbose output to a log file
+echo      --allow-from ^<addresses^>   specify optional acceptable client addresses ^(delimiter: comma^)
+echo      --authtoken ^<authtoken^>    specify authtoken ^(which is automatically generated if not specified^)
+exit /B 0

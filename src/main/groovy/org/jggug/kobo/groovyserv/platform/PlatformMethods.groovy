@@ -66,5 +66,9 @@ class PlatformMethods {
             LIBC.setenv(name, value, 1)
         }
     }
+
+    static boolean isWindows() {
+        Platform.isWindows()
+    }
 }
 

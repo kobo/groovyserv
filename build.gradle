@@ -53,6 +53,7 @@ configurations {
 dependencies {
     compile 'org.codehaus.groovy:groovy-all:2.1.6'
     compile 'commons-cli:commons-cli:1.2'
+    archives 'org.kohsuke:akuma:1.9'
     archives 'net.java.dev.jna:jna:3.2.7'
     testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
     testRuntime 'cglib:cglib-nodep:2.2.2'     // for spock: enables mocking of classes (in addition to interfaces)

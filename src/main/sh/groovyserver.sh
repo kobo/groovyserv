@@ -47,18 +47,6 @@ fi
 # Functions
 #-------------------------------------------
 
-usage() {
-    echo "usage: `basename $0` [options]"
-    echo "options:"
-    echo "  -v                       verbose output to the log file"
-    echo "  -q                       suppress starting messages"
-    echo "  -k                       kill the running groovyserver"
-    echo "  -r                       restart the running groovyserver"
-    echo "  -p <port>                specify the port to listen"
-    echo "  --allow-from <addresses> specify optional acceptable client addresses (delimiter: comma)"
-    echo "  --authtoken <authtoken>  specify authtoken (which is automatically generated if not specified)"
-}
-
 find_groovy_command() {
     unset GROOVY_CMD
     if [ "$GROOVY_HOME" != "" ]; then
@@ -68,12 +56,12 @@ find_groovy_command() {
             die "ERROR: Not found a groovy command in GROOVY_HOME: $GROOVY_CMD"
         fi
         info_log "Groovy command path: $GROOVY_CMD (found at GROOVY_HOME)"
-    elif is_command_avaiable groovy; then
+    elif is_command_available groovy; then
         info_log "Groovy home directory: (none)"
         GROOVY_CMD=`which groovy`
         info_log "Groovy command path: $GROOVY_CMD (found at PATH)"
     else
-        die "ERROR: Not found a groovy command. Required either PATH having groovy command or GROOVY_HOME"
+        die "ERROR: Not found a groovy command. Required either PATH having groovy command or GROOVY_HOME."
     fi
 }
 
@@ -96,135 +84,49 @@ setup_classpath() {
 }
 
 setup_java_opts() {
-    # -server option for JVM (for performance) (experimental)
-    export JAVA_OPTS="$JAVA_OPTS -server"
-}
-
-send_shutdown_request() {
-    echo "Auth: ${AUTHTOKEN:-$(cat "$GROOVYSERV_AUTHTOKEN_FILE")}"
-    echo "Cmd: shutdown"
-}
-
-kill_process_if_specified() {
-    if $DO_KILL || $DO_RESTART; then
-        is_port_listened $GROOVYSERV_PORT
-        if [ $? -ne 0 ]; then
-            info_log "WARN: groovyserver is not running"
-        elif [ -f "$GROOVYSERV_AUTHTOKEN_FILE" ]; then
-            $DEBUG && send_shutdown_request
-            send_shutdown_request | nc localhost $GROOVYSERV_PORT
-            if [ $? -eq 0 ]; then
-                # TODO wait until is_port_listened being false
-                sleep 1
-                info_log "Killed groovyserver successfully"
-            else
-                # TODO check by is_port_listened to make sure the kill result
-                die "ERROR: Fail to kill groovyserver. Isn't the port being used by a non-groovyserv process?"
-            fi
-        else
-            die "ERROR: AuthToken file $GROOVYSERV_AUTHTOKEN_FILE is not found. Please kill the process somehow before trying again."
-        fi
-        if $DO_KILL; then
-            exit 0
-        fi
-    fi
-}
-
-check_duplicated_invoking() {
-    # if connecting to server is succeed, return with warning message
-    if is_port_listened $GROOVYSERV_PORT; then
-        die "WARN: groovyserver is already running on port $GROOVYSERV_PORT"
-    fi
+    # -server: for performance (experimental)
+    # -Djava.awt.headless=true: without this, annoying to switch an active process to it when new process is created as daemon
+    export JAVA_OPTS="$JAVA_OPTS -server -Djava.awt.headless=true"
 }
 
 invoke_server() {
-    if $DEBUG; then
-        echo "Invoking server for DEBUG..."
-        echo "$GROOVY_CMD" $GROOVYSERV_OPTS -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)"
-        "$GROOVY_CMD" $GROOVYSERV_OPTS -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)"
-        exit 0
-    else
-        nohup "$GROOVY_CMD" $GROOVYSERV_OPTS -e "org.jggug.kobo.groovyserv.GroovyServer.main(args)" > /dev/null 2>&1 &
-    fi
+    local groovyserv_script_path="$(expand_path $0)"
+    exec "$GROOVY_CMD" $GROOVYSERV_OPTS -e "org.jggug.kobo.groovyserv.ui.ServerCLI.main(args)" -- "$groovyserv_script_path" "$@"
 }
 
-wait_for_server_available() {
-    if ! ${QUIET}; then
-        /bin/echo -n "Starting" 1>&2
-    fi
-
-    while true; do
-        if ! ${QUIET}; then
-            /bin/echo -n "." 1>&2
-        fi
-        sleep 1
-
-        # waiting until authToken filed is created
-        [ ! -f "$GROOVYSERV_AUTHTOKEN_FILE" ] && continue
-
-        # if connecting to server is succeed, return successfully
-        is_port_listened $GROOVYSERV_PORT && break
-    done
-
-    info_log
-    info_log "groovyserver is successfully started on $GROOVYSERV_PORT port"
+usage() {
+    # when updating usage text, print ServerCLI's output and customize it.
+    cat << EOF
+usage: $(basename $0) [options]
+options:
+  -h,--help                     show this usage
+  -k,--kill                     kill the running groovyserver
+  -p,--port <port>              specify the port to listen
+  -q,--quiet                    suppress output to console except error message
+  -r,--restart                  restart the running groovyserver
+  -v,--verbose                  verbose output to a log file
+     --allow-from <addresses>   specify optional acceptable client addresses (delimiter: comma)
+     --authtoken <authtoken>    specify authtoken (which is automatically generated if not specified)
+EOF
 }
-
-# ------------------------------------------
-# Setup global variables only for here
-# ------------------------------------------
-
-DO_KILL=false
-DO_RESTART=false
 
 #-------------------------------------------
 # Main
 #-------------------------------------------
 
 # Parse arguments
-while [ $# -gt 0 ]; do
-    case $1 in
-        -v)
-            GROOVYSERV_OPTS="$GROOVYSERV_OPTS -Dgroovyserver.verbose=true"
-            shift
-            ;;
-        -q)
+for arg in "$@"; do
+    # Must not consume original arguments because they needs for invoke_server
+    case $arg in
+        -q | --quiet)
             QUIET=true
-            shift
             ;;
-        -p)
-            shift
-            GROOVYSERV_PORT=$1
-            shift
-            ;;
-        -k)
-            DO_KILL=true
-            shift
-            ;;
-        -r)
-            DO_RESTART=true
-            shift
-            ;;
-        --allow-from)
-            shift
-            GROOVYSERV_OPTS="$GROOVYSERV_OPTS -Dgroovyserver.allowFrom=$1"
-            shift
-            ;;
-        --authtoken)
-            shift
-            GROOVYSERV_OPTS="$GROOVYSERV_OPTS -Dgroovyserver.authtoken=$1"
-            shift
-            ;;
-        *)
+        -h | --help)
             usage
-            exit 1
+            exit 0
             ;;
     esac
 done
-
-# Decide Port/AuthToken (it must be after resolving port number from arguments)
-GROOVYSERV_OPTS="$GROOVYSERV_OPTS -Dgroovyserver.port=${GROOVYSERV_PORT}"
-GROOVYSERV_AUTHTOKEN_FILE=$(get_authtoken_file)
 
 # Pre-processing
 find_groovy_command
@@ -233,10 +135,4 @@ setup_classpath
 setup_java_opts
 
 # Server operation
-kill_process_if_specified
-check_duplicated_invoking
-invoke_server
-
-# Post-processing
-wait_for_server_available
-
+invoke_server "$@"

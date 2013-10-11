@@ -1,4 +1,3 @@
-#!/usr/bin/env groovy
 /*
  * Copyright 2009-2013 the original author or authors.
  *
@@ -14,29 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jggug.kobo.groovyserv
+
+package org.jggug.kobo.groovyserv.utils
+
+import org.jggug.kobo.groovyserv.GroovyServer
 
 /**
+ * Holders of objects for global use.
+ *
  * @author NAKANO Yasuharu
  */
-public enum ExitStatus {
+class Holders {
 
-    SUCCESS(0),
-    INTERRUPTED(1),
-    INVALID_REQUEST(2),
-    IO_ERROR(3),
-    ILLEGAL_STATE(4),
-    TERMINATED(5),
-    COMMAND_ERROR(6),
-    INVALID_AUTH_TOKEN(201),
-    CLIENT_NOT_ALLOWED(202),
-    UNEXPECTED_ERROR(-1),
-    FORCELY_SHUTDOWN(99)
+    static GroovyServer groovyServer
 
-    int code
-
-    private ExitStatus(code) {
-        this.code = code
+    private Holders() {
+        // static only
     }
 
 }

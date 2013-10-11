@@ -30,7 +30,7 @@ class ClientInterruptionSpec extends Specification {
     GroovyClient client
 
     def setup() {
-        client = new GroovyClient("localhost", 1961)
+        client = new GroovyClient("localhost", 1961).connect()
     }
 
     def "interruptable only main thread"() {
@@ -100,7 +100,7 @@ class ClientInterruptionSpec extends Specification {
         Thread.sleep 500
 
         //then:
-        client.readAll()
+        client.readAllAvailable()
         assert client.exitStatus == ExitStatus.INTERRUPTED.code
         assert client.outText == 'started' + SEP
         assert client.errText == ''

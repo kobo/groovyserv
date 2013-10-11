@@ -77,7 +77,7 @@ version() {
 
 check_environment() {
     SERVER_CMD="$GROOVYSERV_HOME/bin/groovyserver"
-    if ! is_command_avaiable "$SERVER_CMD"; then
+    if ! is_command_available "$SERVER_CMD"; then
         die "ERROR: Not found 'groovyserver' command: $SERVER_CMD"
     fi
 }

@@ -27,11 +27,11 @@ class DebugUtilsSpec extends Specification {
     private static final SEP = System.getProperty("line.separator")
 
     def setup() {
-        System.properties.remove("groovyserver.verbose")
+        DebugUtils.verbose = false
     }
 
     def cleanup() {
-        System.properties.remove("groovyserver.verbose")
+        DebugUtils.verbose = false
     }
 
     def "dump() with string which size is 32"() {
@@ -251,20 +251,5 @@ class DebugUtilsSpec extends Specification {
 
         then:
         thrown IllegalArgumentException
-    }
-
-    def "isVerboseMode()"() {
-        given:
-        if (input) System.properties["groovyserver.verbose"] = input
-
-        expect:
-        DebugUtils.isVerboseMode() == expected
-
-        where:
-        input   | expected
-        "true"  | true
-        "TRUE"  | true
-        null    | false
-        "false" | false
     }
 }

@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-QUIET=false
+QUIET=${QUIET:-false}
 DEBUG=${DEBUG:-false}
 
 #-------------------------------------------
@@ -85,7 +85,7 @@ is_file_exists() {
     ls $file >/dev/null 2>&1
 }
 
-is_command_avaiable() {
+is_command_available() {
     local command=$1
     which $command >/dev/null 2>&1
 }
