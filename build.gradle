@@ -39,8 +39,10 @@ buildscript {
 
 repositories {
     mavenCentral()
-    mavenRepo name: "codehaus", url: "http://repository.codehaus.org"
-    mavenRepo name: "codehaus-snapshots", url: "http://snapshots.repository.codehaus.org"
+    maven {
+        url "http://repository.codehaus.org"
+        url "http://snapshots.repository.codehaus.org"
+    }
 }
 
 configurations {
@@ -233,12 +235,12 @@ task distSrc(type: Zip) {
 task test(overwrite: true, dependsOn: ['unitTest', 'integrationTest'])
 
 task unitTest(type: Test) {
-    testReportDir = file("$buildDir/reports/unit")
-    testResultsDir = file("$buildDir/test-results/unit")
+    reports.html.destination = file("$buildDir/reports/unit")
+    reports.junitXml.destination = file("$buildDir/test-results/unit")
 
     // Unfortunatelly, these cause no effect for UP-TO-DATE skipping due to systemProperty call in doFirst.
     inputs.dir file("$projectDir/src/main/groovy")
-    outputs.dir testResultsDir
+    outputs.dir file("$buildDir/test-results/unit")
 
     doFirst {
         // Support for -Dtest.single
@@ -269,8 +271,8 @@ integrationTestSpecs.each { spec ->
         inputs.dir file("$projectDir/src")
         outputs.dir file("$buildDir/test-results/${spec.taskId}")
 
-        testReportDir = file("$buildDir/reports/${spec.taskId}")
-        testResultsDir = file("$buildDir/test-results/${spec.taskId}")
+        reports.html.destination = file("$buildDir/reports/${spec.taskId}")
+        reports.junitXml.destination = file("$buildDir/test-results/${spec.taskId}")
 
         def binDir = convertMixedPath(file("${buildDir}/executables/${(spec.asPlatformIndependent) ? "platformIndependent" : "native"}/bin"))
         def clientExecutableExpression = "${spec.invoker ?: ''} ${binDir}/groovyclient${spec.extension}".trim()
