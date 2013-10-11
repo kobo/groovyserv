@@ -182,7 +182,8 @@ task compileC {
         if (Boolean.valueOf(System.properties['debug'])) {
             options << 'DEBUG=true'
         }
-        executeCommand('make', options)
+        def makeCommand = isDos() ? 'mingw32-make' : 'make'
+        executeCommand([makeCommand, * options])
     }
 }
 
@@ -326,9 +327,9 @@ task wrapper(type: Wrapper) {
 // Documents
 
 task docs << {
-    executeCommand 'git', ['checkout', 'docs']
-    executeCommand 'make', ['clean', 'html']
-    executeCommand 'git', ['checkout', 'gh-pages']
+    executeCommand['git', 'checkout', 'docs']
+    executeCommand['make', 'clean', 'html']
+    executeCommand['git', 'checkout', 'gh-pages']
     copy {
         into "$projectDir"
         from "$projectDir/build/docs"
@@ -341,28 +342,29 @@ task docs << {
 
 def startGroovyServer(groovyserverPath) {
     AnsiColor.printlnAsInfo ">> Starting groovyserver..."
-    executeCommand("sh", ['-c', "${groovyserverPath} -r -v"])
+    executeCommand(scriptExecutor + [groovyserverPath, "-r", "-v"])
 }
 
 def shutdownGroovyServer(groovyserverPath) {
     AnsiColor.printlnAsInfo ">> Shutting down groovyserver..."
-    executeCommand("sh", ['-c', "${groovyserverPath} -k"])
+    executeCommand(scriptExecutor + [groovyserverPath, "-k"])
 }
 
-def executeCommand(command, arguments) {
+def executeCommand(List command) {
     AnsiColor.printlnAsInfo ">> Executing command..."
-    AnsiColor.printlnAsInfo "\$ $command ${arguments.join(' ')}"
-    new ByteArrayOutputStream().withStream { os ->
-        def result = exec {
-            executable = command
-            args = arguments
-            standardOutput = os
+    AnsiColor.printlnAsInfo "\$ ${command.join(' ')}"
+    def pb = new ProcessBuilder(command as String[])
+    pb.environment().remove('GROOVYSERV_HOME') // unset GROOVYSERV_HOME (which may be set by GVM) for a process invoked by gradle directly
+    def p = pb.start()
+    p.consumeProcessOutput(System.out, System.err)
+    p.waitFor()
+}
 
-            // unset GROOVYSERV_HOME (which may be set by GVM) for a process invoked by gradle directly
-            environment.remove('GROOVYSERV_HOME')
-        }
-        println os.toString()
-        return os.toString()
+def getScriptExecutor() {
+    if (isDos()) {
+        return ["cmd.exe", "/c",]
+    } else {
+        return ["bash"]
     }
 }
 
@@ -374,6 +376,23 @@ def getOsSuffix() {
     def osName = System.properties['os.name'].replaceAll(' ', '').toLowerCase()
     def osArch = System.properties['os.arch']
     return "${osName}-${osArch}"
+}
+
+def isWindows() {
+    ant.condition(property: "os", value: "windows") { os(family: "windows") }
+    return ant.properties['os'] == "windows"
+}
+
+def isCygwin() {
+    try {
+        return "uname".execute().text.toLowerCase().contains("cygwin")
+    } catch (IOException e) {
+        return false
+    }
+}
+
+def isDos() {
+    return isWindows() && !isCygwin()
 }
 
 class IntegrationTestSpec {
@@ -402,6 +421,7 @@ class IntegrationTestSpec {
 
 import org.fusesource.jansi.AnsiConsole
 import org.fusesource.jansi.Ansi
+
 class AnsiColor {
     static init() {
         AnsiConsole.systemInstall()
