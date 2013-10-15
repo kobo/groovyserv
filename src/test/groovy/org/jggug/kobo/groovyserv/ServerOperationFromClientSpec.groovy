@@ -35,10 +35,6 @@ class ServerOperationFromClientSpec extends Specification {
         TestUtils.shutdownServer()
     }
 
-    def cleanup() {
-        TestUtils.shutdownServer()
-    }
-
     def cleanupSpec() {
         // make sure server running
         TestUtils.startServer()
