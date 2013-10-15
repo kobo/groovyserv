@@ -15,7 +15,6 @@
  */
 package org.jggug.kobo.groovyserv.ui
 
-import com.sun.akuma.Daemon
 import org.jggug.kobo.groovyserv.AuthToken
 import org.jggug.kobo.groovyserv.ExitStatus
 import org.jggug.kobo.groovyserv.GroovyClient
@@ -39,7 +38,6 @@ class ServerCLI {
     private options
     private int port
     private boolean quiet
-    private Daemon daemon = new Daemon()
 
     static void main(String[] args) {
         assert args.size() > 0: "script path is required."
@@ -63,7 +61,6 @@ class ServerCLI {
         try {
             // If running as daemon, a server is started up directly.
             if (isDaemonized()) {
-                initDaemon()
                 startServerDirectlyAndWaitFor() // infinite blocking operation
                 return
             }
@@ -195,32 +192,13 @@ class ServerCLI {
     }
 
     private boolean isDaemonized() {
-        if (isAkumaSupported()) {
-            return daemon.isDaemonized()
-        }
         return options.daemonized
     }
 
     private void daemonize() {
-        if (isAkumaSupported()) {
-            daemon.daemonize() // start daemon process
-            DebugUtils.verboseLog "${id}: Daemonizing by Akuma"
-            return
-        }
         def command = convertExecutableCommand([serverScriptPath.absolutePath, "--daemonized", "-q", * args])
         DebugUtils.verboseLog "${id}: Daemonizing by re-invoking a server script: $command"
         command.execute()
-    }
-
-    private void initDaemon() {
-        if (isAkumaSupported()) {
-            daemon.init(null) // unnecessary PID file because this should be run in windows
-        }
-    }
-
-    private static boolean isAkumaSupported() {
-        String os = System.getProperty("os.name");
-        return (os in ["Linux", "SunOS", "Mac OS X"])
     }
 
     private static List<String> convertExecutableCommand(List<String> command) {
