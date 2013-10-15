@@ -330,7 +330,6 @@ rescue Errno::ECONNREFUSED
     exit 1
   end
   start_server([])
-  sleep 3
   failCount += 1
   retry
 rescue Errno::ECONNRESET, Errno::EPIPE

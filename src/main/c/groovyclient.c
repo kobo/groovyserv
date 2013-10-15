@@ -237,12 +237,6 @@ static int connect_server(char* argv0, char* host, int port, char* authtoken)
             exit(1);
         }
         start_server(argv0, port, authtoken);
-
-#ifdef WINDOWS
-        Sleep(3000);
-#else
-        sleep(3);
-#endif
         failCount++;
     }
     return fd;
