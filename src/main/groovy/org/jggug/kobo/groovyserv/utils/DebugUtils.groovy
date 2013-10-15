@@ -71,7 +71,7 @@ class DebugUtils {
     }
 
     private static currentTimestamp() {
-        new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS").format(new Date())
+        new Date().format("yyyy/MM/dd HH:mm:ss.SSS")
     }
 
     private static writeLog(formatted) {
