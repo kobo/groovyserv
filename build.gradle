@@ -265,7 +265,7 @@ def integrationTestSpecs = [
 ].collect { new IntegrationTestSpec(it) }
 integrationTestSpecs.each { spec ->
     // generate dynamically
-    task "${spec.taskName}"(type: Test, dependsOn: ['executables', 'prepareIntegrationTest']) {
+    task "${spec.taskName}"(type: Test, dependsOn: 'executables') {
         mustRunAfter "unitTest"
         onlyIf { spec.shouldRun() }
 
@@ -291,19 +291,17 @@ integrationTestSpecs.each { spec ->
             // prop for TestUtils
             systemProperties 'groovyserv.executable.client': clientExecutableExpression
             systemProperties 'groovyserv.executable.server': serverExecutableExpression
-        }
-        doLast {
+
+
             restartGroovyServer()
         }
     }
 }
 
-task prepareIntegrationTest << {
-    startGroovyServer()
-}
-
-task integrationTest(dependsOn: ['executables', integrationTestSpecs*.taskName]) << {
-    shutdownGroovyServer()
+task integrationTest(dependsOn: ['executables', integrationTestSpecs*.taskName]) {
+    doLast {
+        shutdownGroovyServer()
+    }
 }
 
 // Common configuration for unitTest and integrationTest
@@ -344,11 +342,6 @@ task docs << {
 //===========================================
 // Helper
 //===========================================
-
-def startGroovyServer() {
-    AnsiColor.printlnAsInfo ">> Starting groovyserver..."
-    handleServer(["-v"])
-}
 
 def restartGroovyServer() {
     AnsiColor.printlnAsInfo ">> Restarting groovyserver..."
