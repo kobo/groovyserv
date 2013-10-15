@@ -24,7 +24,7 @@ class InvalidAuthTokenException extends InvalidRequestHeaderException {
 
     InvalidAuthTokenException(String message, Throwable e = null) {
         super(message, e)
-        exitStatus = ExitStatus.INVALID_AUTH_TOKEN.code
+        exitStatus = ExitStatus.INVALID_AUTHTOKEN.code
     }
 }
 

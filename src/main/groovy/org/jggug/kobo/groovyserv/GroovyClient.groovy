@@ -166,7 +166,7 @@ class GroovyClient {
             disconnect()
         }
 
-        if (exitStatus == ExitStatus.INVALID_AUTH_TOKEN.code) {
+        if (exitStatus == ExitStatus.INVALID_AUTHTOKEN.code) {
             throw new InvalidAuthTokenException("${id}: Authentication failed")
         }
         if (exitStatus != ExitStatus.SUCCESS.code) {
