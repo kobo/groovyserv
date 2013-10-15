@@ -39,9 +39,8 @@ class InvocationRequest {
      * @throws InvalidAuthTokenException
      */
     void check() {
-        def id = "${InvocationRequest.simpleName}:${port}"
         if (!clientAuthToken | !serverAuthToken || !serverAuthToken.isValid(clientAuthToken)) {
-            DebugUtils.errorLog id, "Authentication failed. AuthToken is unmatched: ${clientAuthToken} <=> ${serverAuthToken?.token}"
+            DebugUtils.errorLog "Authentication failed. AuthToken is unmatched: ${clientAuthToken} <=> ${serverAuthToken?.token}"
             Thread.sleep(waitTime) // to prevent from brute force attack
             throw new InvalidAuthTokenException("Authentication failed. AuthToken is unmatched: ${clientAuthToken} <=> ******")
         }

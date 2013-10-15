@@ -108,7 +108,7 @@ class ClientProtocols {
      * @throws GServIOException
      */
     static InvocationRequest readInvocationRequest(ClientConnection conn) {
-        def id = "${ClientProtocols.simpleName}:${conn.socket.port}"
+        def id = "ClientProtocols:${conn.socket.port}"
         Map<String, List<String>> headers = readHeaders(conn)
         def request = new InvocationRequest(
             port: conn.socket.port,
@@ -151,7 +151,7 @@ class ClientProtocols {
     }
 
     private static Map<String, List<String>> readHeaders(ClientConnection conn) {
-        def id = "${ClientProtocols.simpleName}:${conn.socket.port}"
+        def id = "ClientProtocols:${conn.socket.port}"
         def ins = conn.socket.inputStream // raw stream
         return parseHeaders(id, ins)
     }
@@ -165,7 +165,7 @@ class ClientProtocols {
                 def value = (tokens.size() > 1) ? tokens[1] : ''
                 headers.get(key, []) << value.trim()
             }
-            DebugUtils.verboseLog id, """Parsed headers: ${
+            DebugUtils.verboseLog """${id}: Parsed headers: ${
                 headers.collectEntries { key, value -> [key, (key == HEADER_AUTHTOKEN) ? '*' * 8 : value] }
             }"""
             return headers

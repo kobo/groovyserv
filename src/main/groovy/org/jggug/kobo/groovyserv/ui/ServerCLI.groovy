@@ -32,7 +32,7 @@ import org.jggug.kobo.groovyserv.utils.Holders
  */
 class ServerCLI {
 
-    private String id
+    private id
     private File serverScriptPath
     private List<String> args
     private options
@@ -50,11 +50,11 @@ class ServerCLI {
         this.options = parseOptions(args)
         this.port = getPortNumber(options)
         this.quiet = options.quiet
-        this.id = "${ServerCLI.simpleName}:$port"
+        this.id = "ServerCLI:$port"
         WorkFiles.setUp(port) // for authtoken
         DebugUtils.verbose = options.verbose
-        DebugUtils.verboseLog id, "Invoking by script: $serverScriptPath"
-        DebugUtils.verboseLog id, "Server command: ${args}"
+        DebugUtils.verboseLog "${id}: Invoking by script: $serverScriptPath"
+        DebugUtils.verboseLog "${id}: Server command: ${args}"
     }
 
     void invoke() {
@@ -80,7 +80,7 @@ class ServerCLI {
         }
         catch (Throwable e) {
             die "ERROR: ${e.message}"
-            DebugUtils.verboseLog id, "Failed to invoke server command", e
+            DebugUtils.verboseLog "${id}: Failed to invoke server command", e
         }
     }
 
@@ -103,11 +103,11 @@ class ServerCLI {
         try {
             def exitStatus = client.connect().shutdown().waitFor().exitStatus
             if (exitStatus != ExitStatus.SUCCESS.code) {
-                DebugUtils.errorLog id, "Failed to kill the server: exitStatus=${exitStatus}"
+                DebugUtils.errorLog "${id}: Failed to kill the server: exitStatus=${exitStatus}"
             }
         }
         catch (Throwable e) {
-            DebugUtils.errorLog id, "Failed to kill the server", e
+            DebugUtils.errorLog "${id}: Failed to kill the server", e
             println "" // clear for print
             die "ERROR: Failed to kill the server. Isn't the port being used by a non-groovyserv process?"
         }
@@ -199,7 +199,7 @@ class ServerCLI {
 
     private void daemonize() {
         def command = convertExecutableCommand([serverScriptPath.absolutePath, "--daemonized", "-q", * args])
-        DebugUtils.verboseLog id, "Daemonizing by re-invoking a server script: $command"
+        DebugUtils.verboseLog "${id}: Daemonizing by re-invoking a server script: $command"
         command.execute()
     }
 

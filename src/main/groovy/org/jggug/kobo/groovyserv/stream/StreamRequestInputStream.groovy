@@ -25,7 +25,6 @@ import org.jggug.kobo.groovyserv.utils.DebugUtils
  */
 class StreamRequestInputStream extends InputStream {
 
-    private static final String id = StreamRequestInputStream.simpleName
     private InputStream inputStream
     private boolean closed = false
 
@@ -44,7 +43,7 @@ class StreamRequestInputStream extends InputStream {
         try {
             return inputStream.read()
         } catch (InterruptedIOException e) {
-            DebugUtils.verboseLog id, "StreamRequestInputStream:read(): Interrupted I/O"
+            DebugUtils.verboseLog("StreamRequestInputStream:read(): Interrupted I/O")
             return -1
         }
     }
@@ -58,7 +57,7 @@ class StreamRequestInputStream extends InputStream {
         try {
             return inputStream.read(buf, offset, length)
         } catch (InterruptedIOException e) {
-            DebugUtils.verboseLog id, "StreamRequestInputStream:read(byte[], int, int): Interrupted I/O"
+            DebugUtils.verboseLog("StreamRequestInputStream:read(byte[], int, int): Interrupted I/O")
             return -1
         }
     }
@@ -66,7 +65,7 @@ class StreamRequestInputStream extends InputStream {
     @Override
     void close() {
         closed = true
-        DebugUtils.verboseLog id, "StreamRequestInputStream is closed: ${ClientConnection.currentConnection}"
+        DebugUtils.verboseLog "StreamRequestInputStream is closed: ${ClientConnection.currentConnection}"
     }
 
     /**

@@ -24,7 +24,6 @@ import org.jggug.kobo.groovyserv.utils.DebugUtils
 @Singleton
 class EnvironmentVariables {
 
-    private static final String id = EnvironmentVariables.simpleName
     private final cache = [:]
     private final origGetenv = System.metaClass.getMetaMethod("getenv", [String] as Object[])
     private final origGetenvAll = System.metaClass.getMetaMethod("getenv", null)
@@ -46,24 +45,24 @@ class EnvironmentVariables {
             if (value == null) {
                 value = origGetenv.doMethodInvoke(System, envVarName)
             }
-            DebugUtils.verboseLog id, "getenv(${envVarName}) => $value"
+            DebugUtils.verboseLog("getenv(${envVarName}) => $value")
             return value
         }
         // for System.getenv()["xxx"] or System.getenv().xxx
         System.metaClass.'static'.getenv = { ->
             def envMap = new HashMap(origGetenvAll.doMethodInvoke(System))
             envMap.putAll(cache) // overwritten by cache entries
-            DebugUtils.verboseLog id, "getenv() => $envMap"
+            DebugUtils.verboseLog("getenv() => $envMap")
             return envMap
         }
         // for System.env["xxx"] or System.env.xxx
         System.metaClass.'static'.getEnv = { ->
             def envMap = new HashMap(origGetenvAll.doMethodInvoke(System))
             envMap.putAll(cache) // overwritten by cache entries
-            DebugUtils.verboseLog id, "getenv() => $envMap"
+            DebugUtils.verboseLog("getenv() => $envMap")
             return envMap
         }
-        DebugUtils.verboseLog id, "System.getenv is replaced"
+        DebugUtils.verboseLog("System.getenv is replaced")
     }
 
     /**
@@ -73,8 +72,8 @@ class EnvironmentVariables {
      * @param envVar 'NAME=VALUE' style environment variable information.
      */
     void put(String envVar) {
-        // Applying to native platform environment variables
-        // for sub-process which is maybe invoked by user's Groovy script
+        // Appling to native platform environment variables
+        // for subprocess which is maybe invoked by user's Groovy script
         PlatformMethods.putenv(envVar)
 
         // Caching for next call of System.getenv
@@ -82,6 +81,6 @@ class EnvironmentVariables {
         def name = tokens[0]
         def value = (tokens.size() == 1) ? null : tokens[1]
         cache[name] = value
-        DebugUtils.verboseLog id, "putenv(${name}, ${value})"
+        DebugUtils.verboseLog("putenv(${name}, ${value})")
     }
 }

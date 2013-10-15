@@ -48,7 +48,7 @@ class RequestWorker extends ThreadPoolExecutor implements Runnable {
     RequestWorker(authToken, socket) {
         // API: ThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue)
         super(POOL_SIZE, POOL_SIZE, 0, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>())
-        this.id = "${RequestWorker.simpleName}:${socket.port}"
+        this.id = "RequestWorker:${socket.port}"
         this.conn = new ClientConnection(authToken, socket)
 
         // for management sub threads in invoke handler.
@@ -62,7 +62,7 @@ class RequestWorker extends ThreadPoolExecutor implements Runnable {
                     def rootThreadGroup = Thread.currentThread().threadGroup
                     def subThreadGroup = new GServThreadGroup(rootThreadGroup, "${rootThreadGroup.name}:${index.getAndIncrement()}")
                     def thread = new Thread(subThreadGroup, runnable)
-                    DebugUtils.verboseLog id, "Thread is created: $thread"
+                    DebugUtils.verboseLog("${id}: Thread is created: $thread")
                     return thread
                 }
             }
@@ -71,23 +71,23 @@ class RequestWorker extends ThreadPoolExecutor implements Runnable {
 
     @Override
     void run() {
-        DebugUtils.verboseLog id, "Request worker is started"
+        DebugUtils.verboseLog("${id}: Request worker is started")
 
         // Parse request
         InvocationRequest request = parseRequest()
         if (request == null) {
-            DebugUtils.verboseLog id, "Command not found"
+            DebugUtils.verboseLog("${id}: Command not found")
             return
         }
 
         // Handling built-in commands
         if (request.command == 'ping') {
-            DebugUtils.verboseLog id, "Ping command is accepted. Do nothing"
+            DebugUtils.verboseLog("${id}: Ping command is accepted. Do nothing")
             closeSafely(ExitStatus.SUCCESS.code)
             return
         }
         if (request.command == 'shutdown') {
-            DebugUtils.verboseLog id, "Shutdown command is accepted"
+            DebugUtils.verboseLog("${id}: Shutdown command is accepted")
             closeSafely(ExitStatus.SUCCESS.code)
             Holders.groovyServer.shutdown()
             return
@@ -101,10 +101,10 @@ class RequestWorker extends ThreadPoolExecutor implements Runnable {
         try {
             return conn.openSession()
         } catch (InvalidAuthTokenException e) {
-            DebugUtils.errorLog id, "Invalid authtoken", e
+            DebugUtils.errorLog "${id}: Invalid authtoken", e
             conn.sendExit(e.exitStatus, e.message)
         } catch (GServException e) {
-            DebugUtils.verboseLog id, "Failed to open session: ${e.message}", e
+            DebugUtils.verboseLog("${id}: Failed to open session: ${e.message}", e)
             conn.sendExit(e.exitStatus, e.message)
         }
     }
@@ -120,13 +120,13 @@ class RequestWorker extends ThreadPoolExecutor implements Runnable {
             // cancelling all tasks
             if (!isShutdown()) shutdownNow()
 
-            DebugUtils.errorLog id, "Failed to start request worker", e
+            DebugUtils.errorLog("${id}: Failed to start request worker", e)
         }
     }
 
     @Override
     protected RunnableFuture newTaskFor(Runnable runnable, defaultValue) {
-        DebugUtils.verboseLog id, "Future task of handler is created: ${runnable.id}"
+        DebugUtils.verboseLog("${id}: Future task of handler is created: ${runnable.id}")
         new FutureTask(runnable, defaultValue) {
             String toString() { runnable.id } // for debug
         }
@@ -134,7 +134,7 @@ class RequestWorker extends ThreadPoolExecutor implements Runnable {
 
     @Override
     protected void afterExecute(Runnable runnable, Throwable e) {
-        DebugUtils.verboseLog id, "Handler is dead: ${runnable}", e
+        DebugUtils.verboseLog("${id}: Handler is dead: ${runnable}", e)
         super.afterExecute(runnable, e)
 
         // To await assign futures to instance variables.
@@ -147,9 +147,9 @@ class RequestWorker extends ThreadPoolExecutor implements Runnable {
         int exitStatus = getExitStatus(runnable)
         def anotherFuture = (runnable == invokeFuture) ? streamFuture : invokeFuture
         if (anotherFuture.isDone()) {
-            DebugUtils.verboseLog id, "Another handler ${anotherFuture} is already done", e
+            DebugUtils.verboseLog("${id}: Another handler ${anotherFuture} is already done", e)
         } else {
-            DebugUtils.verboseLog id, "Another handler ${anotherFuture} is canceling by ${runnable}", e
+            DebugUtils.verboseLog("${id}: Another handler ${anotherFuture} is canceling by ${runnable}", e)
             anotherFuture.cancel(true)
         }
 
@@ -169,17 +169,17 @@ class RequestWorker extends ThreadPoolExecutor implements Runnable {
         try {
             conn.sendExit(exitStatus)
         } catch (e) {
-            DebugUtils.errorLog id, "Failed to send exit status: ${exitStatus}: ${message}", e
+            DebugUtils.errorLog("${id}: Failed to send exit status: ${exitStatus}: ${message}", e)
         }
         IOUtils.close(conn)
         conn = null
-        DebugUtils.verboseLog id, "Closed safely: ${exitStatus}: ${message}"
+        DebugUtils.verboseLog("${id}: Closed safely: ${exitStatus}: ${message}")
     }
 
     @Override
     protected void terminated() {
         closeSafely(ExitStatus.TERMINATED.code) // by way of precaution
-        DebugUtils.verboseLog id, "Terminated"
+        DebugUtils.verboseLog("${id}: Terminated")
     }
 
     private int getExitStatus(runnable) {
@@ -188,27 +188,27 @@ class RequestWorker extends ThreadPoolExecutor implements Runnable {
             return ExitStatus.SUCCESS.code
         }
         catch (CancellationException e) {
-            DebugUtils.verboseLog id, "Cancelled: ${e.message}"
+            DebugUtils.verboseLog("${id}: Cancelled: ${e.message}")
             return ExitStatus.INTERRUPTED.code
         }
         catch (InterruptedException e) {
-            DebugUtils.verboseLog id, "Interrupted as thread: ${e.message}"
+            DebugUtils.verboseLog("${id}: Interrupted as thread: ${e.message}")
             return ExitStatus.INTERRUPTED.code
         }
         catch (GServInterruptedException e) {
-            DebugUtils.verboseLog id, "Interrupted by client: ${e.message}"
+            DebugUtils.verboseLog("${id}: Interrupted by client: ${e.message}")
             return ExitStatus.INTERRUPTED.code
         }
         catch (SystemExitException e) {
-            DebugUtils.verboseLog id, "Exited: ${e.exitStatus}: ${e.message}", e
+            DebugUtils.verboseLog("${id}: Exited: ${e.exitStatus}: ${e.message}", e)
             return e.exitStatus
         }
         catch (GServException e) {
-            DebugUtils.errorLog id, "Error: ${e.exitStatus}", e
+            DebugUtils.errorLog("${id}: Error: ${e.exitStatus}", e)
             return e.exitStatus
         }
         catch (Throwable e) {
-            DebugUtils.errorLog id, "Unexpected error", e
+            DebugUtils.errorLog("${id}: Unexpected error", e)
             return ExitStatus.UNEXPECTED_ERROR.code
         }
     }

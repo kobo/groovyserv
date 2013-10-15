@@ -22,39 +22,56 @@ import org.jggug.kobo.groovyserv.WorkFiles
  */
 class DebugUtils {
 
+    private static final String PREFIX_DEBUG_LOG = "DEBUG: "
+
     static boolean verbose = false
 
-    static errorLog(String id, Object message, Throwable e = null) {
-        writeLog(formatLog("ERROR", id, message, e))
+    static errorLog(message, Throwable e = null) {
+        def formatted = formatLog(message, e)
+        writeLog(formatted)
     }
 
-    static infoLog(String id, Object message, Throwable e = null) {
-        writeLog(formatLog("INFO", id, message, e))
+    static infoLog(message, Throwable e = null) {
+        def formatted = formatLog(message, e)
+        writeLog(formatted)
     }
 
-    static verboseLog(String id, Object message, Throwable e = null) {
+    static verboseLog(message, Throwable e = null) {
         if (!verbose) return
-        writeLog(formatLog("DEBUG", id, message, e))
+
+        // lazy formatting message
+        String messageText = (message instanceof Closure) ? message.call() : message
+
+        // added prefix for each line
+        def formatted = {
+            def sw = new StringWriter()
+            def pw = new PrintWriter(sw)
+            formatLog(messageText, e).eachLine { line ->
+                pw.println(PREFIX_DEBUG_LOG + line)
+            }
+            sw.toString().trim()
+        }.call()
+
+        writeLog(formatted)
     }
 
-    private static formatLog(String level, String id, Object message, Throwable e) {
+    private static formatLog(String message, Throwable e) {
         def sw = new StringWriter()
         def pw = new PrintWriter(sw)
         def timestamp = currentTimestamp() // use same timestamp per call of formatLog
-        String messageText = (message instanceof Closure) ? message.call() : message
-        messageText.eachLine { line ->
-            pw.println("${timestamp} [${level}] ($id) ${line}")
+        message.eachLine { line ->
+            pw.println(timestamp + " " + line)
         }
         if (e) {
             ("---> " + formatStackTrace(e)).eachLine { line ->
-                pw.println("     ${line}")
+                pw.println(timestamp + " " + line)
             }
         }
         sw.toString().trim()
     }
 
     private static currentTimestamp() {
-        new Date().format("yyyy-MM-dd HH:mm:ss,SSS")
+        new Date().format("yyyy/MM/dd HH:mm:ss.SSS")
     }
 
     private static writeLog(formatted) {

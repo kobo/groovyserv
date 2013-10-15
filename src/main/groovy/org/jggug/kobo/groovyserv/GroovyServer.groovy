@@ -31,7 +31,6 @@ class GroovyServer {
 
     static final int DEFAULT_PORT = 1961
 
-    private String id
     Integer port
     ServerSocket serverSocket
     AuthToken authToken
@@ -39,7 +38,6 @@ class GroovyServer {
 
     void start() {
         assert port != null
-        this.id = "${GroovyServer.simpleName}:${port}"
         try {
             // Preparing
             WorkFiles.setUp(port)
@@ -54,11 +52,11 @@ class GroovyServer {
             handleRequest()
         }
         catch (GServException e) {
-            DebugUtils.errorLog id, "Error: GroovyServer", e
+            DebugUtils.errorLog "Error: GroovyServer", e
             exit e.exitStatus
         }
         catch (Throwable e) {
-            DebugUtils.errorLog id, "Unexpected error: GroovyServer", e
+            DebugUtils.errorLog "Unexpected error: GroovyServer", e
             exit ExitStatus.UNEXPECTED_ERROR
         }
         finally {
@@ -68,7 +66,7 @@ class GroovyServer {
 
     void shutdown() {
         authToken.delete()
-        DebugUtils.infoLog id, "Server is shut down"
+        DebugUtils.infoLog "Server is shut down"
         exit ExitStatus.FORCELY_SHUTDOWN
     }
 
@@ -100,14 +98,14 @@ class GroovyServer {
 
     private void startServer() {
         serverSocket = new ServerSocket(port)
-        DebugUtils.infoLog id, "Server is started with ${port} port" + (allowFrom ? " allowing from ${allowFrom.join(" and ")}" : "")
-        DebugUtils.infoLog id, "Default classpath: ${System.getenv('CLASSPATH')}"
+        DebugUtils.infoLog "Server is started with ${port} port" + (allowFrom ? " allowing from ${allowFrom.join(" and ")}" : "")
+        DebugUtils.infoLog "Default classpath: ${System.getenv('CLASSPATH')}"
     }
 
     private void handleRequest() {
         while (true) {
             def socket = serverSocket.accept()
-            DebugUtils.verboseLog id, "Accepted socket: ${socket}"
+            DebugUtils.verboseLog "Accepted socket: ${socket}"
 
             // This socket must be closed under a responsibility of RequestWorker.
             // RequestWorker must be invoked on the new thread in order to apply new thread group to all sub threads.

@@ -29,7 +29,7 @@ class StreamRequestHandler implements Runnable {
     private ClientConnection conn
 
     StreamRequestHandler(clientConnection) {
-        this.id = "${StreamRequestHandler.simpleName}:${clientConnection.socket.port}"
+        this.id = "StreamRequestHandler:${clientConnection.socket.port}"
         this.conn = clientConnection
     }
 
@@ -43,16 +43,16 @@ class StreamRequestHandler implements Runnable {
     @Override
     void run() {
         Thread.currentThread().name = id
-        DebugUtils.verboseLog id, "Thread started"
+        DebugUtils.verboseLog("${id}: Thread started")
         try {
             while (true) {
                 def request = conn.readStreamRequest()
                 if (request.isInterrupted()) {
-                    DebugUtils.verboseLog id, "Received interruption request from client"
+                    DebugUtils.verboseLog "${id}: Recieved interruption request from client"
                     throw new GServInterruptedException("${id}: By client request")
                 }
                 if (request.isEmpty()) {
-                    DebugUtils.verboseLog id, "Received empty request from client (Closed stdin on client)"
+                    DebugUtils.verboseLog "${id}: Recieved empty request from client (Closed stdin on client)"
                     conn.tearDownTransferringPipes()
                     continue // continue to check the client interruption
                 }
@@ -61,36 +61,36 @@ class StreamRequestHandler implements Runnable {
                 int offset = 0
                 int result = conn.socket.inputStream.read(buff, offset, request.size) // read from raw stream
                 if (result == -1) {
-                    DebugUtils.verboseLog id, "EOF of input stream of socket (Half-closed by the client)"
+                    DebugUtils.verboseLog "${id}: EOF of input stream of socket (Half-closed by the client)"
                     throw new GServInterruptedException("${id}: By EOF of input stream of socket")
                 }
                 readLog(buff, offset, result, request.size)
                 if (conn.toreDownPipes) {
-                    DebugUtils.errorLog id, "Already tore down pipes. So the above data is just ignored."
+                    DebugUtils.errorLog "Already tore down pipes. So the above data is just ignored."
                 } else {
                     conn.transferStreamRequest(buff, offset, result)
                 }
             }
         }
         catch (InvalidRequestHeaderException e) {
-            DebugUtils.verboseLog id, "Invalid request header: ${e.message}" // ignored details
+            DebugUtils.verboseLog("${id}: Invalid request header: ${e.message}") // ignored details
             throw new GServInterruptedException("${id}: By receiving invalid request")
         }
         catch (InterruptedException e) {
-            DebugUtils.verboseLog id, "Thread interrupted: ${e.message}" // ignored details
+            DebugUtils.verboseLog("${id}: Thread interrupted: ${e.message}") // ignored details
         }
         catch (InterruptedIOException e) {
-            DebugUtils.verboseLog id, "I/O interrupted: ${e.message}" // ignored details
+            DebugUtils.verboseLog("${id}: I/O interrupted: ${e.message}") // ignored details
         }
         catch (GServIOException e) {
-            DebugUtils.verboseLog id, "I/O error: ${e.message}" // ignored details
+            DebugUtils.verboseLog("${id}: I/O error: ${e.message}") // ignored details
         }
         catch (IOException e) {
-            DebugUtils.verboseLog id, "I/O error: ${e.message}" // ignored details
+            DebugUtils.verboseLog("${id}: I/O error: ${e.message}") // ignored details
         }
         finally {
             conn.tearDownTransferringPipes()
-            DebugUtils.verboseLog id, "Thread is dead"
+            DebugUtils.verboseLog("${id}: Thread is dead")
         }
     }
 
@@ -98,7 +98,7 @@ class StreamRequestHandler implements Runnable {
     String toString() { id }
 
     private static readLog(byte[] buff, int offset, int readSize, int sizeHeader) {
-        DebugUtils.verboseLog StreamRequestHandler.simpleName, """\
+        DebugUtils.verboseLog """\
             |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
             |Client->Server {
             |  id: in

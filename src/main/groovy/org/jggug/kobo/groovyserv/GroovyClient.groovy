@@ -48,7 +48,7 @@ class GroovyClient {
     GroovyClient(String host = "localhost", int port = GroovyServer.DEFAULT_PORT) {
         this.host = host
         this.port = port
-        this.id = "${GroovyClient.simpleName}:$host:$port"
+        this.id = "GroovyClient:$host:$port"
     }
 
     GroovyClient run(String... args) {
@@ -146,7 +146,7 @@ class GroovyClient {
 
     boolean isServerAvailable() {
         if (!WorkFiles.AUTHTOKEN_FILE.exists()) {
-            DebugUtils.verboseLog id, "No authtoken file"
+            DebugUtils.verboseLog "${id}: No authtoken file"
             return false
         }
         try {
@@ -155,11 +155,11 @@ class GroovyClient {
             waitFor()
         }
         catch (ConnectException e) {
-            DebugUtils.verboseLog id, "Caught exception when health-checking", e
+            DebugUtils.verboseLog "${id}: Caught exception when health-checking", e
             return false
         }
         catch (Exception e) {
-            DebugUtils.errorLog id, "Caught unexpected exception when health-checking", e
+            DebugUtils.errorLog "${id}: Caught unexpected exception when health-checking", e
             return false
         }
         finally {
@@ -170,7 +170,7 @@ class GroovyClient {
             throw new InvalidAuthTokenException("${id}: Authentication failed")
         }
         if (exitStatus != ExitStatus.SUCCESS.code) {
-            DebugUtils.errorLog id, "Exit status for ping seems invalid: $exitStatus"
+            DebugUtils.errorLog "${id}: Exit status for ping seems invalid: $exitStatus"
         }
         return true
     }
@@ -191,7 +191,7 @@ class GroovyClient {
             return true
         }
         catch (Exception e) {
-            DebugUtils.errorLog id, "Caught unexpected exception when health-checking", e
+            DebugUtils.errorLog "${id}: Caught unexpected exception when health-checking", e
             return false
         }
         return false

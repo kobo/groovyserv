@@ -34,7 +34,7 @@ class GroovyInvokeHandler implements Runnable {
     private boolean interrupted = false
 
     GroovyInvokeHandler(request) {
-        this.id = "${GroovyInvokeHandler.simpleName}:${request.port}"
+        this.id = "GroovyInvokeHandler:${request.port}"
         this.request = request
     }
 
@@ -51,7 +51,7 @@ class GroovyInvokeHandler implements Runnable {
     @Override
     void run() {
         Thread.currentThread().name = id
-        DebugUtils.verboseLog id, "Thread started"
+        DebugUtils.verboseLog("${id}: Thread started")
         boolean shouldResetCurrentDir = false
         try {
             if (request.cwd) {
@@ -65,7 +65,7 @@ class GroovyInvokeHandler implements Runnable {
         }
         catch (InterruptedException e) {
             interrupted = true
-            DebugUtils.verboseLog id, "Thread interrupted: ${e.message}"
+            DebugUtils.verboseLog("${id}: Thread interrupted: ${e.message}")
         }
         catch (GServIllegalStateException e) {
             shouldResetCurrentDir = false
@@ -74,7 +74,7 @@ class GroovyInvokeHandler implements Runnable {
         catch (RuntimeException e) { // TODO using GServInterruptedException
             if (e.cause instanceof InterruptedException) {
                 interrupted = true
-                DebugUtils.verboseLog id, "Thread interrupted: ${e.message}"
+                DebugUtils.verboseLog("${id}: Thread interrupted: ${e.message}")
             }
             throw e
         }
@@ -84,7 +84,7 @@ class GroovyInvokeHandler implements Runnable {
                 // only if not throwing any exception
                 CurrentDirHolder.instance.reset()
             }
-            DebugUtils.verboseLog id, "Thread is dead"
+            DebugUtils.verboseLog("${id}: Thread is dead")
         }
     }
 
@@ -93,7 +93,7 @@ class GroovyInvokeHandler implements Runnable {
 
     private void setupEnvVars(List<String> envVars) {
         envVars.each { envVar ->
-            DebugUtils.verboseLog id, "putenv(${envVar})"
+            DebugUtils.verboseLog("${id}: putenv(${envVar})")
             EnvironmentVariables.instance.put(envVar)
         }
     }
@@ -134,7 +134,7 @@ class GroovyInvokeHandler implements Runnable {
     }
 
     private invokeGroovy(args, classpath) {
-        DebugUtils.verboseLog id, "Invoking groovy: ${args} with classpath=${classpath}"
+        DebugUtils.verboseLog("${id}: Invoking groovy: ${args} with classpath=${classpath}")
         GroovyMain2.processArgs(args as String[], System.out, classpath)
         appendServerVersion(args)
     }
@@ -148,27 +148,27 @@ class GroovyInvokeHandler implements Runnable {
     private awaitAllSubThreads() {
         def threads = getAllAliveSubThreads()
         if (!threads) {
-            DebugUtils.verboseLog id, "Threre is no sub thread"
+            DebugUtils.verboseLog("${id}: Threre is no sub thread")
             return
         }
-        DebugUtils.verboseLog id, "All sub threads are joining...."
+        DebugUtils.verboseLog("${id}: All sub threads are joining....")
         for (Thread thread in threads) {
             if (thread.daemon) continue
             while (thread.alive) {
                 if (interrupted) {
-                    DebugUtils.verboseLog id, "Detected interruption while joining ${thread}"
+                    DebugUtils.verboseLog("${id}: Detected interruption while joining ${thread}")
                     return
                 }
-                DebugUtils.verboseLog id, "Joining ${thread}..."
+                DebugUtils.verboseLog("${id}: Joining ${thread}...")
                 try {
                     thread.join(TIMEOUT_FOR_JOINING_SUBTHREADS)
                 } catch (InterruptedException e) {
-                    DebugUtils.verboseLog id, "Interrupted joining ${thread}"
+                    DebugUtils.verboseLog("${id}: Interrupted joining ${thread}")
                     throw e
                 }
             }
         }
-        DebugUtils.verboseLog id, "All sub threads joined"
+        DebugUtils.verboseLog("${id}: All sub threads joined")
     }
 
     private killAllSubThreadsIfExist() {
@@ -179,7 +179,7 @@ class GroovyInvokeHandler implements Runnable {
         threads.each { thread ->
             thread.stop() // by force
         }
-        DebugUtils.verboseLog id, "All sub threads stopped by force"
+        DebugUtils.verboseLog("${id}: All sub threads stopped by force")
     }
 
     private getAllAliveSubThreads() {
@@ -189,7 +189,7 @@ class GroovyInvokeHandler implements Runnable {
         if (count < threads.size()) {
             // convert to list for convenience except own thread
             def list = (threads as List).findAll { it && it != Thread.currentThread() }
-            DebugUtils.verboseLog id, "Found ${list.size()} sub thread(s): ${list}"
+            DebugUtils.verboseLog("${id}: Found ${list.size()} sub thread(s): ${list}")
             return list
         }
         return getAllAliveSubThreads()
