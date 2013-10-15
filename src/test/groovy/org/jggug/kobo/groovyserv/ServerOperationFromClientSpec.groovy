@@ -19,6 +19,7 @@ import org.jggug.kobo.groovyserv.test.IntegrationTest
 import org.jggug.kobo.groovyserv.test.TestUtils
 import spock.lang.IgnoreIf
 import spock.lang.Specification
+import spock.lang.Stepwise
 import spock.lang.Timeout
 
 import java.util.concurrent.TimeUnit
@@ -29,18 +30,13 @@ import java.util.concurrent.TimeUnit
 @IntegrationTest
 @IgnoreIf({ properties["os.name"].startsWith("Windows") })
 @Timeout(value = 30, unit = TimeUnit.SECONDS)
+@Stepwise
 class ServerOperationFromClientSpec extends Specification {
 
-    def setup() {
-        TestUtils.shutdownServer()
-    }
-
-    def cleanupSpec() {
-        // make sure server running
-        TestUtils.startServer()
-    }
-
     def "executes client with no running server"() {
+        given:
+        TestUtils.shutdownServer()
+
         when:
         def p = executeClient()
 
@@ -50,9 +46,6 @@ class ServerOperationFromClientSpec extends Specification {
     }
 
     def "executes client with running server"() {
-        given:
-        TestUtils.startServer()
-
         when:
         def p = executeClient()
 
@@ -63,6 +56,7 @@ class ServerOperationFromClientSpec extends Specification {
 
     def "executes client with no running server when there are previous an authtoken file"() {
         given:
+        TestUtils.shutdownServer()
         createAuthTokenFile()
 
         when:
