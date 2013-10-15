@@ -292,8 +292,13 @@ integrationTestSpecs.each { spec ->
             systemProperties 'groovyserv.executable.client': clientExecutableExpression
             systemProperties 'groovyserv.executable.server': serverExecutableExpression
 
-
             restartGroovyServer()
+        }
+        doLast {
+            def canShutdownAtIntegrationTestTask = gradle.taskGraph.allTasks.contains(integrationTest)
+            if (!canShutdownAtIntegrationTestTask) {
+                shutdownGroovyServer()
+            }
         }
     }
 }
