@@ -265,7 +265,7 @@ def integrationTestSpecs = [
 ].collect { new IntegrationTestSpec(it) }
 integrationTestSpecs.each { spec ->
     // generate dynamically
-    task "${spec.taskName}"(type: Test, dependsOn: 'executables') {
+    task "${spec.taskName}"(type: Test, dependsOn: ['executables', 'prepareIntegrationTest']) {
         mustRunAfter "unitTest"
         onlyIf { spec.shouldRun() }
 
@@ -291,15 +291,20 @@ integrationTestSpecs.each { spec ->
             // prop for TestUtils
             systemProperties 'groovyserv.executable.client': clientExecutableExpression
             systemProperties 'groovyserv.executable.server': serverExecutableExpression
-
-            startGroovyServer(serverExecutableExpression)
         }
         doLast {
-            shutdownGroovyServer(serverExecutableExpression)
+            restartGroovyServer()
         }
     }
 }
-task integrationTest(dependsOn: ['executables', integrationTestSpecs*.taskName])
+
+task prepareIntegrationTest << {
+    startGroovyServer()
+}
+
+task integrationTest(dependsOn: ['executables', integrationTestSpecs*.taskName]) << {
+    shutdownGroovyServer()
+}
 
 // Common configuration for unitTest and integrationTest
 tasks.withType(Test) each {
@@ -327,9 +332,9 @@ task wrapper(type: Wrapper) {
 // Documents
 
 task docs << {
-    executeCommand['git', 'checkout', 'docs']
-    executeCommand['make', 'clean', 'html']
-    executeCommand['git', 'checkout', 'gh-pages']
+    executeCommand('git', 'checkout', 'docs')
+    executeCommand('make', 'clean', 'html')
+    executeCommand('git', 'checkout', 'gh-pages')
     copy {
         into "$projectDir"
         from "$projectDir/build/docs"
@@ -340,14 +345,25 @@ task docs << {
 // Helper
 //===========================================
 
-def startGroovyServer(groovyserverPath) {
+def startGroovyServer() {
     AnsiColor.printlnAsInfo ">> Starting groovyserver..."
-    executeCommand(scriptExecutor + [groovyserverPath, "-r", "-v"])
+    handleServer(["-v"])
 }
 
-def shutdownGroovyServer(groovyserverPath) {
+def restartGroovyServer() {
+    AnsiColor.printlnAsInfo ">> Restarting groovyserver..."
+    handleServer(["-r", "-v"])
+}
+
+def shutdownGroovyServer() {
     AnsiColor.printlnAsInfo ">> Shutting down groovyserver..."
-    executeCommand(scriptExecutor + [groovyserverPath, "-k"])
+    handleServer(["-k"])
+}
+
+def handleServer(List options) {
+    def binDir = convertMixedPath(file("${buildDir}/executables/native/bin"))
+    def groovyserverPath = "$binDir/groovyserver"
+    executeCommand([* scriptExecutor, groovyserverPath, * options])
 }
 
 def executeCommand(List command) {
