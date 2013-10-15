@@ -49,14 +49,14 @@ class EnvironmentVariables {
             return value
         }
         // for System.getenv()["xxx"] or System.getenv().xxx
-        System.metaClass.'static'.getenv = {->
+        System.metaClass.'static'.getenv = { ->
             def envMap = new HashMap(origGetenvAll.doMethodInvoke(System))
             envMap.putAll(cache) // overwritten by cache entries
             DebugUtils.verboseLog("getenv() => $envMap")
             return envMap
         }
         // for System.env["xxx"] or System.env.xxx
-        System.metaClass.'static'.getEnv = {->
+        System.metaClass.'static'.getEnv = { ->
             def envMap = new HashMap(origGetenvAll.doMethodInvoke(System))
             envMap.putAll(cache) // overwritten by cache entries
             DebugUtils.verboseLog("getenv() => $envMap")

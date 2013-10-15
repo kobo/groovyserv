@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 package org.jggug.kobo.groovyserv
+
 import org.jggug.kobo.groovyserv.exception.GServIOException
+
 /**
  * A connection between client process and server process in localhost
  * is authenticated by simple authToken mechanism.

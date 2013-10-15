@@ -37,8 +37,7 @@ class CurrentDirHolder {
             return
         }
         if (isSetCurrentDir()) {
-            throw new GServIllegalStateException(
-                "Cannot change current directory because another session is running on different directory: ${currentDir} -X-> ${newDir}")
+            throw new GServIllegalStateException("Cannot change current directory because another session is running on different directory: ${currentDir} -X-> ${newDir}")
         }
         System.properties['user.dir'] = newDir
         PlatformMethods.chdir(newDir)

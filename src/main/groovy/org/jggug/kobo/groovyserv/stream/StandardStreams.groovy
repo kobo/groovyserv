@@ -43,15 +43,15 @@ class StandardStreams {
     }
 
     private static InputStream newInAsInputStream() {
-        new DynamicDelegatedInputStream({-> ClientConnection.currentConnection.ins })
+        new DynamicDelegatedInputStream({ -> ClientConnection.currentConnection.ins })
     }
 
     private static PrintStream newOutAsPrintStream() {
-        new DynamicDelegatedPrintStream({-> ClientConnection.currentConnection.out })
+        new DynamicDelegatedPrintStream({ -> ClientConnection.currentConnection.out })
     }
 
     private static PrintStream newErrAsPrintStream() {
-        new DynamicDelegatedPrintStream({-> ClientConnection.currentConnection.err })
+        new DynamicDelegatedPrintStream({ -> ClientConnection.currentConnection.err })
     }
 
 }
