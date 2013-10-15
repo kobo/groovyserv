@@ -87,7 +87,7 @@ class ServerCLI {
     private void shutdownServer() {
         def client = newGroovyClient()
 
-        // If server is already not running, it need to do nothing.
+        // If server isn't already running, it needs to do nothing.
         if (!client.isServerAvailable()) {
             println "WARN: Server is not running."
             return
@@ -101,7 +101,10 @@ class ServerCLI {
         // Shutting down
         print "Shutting down server..."
         try {
-            client.connect().shutdown()
+            def exitStatus = client.connect().shutdown().waitFor().exitStatus
+            if (exitStatus != ExitStatus.SUCCESS.code) {
+                DebugUtils.errorLog "${id}: Failed to kill the server: exitStatus=${exitStatus}"
+            }
         }
         catch (Throwable e) {
             DebugUtils.errorLog "${id}: Failed to kill the server", e
@@ -110,11 +113,10 @@ class ServerCLI {
         }
 
         // Waiting for server down
-        while (client.isServerAvailable()) {
+        while (!client.isServerShutdown()) {
             print "."
-            sleep 500
+            sleep 200
         }
-        sleep 1000 // to make sure that connection is closed
         println "" // clear for print
         println "Server is successfully shut down."
     }
@@ -122,13 +124,13 @@ class ServerCLI {
     private void startServerAsDaemon() {
         def client = newGroovyClient()
 
-        // If server is already running, it need to do nothing.
+        // If server is already running, it needs to do nothing.
         if (client.isServerAvailable()) {
             println "WARN: Server is already running on ${port} port."
             return
         }
 
-        // If there is no authtoken, to access to server is impossible.
+        // If there is authtoken, it might be old.
         if (WorkFiles.AUTHTOKEN_FILE.exists()) {
             println "WARN: AuthToken file ${WorkFiles.AUTHTOKEN_FILE} is found. It will be overwritten by new token."
             WorkFiles.AUTHTOKEN_FILE.delete()
@@ -139,10 +141,10 @@ class ServerCLI {
         daemonize() // start daemon process
 
         // Waiting for server up
-        sleep 1000
+        sleep 2000
         while (!client.isServerAvailable()) {
             print "."
-            sleep 500
+            sleep 200
         }
         println "" // clear for print
         println "Server is successfully started up on $port port."

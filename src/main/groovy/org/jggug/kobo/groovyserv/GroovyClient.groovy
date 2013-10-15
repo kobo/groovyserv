@@ -136,6 +136,14 @@ class GroovyClient {
         return this // for method-chain
     }
 
+    GroovyClient waitFor() {
+        while (exitStatus == null) {
+            sleep 100 // wait for server operation
+            readAllAvailable()
+        }
+        return this // for method-chain
+    }
+
     boolean isServerAvailable() {
         if (!WorkFiles.AUTHTOKEN_FILE.exists()) {
             DebugUtils.verboseLog "${id}: No authtoken file"
@@ -144,17 +152,14 @@ class GroovyClient {
         try {
             if (!isConnected()) connect()
             ping()
-            while (exitStatus == null) {
-                sleep 500 // wait for server operation
-                readAllAvailable()
-            }
+            waitFor()
         }
         catch (ConnectException e) {
             DebugUtils.verboseLog "${id}: Caught exception when health-checking", e
             return false
         }
         catch (Exception e) {
-            DebugUtils.errorLog "${id}: Caught exception when health-checking", e
+            DebugUtils.errorLog "${id}: Caught unexpected exception when health-checking", e
             return false
         }
         finally {
@@ -168,6 +173,28 @@ class GroovyClient {
             DebugUtils.errorLog "${id}: Exit status for ping seems invalid: $exitStatus"
         }
         return true
+    }
+
+    // NOTE: isServerAvailable() isn't !isServerShutdown()
+    // Because a complete shutdown status must be port closed and authtoken file deleted.
+    // On the other hand, server available status means a server can handle a request rightly.
+    // The contrary means a server cannot handle a request just rightly.
+    // Either that a port is closed or that a authtoken file is deleted happen to match the condition.
+    boolean isServerShutdown() {
+        if (WorkFiles.AUTHTOKEN_FILE.exists()) {
+            return false
+        }
+        try {
+            new Socket(host, port)
+        }
+        catch (ConnectException e) {
+            return true
+        }
+        catch (Exception e) {
+            DebugUtils.errorLog "${id}: Caught unexpected exception when health-checking", e
+            return false
+        }
+        return false
     }
 
     private void clearBuffer() {
