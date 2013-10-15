@@ -22,20 +22,24 @@ import org.jggug.kobo.groovyserv.utils.DebugUtils
  */
 class GServThreadGroup extends ThreadGroup {
 
+    private String id
+
     GServThreadGroup(String name) {
         super(name)
+        this.id = "${GServThreadGroup.simpleName}:${name}"
     }
 
     GServThreadGroup(ThreadGroup parent, String name) {
         super(parent, name)
+        this.id = "${GServThreadGroup.simpleName}:${name}:${parent.name}"
     }
 
     @Override
     void uncaughtException(Thread thread, Throwable e) {
         if (containsCaused(e, ThreadDeath)) {
-            DebugUtils.verboseLog("${name}: Thread is stopped by force: ${thread}") // ignored details
+            DebugUtils.verboseLog id, "Thread is stopped by force: ${thread}" // ignored details
         } else {
-            DebugUtils.errorLog("${name}: Uncaught exception: ${thread}", e)
+            DebugUtils.errorLog id, "Uncaught exception: ${thread}", e
         }
     }
 

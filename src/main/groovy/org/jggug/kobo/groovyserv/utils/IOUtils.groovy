@@ -24,6 +24,8 @@ import java.util.concurrent.Future
  */
 class IOUtils {
 
+    private static final id = IOUtils.simpleName
+
     /**
      * @throws Throwable when ExecutionException is occured, throw an inner exception wrapped by ExecutionException
      * @throws CancellationException
@@ -41,7 +43,7 @@ class IOUtils {
         try {
             if (closeable) closeable.close()
         } catch (IOException e) {
-            DebugUtils.errorLog("Failed to close", e)
+            DebugUtils.errorLog id, "Failed to close", e
         }
     }
 

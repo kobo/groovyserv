@@ -26,6 +26,7 @@ import org.jggug.kobo.groovyserv.utils.DebugUtils
  */
 class StreamResponseOutputStream extends OutputStream {
 
+    private static final String id = StreamResponseOutputStream.simpleName
     private OutputStream outputStream
     private String streamId
     private boolean closed = false
@@ -82,11 +83,11 @@ class StreamResponseOutputStream extends OutputStream {
     @Override
     void close() {
         closed = true
-        DebugUtils.verboseLog "StreamResponseOutputStream($streamId) is closed: ${ClientConnection.currentConnection}"
+        DebugUtils.verboseLog id, "StreamResponseOutputStream($streamId) is closed: ${ClientConnection.currentConnection}"
     }
 
     private writeVerboseLog(byte[] b, int offset, int length) {
-        DebugUtils.verboseLog {
+        DebugUtils.verboseLog id, {
             """\
             |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
             |Server->Client {
