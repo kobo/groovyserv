@@ -20,75 +20,70 @@ import org.jggug.kobo.groovyserv.WorkFiles
 /**
  * @author NAKANO Yasuharu
  */
-class DebugUtils {
+class LogUtils {
 
-    private static final String PREFIX_DEBUG_LOG = "DEBUG: "
+    // MEMO: GroovyServ cannot use a major log library like Log4j because it may be used by a user script.
+    // If GroovyServ configured log4j, its behavior on the user script could became something unexpected for user.
 
-    static boolean verbose = false
+    static boolean debug = false
 
     static errorLog(message, Throwable e = null) {
-        def formatted = formatLog(message, e)
-        writeLog(formatted)
+        writeLog(formatLog("ERROR", message, e))
     }
 
     static infoLog(message, Throwable e = null) {
-        def formatted = formatLog(message, e)
-        writeLog(formatted)
+        writeLog(formatLog("INFO", message, e))
     }
 
-    static verboseLog(message, Throwable e = null) {
-        if (!verbose) return
-
-        // lazy formatting message
-        String messageText = (message instanceof Closure) ? message.call() : message
-
-        // added prefix for each line
-        def formatted = {
-            def sw = new StringWriter()
-            def pw = new PrintWriter(sw)
-            formatLog(messageText, e).eachLine { line ->
-                pw.println(PREFIX_DEBUG_LOG + line)
-            }
-            sw.toString().trim()
-        }.call()
-
-        writeLog(formatted)
+    static debugLog(message, Throwable e = null) {
+        if (!debug) return
+        writeLog(formatLog("DEBUG", message, e))
     }
 
-    private static formatLog(String message, Throwable e) {
+    private static formatLog(String level, Object message, Throwable e) {
+        def caller = callerInfo
         def sw = new StringWriter()
         def pw = new PrintWriter(sw)
         def timestamp = currentTimestamp() // use same timestamp per call of formatLog
-        message.eachLine { line ->
-            pw.println(timestamp + " " + line)
+        String messageText = (message instanceof Closure) ? message.call() : message
+        messageText.eachLine { line ->
+            pw.println "${timestamp} [${level}] ($caller) ${line}"
         }
         if (e) {
-            ("---> " + formatStackTrace(e)).eachLine { line ->
-                pw.println(timestamp + " " + line)
-            }
+            pw.println formatStackTrace(e)
         }
         sw.toString().trim()
     }
 
-    private static currentTimestamp() {
-        new Date().format("yyyy/MM/dd HH:mm:ss.SSS")
+    private static getCallerInfo() {
+        def caller = Thread.currentThread().stackTrace.find { StackTraceElement ele ->
+            def className = ele.className
+            className.startsWith("org.jggug.kobo.groovyserv") && !className.startsWith(LogUtils.name)
+        }
+        def simpleName = caller.className.replaceFirst(/^.*\./, '') // as simpleName
+        def lineNumber = caller.lineNumber
+        return "${simpleName}:${lineNumber}"
     }
 
-    private static writeLog(formatted) {
+    private static currentTimestamp() {
+        new Date().format("yyyy/MM/dd HH:mm:ss,SSS")
+    }
+
+    private static writeLog(String formatted) {
         WorkFiles.LOG_FILE.withWriterAppend { out ->
             out.println formatted
         }
     }
 
-    private static String formatStackTrace(e) {
+    private static String formatStackTrace(Throwable e) {
         def sw = new StringWriter()
         e.printStackTrace(new PrintWriter(sw))
         sanitizeStackTrace(sw.toString())
     }
 
-    private static String sanitizeStackTrace(string) {
+    private static String sanitizeStackTrace(String stackTrace) {
         def sw = new StringWriter()
-        string.eachLine { line ->
+        stackTrace.eachLine { line ->
             if (line=~/at (sun\.|org.codehaus.groovy)/) return
             sw.println line
         }
@@ -96,7 +91,7 @@ class DebugUtils {
         sw.toString()
     }
 
-    static String dump(byte[] buf, int offset, int length) {
+    static String dumpHex(byte[] buf, int offset, int length) {
         if (offset < 0 || length < 0) {
             throw new IllegalArgumentException("offset and length must be specified a positive value")
         }

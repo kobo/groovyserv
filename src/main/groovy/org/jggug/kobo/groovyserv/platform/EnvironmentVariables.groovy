@@ -15,7 +15,7 @@
  */
 package org.jggug.kobo.groovyserv.platform
 
-import org.jggug.kobo.groovyserv.utils.DebugUtils
+import org.jggug.kobo.groovyserv.utils.LogUtils
 
 /**
  * @author UEHARA Junji
@@ -45,24 +45,24 @@ class EnvironmentVariables {
             if (value == null) {
                 value = origGetenv.doMethodInvoke(System, envVarName)
             }
-            DebugUtils.verboseLog("getenv(${envVarName}) => $value")
+            LogUtils.debugLog "getenv(${envVarName}) => $value"
             return value
         }
         // for System.getenv()["xxx"] or System.getenv().xxx
         System.metaClass.'static'.getenv = { ->
             def envMap = new HashMap(origGetenvAll.doMethodInvoke(System))
             envMap.putAll(cache) // overwritten by cache entries
-            DebugUtils.verboseLog("getenv() => $envMap")
+            LogUtils.debugLog "getenv() => $envMap"
             return envMap
         }
         // for System.env["xxx"] or System.env.xxx
         System.metaClass.'static'.getEnv = { ->
             def envMap = new HashMap(origGetenvAll.doMethodInvoke(System))
             envMap.putAll(cache) // overwritten by cache entries
-            DebugUtils.verboseLog("getenv() => $envMap")
+            LogUtils.debugLog "getenv() => $envMap"
             return envMap
         }
-        DebugUtils.verboseLog("System.getenv is replaced")
+        LogUtils.debugLog "System.getenv is replaced"
     }
 
     /**
@@ -81,6 +81,6 @@ class EnvironmentVariables {
         def name = tokens[0]
         def value = (tokens.size() == 1) ? null : tokens[1]
         cache[name] = value
-        DebugUtils.verboseLog("putenv(${name}, ${value})")
+        LogUtils.debugLog "putenv(${name}, ${value})"
     }
 }

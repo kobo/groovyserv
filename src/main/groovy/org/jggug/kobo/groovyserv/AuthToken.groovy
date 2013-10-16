@@ -39,7 +39,7 @@ class AuthToken {
         try {
             WorkFiles.AUTHTOKEN_FILE.text = token
             setupFilePermission()
-            //DebugUtils.verboseLog "Saved authToken: ${token}"
+            //LogUtils.verboseLog "Saved authToken: ${token}"
         } catch (IOException e) {
             throw new GServIOException("I/O error: AuthToken file cannot be written: ${WorkFiles.AUTHTOKEN_FILE}", e)
         }
@@ -47,7 +47,7 @@ class AuthToken {
 
     void delete() {
         WorkFiles.AUTHTOKEN_FILE.delete()
-        //DebugUtils.verboseLog "Deleted authToken: ${token}"
+        //LogUtils.verboseLog "Deleted authToken: ${token}"
     }
 
     boolean isValid(given) {

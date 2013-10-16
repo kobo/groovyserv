@@ -16,7 +16,7 @@
 package org.jggug.kobo.groovyserv.stream
 
 import org.jggug.kobo.groovyserv.ClientConnection
-import org.jggug.kobo.groovyserv.utils.DebugUtils
+import org.jggug.kobo.groovyserv.utils.LogUtils
 
 /**
  * Handling StreamRequest in protocol between client and server.
@@ -43,7 +43,7 @@ class StreamRequestInputStream extends InputStream {
         try {
             return inputStream.read()
         } catch (InterruptedIOException e) {
-            DebugUtils.verboseLog("StreamRequestInputStream:read(): Interrupted I/O")
+            LogUtils.debugLog "StreamRequestInputStream:read(): Interrupted I/O"
             return -1
         }
     }
@@ -57,7 +57,7 @@ class StreamRequestInputStream extends InputStream {
         try {
             return inputStream.read(buf, offset, length)
         } catch (InterruptedIOException e) {
-            DebugUtils.verboseLog("StreamRequestInputStream:read(byte[], int, int): Interrupted I/O")
+            LogUtils.debugLog "StreamRequestInputStream:read(byte[], int, int): Interrupted I/O"
             return -1
         }
     }
@@ -65,7 +65,7 @@ class StreamRequestInputStream extends InputStream {
     @Override
     void close() {
         closed = true
-        DebugUtils.verboseLog "StreamRequestInputStream is closed: ${ClientConnection.currentConnection}"
+        LogUtils.debugLog "StreamRequestInputStream is closed: ${ClientConnection.currentConnection}"
     }
 
     /**

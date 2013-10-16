@@ -22,7 +22,7 @@ import org.jggug.kobo.groovyserv.exception.InvalidAuthTokenException
 import org.jggug.kobo.groovyserv.exception.InvalidRequestHeaderException
 import org.jggug.kobo.groovyserv.stream.StreamRequestInputStream
 import org.jggug.kobo.groovyserv.stream.StreamResponseOutputStream
-import org.jggug.kobo.groovyserv.utils.DebugUtils
+import org.jggug.kobo.groovyserv.utils.LogUtils
 import org.jggug.kobo.groovyserv.utils.Holders
 import org.jggug.kobo.groovyserv.utils.IOUtils
 
@@ -33,7 +33,6 @@ class ClientConnection implements Closeable {
 
     private static InheritableThreadLocal<ClientConnection> connectionHolder = new InheritableThreadLocal<ClientConnection>()
 
-    private String id
     final AuthToken authToken
     Socket socket
 
@@ -51,7 +50,6 @@ class ClientConnection implements Closeable {
     final PrintStream err
 
     ClientConnection(AuthToken authToken, Socket socket) {
-        this.id = "ClientConnection:${socket.port}"
         this.authToken = authToken
         this.socket = socket
 
@@ -74,9 +72,9 @@ class ClientConnection implements Closeable {
     InvocationRequest openSession() {
         checkAllowedClientAddress()
         def request = ClientProtocols.readInvocationRequest(this)
-        DebugUtils.verboseLog "${id}: Protocol: ${request.protocol}"
+        LogUtils.debugLog "Protocol: ${request.protocol}"
         if (request.protocol == "simple") {
-            DebugUtils.verboseLog "${id}: Detected 'simple' protocol"
+            LogUtils.debugLog "Detected 'simple' protocol"
             silentExitStatus = true
             this.out.out.noHeader = true
             this.err.out.noHeader = true
@@ -100,9 +98,9 @@ class ClientConnection implements Closeable {
             pipedOutputStream.write(buff, offset, result)
             pipedOutputStream.flush()
         } catch (InterruptedIOException e) {
-            throw new GServIOException("${id}: I/O interrupted: Failed to write to piped stream", e)
+            throw new GServIOException("I/O interrupted: Failed to write to piped stream", e)
         } catch (IOException e) {
-            throw new GServIOException("${id}: I/O error: Failed to write to piped stream", e)
+            throw new GServIOException("I/O error: Failed to write to piped stream", e)
         }
     }
 
@@ -117,9 +115,9 @@ class ClientConnection implements Closeable {
                 write(data)
                 flush()
             }
-            DebugUtils.verboseLog "${id}: Sent exit code: ${status}: ${message}"
+            LogUtils.debugLog "Sent exit code: ${status}: ${message}"
         } catch (IOException e) {
-            throw new GServIOException("${id}: I/O error: failed to send exit status", e)
+            throw new GServIOException("I/O error: failed to send exit status", e)
         }
     }
 
@@ -129,20 +127,20 @@ class ClientConnection implements Closeable {
      */
     synchronized void close() {
         if (closed) {
-            DebugUtils.verboseLog "${id}: Already closed"
+            LogUtils.debugLog "Already closed"
             return
         }
         tearDownTransferringPipes()
         if (pipedInputStream) {
             IOUtils.close(pipedInputStream)
-            DebugUtils.verboseLog "${id}: PipedInputStream is closed"
+            LogUtils.debugLog "PipedInputStream is closed"
             pipedInputStream = null
         }
         if (socket) {
             // closing output stream because it needs to flush.
             // socket and socket.inputStream are also closed by closing output stream which is gotten from socket.
             IOUtils.close(socketOutputStream)
-            DebugUtils.verboseLog "${id}: Socket is closed"
+            LogUtils.debugLog "Socket is closed"
             socket = null
         }
         connectionHolder.set(null)
@@ -160,19 +158,16 @@ class ClientConnection implements Closeable {
      */
     synchronized void tearDownTransferringPipes() {
         if (toreDownPipes) {
-            DebugUtils.verboseLog "${id}: Pipes to transfer a stream request already tore down"
+            LogUtils.debugLog "Pipes to transfer a stream request already tore down"
             return
         }
         if (pipedOutputStream) {
             IOUtils.close(pipedOutputStream)
-            DebugUtils.verboseLog "${id}: PipedOutputStream is closed"
+            LogUtils.debugLog "PipedOutputStream is closed"
             pipedOutputStream = null
         }
         toreDownPipes = true
     }
-
-    @Override
-    String toString() { id }
 
     static getCurrentConnection() {
         def connection = connectionHolder.get()

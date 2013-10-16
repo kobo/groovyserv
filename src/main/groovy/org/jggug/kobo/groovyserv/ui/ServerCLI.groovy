@@ -22,8 +22,8 @@ import org.jggug.kobo.groovyserv.GroovyServer
 import org.jggug.kobo.groovyserv.WorkFiles
 import org.jggug.kobo.groovyserv.exception.InvalidAuthTokenException
 import org.jggug.kobo.groovyserv.platform.PlatformMethods
-import org.jggug.kobo.groovyserv.utils.DebugUtils
 import org.jggug.kobo.groovyserv.utils.Holders
+import org.jggug.kobo.groovyserv.utils.LogUtils
 
 /**
  * Facade for script of groovyserver.*
@@ -32,7 +32,6 @@ import org.jggug.kobo.groovyserv.utils.Holders
  */
 class ServerCLI {
 
-    private id
     private File serverScriptPath
     private List<String> args
     private options
@@ -50,11 +49,10 @@ class ServerCLI {
         this.options = parseOptions(args)
         this.port = getPortNumber(options)
         this.quiet = options.quiet
-        this.id = "ServerCLI:$port"
         WorkFiles.setUp(port) // for authtoken
-        DebugUtils.verbose = options.verbose
-        DebugUtils.verboseLog "${id}: Invoking by script: $serverScriptPath"
-        DebugUtils.verboseLog "${id}: Server command: ${args}"
+        LogUtils.debug = options.verbose
+        LogUtils.debugLog "Invoking by script: $serverScriptPath"
+        LogUtils.debugLog "Server command: ${args}"
     }
 
     void invoke() {
@@ -80,7 +78,7 @@ class ServerCLI {
         }
         catch (Throwable e) {
             die "ERROR: ${e.message}"
-            DebugUtils.verboseLog "${id}: Failed to invoke server command", e
+            LogUtils.debugLog "Failed to invoke server command", e
         }
     }
 
@@ -103,11 +101,11 @@ class ServerCLI {
         try {
             def exitStatus = client.connect().shutdown().waitFor().exitStatus
             if (exitStatus != ExitStatus.SUCCESS.code) {
-                DebugUtils.errorLog "${id}: Failed to kill the server: exitStatus=${exitStatus}"
+                LogUtils.errorLog "Failed to kill the server: exitStatus=${exitStatus}"
             }
         }
         catch (Throwable e) {
-            DebugUtils.errorLog "${id}: Failed to kill the server", e
+            LogUtils.errorLog "Failed to kill the server", e
             println "" // clear for print
             die "ERROR: Failed to kill the server. Isn't the port being used by a non-groovyserv process?"
         }
@@ -199,7 +197,7 @@ class ServerCLI {
 
     private void daemonize() {
         def command = convertExecutableCommand([serverScriptPath.absolutePath, "--daemonized", "-q", * args])
-        DebugUtils.verboseLog "${id}: Daemonizing by re-invoking a server script: $command"
+        LogUtils.debugLog "Daemonizing by re-invoking a server script: $command"
         command.execute()
     }
 

@@ -19,235 +19,235 @@ import org.jggug.kobo.groovyserv.test.UnitTest
 import spock.lang.Specification
 
 /**
- * Specifications for the {@link org.jggug.kobo.groovyserv.utils.DebugUtils} class.
+ * Specifications for the {@link LogUtils} class.
  */
 @UnitTest
-class DebugUtilsSpec extends Specification {
+class LogUtilsSpec extends Specification {
 
     private static final SEP = System.getProperty("line.separator")
 
     def setup() {
-        DebugUtils.verbose = false
+        LogUtils.debug = false
     }
 
     def cleanup() {
-        DebugUtils.verbose = false
+        LogUtils.debug = false
     }
 
-    def "dump() with string which size is 32"() {
+    def "dumpHex() with string which size is 32"() {
         given:
         byte[] data = "0123456789abcdef0123456789ABCDEF".bytes
 
         expect:
-        DebugUtils.dump(data, 0, data.size()) ==
+        LogUtils.dumpHex(data, 0, data.size()) ==
             '''+-----------+-----------+-----------+-----------+----------------+
               |30 31 32 33 34 35 36 37 38 39 61 62 63 64 65 66 | 0123456789abcdef
               |30 31 32 33 34 35 36 37 38 39 41 42 43 44 45 46 | 0123456789ABCDEF
               |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin().replaceAll(/\r?\n/, SEP)
     }
 
-    def "dump() with string which size is 31"() {
+    def "dumpHex() with string which size is 31"() {
         given:
         byte[] data = "0123456789abcdef0123456789ABCDE".bytes
 
         expect:
-        DebugUtils.dump(data, 0, data.size()) ==
+        LogUtils.dumpHex(data, 0, data.size()) ==
             '''+-----------+-----------+-----------+-----------+----------------+
               |30 31 32 33 34 35 36 37 38 39 61 62 63 64 65 66 | 0123456789abcdef
               |30 31 32 33 34 35 36 37 38 39 41 42 43 44 45    | 0123456789ABCDE
               |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin().replaceAll(/\r?\n/, SEP)
     }
 
-    def "dump() with string which size is 17"() {
+    def "dumpHex() with string which size is 17"() {
         given:
         byte[] data = "0123456789abcdef0".bytes
 
         expect:
-        DebugUtils.dump(data, 0, data.size()) ==
+        LogUtils.dumpHex(data, 0, data.size()) ==
             '''+-----------+-----------+-----------+-----------+----------------+
               |30 31 32 33 34 35 36 37 38 39 61 62 63 64 65 66 | 0123456789abcdef
               |30                                              | 0
               |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin().replaceAll(/\r?\n/, SEP)
     }
 
-    def "dump() with string which size is 16"() {
+    def "dumpHex() with string which size is 16"() {
         given:
         byte[] data = "0123456789abcdef".bytes
 
         expect:
-        DebugUtils.dump(data, 0, data.size()) ==
+        LogUtils.dumpHex(data, 0, data.size()) ==
             '''+-----------+-----------+-----------+-----------+----------------+
               |30 31 32 33 34 35 36 37 38 39 61 62 63 64 65 66 | 0123456789abcdef
               |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin().replaceAll(/\r?\n/, SEP)
     }
 
-    def "dump() with string which size is 15"() {
+    def "dumpHex() with string which size is 15"() {
         given:
         byte[] data = "0123456789abcde".bytes
 
         expect:
-        DebugUtils.dump(data, 0, data.size()) ==
+        LogUtils.dumpHex(data, 0, data.size()) ==
             '''+-----------+-----------+-----------+-----------+----------------+
               |30 31 32 33 34 35 36 37 38 39 61 62 63 64 65    | 0123456789abcde
               |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin().replaceAll(/\r?\n/, SEP)
     }
 
-    def "dump() with string which size is 1"() {
+    def "dumpHex() with string which size is 1"() {
         given:
         byte[] data = "0".bytes
 
         expect:
-        DebugUtils.dump(data, 0, data.size()) ==
+        LogUtils.dumpHex(data, 0, data.size()) ==
             '''+-----------+-----------+-----------+-----------+----------------+
               |30                                              | 0
               |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin().replaceAll(/\r?\n/, SEP)
     }
 
-    def "dump() with string which size is 0"() {
+    def "dumpHex() with string which size is 0"() {
         given:
         byte[] data = "".bytes
 
         expect:
-        DebugUtils.dump(data, 0, data.size()) ==
+        LogUtils.dumpHex(data, 0, data.size()) ==
             '''+-----------+-----------+-----------+-----------+----------------+
               |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin().replaceAll(/\r?\n/, SEP)
     }
 
-    def "dump() with string which size is 32 and from offset 1"() {
+    def "dumpHex() with string which size is 32 and from offset 1"() {
         given:
         byte[] data = "0123456789abcdef0123456789ABCDEF".bytes
 
         expect:
-        DebugUtils.dump(data, 1, data.size()) ==
+        LogUtils.dumpHex(data, 1, data.size()) ==
             '''+-----------+-----------+-----------+-----------+----------------+
               |31 32 33 34 35 36 37 38 39 61 62 63 64 65 66 30 | 123456789abcdef0
               |31 32 33 34 35 36 37 38 39 41 42 43 44 45 46    | 123456789ABCDEF
               |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin().replaceAll(/\r?\n/, SEP)
     }
 
-    def "dump() with string which size is 32 and from offset 31"() {
+    def "dumpHex() with string which size is 32 and from offset 31"() {
         given:
         byte[] data = "0123456789abcdef0123456789ABCDEF".bytes
 
         expect:
-        DebugUtils.dump(data, 31, data.size()) ==
+        LogUtils.dumpHex(data, 31, data.size()) ==
             '''+-----------+-----------+-----------+-----------+----------------+
               |46                                              | F
               |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin().replaceAll(/\r?\n/, SEP)
     }
 
-    def "dump() with string which size is 32 and from offset 32"() {
+    def "dumpHex() with string which size is 32 and from offset 32"() {
         given:
         byte[] data = "0123456789abcdef0123456789ABCDEF".bytes
 
         expect:
-        DebugUtils.dump(data, 32, data.size()) ==
+        LogUtils.dumpHex(data, 32, data.size()) ==
             '''+-----------+-----------+-----------+-----------+----------------+
               |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin().replaceAll(/\r?\n/, SEP)
     }
 
-    def "dump() with string which size is 32 and from offset 33"() {
+    def "dumpHex() with string which size is 32 and from offset 33"() {
         given:
         byte[] data = "0123456789abcdef0123456789ABCDEF".bytes
 
         expect:
-        DebugUtils.dump(data, 33, data.size()) ==
+        LogUtils.dumpHex(data, 33, data.size()) ==
             '''+-----------+-----------+-----------+-----------+----------------+
               |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin().replaceAll(/\r?\n/, SEP)
     }
 
-    def "dump() with string which size is 1 and from offset 1"() {
+    def "dumpHex() with string which size is 1 and from offset 1"() {
         given:
         byte[] data = "0".bytes
 
         expect:
-        DebugUtils.dump(data, 1, data.size()) ==
+        LogUtils.dumpHex(data, 1, data.size()) ==
             '''+-----------+-----------+-----------+-----------+----------------+
               |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin().replaceAll(/\r?\n/, SEP)
     }
 
-    def "dump() with string which size is 32 but specified length 16 as 3rd argument"() {
+    def "dumpHex() with string which size is 32 but specified length 16 as 3rd argument"() {
         given:
         byte[] data = "0123456789abcdef0123456789ABCDEF".bytes
 
         expect:
-        DebugUtils.dump(data, 0, 16) ==
+        LogUtils.dumpHex(data, 0, 16) ==
             '''+-----------+-----------+-----------+-----------+----------------+
               |30 31 32 33 34 35 36 37 38 39 61 62 63 64 65 66 | 0123456789abcdef
               |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin().replaceAll(/\r?\n/, SEP)
     }
 
-    def "dump() with string which size is 32 but specified length 1 as 3rd argument"() {
+    def "dumpHex() with string which size is 32 but specified length 1 as 3rd argument"() {
         given:
         byte[] data = "0123456789abcdef0123456789ABCDEF".bytes
 
         expect:
-        DebugUtils.dump(data, 0, 1) ==
+        LogUtils.dumpHex(data, 0, 1) ==
             '''+-----------+-----------+-----------+-----------+----------------+
               |30                                              | 0
               |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin().replaceAll(/\r?\n/, SEP)
     }
 
-    def "dump() with string which size is 32 but specified length 0 as 3rd argument"() {
+    def "dumpHex() with string which size is 32 but specified length 0 as 3rd argument"() {
         given:
         byte[] data = "0123456789abcdef0123456789ABCDEF".bytes
 
         expect:
-        DebugUtils.dump(data, 0, 0) ==
+        LogUtils.dumpHex(data, 0, 0) ==
             '''+-----------+-----------+-----------+-----------+----------------+
               |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin().replaceAll(/\r?\n/, SEP)
     }
 
-    def "dump() with string which size is 1 but specified length 0 as 3rd argument"() {
+    def "dumpHex() with string which size is 1 but specified length 0 as 3rd argument"() {
         given:
         byte[] data = "0".bytes
 
         expect:
-        DebugUtils.dump(data, 0, 16) ==
+        LogUtils.dumpHex(data, 0, 16) ==
             '''+-----------+-----------+-----------+-----------+----------------+
               |30                                              | 0
               |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin().replaceAll(/\r?\n/, SEP)
     }
 
-    def "dump() with string which size is 32 from offset 8 but specified length 16 as 3rd argument"() {
+    def "dumpHex() with string which size is 32 from offset 8 but specified length 16 as 3rd argument"() {
         given:
         byte[] data = "0123456789abcdef0123456789ABCDEF".bytes
 
         expect:
-        DebugUtils.dump(data, 8, 16) ==
+        LogUtils.dumpHex(data, 8, 16) ==
             '''+-----------+-----------+-----------+-----------+----------------+
               |38 39 61 62 63 64 65 66 30 31 32 33 34 35 36 37 | 89abcdef01234567
               |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin().replaceAll(/\r?\n/, SEP)
     }
 
-    def "dump() with string which size is 32 from offset 8 but specified length 15 as 3rd argument"() {
+    def "dumpHex() with string which size is 32 from offset 8 but specified length 15 as 3rd argument"() {
         given:
         byte[] data = "0123456789abcdef0123456789ABCDEF".bytes
 
         expect:
-        DebugUtils.dump(data, 8, 15) ==
+        LogUtils.dumpHex(data, 8, 15) ==
             '''+-----------+-----------+-----------+-----------+----------------+
               |38 39 61 62 63 64 65 66 30 31 32 33 34 35 36    | 89abcdef0123456
               |+-----------+-----------+-----------+-----------+----------------+'''.stripMargin().replaceAll(/\r?\n/, SEP)
     }
 
-    def "dump() with negative offset value"() {
+    def "dumpHex() with negative offset value"() {
         given:
         byte[] data = "0123456789abcdef0123456789ABCDEF".bytes
 
         when:
-        DebugUtils.dump(data, -1, data.size() - 1)
+        LogUtils.dumpHex(data, -1, data.size() - 1)
 
         then:
         thrown IllegalArgumentException
     }
 
-    def "dump() with negative length value"() {
+    def "dumpHex() with negative length value"() {
         given:
         byte[] data = "0123456789abcdef0123456789ABCDEF".bytes
 
         when:
-        DebugUtils.dump(data, 0, -1)
+        LogUtils.dumpHex(data, 0, -1)
 
         then:
         thrown IllegalArgumentException

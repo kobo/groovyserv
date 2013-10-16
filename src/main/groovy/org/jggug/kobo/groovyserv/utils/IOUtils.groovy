@@ -41,7 +41,7 @@ class IOUtils {
         try {
             if (closeable) closeable.close()
         } catch (IOException e) {
-            DebugUtils.errorLog("Failed to close", e)
+            LogUtils.errorLog "Failed to close", e
         }
     }
 

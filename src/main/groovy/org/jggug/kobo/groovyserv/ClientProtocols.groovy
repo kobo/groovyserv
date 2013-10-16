@@ -18,8 +18,8 @@ package org.jggug.kobo.groovyserv
 import org.jggug.kobo.groovyserv.exception.GServIOException
 import org.jggug.kobo.groovyserv.exception.InvalidAuthTokenException
 import org.jggug.kobo.groovyserv.exception.InvalidRequestHeaderException
-import org.jggug.kobo.groovyserv.utils.DebugUtils
 import org.jggug.kobo.groovyserv.utils.IOUtils
+import org.jggug.kobo.groovyserv.utils.LogUtils
 
 /**
  * Protocol summary:
@@ -108,13 +108,12 @@ class ClientProtocols {
      * @throws GServIOException
      */
     static InvocationRequest readInvocationRequest(ClientConnection conn) {
-        def id = "ClientProtocols:${conn.socket.port}"
         Map<String, List<String>> headers = readHeaders(conn)
         def request = new InvocationRequest(
             port: conn.socket.port,
             cwd: headers[HEADER_CURRENT_WORKING_DIR]?.getAt(0),
             classpath: headers[HEADER_CP]?.getAt(0),
-            args: decodeArgs(id, headers[HEADER_ARG]),
+            args: decodeArgs(headers[HEADER_ARG]),
             clientAuthToken: headers[HEADER_AUTHTOKEN]?.getAt(0),
             serverAuthToken: conn.authToken,
             envVars: headers[HEADER_ENV],
@@ -125,12 +124,12 @@ class ClientProtocols {
         return request
     }
 
-    private static List<String> decodeArgs(String id, List<String> encoded) {
+    private static List<String> decodeArgs(List<String> encoded) {
         encoded.collect {
             try {
                 new String(it.decodeBase64()) // using default encoding
             } catch (RuntimeException e) {
-                throw new InvalidRequestHeaderException("${id}: Found invalid arguments: ${it}", e)
+                throw new InvalidRequestHeaderException("Found invalid arguments: ${it}", e)
             }
         }
     }
@@ -151,12 +150,11 @@ class ClientProtocols {
     }
 
     private static Map<String, List<String>> readHeaders(ClientConnection conn) {
-        def id = "ClientProtocols:${conn.socket.port}"
         def ins = conn.socket.inputStream // raw stream
-        return parseHeaders(id, ins)
+        return parseHeaders(ins)
     }
 
-    static Map<String, List<String>> parseHeaders(String id, InputStream ins) {
+    static Map<String, List<String>> parseHeaders(InputStream ins) {
         try {
             def headers = [:]
             IOUtils.readLines(ins).each { String line ->
@@ -165,16 +163,16 @@ class ClientProtocols {
                 def value = (tokens.size() > 1) ? tokens[1] : ''
                 headers.get(key, []) << value.trim()
             }
-            DebugUtils.verboseLog """${id}: Parsed headers: ${
+            LogUtils.debugLog """Parsed headers: ${
                 headers.collectEntries { key, value -> [key, (key == HEADER_AUTHTOKEN) ? '*' * 8 : value] }
             }"""
             return headers
         }
         catch (InterruptedIOException e) {
-            throw new GServIOException("${id}: I/O interrupted: interrupted while reading line", e)
+            throw new GServIOException("I/O interrupted: interrupted while reading line", e)
         }
         catch (IOException e) {
-            throw new GServIOException("${id}: I/O error: failed to read line: ${e.message}", e)
+            throw new GServIOException("I/O error: failed to read line: ${e.message}", e)
         }
     }
 

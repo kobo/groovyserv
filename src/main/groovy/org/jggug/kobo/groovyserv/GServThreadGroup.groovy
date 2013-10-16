@@ -15,7 +15,7 @@
  */
 package org.jggug.kobo.groovyserv
 
-import org.jggug.kobo.groovyserv.utils.DebugUtils
+import org.jggug.kobo.groovyserv.utils.LogUtils
 
 /**
  * @author NAKANO Yasuharu
@@ -33,9 +33,9 @@ class GServThreadGroup extends ThreadGroup {
     @Override
     void uncaughtException(Thread thread, Throwable e) {
         if (containsCaused(e, ThreadDeath)) {
-            DebugUtils.verboseLog("${name}: Thread is stopped by force: ${thread}") // ignored details
+            LogUtils.debugLog "Thread is stopped by force: ${thread}" // ignored details
         } else {
-            DebugUtils.errorLog("${name}: Uncaught exception: ${thread}", e)
+            LogUtils.errorLog "Uncaught exception: ${thread}", e
         }
     }
 

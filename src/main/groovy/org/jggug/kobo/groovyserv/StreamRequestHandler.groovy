@@ -18,18 +18,16 @@ package org.jggug.kobo.groovyserv
 import org.jggug.kobo.groovyserv.exception.GServIOException
 import org.jggug.kobo.groovyserv.exception.GServInterruptedException
 import org.jggug.kobo.groovyserv.exception.InvalidRequestHeaderException
-import org.jggug.kobo.groovyserv.utils.DebugUtils
+import org.jggug.kobo.groovyserv.utils.LogUtils
 
 /**
  * @author NAKANO Yasuharu
  */
 class StreamRequestHandler implements Runnable {
 
-    private String id
     private ClientConnection conn
 
     StreamRequestHandler(clientConnection) {
-        this.id = "StreamRequestHandler:${clientConnection.socket.port}"
         this.conn = clientConnection
     }
 
@@ -42,17 +40,17 @@ class StreamRequestHandler implements Runnable {
      */
     @Override
     void run() {
-        Thread.currentThread().name = id
-        DebugUtils.verboseLog("${id}: Thread started")
+        Thread.currentThread().name = "Thread:${StreamRequestHandler.simpleName}"
+        LogUtils.debugLog "Thread started"
         try {
             while (true) {
                 def request = conn.readStreamRequest()
                 if (request.isInterrupted()) {
-                    DebugUtils.verboseLog "${id}: Recieved interruption request from client"
-                    throw new GServInterruptedException("${id}: By client request")
+                    LogUtils.debugLog "Recieved interruption request from client"
+                    throw new GServInterruptedException("By client request")
                 }
                 if (request.isEmpty()) {
-                    DebugUtils.verboseLog "${id}: Recieved empty request from client (Closed stdin on client)"
+                    LogUtils.debugLog "Recieved empty request from client (Closed stdin on client)"
                     conn.tearDownTransferringPipes()
                     continue // continue to check the client interruption
                 }
@@ -61,44 +59,41 @@ class StreamRequestHandler implements Runnable {
                 int offset = 0
                 int result = conn.socket.inputStream.read(buff, offset, request.size) // read from raw stream
                 if (result == -1) {
-                    DebugUtils.verboseLog "${id}: EOF of input stream of socket (Half-closed by the client)"
-                    throw new GServInterruptedException("${id}: By EOF of input stream of socket")
+                    LogUtils.debugLog "EOF of input stream of socket (Half-closed by the client)"
+                    throw new GServInterruptedException("By EOF of input stream of socket")
                 }
                 readLog(buff, offset, result, request.size)
                 if (conn.toreDownPipes) {
-                    DebugUtils.errorLog "Already tore down pipes. So the above data is just ignored."
+                    LogUtils.errorLog "Already tore down pipes. So the above data is just ignored."
                 } else {
                     conn.transferStreamRequest(buff, offset, result)
                 }
             }
         }
         catch (InvalidRequestHeaderException e) {
-            DebugUtils.verboseLog("${id}: Invalid request header: ${e.message}") // ignored details
-            throw new GServInterruptedException("${id}: By receiving invalid request")
+            LogUtils.debugLog "Invalid request header: ${e.message}" // ignored details
+            throw new GServInterruptedException("By receiving invalid request")
         }
         catch (InterruptedException e) {
-            DebugUtils.verboseLog("${id}: Thread interrupted: ${e.message}") // ignored details
+            LogUtils.debugLog "Thread interrupted: ${e.message}" // ignored details
         }
         catch (InterruptedIOException e) {
-            DebugUtils.verboseLog("${id}: I/O interrupted: ${e.message}") // ignored details
+            LogUtils.debugLog "I/O interrupted: ${e.message}" // ignored details
         }
         catch (GServIOException e) {
-            DebugUtils.verboseLog("${id}: I/O error: ${e.message}") // ignored details
+            LogUtils.debugLog "I/O error: ${e.message}" // ignored details
         }
         catch (IOException e) {
-            DebugUtils.verboseLog("${id}: I/O error: ${e.message}") // ignored details
+            LogUtils.debugLog "I/O error: ${e.message}" // ignored details
         }
         finally {
             conn.tearDownTransferringPipes()
-            DebugUtils.verboseLog("${id}: Thread is dead")
+            LogUtils.debugLog "Thread is dead"
         }
     }
 
-    @Override
-    String toString() { id }
-
     private static readLog(byte[] buff, int offset, int readSize, int sizeHeader) {
-        DebugUtils.verboseLog """\
+        LogUtils.debugLog """\
             |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
             |Client->Server {
             |  id: in
@@ -106,7 +101,7 @@ class StreamRequestHandler implements Runnable {
             |  size(actual): ${readSize}
             |  thread group: ${Thread.currentThread().threadGroup.name}
             |  body:
-            |${DebugUtils.dump(buff, offset, readSize)}
+            |${LogUtils.dumpHex(buff, offset, readSize)}
             |}
             |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
             |""".stripMargin()

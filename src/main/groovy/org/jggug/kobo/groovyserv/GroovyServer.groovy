@@ -18,7 +18,7 @@ package org.jggug.kobo.groovyserv
 import org.jggug.kobo.groovyserv.exception.GServException
 import org.jggug.kobo.groovyserv.platform.EnvironmentVariables
 import org.jggug.kobo.groovyserv.stream.StandardStreams
-import org.jggug.kobo.groovyserv.utils.DebugUtils
+import org.jggug.kobo.groovyserv.utils.LogUtils
 
 /**
  * GroovyServer runs groovy command background.
@@ -52,11 +52,11 @@ class GroovyServer {
             handleRequest()
         }
         catch (GServException e) {
-            DebugUtils.errorLog "Error: GroovyServer", e
+            LogUtils.errorLog "Error: GroovyServer", e
             exit e.exitStatus
         }
         catch (Throwable e) {
-            DebugUtils.errorLog "Unexpected error: GroovyServer", e
+            LogUtils.errorLog "Unexpected error: GroovyServer", e
             exit ExitStatus.UNEXPECTED_ERROR
         }
         finally {
@@ -66,7 +66,7 @@ class GroovyServer {
 
     void shutdown() {
         authToken.delete()
-        DebugUtils.infoLog "Server is shut down"
+        LogUtils.infoLog "Server is shut down"
         exit ExitStatus.FORCELY_SHUTDOWN
     }
 
@@ -98,14 +98,14 @@ class GroovyServer {
 
     private void startServer() {
         serverSocket = new ServerSocket(port)
-        DebugUtils.infoLog "Server is started with ${port} port" + (allowFrom ? " allowing from ${allowFrom.join(" and ")}" : "")
-        DebugUtils.infoLog "Default classpath: ${System.getenv('CLASSPATH')}"
+        LogUtils.infoLog "Server is started with ${port} port" + (allowFrom ? " allowing from ${allowFrom.join(" and ")}" : "")
+        LogUtils.infoLog "Default classpath: ${System.getenv('CLASSPATH')}"
     }
 
     private void handleRequest() {
         while (true) {
             def socket = serverSocket.accept()
-            DebugUtils.verboseLog "Accepted socket: ${socket}"
+            LogUtils.debugLog "Accepted socket: ${socket}"
 
             // This socket must be closed under a responsibility of RequestWorker.
             // RequestWorker must be invoked on the new thread in order to apply new thread group to all sub threads.
