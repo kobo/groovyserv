@@ -325,10 +325,11 @@ begin
     session(socket, $options.server[:args])
   }
 rescue Errno::ECONNREFUSED
-  if failCount >= 3
+  if failCount >= 1
     STDERR.puts "ERROR: Failed to start up groovyserver: #{SERVER_CMD}"
     exit 1
   end
+  # If server isn't started up yet, a client try to run it automatically.
   start_server([])
   failCount += 1
   retry

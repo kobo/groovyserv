@@ -228,14 +228,13 @@ static char* get_authtoken_generated_by_server(int port)
 static int connect_server(char* argv0, char* host, int port, char* authtoken)
 {
     int fd;
-
     int failCount = 0;
-
     while ((fd = open_socket(host, port)) == -1) {
-        if (failCount >= 3) {
+        if (failCount >= 1) {
             fprintf(stderr, "ERROR: failed to start up groovyserver\n");
             exit(1);
         }
+        // If server isn't started up yet, a client try to run it automatically.
         start_server(argv0, port, authtoken);
         failCount++;
     }
