@@ -75,8 +75,12 @@ debug_log() {
 }
 
 die() {
-    local message="$*"
+    local message="$1"
+    local hint="$2"
     error_log "$message"
+    if [ -n "$hint" ]; then
+        error_log "$hint"
+    fi
     exit 1
 }
 

@@ -81,10 +81,10 @@ class StreamRequestHandler implements Runnable {
             LogUtils.debugLog "I/O interrupted: ${e.message}" // ignored details
         }
         catch (GServIOException e) {
-            LogUtils.debugLog "I/O error: ${e.message}" // ignored details
+            LogUtils.debugLog "${e.message}" // ignored details
         }
         catch (IOException e) {
-            LogUtils.debugLog "I/O error: ${e.message}" // ignored details
+            LogUtils.debugLog "${e.message}" // ignored details
         }
         finally {
             conn.tearDownTransferringPipes()

@@ -45,7 +45,7 @@ buf* buf_init(buf* buf, int size, const char* const initial)
     buf->buffer_size = size;
     buf->buffer = malloc(size * sizeof(char));
     if (buf->buffer == NULL) {
-        fprintf(stderr, "\nERROR: malloc error\n");
+        fprintf(stderr, "\nERROR: failed to allocate memory\n");
         exit(1);
     }
     if (initial != NULL) {

@@ -39,7 +39,7 @@ class ServerCLI {
     private boolean quiet
 
     static void main(String[] args) {
-        assert args.size() > 0: "script path is required."
+        assert args.size() > 0: "script path is required"
         new ServerCLI(args[0], args.tail().toList()).invoke()
     }
 
@@ -51,7 +51,7 @@ class ServerCLI {
         this.quiet = options.quiet
         WorkFiles.setUp(port) // for authtoken
         LogUtils.debug = options.verbose
-        LogUtils.debugLog "Invoking by script: $serverScriptPath"
+        LogUtils.debugLog "Invoking by script: ${serverScriptPath}"
         LogUtils.debugLog "Server command: ${args}"
     }
 
@@ -74,11 +74,12 @@ class ServerCLI {
             startServerAsDaemon()
         }
         catch (InvalidAuthTokenException e) {
-            die "ERROR: Authtoken is invalid. Please specify a right token or just kill the process somehow."
+            die "ERROR: invalid authtoken",
+                "Hint:  Please specify a right authtoken or just kill the process somehow."
         }
         catch (Throwable e) {
-            die "ERROR: ${e.message}"
-            LogUtils.debugLog "Failed to invoke server command", e
+            die "ERROR: unexpected error: ${e.message}"
+            LogUtils.debugLog "Failed to invoke a server command", e
         }
     }
 
@@ -87,13 +88,14 @@ class ServerCLI {
 
         // If server isn't already running, it needs to do nothing.
         if (!client.isServerAvailable()) {
-            println "WARN: Server is not running."
+            println "WARN: server is not running"
             return
         }
 
         // If there is no authtoken, to access to server is impossible.
         if (!WorkFiles.AUTHTOKEN_FILE.exists()) {
-            die "ERROR: AuthToken file ${WorkFiles.AUTHTOKEN_FILE} is not found. Please kill the process somehow."
+            die "ERROR: could not find authtoken file: ${WorkFiles.AUTHTOKEN_FILE}",
+                "Hint:  Please kill the process somehow."
         }
 
         // Shutting down
@@ -107,7 +109,8 @@ class ServerCLI {
         catch (Throwable e) {
             LogUtils.errorLog "Failed to kill the server", e
             println "" // clear for print
-            die "ERROR: Failed to kill the server. Isn't the port being used by a non-groovyserv process?"
+            die "ERROR: could not kill server",
+                "Hint:  Isn't the port being used by a non-groovyserv process?"
         }
 
         // Waiting for server down
@@ -116,7 +119,7 @@ class ServerCLI {
             sleep 200
         }
         println "" // clear for print
-        println "Server is successfully shut down."
+        println "Server is successfully shut down"
     }
 
     private void startServerAsDaemon() {
@@ -124,13 +127,13 @@ class ServerCLI {
 
         // If server is already running, it needs to do nothing.
         if (client.isServerAvailable()) {
-            println "WARN: Server is already running on ${port} port."
+            println "WARN: server is already running on ${port} port"
             return
         }
 
         // If there is authtoken, it might be old.
         if (WorkFiles.AUTHTOKEN_FILE.exists()) {
-            println "WARN: AuthToken file ${WorkFiles.AUTHTOKEN_FILE} is found. It will be overwritten by new token."
+            println "WARN: authtoken file exists: ${WorkFiles.AUTHTOKEN_FILE} (overwritten by new authtoken)"
             WorkFiles.AUTHTOKEN_FILE.delete()
         }
 
@@ -145,12 +148,12 @@ class ServerCLI {
             sleep 200
         }
         println "" // clear for print
-        println "Server is successfully started up on $port port."
+        println "Server is successfully started up on $port port"
     }
 
     private void startServerDirectlyAndWaitFor() {
         if (Holders.groovyServer) {
-            die "ERROR: unexpected status: GroovyServer is already started in the same JVM."
+            die "ERROR: GroovyServer is already started in the same JVM"
         }
 
         // Setup GroovyServer instance
@@ -185,9 +188,12 @@ class ServerCLI {
             _ longOpt: 'daemonized', "run a groovyserver as daemon (INTERNAL USE ONLY)"
         }
         def opt = cli.parse(args)
-        if (!opt) die "ERROR: Failed to parse arguments."
+        if (!opt) die "ERROR: could not parse arguments: ${args.join(' ')}"
         assert !opt.help: "help usage should be shown by a front script"
-        if (opt.kill && opt.restart) die 'ERROR: options --kill and --restart cannot be specified at the same time.'
+        if (opt.kill && opt.restart) {
+            die "ERROR: invalid arguments: ${args.join(' ')}",
+                "Hint: You cannot specify --kill and --restart options at the same time."
+        }
         return opt
     }
 
@@ -216,8 +222,9 @@ class ServerCLI {
         if (!quiet) System.err.print message
     }
 
-    private static die(message) {
+    private static die(message, hint = null) {
         System.err.println message
+        if (hint) System.err.println hint
         exit ExitStatus.COMMAND_ERROR
     }
 

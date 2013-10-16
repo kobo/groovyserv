@@ -81,7 +81,7 @@ if not defined GROOVYSERV_HOME (
     set GROOVYSERV_HOME=%DIRNAME%..
 )
 if not exist "%GROOVYSERV_HOME%\lib\groovyserv-*.jar" (
-    echo ERROR: Not found a valid GROOVYSERV_HOME directory: "%GROOVYSERV_HOME%" >&2
+    echo ERROR: invalid GROOVYSERV_HOME: "%GROOVYSERV_HOME%" >&2
     goto end
 )
 call :info_log GroovyServ home directory: "%GROOVYSERV_HOME%"
@@ -127,7 +127,7 @@ if defined JAVA_OPT (
 call :reset_errorlevel
 %GROOVY_CMD% %GROOVYSERV_OPTS% -e org.jggug.kobo.groovyserv.ui.ServerCLI.main(args) -- "%SCRIPT_PATH%" %*
 if errorlevel 1 (
-    echo ERROR: Failed to invoke groovyserver >&2
+    echo ERROR: could not start server: "%SCRIPT_PATH%" >&2
     goto end
 )
 
@@ -153,7 +153,7 @@ exit /B
 :setup_GROOVY_CMD_from_GROOVY_HOME
     set GROOVY_CMD=%GROOVY_HOME%\bin\groovy.bat
     if not exist "%GROOVY_CMD%" (
-        echo ERROR: Not found a valid GROOVY_HOME directory: "%GROOVY_HOME%" >&2
+        echo ERROR: invalid GROOVY_HOME: "%GROOVY_HOME%" >&2
         exit /B 1
     )
     call :info_log Groovy command path: "%GROOVY_CMD%" ^(found at GROOVY_HOME^)
@@ -163,7 +163,8 @@ exit /B
 :setup_GROOVY_CMD_from_PATH
     call :find_groovy_from_path_and_setup_GROOVY_CMD groovy.bat
     if not defined GROOVY_CMD (
-        echo ERROR: Not found a groovy command. Required either PATH having groovy command or GROOVY_HOME >&2
+        echo ERROR: groovy command not found >&2
+        echo Hint:  Requires either PATH having groovy command or GROOVY_HOME. >&2
         exit /B 1
     )
     call :info_log Groovy command path: "%GROOVY_CMD%" ^(found at PATH^)

@@ -169,10 +169,10 @@ class ClientProtocols {
             return headers
         }
         catch (InterruptedIOException e) {
-            throw new GServIOException("I/O interrupted: interrupted while reading line", e)
+            throw new GServIOException("Interrupted to parse headers", e)
         }
         catch (IOException e) {
-            throw new GServIOException("I/O error: failed to read line: ${e.message}", e)
+            throw new GServIOException("Failed to read line: ${e.message}", e)
         }
     }
 

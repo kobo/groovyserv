@@ -29,7 +29,7 @@ public class NoExitSecurityManager2 extends NoExitSecurityManager {
      * @throws SystemExitException when System.exit() is called
      */
     public void checkExit(final int code) {
-        throw new SystemExitException(code, "called System.exit(" + code + ")");
+        throw new SystemExitException(code, "System.exit(" + code + ") is called");
     }
 
 }

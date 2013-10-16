@@ -79,7 +79,7 @@ int open_socket(char* server_host, int server_port)
     // FIXME to use getaddressinfo or getnameinfo
     hostent = gethostbyname(server_host); // lookup IP
     if (hostent == NULL) {
-        printf("ERROR: cannot resolve host address: %s\n", server_host);
+        fprintf(stderr, "ERROR: could not resolve host address: %s\n", server_host);
         exit(1);
     }
 
@@ -95,7 +95,7 @@ int open_socket(char* server_host, int server_port)
 #else
     if ((fd = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
 #endif
-        perror("ERROR: socket");
+        fprintf(stderr, "ERROR: could not open socket: %s:%d", server_host, server_port);
         exit(1);
     }
 
@@ -108,7 +108,7 @@ int open_socket(char* server_host, int server_port)
         if (errno == ECONNREFUSED) {
             return -1;
         }
-        perror("ERROR: connect");
+        perror("ERROR: could not connect to server");
         exit(1);
     }
 #endif
@@ -123,7 +123,7 @@ static BOOL mask_match(char* pattern, const char* str)
     char* pos = strchr(str, '=');
 
     if (pos == NULL) {
-        printf("ERROR: environment variable %s format invalid\n", str);
+        fprintf(stderr, "ERROR: invalid environment variable: %s\n", str);
         exit(1);
     }
     *pos = '\0';
@@ -170,7 +170,7 @@ void send_header(int fd, int argc, char** argv, char* authtoken)
     buf_printf(&read_buf, "%s: ", HEADER_KEY_CURRENT_WORKING_DIR);
     char* cwd = getcwd(path_buffer, MAXPATHLEN);
     if (cwd == NULL) {
-        perror("ERROR: getcwd");
+        perror("ERROR: could not get cwd");
         exit(1);
     }
 
@@ -187,7 +187,7 @@ void send_header(int fd, int argc, char** argv, char* authtoken)
             // "+5" is a extra space for '=' padding and NULL as the end of string
             encoded_ptr = malloc(sizeof(char) * strlen(argv[i]) * 1.5 + 5);
             if (encoded_ptr == NULL) {
-                perror("ERROR: failed to malloc");
+                perror("ERROR: could not allocate memory");
                 exit(1);
             }
             encoded_work = encoded_ptr; // copy for free
@@ -233,11 +233,11 @@ static void read_header(char* buf, struct header_t* header)
     // key
     char* p = strtok(buf, " :");
     if (p == NULL) {
-        fprintf(stderr, "ERROR: key is NULL\n");
+        fprintf(stderr, "ERROR: invalid header: key is NULL\n");
         exit(1);
     }
     if (strlen(p) > MAX_HEADER_KEY_LEN) {
-        fprintf(stderr, "ERROR: key \"%s\" is too long\n", p);
+        fprintf(stderr, "ERROR: invalid header: key \"%s\" is too long\n", p);
         exit(1);
     }
     int i;
@@ -251,7 +251,7 @@ static void read_header(char* buf, struct header_t* header)
             return;
         }
         if (!isalnum((unsigned char) p[i])) {
-            fprintf(stderr, "ERROR: key \"%s\" is invalid: %x\n", p, p[i]);
+            fprintf(stderr, "ERROR: invalid header: key \"%s\" is invalid: %x\n", p, p[i]);
             exit(1);
         }
     }
@@ -260,14 +260,14 @@ static void read_header(char* buf, struct header_t* header)
     // value
     p = strtok(NULL, "\n");
     if (p == NULL) {
-        fprintf(stderr, "ERROR: value of key \"%s\" is NULL: %s\n", header->key, p);
+        fprintf(stderr, "ERROR: invalid header: value of key \"%s\" is NULL: %s\n", header->key, p);
         exit(1);
     }
     while (isspace((unsigned char) *p)) { // ignore spaces
         p++;
     }
     if (strlen(p) > MAX_HEADER_VALUE_LEN) {
-        fprintf(stderr, "ERROR: value of key \"%s\" is too long: %s\n", header->key, p);
+        fprintf(stderr, "ERROR: invalid header: value of key \"%s\" is too long: %s\n", header->key, p);
         exit(1);
     }
     strncpy(header->value, p, MAX_HEADER_VALUE_LEN);
@@ -284,7 +284,7 @@ static char* read_line(int fd, char* buf, int size)
 #ifdef WINDOWS
          int ret = recv(fd, buf + i, 1, 0);
          if (ret == -1) {
-             fprintf(stderr, "ERROR: failed to read line: %zu\n", WSAGetLastError());
+             fprintf(stderr, "ERROR: could not read line of header: %zu\n", WSAGetLastError());
              exit(1);
          }
          if (ret != 1) {
@@ -364,18 +364,18 @@ static int min_int(int a,int b) {
 /*
  * Receive a chunk, and write it to stdout or stderr.
  */
-static int receive_from_server(int socket, char* stream_identifier, int size)
+static int receive_from_server(int socket, char* channel, int size)
 {
     // select output stream
     int output_fd;
-    if (strcmp(stream_identifier, "out") == 0) {
+    if (strcmp(channel, "out") == 0) {
         output_fd = fileno(stdout);
     }
-    else if (strcmp(stream_identifier, "err") == 0) {
+    else if (strcmp(channel, "err") == 0) {
         output_fd = fileno(stderr);
     }
     else {
-        fprintf(stderr, "ERROR: unrecognizable stream identifier: %s\n", stream_identifier);
+        fprintf(stderr, "ERROR: unrecognized stream channel: %s\n", channel);
         exit(1);
     }
 
@@ -402,7 +402,7 @@ static int send_to_server(int fd)
     int ret;
 
     if ((ret = read(fileno(stdin), read_buf, BUFFER_SIZE)) == -1){ // TODO buffering
-        perror("ERROR: failed to read from stdin");
+        perror("ERROR: could not read standard input");
         exit(1);
     }
     read_buf[ret] = '\0';
@@ -470,11 +470,11 @@ int start_session(int fd)
         FD_SET(fd, &read_set);
 
         if ((ret = select(fd + 1, &read_set, (fd_set*)NULL, (fd_set*)NULL, NULL)) == -1) {
-            perror("ERROR: select failure");
+            perror("ERROR: could not select I/O");
             exit(1);
         }
         if (ret == 0) {
-            fprintf(stderr, "ERROR: timeout?\n");
+            fprintf(stderr, "ERROR: could not receive return value (might timeout)\n");
             continue;
         }
 

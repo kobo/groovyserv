@@ -112,7 +112,7 @@ static void set_mask_option(char ** env_mask, char* opt, char* value)
         ;
     }
     if (p-env_mask == MAX_MASK) {
-        fprintf(stderr, "ERROR: too many option: %s %s\n", opt, value);
+        fprintf(stderr, "ERROR: too many options: %s %s\n", opt, value);
         usage();
         exit(1);
     }
@@ -153,7 +153,7 @@ void scan_options(struct option_t* option, int argc, char **argv)
             struct option_info_t* opt = what_option(name);
 
             if (opt == NULL) {
-                fprintf(stderr, "ERROR: unknown option %s\n", argvi_copy);
+                fprintf(stderr, "ERROR: unrecognized option %s\n", argvi_copy);
                 usage();
                 exit(1);
             }
@@ -178,7 +178,7 @@ void scan_options(struct option_t* option, int argc, char **argv)
             case OPT_PORT:
                 assert(opt->take_value == TRUE);
                 if (sscanf(value, "%d", &option->port) != 1) {
-                    fprintf(stderr, "ERROR: port number %s of option %s error\n", value, argvi_copy);
+                    fprintf(stderr, "ERROR: could not parse port number: %s\n", value);
                     exit(1);
                 }
                 break;
@@ -222,16 +222,16 @@ void scan_options(struct option_t* option, int argc, char **argv)
 
     // check unavailable combination of options
     if (option->kill && option->restart) {
-        fprintf(stderr, "ERROR: cannot specify both of kill & restart\n");
+        fprintf(stderr, "ERROR: cannot specify both of -Ckill-server and -Crestart-server options\n");
         exit(1);
     }
     if (option->host != NULL) {
         if (option->restart) {
-            fprintf(stderr, "ERROR: cannot specify restart-server to explicitly specified host\n");
+            fprintf(stderr, "ERROR: cannot specify -Crestart-server with explicitly specified host\n");
             exit(1);
         }
         if (option->kill) {
-            fprintf(stderr, "ERROR: cannot specify kill-server to explicitly specified host\n");
+            fprintf(stderr, "ERROR: cannot specify -Ckill-server with explicitly specified host\n");
             exit(1);
         }
     }

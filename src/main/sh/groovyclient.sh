@@ -78,13 +78,13 @@ version() {
 check_environment() {
     SERVER_CMD="$GROOVYSERV_HOME/bin/groovyserver"
     if ! is_command_available "$SERVER_CMD"; then
-        die "ERROR: Not found 'groovyserver' command: $SERVER_CMD"
+        die "ERROR: server command not found: $SERVER_CMD"
     fi
 }
 
 invoke_server_command() {
     info_log "Invoking server: '$SERVER_CMD' -p $GROOVYSERV_PORT ${SERVER_OPTIONS[@]}"
-    "$SERVER_CMD" -p $GROOVYSERV_PORT ${SERVER_OPTIONS[@]} || die "ERROR: Sorry, unexpected error occurs"
+    "$SERVER_CMD" -p $GROOVYSERV_PORT ${SERVER_OPTIONS[@]} || die "ERROR: could not invoke server command: $?"
 }
 
 start_server() {

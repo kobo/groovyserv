@@ -93,7 +93,7 @@ class LogUtils {
 
     static String dumpHex(byte[] buf, int offset, int length) {
         if (offset < 0 || length < 0) {
-            throw new IllegalArgumentException("offset and length must be specified a positive value")
+            throw new IllegalArgumentException("Must be positive: offset=${offset}, length=${length}")
         }
         final separatorLine = "+-----------+-----------+-----------+-----------+----------------+"
         final numPerLine = 16

@@ -102,7 +102,7 @@ class RequestWorker extends ThreadPoolExecutor implements Runnable {
             LogUtils.errorLog "Invalid authtoken", e
             conn.sendExit(e.exitStatus, e.message)
         } catch (GServException e) {
-            LogUtils.debugLog "Failed to open session: ${e.message}", e
+            LogUtils.debugLog "Failed to open new session: ${e.message}", e
             conn.sendExit(e.exitStatus, e.message)
         }
     }
@@ -118,7 +118,7 @@ class RequestWorker extends ThreadPoolExecutor implements Runnable {
             // cancelling all tasks
             if (!isShutdown()) shutdownNow()
 
-            LogUtils.errorLog "Failed to start request worker", e
+            LogUtils.errorLog "Failed to start a request worker", e
         }
     }
 
@@ -167,11 +167,11 @@ class RequestWorker extends ThreadPoolExecutor implements Runnable {
         try {
             conn.sendExit(exitStatus)
         } catch (e) {
-            LogUtils.errorLog "Failed to send exit status: ${exitStatus}: ${message}", e
+            LogUtils.errorLog "Failed to send the exit status: ${exitStatus} ${message ? " with the message: $message" : ""}", e
         }
         IOUtils.close(conn)
         conn = null
-        LogUtils.debugLog "Closed safely: ${exitStatus}: ${message}"
+        LogUtils.debugLog "Closed safely: ${exitStatus} ${message ? " with the message: $message" : ""}"
     }
 
     @Override

@@ -96,7 +96,7 @@ end
 
 def start_server(args)
   unless FileTest.executable? SERVER_CMD
-    STDERR.puts "ERROR: Command not found: #{SERVER_CMD}"
+    STDERR.puts "ERROR: server command not found: #{SERVER_CMD}"
     exit 1
   end
   if $options.client[:quiet]
@@ -174,9 +174,9 @@ def handle_socket(socket)
     end
     status_code = headers['Status'].to_i
     if status_code == ERROR_INVALID_AUTHTOKEN
-      STDERR.puts "ERROR: rejected by groovyserv because of invalid authtoken"
+      STDERR.puts "ERROR: invalid authtoken"
     elsif status_code == ERROR_CLIENT_NOT_ALLOWED
-      STDERR.puts "ERROR: rejected by groovyserv because of not allowed client address"
+      STDERR.puts "ERROR: client address not allowed: #{options.client[:host]}:#{options.client[:port]}"
     end
     exit status_code
   end
@@ -326,7 +326,7 @@ begin
   }
 rescue Errno::ECONNREFUSED
   if failCount >= 1
-    STDERR.puts "ERROR: Failed to start up groovyserver: #{SERVER_CMD}"
+    STDERR.puts "ERROR: could not start server: #{SERVER_CMD}"
     exit 1
   end
   # If server isn't started up yet, a client try to run it automatically.

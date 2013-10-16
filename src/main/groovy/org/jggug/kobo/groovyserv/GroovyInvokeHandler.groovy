@@ -146,7 +146,7 @@ class GroovyInvokeHandler implements Runnable {
             LogUtils.debugLog "Threre is no sub thread"
             return
         }
-        LogUtils.debugLog "All sub threads are joining...."
+        LogUtils.debugLog "All sub threads are joining..."
         for (Thread thread in threads) {
             if (thread.daemon) continue
             while (thread.alive) {

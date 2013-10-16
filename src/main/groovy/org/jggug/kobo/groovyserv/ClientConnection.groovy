@@ -98,9 +98,9 @@ class ClientConnection implements Closeable {
             pipedOutputStream.write(buff, offset, result)
             pipedOutputStream.flush()
         } catch (InterruptedIOException e) {
-            throw new GServIOException("I/O interrupted: Failed to write to piped stream", e)
+            throw new GServIOException("Interrupted to write to piped stream", e)
         } catch (IOException e) {
-            throw new GServIOException("I/O error: Failed to write to piped stream", e)
+            throw new GServIOException("Failed to write to piped stream", e)
         }
     }
 
@@ -115,9 +115,9 @@ class ClientConnection implements Closeable {
                 write(data)
                 flush()
             }
-            LogUtils.debugLog "Sent exit code: ${status}: ${message}"
+            LogUtils.debugLog "Sent exit status: ${status} ${message ? " with the message: $message" : ""}"
         } catch (IOException e) {
-            throw new GServIOException("I/O error: failed to send exit status", e)
+            throw new GServIOException("Failed to send exit status", e)
         }
     }
 

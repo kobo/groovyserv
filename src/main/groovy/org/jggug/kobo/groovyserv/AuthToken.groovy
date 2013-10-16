@@ -41,7 +41,7 @@ class AuthToken {
             setupFilePermission()
             //LogUtils.verboseLog "Saved authToken: ${token}"
         } catch (IOException e) {
-            throw new GServIOException("I/O error: AuthToken file cannot be written: ${WorkFiles.AUTHTOKEN_FILE}", e)
+            throw new GServIOException("Could not write AuthToken file: ${WorkFiles.AUTHTOKEN_FILE}", e)
         }
     }
 

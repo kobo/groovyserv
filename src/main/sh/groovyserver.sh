@@ -53,7 +53,7 @@ find_groovy_command() {
         info_log "Groovy home directory: $GROOVY_HOME"
         GROOVY_CMD="$GROOVY_HOME/bin/groovy"
         if [ ! -x "$GROOVY_CMD" ]; then
-            die "ERROR: Not found a groovy command in GROOVY_HOME: $GROOVY_CMD"
+            die "ERROR: invalid GROOVY_HOME: $GROOVY_HOME"
         fi
         info_log "Groovy command path: $GROOVY_CMD (found at GROOVY_HOME)"
     elif is_command_available groovy; then
@@ -61,13 +61,14 @@ find_groovy_command() {
         GROOVY_CMD=`which groovy`
         info_log "Groovy command path: $GROOVY_CMD (found at PATH)"
     else
-        die "ERROR: Not found a groovy command. Required either PATH having groovy command or GROOVY_HOME."
+        die "ERROR: groovy command not found" \
+            "Hint:  Requires either PATH having groovy command or GROOVY_HOME."
     fi
 }
 
 check_groovyserv_home() {
     if ! is_file_exists "$GROOVYSERV_HOME/lib/groovyserv-*.jar"; then
-        die "ERROR: Not found a valid GROOVYSERV_HOME directory: $GROOVYSERV_HOME"
+        die "ERROR: invalid GROOVYSERV_HOME: $GROOVYSERV_HOME"
     fi
     info_log "GroovyServ home directory: $GROOVYSERV_HOME"
     info_log "GroovyServ work directory: $GROOVYSERV_WORK_DIR"

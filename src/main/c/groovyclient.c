@@ -79,7 +79,8 @@ static char* groovyserver_cmdline(char* script_path, char* arg, int port)
         // If the path is on cygwin, scriptdir is used instead of GROOVYSERV_HOME.
         if (*groovyserv_home == '/') {
             if (!client_option.quiet) {
-                fprintf(stderr, "WARN: Using the directory path of groovyclient instead of the invalid GROOVYSERV_HOME which isn't a path format on Windows: %s\n", groovyserv_home);
+                fprintf(stderr, "WARN: invalid path format of GROOVYSERV_HOME: %s\n", groovyserv_home);
+                fprintf(stderr, "Hint: Using the directory path of groovyclient instead of a path format on Windows.\n");
                 fflush(stderr);
             }
             scriptdir(basedir_path, script_path);
@@ -165,13 +166,13 @@ static void read_authtoken(char* authtoken, int size, int port)
     FILE* fp = fopen(path, "r");
     if (fp != NULL) {
         if (fgets(authtoken, size, fp) == NULL) {
-            perror("ERROR: fgets");
+            fprintf(stderr, "ERROR: could not read authtoken file: %s\n", path);
             exit(1);
         }
         fclose(fp);
     }
     else {
-        fprintf(stderr, "ERROR: cannot open authtoken file\n");
+        fprintf(stderr, "ERROR: could not open authtoken file: %s\n", path);
         exit(1);
     }
 }
@@ -201,7 +202,7 @@ static int get_port()
     if (port_str != NULL) {
         int port;
         if (sscanf(port_str, "%d", &port) != 1) {
-            fprintf(stderr, "ERROR: port number %s of GROOVYSERV_PORT error\n", port_str);
+            fprintf(stderr, "ERROR: could not parse port number from GROOVYSERV_PORT: %s\n", port_str);
             exit(1);
         }
         return port;
@@ -225,17 +226,17 @@ static char* get_authtoken_generated_by_server(int port)
     return authtoken;
 }
 
-static int connect_server(char* argv0, char* host, int port, char* authtoken)
+static int connect_server(char* script_path, char* host, int port, char* authtoken)
 {
     int fd;
     int failCount = 0;
     while ((fd = open_socket(host, port)) == -1) {
         if (failCount >= 1) {
-            fprintf(stderr, "ERROR: failed to start up groovyserver\n");
+            fprintf(stderr, "ERROR: could not start server: %s\n", script_path);
             exit(1);
         }
         // If server isn't started up yet, a client try to run it automatically.
-        start_server(argv0, port, authtoken);
+        start_server(script_path, port, authtoken);
         failCount++;
     }
     return fd;
@@ -262,13 +263,13 @@ int main(int argc, char** argv)
 #ifdef WINDOWS
     WSADATA wsadata;
     if (WSAStartup(MAKEWORD(1,1), &wsadata) == SOCKET_ERROR) {
-        fprintf(stderr, "ERROR: creating socket\n");
+        fprintf(stderr, "ERROR: could not create socket\n");
         exit(1);
     }
 
     // make standard output to binary mode.
     if (_setmode(_fileno(stdout), _O_BINARY) < 0) {
-        fprintf(stderr, "ERROR: setmode stdout failed\n");
+        fprintf(stderr, "ERROR: could not make standard output to binary mode\n");
         exit(1);
     }
 #endif
@@ -308,16 +309,16 @@ int main(int argc, char** argv)
     int status = start_session(fd_soc);
 
     // print particular error status message
-    // FIXME it's strongly bound to exit code of ExitStatus on groovyserver.
-    //       and it will easily conflict with exit code which is specified at user script...
+    // FIXME it's strongly bound to exit status of ExitStatus on groovyserver.
+    //       and it will easily conflict with exit status which is specified at user script...
     if (status == ERROR_INVALID_AUTHTOKEN) {
-        fprintf(stderr, "ERROR: rejected by groovyserv because of invalid authtoken\n");
+        fprintf(stderr, "ERROR: invalid authtoken\n");
     } else if (status == ERROR_CLIENT_NOT_ALLOWED) {
-        fprintf(stderr, "ERROR: rejected by groovyserv because of not allowed client address\n");
+        fprintf(stderr, "ERROR: client address not allowed: %s:%d\n", host, port);
     }
 
 #ifdef DEBUG
-    fprintf(stderr, "DEBUG: exit code: %d\n", status);
+    fprintf(stderr, "DEBUG: exit status: %d\n", status);
 #endif
 
     // an additional text after invoking

@@ -42,13 +42,14 @@ DIRNAME=`dirname "$PRG"`
 
 check_groovyserv_home() {
     if ! is_file_exists "$GROOVYSERV_HOME/native/src/main/c"; then
-        die "ERROR: Not found a valid GROOVYSERV_HOME directory: $GROOVYSERV_HOME"
+        die "ERROR: invalid GROOVYSERV_HOME: $GROOVYSERV_HOME"
     fi
 }
 
 check_make_command() {
     if ! is_command_available make; then
-        die "ERROR: Not found 'make' command. This script is required 'make' and 'gcc' command to build a native client from source."
+        die "ERROR: 'make' command not found" \
+            "Hint:  Requires 'make' and 'gcc' command in PATH to build a native client from source code."
     fi
 }
 
@@ -58,7 +59,7 @@ build_nativeclient() {
 
     cd "$src_dir"
     make clean
-    make -e GROOVYSERV_VERSION="@GROOVYSERV_VERSION@" || die "ERROR: unexpected error occurs"
+    make -e GROOVYSERV_VERSION="@GROOVYSERV_VERSION@" || die "ERROR: could not build native client: $?"
 }
 
 install_nativeclient() {
