@@ -44,7 +44,7 @@ class GroovyInvokeHandler implements Runnable {
      *              When classpath option is invalid.
      *              Actually this exception is wrapped by ExecutionException.
      * @throws GServIllegalStateException
-     *              When changed current directory after set different directory by another session
+     *              When current directory is changed after different directory is set by another session
      */
     @Override
     void run() {

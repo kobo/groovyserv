@@ -28,7 +28,7 @@ class EnvironmentVariablesSpec extends Specification {
         EnvironmentVariables.setUp()
     }
 
-    def "put() set a specified environment variable and then it's visible for getenv(name)"() {
+    def "put() sets a specified environment variable and then it's visible for getenv(name)"() {
         given:
         assert System.getenv("ENV_TEST_1_NAME") == null
 
@@ -39,7 +39,7 @@ class EnvironmentVariablesSpec extends Specification {
         System.getenv("ENV_TEST_1_NAME") == "ENV_TEST_1_VALUE"
     }
 
-    def "put() set a specified environment variable and then it's visible for getenv() with no argument"() {
+    def "put() sets a specified environment variable and then it's visible for getenv() with no argument"() {
         given:
         assert System.getenv()["ENV_TEST_2_NAME"] == null
         assert System.getenv().ENV_TEST_2_NAME == null
@@ -54,7 +54,7 @@ class EnvironmentVariablesSpec extends Specification {
         System.getenv().size() == beforeEnvCount + 1
     }
 
-    def "put() set a specified environment variable and then it's visible for 'env' property"() {
+    def "put() sets a specified environment variable and then it's visible for 'env' property"() {
         given:
         assert System.env["ENV_TEST_3_NAME"] == null
         assert System.env.ENV_TEST_3_NAME == null

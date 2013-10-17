@@ -29,7 +29,7 @@ class EnvironmentVariables {
     private final origGetenvAll = System.metaClass.getMetaMethod("getenv", null)
 
     /**
-     * Initialize something necessary.
+     * Initializes something necessary.
      */
     static void setUp() {
         EnvironmentVariables.instance.replaceSystemGetenv()
@@ -66,7 +66,7 @@ class EnvironmentVariables {
     }
 
     /**
-     * set the environment variable by using a platform native method.
+     * Sets the environment variable by using a platform native method.
      * This method is called by groovyserver before invoking Groovy script.
      *
      * @param envVar 'NAME=VALUE' style environment variable information.

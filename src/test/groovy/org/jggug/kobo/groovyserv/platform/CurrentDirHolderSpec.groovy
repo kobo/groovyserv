@@ -37,7 +37,7 @@ class CurrentDirHolderSpec extends Specification {
         holder.reset()
     }
 
-    void "setDir() set currentDir when not set nothing yet"() {
+    void "setDir() sets currentDir when nothing is set yet"() {
         when:
         holder.setDir(workDir)
 
@@ -45,7 +45,7 @@ class CurrentDirHolderSpec extends Specification {
         assertCurrentDir(workDir)
     }
 
-    void "setDir() set currentDir when already set a same directory"() {
+    void "setDir() sets currentDir when a same directory is already set"() {
         given:
         holder.setDir(workDir)
         assertCurrentDir(workDir)
@@ -57,7 +57,7 @@ class CurrentDirHolderSpec extends Specification {
         assertCurrentDir(workDir)
     }
 
-    def "setDir() set currentDir when already set a different directory"() {
+    def "setDir() sets currentDir when a different directory is already set"() {
         given:
         holder.setDir(workDir)
 
