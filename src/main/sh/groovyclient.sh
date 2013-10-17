@@ -49,7 +49,7 @@ usage() {
     echo "  -Ca,-Cauthtoken <authtoken>      specify the authtoken"
     echo "  -Ck,-Ckill-server                kill the running groovyserver"
     echo "  -Cr,-Crestart-server             restart the running groovyserver"
-    echo "  -Cq,-Cquiet                      suppress statring messages"
+    echo "  -Cq,-Cquiet                      suppress starting messages"
     echo "  -Cenv <substr>                   pass environment variables of which a name"
     echo "                                   includes specified substr"
     echo "  -Cenv-all                        pass all environment variables"
@@ -58,7 +58,7 @@ usage() {
     echo "  -Cv,-Cversion                    display the GroovyServ version"
     echo
     echo "********************************** NOTE ***************************************"
-    echo "  This client scirpt is LIMITED EDITION. So following features are unavailable:"
+    echo "  This client script is LIMITED EDITION. So following features are unavailable:"
     echo "    * Signal handling on client side (Ctrl+C)"
     echo "    * System.in from client"
     echo "    * Distinguishable stdout from stderr on client (all responses to stdout)"
