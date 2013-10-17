@@ -147,7 +147,16 @@ def send_command(socket, args)
 end
 
 def authtoken
-  $options.client[:authtoken] || File.open(AUTHTOKEN_FILE_BASE + "-" + $options.client[:port].to_s) { |f| f.read }
+  begin
+    authtoken_path = AUTHTOKEN_FILE_BASE + "-" + $options.client[:port].to_s
+    $options.client[:authtoken] || File.open(authtoken_path) { |f| f.read }
+  rescue Errno::ENOENT
+    STDERR.puts "ERROR: could not open authtoken file: #{authtoken_path}"
+    exit 1
+  rescue Errno::EISDIR
+    STDERR.puts "ERROR: could not read authtoken file: #{authtoken_path}"
+    exit 1
+  end
 end
 
 def current_dir()
