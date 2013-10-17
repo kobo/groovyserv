@@ -102,7 +102,7 @@ class ClientInterruptionSpec extends Specification {
         Thread.sleep 500
 
         //then:
-        client.readAllAvailable()
+        client.waitForExit()
         assert client.exitStatus == ExitStatus.INTERRUPTED.code
         assert client.outText == 'started' + SEP
         assert client.errText == ''

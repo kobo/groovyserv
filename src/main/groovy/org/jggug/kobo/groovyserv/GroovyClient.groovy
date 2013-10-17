@@ -18,7 +18,6 @@ package org.jggug.kobo.groovyserv
 import org.jggug.kobo.groovyserv.exception.InvalidAuthTokenException
 import org.jggug.kobo.groovyserv.utils.IOUtils
 import org.jggug.kobo.groovyserv.utils.LogUtils
-
 /**
  * GroovyServ's client implemented by Groovy.
  *
@@ -39,9 +38,9 @@ class GroovyClient {
 
     List<String> environments = []
 
-    private outBytes = []
-    private errBytes = []
-    private Integer exitStatus
+    private List<Byte> outBytes = []
+    private List<Byte> errBytes = []
+    Integer exitStatus
 
     GroovyClient(String host = "localhost", int port = GroovyServer.DEFAULT_PORT) {
         this.host = host
@@ -68,30 +67,6 @@ class GroovyClient {
                 |
                 |${text}""".stripMargin()
         return this // for method-chain
-    }
-
-    void readAllAvailable() {
-        checkActive()
-        clearBuffer()
-
-        def availableText = IOUtils.readAvailableText(ins)
-        if (availableText.empty) return
-
-        def availableInputStream = new ByteArrayInputStream(availableText.bytes)
-        while (true) {
-            def headers = ClientProtocols.parseHeaders(availableInputStream)
-            if (!headers) break
-
-            if (headers.Channel?.getAt(0)==~/out|err/) {
-                def buff = this."${headers.Channel?.get(0)}Bytes"
-                int size = headers.Size?.getAt(0) as int
-                buff.addAll ClientProtocols.readBody(availableInputStream, size)
-            } else if (headers.Status) {
-                exitStatus = headers.Status?.getAt(0) as int
-            }
-        }
-
-        if (exitStatus) disconnect()
     }
 
     String getOutText() {
@@ -133,10 +108,18 @@ class GroovyClient {
         return this // for method-chain
     }
 
-    GroovyClient waitFor() {
+    GroovyClient waitForResponse() {
+        while (exitStatus == null && outBytes.empty && errBytes.empty) {
+            sleep 200 // wait for server operation
+            readAllAsPossible()
+        }
+        return this // for method-chain
+    }
+
+    GroovyClient waitForExit() {
         while (exitStatus == null) {
-            sleep 100 // wait for server operation
-            readAllAvailable()
+            sleep 200 // wait for server operation
+            readAllAsPossible()
         }
         return this // for method-chain
     }
@@ -149,7 +132,7 @@ class GroovyClient {
         try {
             if (!isConnected()) connect()
             ping()
-            waitFor()
+            waitForExit()
         }
         catch (ConnectException e) {
             LogUtils.debugLog "Caught exception when health-checking", e
@@ -198,10 +181,12 @@ class GroovyClient {
         return true
     }
 
-    private void clearBuffer() {
+    GroovyClient clearBuffer() {
         outBytes.clear()
         errBytes.clear()
         exitStatus = null
+
+        return this // for method-chain
     }
 
     GroovyClient connect() {
@@ -226,6 +211,29 @@ class GroovyClient {
         out = null
 
         return this // for method-chain
+    }
+
+    private void readAllAsPossible() {
+        checkActive()
+
+        def availableText = IOUtils.readAvailableText(ins)
+        if (availableText.empty) return
+
+        def availableInputStream = new ByteArrayInputStream(availableText.bytes)
+        while (true) {
+            def headers = ClientProtocols.parseHeaders(availableInputStream)
+            if (!headers) break
+
+            if (headers.Channel?.getAt(0)==~/out|err/) {
+                def buff = this."${headers.Channel?.get(0)}Bytes"
+                int size = headers.Size?.getAt(0) as int
+                buff.addAll ClientProtocols.readBody(availableInputStream, size)
+            } else if (headers.Status) {
+                exitStatus = headers.Status?.getAt(0) as int
+            }
+        }
+
+        if (exitStatus) disconnect()
     }
 
     @Override

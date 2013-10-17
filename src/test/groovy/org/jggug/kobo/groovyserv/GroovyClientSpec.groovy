@@ -27,8 +27,6 @@ import spock.lang.Specification
 class GroovyClientSpec extends Specification {
 
     static final String SEP = System.getProperty("line.separator")
-    static final int WAIT_TIME = 1000
-
     GroovyClient client
 
     def setup() {
@@ -43,10 +41,10 @@ class GroovyClientSpec extends Specification {
     def "only InvocationRequest"() {
         when:
         client.run('-e', 'println("hello")')
-        Thread.sleep(WAIT_TIME)
 
         then:
-        client.readAllAvailable()
+        client.waitForExit()
+        client.exitStatus == ExitStatus.SUCCESS.code
         client.outText == "hello" + SEP
         client.errText == ""
     }
@@ -54,23 +52,22 @@ class GroovyClientSpec extends Specification {
     def "using StreamRequest"() {
         when:
         client.run('-e', 'System.in.eachLine { line, index -> println(line * 2) }')
-        Thread.sleep(WAIT_TIME)
+        Thread.sleep(1000)
 
         and:
         client.input("A")
-        Thread.sleep(WAIT_TIME)
 
         then:
-        client.readAllAvailable()
+        client.waitForResponse()
         client.outText == "AA" + SEP
         client.errText == ""
+        client.clearBuffer()
 
         when:
         client.input("B")
-        Thread.sleep(WAIT_TIME)
 
         then:
-        client.readAllAvailable()
+        client.waitForResponse()
         client.outText == "BB" + SEP
         client.errText == ""
     }
@@ -78,22 +75,18 @@ class GroovyClientSpec extends Specification {
     def "interrupted by client"() {
         when:
         client.run('-e', 'println "CCCC"; while (true) { sleep 1000 }')
-        Thread.sleep(1500)
 
         then:
-        client.readAllAvailable()
+        client.waitForResponse()
         client.outText == "CCCC" + SEP
         client.errText == ""
 
         when:
-        Thread.sleep(WAIT_TIME)
         client.interrupt()
-        Thread.sleep(WAIT_TIME)
 
         then:
-        client.readAllAvailable()
+        client.waitForExit()
         client.exitStatus == ExitStatus.INTERRUPTED.code
-        Thread.sleep(WAIT_TIME)
     }
 
     def "passing environment variables"() {
@@ -104,14 +97,11 @@ class GroovyClientSpec extends Specification {
 
         when:
         client.run('-e', """println "D" + System.getenv("$envVarName") + "D";""")
-        Thread.sleep(WAIT_TIME)
 
         then:
-        client.readAllAvailable()
+        client.waitForExit()
+        client.exitStatus == ExitStatus.SUCCESS.code
         client.outText == "D${envVarValue}D" + SEP
         client.errText == ""
-
-        and:
-        client.exitStatus == ExitStatus.SUCCESS.code
     }
 }

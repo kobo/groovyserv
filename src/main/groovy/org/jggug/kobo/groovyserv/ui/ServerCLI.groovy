@@ -105,7 +105,7 @@ class ServerCLI {
         // Shutting down
         print "Shutting down server..."
         try {
-            def exitStatus = client.connect().shutdown().waitFor().exitStatus
+            def exitStatus = client.connect().shutdown().waitForExit().exitStatus
             if (exitStatus != ExitStatus.SUCCESS.code) {
                 LogUtils.errorLog "Failed to kill the server: exitStatus=${exitStatus}"
                 println "" // clear for print
