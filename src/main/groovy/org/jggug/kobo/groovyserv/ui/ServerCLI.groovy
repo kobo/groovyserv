@@ -90,7 +90,7 @@ class ServerCLI {
         if (!client.canConnect()) {
             println "WARN: server is not running"
             if (WorkFiles.AUTHTOKEN_FILE.exists()) {
-                println "WARN: previous authtoken file is deleted: ${WorkFiles.AUTHTOKEN_FILE}"
+                println "WARN: old authtoken file is deleted: ${WorkFiles.AUTHTOKEN_FILE}"
                 WorkFiles.AUTHTOKEN_FILE.delete()
             }
             return
@@ -149,7 +149,7 @@ class ServerCLI {
 
         // If there is authtoken, it might be old.
         if (WorkFiles.AUTHTOKEN_FILE.exists()) {
-            println "WARN: authtoken file exists: ${WorkFiles.AUTHTOKEN_FILE} (overwritten by new authtoken)"
+            println "WARN: old authtoken file is deleted: ${WorkFiles.AUTHTOKEN_FILE}"
             WorkFiles.AUTHTOKEN_FILE.delete()
         }
 

@@ -59,7 +59,7 @@ class ServerOperationFromServerScriptSpec extends Specification {
         then:
         assertNeverUseStandardInputStream(p)
         with(p.err.text) {
-            it=~/WARN: authtoken file exists: .*authtoken-[0-9]+ \(overwritten by new authtoken\)/
+            it=~/WARN: old authtoken file is deleted: /
             it=~/Server is successfully started up on [0-9]+ port/
         }
     }
@@ -139,7 +139,7 @@ class ServerOperationFromServerScriptSpec extends Specification {
         assertNeverUseStandardInputStream(p)
         with(p.err.text) {
             it=~/WARN: server is not running/
-            it=~/WARN: previous authtoken file is deleted: /
+            it=~/WARN: old authtoken file is deleted: /
         }
         !WorkFiles.AUTHTOKEN_FILE.exists()
     }
