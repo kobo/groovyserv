@@ -74,7 +74,7 @@ class RequestWorker extends ThreadPoolExecutor implements Runnable {
         // Parse request
         InvocationRequest request = parseRequest()
         if (request == null) {
-            LogUtils.debugLog "Command not found"
+            LogUtils.debugLog "Empty request"
             return
         }
 

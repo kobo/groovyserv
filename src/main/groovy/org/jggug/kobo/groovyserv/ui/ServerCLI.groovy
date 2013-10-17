@@ -51,7 +51,7 @@ class ServerCLI {
         this.quiet = options.quiet
         WorkFiles.setUp(port) // for authtoken
         LogUtils.debug = options.verbose
-        LogUtils.debugLog "Invoking by script: ${serverScriptPath}"
+        LogUtils.debugLog "Invoked by script: ${serverScriptPath}"
         LogUtils.debugLog "Server command: ${args}"
     }
 
