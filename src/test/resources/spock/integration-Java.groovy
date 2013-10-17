@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import org.jggug.kobo.groovyserv.GroovyClientSpec
-import org.jggug.kobo.groovyserv.ClientInterruptionSpec
+import org.jggug.kobo.groovyserv.test.IndependentForSpecificClient
 
 runner {
-    include GroovyClientSpec, ClientInterruptionSpec
+    include IndependentForSpecificClient
 }

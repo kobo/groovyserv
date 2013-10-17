@@ -16,6 +16,7 @@
 package org.jggug.kobo.groovyserv
 
 import org.jggug.kobo.groovyserv.test.IntegrationTest
+import org.jggug.kobo.groovyserv.test.IndependentForSpecificClient
 import org.jggug.kobo.groovyserv.test.TestUtils
 import spock.lang.Specification
 import spock.lang.Timeout
@@ -28,6 +29,7 @@ import java.util.concurrent.TimeUnit
  */
 @IntegrationTest
 @Timeout(value = 30, unit = TimeUnit.SECONDS)
+@IndependentForSpecificClient
 class ServerOperationFromServerScriptSpec extends Specification {
 
     def cleanupSpec() {

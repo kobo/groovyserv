@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.jggug.kobo.groovyserv.test
 
-import org.jggug.kobo.groovyserv.test.IgnoreForShellClient
-import org.jggug.kobo.groovyserv.test.IntegrationTest
-import org.jggug.kobo.groovyserv.test.IndependentForSpecificClient
+import java.lang.annotation.ElementType
+import java.lang.annotation.Retention
+import java.lang.annotation.RetentionPolicy
+import java.lang.annotation.Target
 
-runner {
-    include IntegrationTest
-    exclude IndependentForSpecificClient, IgnoreForShellClient
+@Target([ElementType.TYPE, ElementType.METHOD])
+@Retention(RetentionPolicy.RUNTIME)
+@interface IndependentForSpecificClient {
 }
