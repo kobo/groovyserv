@@ -82,6 +82,16 @@ check_environment() {
     fi
 }
 
+check_authtoken() {
+    local authtoken_file="$(get_authtoken_file)"
+    if [ ! -e $authtoken_file ]; then
+        die "ERROR: could not open authtoken file: $authtoken_file"
+    fi
+    if [ ! -f $authtoken_file ] || [ ! -r $authtoken_file ]; then
+        die "ERROR: could not read authtoken file: $authtoken_file"
+    fi
+}
+
 invoke_server_command() {
     info_log "Invoking server: '$SERVER_CMD' -p $GROOVYSERV_PORT ${SERVER_OPTIONS[@]}"
     "$SERVER_CMD" -p $GROOVYSERV_PORT ${SERVER_OPTIONS[@]} || die "ERROR: could not invoke server command: $?"
@@ -163,6 +173,8 @@ send_request() {
 }
 
 start_session() {
+    check_authtoken
+
     # Connect to server
     exec 5<> /dev/tcp/$GROOVYSERV_HOST/$GROOVYSERV_PORT
 
