@@ -183,7 +183,20 @@ start_session() {
     send_request >&5
 
     # Output response
-    #perl -pe 'local $|=1; $line' <&5
+
+    # Handling first line from standard output stream OR invalid authtoken error
+    read first_line <&5
+    local eol=$?
+    if [ "$first_line" = "Status: 201" ]; then
+        echo "ERROR: invalid authtoken" >&2
+        exit 201
+    fi
+    if [ $eol -eq 1 ]; then
+        /bin/echo -n $first_line
+    else
+        echo $first_line
+    fi
+    # after second line
     cat <&5
 
     # For combination of groovyserver and groovyclient
