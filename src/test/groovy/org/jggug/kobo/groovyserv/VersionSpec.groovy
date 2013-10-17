@@ -28,7 +28,7 @@ class VersionSpec extends Specification {
 
     def "'-v' option prints versions both of client and server"() {
         when:
-        def p = TestUtils.executeClientOk(["-v"])
+        def p = TestUtils.executeClientScriptOk(["-v"])
 
         then:
         def stdout = p.in.text
@@ -41,7 +41,7 @@ class VersionSpec extends Specification {
     def "'-vXxxxx' option prints versions both of client and server"() {
         when:
         // the original Groovy considers the option value to a valid version option.
-        def p = TestUtils.executeClientOk(["-vFOOBAR"])
+        def p = TestUtils.executeClientScriptOk(["-vFOOBAR"])
 
         then:
         def stdout = p.in.text
@@ -53,7 +53,7 @@ class VersionSpec extends Specification {
 
     def "'--version' option prints versions both of client and server"() {
         when:
-        def p = TestUtils.executeClientOk(["--version"])
+        def p = TestUtils.executeClientScriptOk(["--version"])
 
         then:
         def stdout = p.in.text
@@ -65,7 +65,7 @@ class VersionSpec extends Specification {
 
     def "'-Cv' option prints only client version"() {
         when:
-        def p = TestUtils.executeClientOk(["-Cv"])
+        def p = TestUtils.executeClientScriptOk(["-Cv"])
 
         then:
         def stdout = p.in.text
@@ -77,7 +77,7 @@ class VersionSpec extends Specification {
 
     def "'-Cversion' option prints only client version"() {
         when:
-        def p = TestUtils.executeClientOk(["-Cversion"])
+        def p = TestUtils.executeClientScriptOk(["-Cversion"])
 
         then:
         def stdout = p.in.text

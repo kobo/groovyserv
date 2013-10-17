@@ -87,8 +87,12 @@ class ServerCLI {
         def client = newGroovyClient()
 
         // If server isn't already running, it needs to do nothing.
-        if (!client.isServerAvailable()) {
+        if (!client.canConnect()) {
             println "WARN: server is not running"
+            if (WorkFiles.AUTHTOKEN_FILE.exists()) {
+                println "WARN: previous authtoken file is deleted: ${WorkFiles.AUTHTOKEN_FILE}"
+                WorkFiles.AUTHTOKEN_FILE.delete()
+            }
             return
         }
 
@@ -104,13 +108,21 @@ class ServerCLI {
             def exitStatus = client.connect().shutdown().waitFor().exitStatus
             if (exitStatus != ExitStatus.SUCCESS.code) {
                 LogUtils.errorLog "Failed to kill the server: exitStatus=${exitStatus}"
+                println "" // clear for print
+                if (exitStatus == ExitStatus.INVALID_AUTHTOKEN.code) {
+                    die "ERROR: invalid authtoken",
+                        "Hint:  Please specify a right authtoken or just kill the process somehow."
+                } else {
+                    die "ERROR: could not kill server",
+                        "Hint:  Isn't the port being used by a non-groovyserv process? If not so, please kill the process somehow."
+                }
             }
         }
         catch (Throwable e) {
             LogUtils.errorLog "Failed to kill the server", e
             println "" // clear for print
             die "ERROR: could not kill server",
-                "Hint:  Isn't the port being used by a non-groovyserv process?"
+                "Hint:  Isn't the port being used by a non-groovyserv process? If not so, please kill the process somehow."
         }
 
         // Waiting for server down
@@ -126,8 +138,12 @@ class ServerCLI {
         def client = newGroovyClient()
 
         // If server is already running, it needs to do nothing.
-        if (client.isServerAvailable()) {
+        if (client.canConnect()) {
             println "WARN: server is already running on ${port} port"
+            if (!WorkFiles.AUTHTOKEN_FILE.exists()) {
+                die "ERROR: could not find authtoken file: ${WorkFiles.AUTHTOKEN_FILE}",
+                    "Hint:  Isn't the port being used by a non-groovyserv process? If not so, please kill the process somehow."
+            }
             return
         }
 

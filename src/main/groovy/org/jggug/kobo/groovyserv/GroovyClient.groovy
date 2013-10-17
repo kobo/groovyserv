@@ -181,17 +181,21 @@ class GroovyClient {
         if (WorkFiles.AUTHTOKEN_FILE.exists()) {
             return false
         }
+        return !canConnect()
+    }
+
+    boolean canConnect() {
         try {
-            new Socket(host, port)
+            new Socket(host, port).close()
         }
         catch (ConnectException e) {
-            return true
+            return false
         }
         catch (Exception e) {
             LogUtils.errorLog "Caught unexpected exception when health-checking", e
             return false
         }
-        return false
+        return true
     }
 
     private void clearBuffer() {

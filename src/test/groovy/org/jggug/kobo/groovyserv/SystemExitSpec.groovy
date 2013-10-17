@@ -28,10 +28,10 @@ class SystemExitSpec extends Specification {
 
     def "using System.exit() doesn't cause a kill of server process"() {
         when:
-        TestUtils.executeClient(['-e', '"System.exit()"'])
+        TestUtils.executeClientScript(['-e', '"System.exit()"'])
 
         and:
-        def p = TestUtils.executeClient(['-e', '"print(\'Still There?\')"'])
+        def p = TestUtils.executeClientScript(['-e', '"print(\'Still There?\')"'])
         p.waitFor()
 
         then:
@@ -41,7 +41,7 @@ class SystemExitSpec extends Specification {
 
     def "the value of System.exit() is returns as status code of client"() {
         expect:
-        TestUtils.executeClient(['-e', script]).exitValue() == statusCode
+        TestUtils.executeClientScript(['-e', script]).exitValue() == statusCode
 
         where:
         script            | statusCode

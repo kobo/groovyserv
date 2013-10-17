@@ -15,14 +15,15 @@
  */
 package org.jggug.kobo.groovyserv.test
 
-import static org.junit.Assert.*
+import org.jggug.kobo.groovyserv.GroovyClient
 
+import static org.junit.Assert.*
 /**
  * Utilities only for tests.
  */
 class TestUtils {
 
-    static Process executeClientWithEnv(args, Map envMap, closure = null) {
+    static Process executeClientScriptWithEnv(args, Map envMap, closure = null) {
         def client = clientExecutablePath.split(" ") as List
         def p = createProcessBuilder([* client, * args], envMap).start()
         if (closure) closure.call(p)
@@ -30,38 +31,44 @@ class TestUtils {
         return p
     }
 
-    static Process executeClient(args, closure = null) {
-        executeClientWithEnv(args, null, closure)
+    static Process executeClientScript(args, closure = null) {
+        executeClientScriptWithEnv(args, null, closure)
     }
 
-    static Process executeClientOkWithEnv(args, Map envMap, closure = null) {
-        def p = executeClientWithEnv(args, envMap, closure)
+    static Process executeClientScriptOkWithEnv(args, Map envMap, closure = null) {
+        def p = executeClientScriptWithEnv(args, envMap, closure)
         if (p.exitValue() != 0) {
             fail "ERROR: exitValue:${p.exitValue()}, in:[${p.in.text}], err:[${p.err.text}]"
         }
         return p
     }
 
-    static Process executeClientOk(args, closure = null) {
-        executeClientOkWithEnv(args, null, closure)
+    static Process executeClientScriptOk(args, closure = null) {
+        executeClientScriptOkWithEnv(args, null, closure)
     }
 
-    static startServer() {
-        def p = createProcessBuilder(["sh", serverExecutablePath, "-r", "-v"]).start()
-        p.waitFor()
+    static void startServerIfNotRunning() {
+        if (new GroovyClient().isServerAvailable()) return
+
+        def p = executeServerScript(["-r", "-v"])
         if (p.exitValue() != 0) {
             fail "ERROR: exitValue:${p.exitValue()}, in:[${p.in.text}], err:[${p.err.text}]"
-            System.exit(88)
         }
     }
 
-    static shutdownServer() {
-        def p = createProcessBuilder(["sh", serverExecutablePath, "-k"]).start()
-        p.waitFor()
+    static void shutdownServerIfRunning() {
+        if (new GroovyClient().isServerShutdown()) return
+
+        def p = executeServerScript(["-k"])
         if (p.exitValue() != 0) {
             fail "ERROR: exitValue:${p.exitValue()}, in:[${p.in.text}], err:[${p.err.text}]"
-            System.exit(87)
         }
+    }
+
+    static Process executeServerScript(List options) {
+        def p = createProcessBuilder(["sh", serverExecutablePath] + options).start()
+        p.waitFor()
+        return p
     }
 
     private static createProcessBuilder(List commandLine, Map envMap = [:]) {
