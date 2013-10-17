@@ -99,6 +99,22 @@ class ServerOperationFromClientScriptSpec extends Specification {
         createAuthTokenFile(originalToken)
     }
 
+    def "try to execute client with running server when there are no permission for an authtoken file"() {
+        given:
+        TestUtils.startServerIfNotRunning()
+        def originalToken = deleteAuthTokenFile()
+        WorkFiles.AUTHTOKEN_FILE.mkdir() // to fail to read as file
+
+        when:
+        def p = TestUtils.executeClientScript(["-v"])
+
+        then:
+        p.err.text=~/ERROR: could not read authtoken file: /
+
+        cleanup:
+        WorkFiles.AUTHTOKEN_FILE.deleteDir()
+        createAuthTokenFile(originalToken)
+    }
 
     private static void assertIncludingServerInvocationLog(text) {
         assert text.contains("Invoking server")
