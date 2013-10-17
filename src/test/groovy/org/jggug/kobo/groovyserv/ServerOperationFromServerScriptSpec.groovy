@@ -18,6 +18,7 @@ package org.jggug.kobo.groovyserv
 import org.jggug.kobo.groovyserv.test.IntegrationTest
 import org.jggug.kobo.groovyserv.test.IndependentForSpecificClient
 import org.jggug.kobo.groovyserv.test.TestUtils
+import spock.lang.IgnoreIf
 import spock.lang.Specification
 import spock.lang.Timeout
 
@@ -28,6 +29,7 @@ import java.util.concurrent.TimeUnit
  * Before running this, you must start groovyserver.
  */
 @IntegrationTest
+@IgnoreIf({ properties["os.name"].startsWith("Windows") })
 @Timeout(value = 30, unit = TimeUnit.SECONDS)
 @IndependentForSpecificClient
 class ServerOperationFromServerScriptSpec extends Specification {
