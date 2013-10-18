@@ -15,8 +15,8 @@
  */
 package org.jggug.kobo.groovyserv
 
-import org.jggug.kobo.groovyserv.test.IntegrationTest
 import org.jggug.kobo.groovyserv.test.IndependentForSpecificClient
+import org.jggug.kobo.groovyserv.test.IntegrationTest
 import org.jggug.kobo.groovyserv.test.TestUtils
 import spock.lang.IgnoreIf
 import spock.lang.Specification
@@ -89,8 +89,8 @@ class ServerOperationFromServerScriptSpec extends Specification {
         then:
         assertNeverUseStandardInputStream(p)
         with(p.err.text) {
-            it=~/WARN: server is already running on [0-9]+ port/
-            !it.contains("ERROR:")
+            it=~/ERROR: invalid authtoken/
+            it=~/Hint:  Specify a right authtoken or kill the process somehow\./
         }
 
         cleanup:
@@ -108,12 +108,32 @@ class ServerOperationFromServerScriptSpec extends Specification {
         then:
         assertNeverUseStandardInputStream(p)
         with(p.err.text) {
-            it=~/WARN: server is already running on [0-9]+ port/
-            it=~/ERROR: could not find authtoken file: /
-            it=~/Hint:  Isn't the port being used by a non-groovyserv process\? If not so, please kill the process somehow\./
+            it=~/ERROR: could not open authtoken file: /
+            it=~/Hint:  Isn't the port being used by a non-groovyserv process\? Use another port or kill the process somehow\./
         }
 
         cleanup:
+        createAuthTokenFile(originalToken)
+    }
+
+    def "try to start server with running server when authtoken file could not read as file"() {
+        given:
+        TestUtils.startServerIfNotRunning()
+        def originalToken = deleteAuthTokenFile()
+        WorkFiles.AUTHTOKEN_FILE.mkdir() // not readable as file
+
+        when:
+        def p = TestUtils.executeServerScript([])
+
+        then:
+        assertNeverUseStandardInputStream(p)
+        with(p.err.text) {
+            it=~/ERROR: could not read authtoken file: /
+            it=~/Hint:  Check the permission and file type of /
+        }
+
+        cleanup:
+        WorkFiles.AUTHTOKEN_FILE.deleteDir()
         createAuthTokenFile(originalToken)
     }
 
@@ -170,7 +190,7 @@ class ServerOperationFromServerScriptSpec extends Specification {
         assertNeverUseStandardInputStream(p)
         with(p.err.text) {
             it=~/ERROR: invalid authtoken/
-            it=~/Hint:  Please specify a right authtoken or just kill the process somehow./
+            it=~/Hint:  Specify a right authtoken or kill the process somehow\./
         }
 
         cleanup:
@@ -188,11 +208,32 @@ class ServerOperationFromServerScriptSpec extends Specification {
         then:
         assertNeverUseStandardInputStream(p)
         with(p.err.text) {
-            it=~/ERROR: could not find authtoken file: /
-            it=~/Hint:  Please kill the process somehow./
+            it=~/ERROR: could not open authtoken file: /
+            it=~/Hint:  Isn't the port being used by a non-groovyserv process\? Use another port or kill the process somehow\./
         }
 
         cleanup:
+        createAuthTokenFile(originalToken)
+    }
+
+    def "try to kill server with running server when authtoken file could not read as file"() {
+        given:
+        TestUtils.startServerIfNotRunning()
+        def originalToken = deleteAuthTokenFile()
+        WorkFiles.AUTHTOKEN_FILE.mkdir() // not readable as file
+
+        when:
+        def p = TestUtils.executeServerScript(["-k"])
+
+        then:
+        assertNeverUseStandardInputStream(p)
+        with(p.err.text) {
+            it=~/ERROR: could not read authtoken file: /
+            it=~/Hint:  Check the permission and file type of /
+        }
+
+        cleanup:
+        WorkFiles.AUTHTOKEN_FILE.deleteDir()
         createAuthTokenFile(originalToken)
     }
 

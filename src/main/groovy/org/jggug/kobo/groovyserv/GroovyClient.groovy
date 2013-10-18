@@ -15,7 +15,6 @@
  */
 package org.jggug.kobo.groovyserv
 
-import org.jggug.kobo.groovyserv.exception.InvalidAuthTokenException
 import org.jggug.kobo.groovyserv.utils.IOUtils
 import org.jggug.kobo.groovyserv.utils.LogUtils
 /**
@@ -125,12 +124,8 @@ class GroovyClient {
     }
 
     boolean isServerAvailable() {
-        if (!WorkFiles.AUTHTOKEN_FILE.exists()) {
-            LogUtils.debugLog "No authtoken file"
-            return false
-        }
         try {
-            if (!isConnected()) connect()
+            if (!connected) connect()
             ping()
             waitForExit()
         }
@@ -145,25 +140,17 @@ class GroovyClient {
         finally {
             disconnect()
         }
-
-        if (exitStatus == ExitStatus.INVALID_AUTHTOKEN.code) {
-            throw new InvalidAuthTokenException("Authentication failed")
-        }
         if (exitStatus != ExitStatus.SUCCESS.code) {
             LogUtils.errorLog "Exit status for ping seems invalid: $exitStatus"
         }
         return true
     }
 
-    // NOTE: isServerAvailable() isn't !isServerShutdown()
-    // Because a complete shutdown status must be port closed and authtoken file deleted.
-    // On the other hand, server available status means a server can handle a request rightly.
-    // The contrary means a server cannot handle a request just rightly.
-    // Either that a port is closed or that a authtoken file is deleted happen to match the condition.
+    // NOTE: isServerAvailable() isn't negative isServerShutdown()
+    // Because a complete shutdown status must be port closed.
+    // On the other hand, that a server is available means that a server can handle a request rightly.
+    // That a server cannot handle a request rightly means that a server isn't available even if a port is opened.
     boolean isServerShutdown() {
-        if (WorkFiles.AUTHTOKEN_FILE.exists()) {
-            return false
-        }
         return !canConnect()
     }
 

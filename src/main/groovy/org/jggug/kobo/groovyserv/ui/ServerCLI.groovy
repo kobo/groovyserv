@@ -20,11 +20,9 @@ import org.jggug.kobo.groovyserv.ExitStatus
 import org.jggug.kobo.groovyserv.GroovyClient
 import org.jggug.kobo.groovyserv.GroovyServer
 import org.jggug.kobo.groovyserv.WorkFiles
-import org.jggug.kobo.groovyserv.exception.InvalidAuthTokenException
 import org.jggug.kobo.groovyserv.platform.PlatformMethods
 import org.jggug.kobo.groovyserv.utils.Holders
 import org.jggug.kobo.groovyserv.utils.LogUtils
-
 /**
  * Facade for script of groovyserver.*
  *
@@ -73,10 +71,6 @@ class ServerCLI {
             }
             startServerAsDaemon()
         }
-        catch (InvalidAuthTokenException e) {
-            die "ERROR: invalid authtoken",
-                "Hint:  Please specify a right authtoken or just kill the process somehow."
-        }
         catch (Throwable e) {
             LogUtils.errorLog "Failed to invoke a server command", e
             die "ERROR: unexpected error: ${e.message}"
@@ -86,7 +80,9 @@ class ServerCLI {
     private void shutdownServer() {
         def client = newGroovyClient()
 
-        // If server isn't already running, it needs to do nothing.
+        // For usability, the following code checks status in detail and shows an appropriate message.
+
+        // If server is NOT already running, it needs to do nothing.
         if (!client.canConnect()) {
             println "WARN: server is not running"
             if (WorkFiles.AUTHTOKEN_FILE.exists()) {
@@ -95,38 +91,31 @@ class ServerCLI {
             }
             return
         }
+        LogUtils.debugLog "before makeSureServerAvailableOrDie"
+        makeSureServerAvailableOrDie(client)
 
-        // If there is no authtoken, to access to server is impossible.
-        if (!WorkFiles.AUTHTOKEN_FILE.exists()) {
-            die "ERROR: could not find authtoken file: ${WorkFiles.AUTHTOKEN_FILE}",
-                "Hint:  Please kill the process somehow."
-        }
+        // From here, the process of the port is really GroovyServ's process and still alive.
 
         // Shutting down
         print "Shutting down server..."
         try {
             def exitStatus = client.connect().shutdown().waitForExit().exitStatus
             if (exitStatus != ExitStatus.SUCCESS.code) {
-                LogUtils.errorLog "Failed to kill the server: exitStatus=${exitStatus}"
+                LogUtils.errorLog "Failed to kill the server: ${exitStatus}"
                 println "" // clear for print
-                if (exitStatus == ExitStatus.INVALID_AUTHTOKEN.code) {
-                    die "ERROR: invalid authtoken",
-                        "Hint:  Please specify a right authtoken or just kill the process somehow."
-                } else {
-                    die "ERROR: could not kill server",
-                        "Hint:  Isn't the port being used by a non-groovyserv process? If not so, please kill the process somehow."
-                }
+                die "ERROR: could not kill server: ${exitStatus}", // cannot test
+                    "Hint:  Make sure the server process is still alive. If so, kill the process somehow."
             }
         }
         catch (Throwable e) {
             LogUtils.errorLog "Failed to kill the server", e
             println "" // clear for print
-            die "ERROR: could not kill server",
-                "Hint:  Isn't the port being used by a non-groovyserv process? If not so, please kill the process somehow."
+            die "ERROR: could not kill server: ${e.message}", // cannot test
+                "Hint:  Make sure the server process is still alive. If so, kill the process somehow."
         }
 
         // Waiting for server down
-        while (!client.isServerShutdown()) {
+        while (WorkFiles.AUTHTOKEN_FILE.exists() || !client.isServerShutdown()) {
             print "."
             sleep 200
         }
@@ -134,24 +123,49 @@ class ServerCLI {
         println "Server is successfully shut down"
     }
 
+    private void makeSureServerAvailableOrDie(GroovyClient client) {
+        // If there is no authtoken, to access server is impossible.
+        if (!WorkFiles.AUTHTOKEN_FILE.exists()) {
+            die "ERROR: could not open authtoken file: ${WorkFiles.AUTHTOKEN_FILE}",
+                "Hint:  Isn't the port being used by a non-groovyserv process? Use another port or kill the process somehow."
+        }
+        if (!WorkFiles.AUTHTOKEN_FILE.isFile() || !WorkFiles.AUTHTOKEN_FILE.canRead()) {
+            die "ERROR: could not read authtoken file: ${WorkFiles.AUTHTOKEN_FILE}",
+                "Hint:  Check the permission and file type of ${WorkFiles.AUTHTOKEN_FILE}."
+        }
+        // Is server really available?
+        if (!client.isServerAvailable()) {
+            die "ERROR: could not access server", // cannot test
+                "Hint:  Isn't the port being used by a non-groovyserv process? Use another port or kill the process somehow."
+        }
+        if (client.exitStatus == ExitStatus.INVALID_AUTHTOKEN.code) {
+            die "ERROR: invalid authtoken",
+                "Hint:  Specify a right authtoken or kill the process somehow."
+        }
+        if (client.exitStatus != ExitStatus.SUCCESS.code) { // cannot test
+            die "ERROR: server exiting abnormally: ${client.exitStatus}"
+        }
+    }
+
     private void startServerAsDaemon() {
         def client = newGroovyClient()
 
+        // For usability, the following code checks status in detail and shows an appropriate message.
+
         // If server is already running, it needs to do nothing.
         if (client.canConnect()) {
+            makeSureServerAvailableOrDie(client)
             println "WARN: server is already running on ${port} port"
-            if (!WorkFiles.AUTHTOKEN_FILE.exists()) {
-                die "ERROR: could not find authtoken file: ${WorkFiles.AUTHTOKEN_FILE}",
-                    "Hint:  Isn't the port being used by a non-groovyserv process? If not so, please kill the process somehow."
-            }
             return
         }
 
-        // If there is authtoken, it might be old.
+        // If there is authtoken file, it must be old and unnecessary.
         if (WorkFiles.AUTHTOKEN_FILE.exists()) {
             println "WARN: old authtoken file is deleted: ${WorkFiles.AUTHTOKEN_FILE}"
             WorkFiles.AUTHTOKEN_FILE.delete()
         }
+
+        // From here, the port is unused by any process.
 
         // Starting
         print "Starting server..."
@@ -159,7 +173,7 @@ class ServerCLI {
 
         // Waiting for server up
         sleep 2000
-        while (!client.isServerAvailable()) {
+        while (!WorkFiles.AUTHTOKEN_FILE.exists() || !client.isServerAvailable()) {
             print "."
             sleep 200
         }
@@ -239,6 +253,7 @@ class ServerCLI {
     }
 
     private static die(message, hint = null) {
+        LogUtils.errorLog "Died with message: ${message}${hint ? ", ${hint}" : ""}"
         System.err.println message
         if (hint) System.err.println hint
         exit ExitStatus.COMMAND_ERROR
