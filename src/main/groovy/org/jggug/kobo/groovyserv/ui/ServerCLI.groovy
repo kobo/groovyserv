@@ -78,8 +78,8 @@ class ServerCLI {
                 "Hint:  Please specify a right authtoken or just kill the process somehow."
         }
         catch (Throwable e) {
+            LogUtils.errorLog "Failed to invoke a server command", e
             die "ERROR: unexpected error: ${e.message}"
-            LogUtils.debugLog "Failed to invoke a server command", e
         }
     }
 
