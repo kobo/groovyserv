@@ -48,7 +48,7 @@ check_groovyserv_home() {
 
 check_make_command() {
     if ! is_command_available make; then
-        die "ERROR: 'make' command not found" \
+        die "ERROR: command not found: make" \
             "Hint:  Requires 'make' and 'gcc' command in PATH to build a native client from source code."
     fi
 }

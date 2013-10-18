@@ -64,11 +64,9 @@ call :expand_path CLASSPATH "%CLASSPATH%"
 @rem ----------------------------------------
 
 if defined GROOVY_HOME (
-    call :info_log Groovy home directory: "%GROOVY_HOME%"
     call :setup_GROOVY_CMD_from_GROOVY_HOME
     if errorlevel 1 goto end
 ) else (
-    call :info_log Groovy home directory: ^(none^)
     call :setup_GROOVY_CMD_from_PATH
     if errorlevel 1 goto end
 )
@@ -124,12 +122,7 @@ if defined JAVA_OPT (
 @rem Invoke server
 @rem -------------------------------------------
 
-call :reset_errorlevel
 %GROOVY_CMD% %GROOVYSERV_OPTS% -e org.jggug.kobo.groovyserv.ui.ServerCLI.main(args) -- "%SCRIPT_PATH%" %*
-if errorlevel 1 (
-    echo ERROR: could not start server: "%SCRIPT_PATH%" >&2
-    goto end
-)
 
 @rem -------------------------------------------
 @rem Endpoint
@@ -156,6 +149,7 @@ exit /B
         echo ERROR: invalid GROOVY_HOME: "%GROOVY_HOME%" >&2
         exit /B 1
     )
+    call :info_log Groovy home directory: "%GROOVY_HOME%"
     call :info_log Groovy command path: "%GROOVY_CMD%" ^(found at GROOVY_HOME^)
 exit /B
 
@@ -167,6 +161,7 @@ exit /B
         echo Hint:  Requires either PATH having groovy command or GROOVY_HOME. >&2
         exit /B 1
     )
+    call :info_log Groovy home directory: ^(none^)
     call :info_log Groovy command path: "%GROOVY_CMD%" ^(found at PATH^)
 exit /B
 

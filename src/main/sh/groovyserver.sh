@@ -50,11 +50,11 @@ fi
 find_groovy_command() {
     unset GROOVY_CMD
     if [ "$GROOVY_HOME" != "" ]; then
-        info_log "Groovy home directory: $GROOVY_HOME"
         GROOVY_CMD="$GROOVY_HOME/bin/groovy"
         if [ ! -x "$GROOVY_CMD" ]; then
             die "ERROR: invalid GROOVY_HOME: $GROOVY_HOME"
         fi
+        info_log "Groovy home directory: $GROOVY_HOME"
         info_log "Groovy command path: $GROOVY_CMD (found at GROOVY_HOME)"
     elif is_command_available groovy; then
         info_log "Groovy home directory: (none)"
