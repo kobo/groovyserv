@@ -111,12 +111,9 @@ call :info_log GroovyServ default classpath: "%CLASSPATH%"
 @rem Setup other variables
 @rem ----------------------------------------
 
-@rem -server option for JVM (for performance) (experimental)
-if defined JAVA_OPT (
-    set JAVA_OPTS=-server %JAVA_OPTS%
-) else (
-    set JAVA_OPTS=-server
-)
+@rem -server: for performance (experimental)
+@rem -Djava.awt.headless=true: without this, annoying to switch an active process to it when new process is created as daemon
+set JAVA_OPTS=%JAVA_OPTS% -server -Djava.awt.headless=true
 
 @rem -------------------------------------------
 @rem Invoke server
