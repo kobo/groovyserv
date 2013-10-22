@@ -185,7 +185,7 @@ def handle_socket(socket)
     if status_code == ERROR_INVALID_AUTHTOKEN
       STDERR.puts "ERROR: invalid authtoken"
     elsif status_code == ERROR_CLIENT_NOT_ALLOWED
-      STDERR.puts "ERROR: client address not allowed: #{options.client[:host]}:#{options.client[:port]}"
+      STDERR.puts "ERROR: client address not allowed: #{$options.client[:host]}:#{$options.client[:port]}"
     end
     exit status_code
   end
