@@ -39,10 +39,8 @@ buildscript {
 
 repositories {
     mavenCentral()
-    maven {
-        url "http://repository.codehaus.org"
-        url "http://snapshots.repository.codehaus.org"
-    }
+    maven { url "http://repository.codehaus.org" }
+    maven { url "http://snapshots.repository.codehaus.org" }
 }
 
 configurations {
