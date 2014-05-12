@@ -35,6 +35,7 @@ class GroovyServer {
     ServerSocket serverSocket
     AuthToken authToken
     List<String> allowFrom = []
+    List<ThreadGroup> activeThreadGroups = []
 
     void start() {
         assert port != null
@@ -116,6 +117,14 @@ class GroovyServer {
 
     private Thread newRequestWorker(Socket socket) {
         def threadGroup = new GServThreadGroup("GServThreadGroup:${socket.port}")
+
+        // fix for leaking ThreadGroup: https://github.com/kobo/groovyserv/issues/53
+        activeThreadGroups.findAll { it.activeCount() == 0 }.each {
+            it.destroy()
+            activeThreadGroups.remove(it)
+        }
+        activeThreadGroups << threadGroup
+
         new Thread(threadGroup, new RequestWorker(authToken, socket), "RequestWorker:${socket.port}")
     }
 }
