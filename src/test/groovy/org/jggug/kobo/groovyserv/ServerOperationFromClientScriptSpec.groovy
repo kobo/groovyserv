@@ -78,7 +78,7 @@ class ServerOperationFromClientScriptSpec extends Specification {
         def p = TestUtils.executeClientScript(["-v"])
 
         then:
-        p.err.text=~/ERROR: invalid authtoken/
+        p.err.text =~ /ERROR: invalid authtoken/
 
         cleanup:
         updateAuthTokenFile(originalToken)
@@ -93,7 +93,7 @@ class ServerOperationFromClientScriptSpec extends Specification {
         def p = TestUtils.executeClientScript(["-v"])
 
         then:
-        p.err.text=~/ERROR: could not open authtoken file: /
+        p.err.text =~ /ERROR: could not read authtoken file: /
 
         cleanup:
         createAuthTokenFile(originalToken)
@@ -109,7 +109,7 @@ class ServerOperationFromClientScriptSpec extends Specification {
         def p = TestUtils.executeClientScript(["-v"])
 
         then:
-        p.err.text=~/ERROR: could not read authtoken file: /
+        p.err.text =~ /ERROR: could not read authtoken file: /
 
         cleanup:
         WorkFiles.AUTHTOKEN_FILE.deleteDir()
@@ -117,7 +117,7 @@ class ServerOperationFromClientScriptSpec extends Specification {
     }
 
     private static void assertIncludingServerInvocationLog(text) {
-        assert text.contains("Invoking server")
+        assert text.contains("Start server: ")
         assert text.contains("Starting server")
         assert text.contains("Server is successfully started up")
     }
