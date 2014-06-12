@@ -51,7 +51,7 @@ import org.jggug.kobo.groovyserv.utils.LogUtils
  *     <env1>,<env2>..<envN> are environment variable names which sent to the server. (optional)
  *     <value1>,<value2>..<valueN> are environment variable values which sent to the server. (optional)
  *     <classpath> is the value of environment variable CLASSPATH. (optional)
- *     <authToken> is authentication value which a request is from a valid user who invoked the server. (required)
+ *     <authToken> is authentication value which a request is from a valid user who started the server. (required)
  *     <cmd> is a command to operate a server from client via port. (optional)
  *     LF is line feed (0x0a, '\n').
  *

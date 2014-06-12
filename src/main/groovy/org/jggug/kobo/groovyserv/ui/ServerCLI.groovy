@@ -38,7 +38,7 @@ class ServerCLI {
 
     static void main(String[] args) {
         assert args.size() > 0: "script path is required"
-        new ServerCLI(args[0], args.tail().toList()).invoke()
+        new ServerCLI(args[0], args.tail().toList()).server()
     }
 
     ServerCLI(String serverScriptPath, List<String> args) {
@@ -49,11 +49,11 @@ class ServerCLI {
         this.quiet = options.quiet
         WorkFiles.setUp(port) // for authtoken
         LogUtils.debug = options.verbose
-        LogUtils.debugLog "Invoked by script: ${serverScriptPath}"
+        LogUtils.debugLog "Started by script: ${serverScriptPath}"
         LogUtils.debugLog "Server command: ${args}"
     }
 
-    void invoke() {
+    void server() {
         try {
             // If running as daemon, a server is started up directly.
             if (isDaemonized()) {
@@ -72,7 +72,7 @@ class ServerCLI {
             startServerAsDaemon()
         }
         catch (Throwable e) {
-            LogUtils.errorLog "Failed to invoke a server command", e
+            LogUtils.errorLog "Failed to server a server command", e
             die "ERROR: unexpected error: ${e.message}"
         }
     }
@@ -233,7 +233,7 @@ class ServerCLI {
 
     private void daemonize() {
         def command = convertExecutableCommand([serverScriptPath.absolutePath, "--daemonized", "-q", * args])
-        LogUtils.debugLog "Daemonizing by re-invoking a server script: $command"
+        LogUtils.debugLog "Daemonizing by restarting a server script: $command"
         command.execute()
     }
 

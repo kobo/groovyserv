@@ -1,6 +1,6 @@
 ## Welcome to GroovyServ
 
-**GroovyServ makes Groovy’s startup time much faster, by pre-invoking JVM as a server.**
+**GroovyServ makes Groovy’s startup time much faster, by pre-running JVM as a server.**
 
 In software development with script languages, it’s very important that repeat velocity of “try-and-run” is fast enough.
 It is too long to wait for start-up of Groovy even for 1 second.
