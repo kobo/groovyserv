@@ -32,48 +32,16 @@ import spock.lang.Specification
 @IntegrationTest
 class EnvPropagateSpec extends Specification {
 
-    def "specifying -Cenv allows you propagating specified environment variables"() {
-        expect:
-        assertEnvPropagation([
-            // Env of client side
-            "HOGE___testEnv_singleOption___KEY1___FOO": "111",
-            "HOGE___testEnv_singleOption___KEY1___": "222",
-            "___testEnv_singleOption___KEY1___FOO": "333",
-            "___testEnv_singleOption___KEY1___": "444",
-            "___testEnv_singleOption___key___": "555",
-            "___testEnv_singleOption___ABC": "666",
-            "___testEnv_singleOption___KEY1___${'_' * 100}": "${'v' * 100}",
-            "___testEnv_multiOptions___KEY1___": "777",
-            "___testEnv_multiOptions___KEY2___": "888",
-            "___testEnv_multiOptions___KEY3___": "999",
-        ], [
-            "-Cenv", "___testEnv_singleOption___KEY1___",
-            "-Cenv", "___testEnv_multiOptions___KEY3___",
-            "-e", '''"""
-               |assert System.getenv('HOGE___testEnv_singleOption___KEY1___FOO') == '111'      // part match
-               |assert System.getenv('HOGE___testEnv_singleOption___KEY1___') == '222'         // startsWith
-               |assert System.getenv('___testEnv_singleOption___KEY1___FOO') == '333'          // endsWith
-               |assert System.getenv('___testEnv_singleOption___KEY1___') == '444'             // full match
-               |assert System.getenv('___testEnv_singleOption___key___') == null               // not match: capital sensitive
-               |assert System.getenv('___testEnv_singleOption___ABC') == null                // not match: not including a key
-               |assert System.getenv('___testEnv_singleOption___KEY1___' + '_'*100) == 'v'*100 // a long name is OK
-               |assert System.getenv('___testEnv_multiOptions___KEY2___') == null              // not match
-               |assert System.getenv('___testEnv_multiOptions___KEY3___') == '999'             // matched second option
-               |print('OK')
-               |"""'''.stripMargin()
-        ])
-    }
-
     def "specifying -Cenv-all allows you propagating ALL environment variables"() {
         expect:
         assertEnvPropagation([
             // Env of client side
-            "HOGE___testEnvAll___KEY___FOO": "111",
-            "HOGE___testEnvAll___KEY___": "222",
-            "___testEnvAll___KEY___FOO": "333",
-            "___testEnvAll___KEY___": "444",
-            "___testEnvAll___key___": "555",
-            "___testEnvAll___ABC": "666",
+            HOGE___testEnvAll___KEY___FOO: "111",
+            HOGE___testEnvAll___KEY___: "222",
+            ___testEnvAll___KEY___FOO: "333",
+            ___testEnvAll___KEY___: "444",
+            ___testEnvAll___key___: "555",
+            ___testEnvAll___ABC: "666",
             "___testEnvAll___KEY___${'_' * 100}": "${'v' * 100}",
         ], [
             "-Cenv-all",
@@ -90,19 +58,49 @@ class EnvPropagateSpec extends Specification {
         ])
     }
 
+    def "specifying -Cenv allows you propagating specified environment variables"() {
+        expect:
+        assertEnvPropagation([
+            // Env of client side
+            HOGE___testEnv___KEY1___FOO: "111",
+            HOGE___testEnv___KEY1___: "222",
+            ___testEnv___KEY1___FOO: "333",
+            ___testEnv___KEY1___: "444",
+            ___testEnv___key1___: "555",
+            ___testEnv___ABC: "666",
+            "___testEnv___KEY1___${'long_' * 100}": "${'7' * 100}",
+            ___testEnv___KEY2___: "888",
+            ___testEnv___KEY3___: "999",
+        ], [
+            "-Cenv", "___testEnv___KEY1___",
+            "-Cenv", "___testEnv___KEY3___",
+            "-e", '''"""
+               |assert System.getenv('HOGE___testEnv___KEY1___FOO') == '111'      // part match
+               |assert System.getenv('HOGE___testEnv___KEY1___') == '222'         // startsWith
+               |assert System.getenv('___testEnv___KEY1___FOO') == '333'          // endsWith
+               |assert System.getenv('___testEnv___KEY1___') == '444'             // full match
+               |assert System.getenv('___testEnv___key1___') == null              // not match: capital sensitive
+               |assert System.getenv('___testEnv___ABC') == null                  // not match: not including a key
+               |assert System.getenv('___testEnv___KEY1___' + 'long_'*100) == '7'*100 // a long name is OK
+               |assert System.getenv('___testEnv___KEY2___') == null              // not match
+               |assert System.getenv('___testEnv___KEY3___') == '999'             // matched second option
+               |print('OK')
+               |"""'''.stripMargin()
+        ])
+    }
+
     def "specifying -Cenv-exclude prohibits specified environment variables from being propagated (with -Cenv)"() {
         expect:
         assertEnvPropagation([
             // Env of client side
-            "EXCLUDE1___testEnv_withEnvExclude___KEY___": "111",
-            "___testEnv_withEnvExclude___KEY___EXCLUDE1": "222",
-            "HOGEEXCLUDE1___testEnv_withEnvExclude___KEY___": "333",
-            "HOGE___testEnv_withEnvExclude___KEY___FOO": "444",
-            "___testEnv_withEnvExclude___KEY___": "555",
-            "___testEnv_withEnvExclude___ABC": "666",
-            "___testEnv_withEnvExclude___KEY___EXCLUDE1": "777",
-            "___testEnv_withEnvExclude___KEY___EXCLUDE2": "888",
-            "___testEnv_withEnvExclude___KEY___EXCLUDE3": "999",
+            EXCLUDE1___testEnv_withEnvExclude___KEY___: "111",
+            ___testEnv_withEnvExclude___KEY___EXCLUDE1: "222",
+            HOGEEXCLUDE1___testEnv_withEnvExclude___KEY___: "333",
+            HOGE___testEnv_withEnvExclude___KEY___FOO: "444",
+            ___testEnv_withEnvExclude___KEY___: "555",
+            ___testEnv_withEnvExclude___ABC: "666",
+            ___testEnv_withEnvExclude___KEY___EXCLUDE2: "777",
+            ___testEnv_withEnvExclude___KEY___EXCLUDE3: "888",
         ], [
             "-Cenv", "___testEnv_withEnvExclude___KEY___",
             "-Cenv-exclude", "EXCLUDE1",
@@ -115,7 +113,7 @@ class EnvPropagateSpec extends Specification {
                |assert System.getenv('___testEnv_withEnvExclude___KEY___') == '555'
                |assert System.getenv('___testEnv_withEnvExclude___ABC') == null              // not match to env
                |assert System.getenv('___testEnv_withEnvExclude___KEY___EXCLUDE1') == null     // matched to env but excluded
-               |assert System.getenv('___testEnv_withEnvExclude___KEY___EXCLUDE2') == '888'
+               |assert System.getenv('___testEnv_withEnvExclude___KEY___EXCLUDE2') == '777'
                |assert System.getenv('___testEnv_withEnvExclude___KEY___EXCLUDE3') == null     // matched to env but excluded
                |print('OK')
                |"""'''.stripMargin()
@@ -126,13 +124,13 @@ class EnvPropagateSpec extends Specification {
         expect:
         assertEnvPropagation([
             // Env of client side
-            "EXCLUDE___testEnvAll_withEnvExclude___KEY___": "111",
-            "___testEnvAll_withEnvExclude___KEY___EXCLUDE": "222",
-            "HOGEEXCLUDE___testEnvAll_withEnvExclude___KEY___": "333",
-            "HOGE___testEnvAll_withEnvExclude___KEY___FOO": "444",
-            "___testEnvAll_withEnvExclude___KEY___": "555",
-            "___testEnvAll_withEnvExclude___EXCLUDE": "666",
-            "___testEnvAll_withEnvExclude___ABC": "777",
+            EXCLUDE___testEnvAll_withEnvExclude___KEY___: "111",
+            ___testEnvAll_withEnvExclude___KEY___EXCLUDE: "222",
+            HOGEEXCLUDE___testEnvAll_withEnvExclude___KEY___: "333",
+            HOGE___testEnvAll_withEnvExclude___KEY___FOO: "444",
+            ___testEnvAll_withEnvExclude___KEY___: "555",
+            ___testEnvAll_withEnvExclude___EXCLUDE: "666",
+            ___testEnvAll_withEnvExclude___ABC: "777",
         ], [
             "-Cenv-all",
             "-Cenv-exclude", "EXCLUDE",
@@ -149,11 +147,11 @@ class EnvPropagateSpec extends Specification {
         ])
     }
 
-    def "propagated environment variables isn't disposed on server"() {
+    def "propagated environment variables aren't disposed on server"() {
         expect:
         assertEnvPropagation([
-            "___testKeepOnServer___KEY1___": "111",
-            "___testKeepOnServer___KEY2___": "222"
+            ___testKeepOnServer___KEY1___: "111",
+            ___testKeepOnServer___KEY2___: "222"
         ], [
             "-Cenv-all",
             "-e", '''"""
@@ -165,7 +163,7 @@ class EnvPropagateSpec extends Specification {
 
         and: "can overwrite it"
         assertEnvPropagation([
-            "___testKeepOnServer___KEY1___": "XYZ",
+            ___testKeepOnServer___KEY1___: "XYZ",
         ], [
             "-Cenv-all",
             "-e", '''"""
