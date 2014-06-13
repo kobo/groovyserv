@@ -271,7 +271,10 @@ tasks.withType(Test) each {
     it.testLogging.showStandardStreams = true
 
     it.beforeTest { desc ->
-        AnsiColor.printlnAsTestResult """ - (${desc.className}) "${desc.name}" => """, true
+        def packageName = desc.className.replaceFirst(/\.[^.]*$/, '')
+        def shortenPackageName = packageName.split(/\./).collect { it[0] }.join(".")
+        def simpleClassName = desc.className.replaceFirst(/^.*\./, '')
+        AnsiColor.printlnAsTestResult """ - (${shortenPackageName}.${simpleClassName}) "${desc.name}" => """, true
         ext.watch = StopWatch.start()
     }
     it.afterTest { desc, result ->
@@ -382,7 +385,7 @@ class AnsiColor {
     }
 
     static printlnAsTestResult(text, noLF = false) {
-        def message = Ansi.ansi().render(text.replaceAll(/(SUCCESS)/, "@|green \$1|@").replaceAll(/(ERROR|FAILURE|FAILED)/, "@|red \$1|@").replaceAll(/org.jggug.kobo.groovyserv/, 'o.j.k.g'))
+        def message = Ansi.ansi().render(text.replaceAll(/(SUCCESS)/, "@|green \$1|@").replaceAll(/(ERROR|FAILURE|FAILED)/, "@|red \$1|@"))
         if (noLF) {
             print message
             System.out.flush()
