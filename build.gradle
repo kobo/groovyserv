@@ -292,7 +292,7 @@ task unitTest(type: Test) {
 // integrationTest tasks
 def integrationTestSpecs = [
     //[id: 'Java'],
-    [id: 'CUnix', targetOs: ["macosx", "linux"]],
+    [id: 'CUnix', targetOs: ["macosx", "linux", "windows7"]],
     //[id: 'CWin', extension: '.exe', targetOs: ["windowsxp", "windows7"]],
     //[id: 'Ruby', extension: '.rb', invoker: 'ruby'],
     //[id: 'Shell', asPlatformIndependent: true],

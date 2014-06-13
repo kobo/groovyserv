@@ -121,7 +121,7 @@ func (args Args) Param(argIndex int, option string) (paramIndex int, param strin
 
 func HomeDir() string {
 	if runtime.GOOS == "windows" {
-		os.Getenv("USERPROFILE")
+		return os.Getenv("USERPROFILE")
 	}
 	return os.Getenv("HOME")
 }

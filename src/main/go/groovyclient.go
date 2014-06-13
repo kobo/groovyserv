@@ -32,6 +32,7 @@ import (
 	"strconv"
 	"strings"
 	"syscall"
+	"path/filepath"
 )
 
 const (
@@ -349,7 +350,7 @@ func AuthToken(port int, opts Options) string {
 	}
 
 	// Reading a stored token from a file.
-	authTokenPath := path.Join(HOME_DIR, fmt.Sprintf(".groovy/groovyserv/authtoken-%d", port))
+	authTokenPath := filepath.Join(HOME_DIR, ".groovy", "groovyserv", fmt.Sprintf("authtoken-%d", port))
 	body, err := ioutil.ReadFile(authTokenPath)
 	if err != nil {
 		panic(fmt.Sprintf("could not read authtoken file: %s", err.Error()))
@@ -360,7 +361,7 @@ func AuthToken(port int, opts Options) string {
 }
 
 func StartServer(opts Options) {
-	serverCmdFile := path.Join(GROOVYSERV_HOME_DIR, "bin/groovyserver")
+	serverCmdFile := filepath.Join(GROOVYSERV_HOME_DIR, "bin", "groovyserver")
 	if !gs.FileExists(serverCmdFile) {
 		panic(fmt.Sprintf("server command not found %s", serverCmdFile))
 	}
