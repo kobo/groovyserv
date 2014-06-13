@@ -15,9 +15,7 @@
  */
 package org.jggug.kobo.groovyserv
 
-import org.jggug.kobo.groovyserv.test.IgnoreForShellClient
 import org.jggug.kobo.groovyserv.test.IntegrationTest
-import org.jggug.kobo.groovyserv.test.OnlyForShellClient
 import org.jggug.kobo.groovyserv.test.TestUtils
 import spock.lang.Specification
 
@@ -69,7 +67,6 @@ class ClasspathSpec extends Specification {
         p.err.text == ""
     }
 
-    @IgnoreForShellClient
     def "propagated classpath is disposed each invocation (except for shell client)"() {
         given:
         def args = ["-e", '"new ArgEcho().echo(\'hello\')"']
@@ -81,20 +78,6 @@ class ClasspathSpec extends Specification {
         then:
         p.in.text == ""
         p.err.text.contains("org.codehaus.groovy.control.MultipleCompilationErrorsException")
-    }
-
-    @OnlyForShellClient
-    def "propagated classpath is disposed each invocation (only for shell client)"() {
-        given:
-        def args = ["-e", '"new ArgEcho().echo(\'hello\')"']
-
-        when:
-        def p = TestUtils.executeClientScript(args)
-        p.waitFor()
-
-        then:
-        p.in.text.contains("org.codehaus.groovy.control.MultipleCompilationErrorsException")
-        p.err.text == ""
     }
 
     private static resolvePath(jarFileName) {

@@ -16,7 +16,6 @@
 package org.jggug.kobo.groovyserv
 
 import org.jggug.kobo.groovyserv.test.IntegrationTest
-import org.jggug.kobo.groovyserv.test.IndependentForSpecificClient
 import spock.lang.Specification
 
 /**
@@ -24,7 +23,6 @@ import spock.lang.Specification
  * Before running this, you must start groovyserver.
  */
 @IntegrationTest
-@IndependentForSpecificClient
 class ClientInterruptionSpec extends Specification {
 
     static final String SEP = System.getProperty("line.separator")

@@ -16,14 +16,12 @@
 package org.jggug.kobo.groovyserv
 
 import org.jggug.kobo.groovyserv.test.IntegrationTest
-import org.jggug.kobo.groovyserv.test.IndependentForSpecificClient
 import spock.lang.Specification
 
 /**
  * Specifications when using socket directly
  */
 @IntegrationTest
-@IndependentForSpecificClient
 class GroovyClientSpec extends Specification {
 
     static final String SEP = System.getProperty("line.separator")

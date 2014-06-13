@@ -15,7 +15,6 @@
  */
 package org.jggug.kobo.groovyserv
 
-import org.jggug.kobo.groovyserv.test.IndependentForSpecificClient
 import org.jggug.kobo.groovyserv.test.IntegrationTest
 import org.jggug.kobo.groovyserv.test.TestUtils
 import spock.lang.IgnoreIf
@@ -31,7 +30,6 @@ import java.util.concurrent.TimeUnit
 @IntegrationTest
 @IgnoreIf({ properties["os.name"].startsWith("Windows") })
 @Timeout(value = 30, unit = TimeUnit.SECONDS)
-@IndependentForSpecificClient
 class ServerOperationFromServerScriptSpec extends Specification {
 
     def cleanupSpec() {
@@ -47,7 +45,7 @@ class ServerOperationFromServerScriptSpec extends Specification {
 
         then:
         assertNeverUseStandardInputStream(p)
-        p.err.text=~/Server is successfully started up on [0-9]+ port/
+        p.err.text =~ /Server is successfully started up on [0-9]+ port/
     }
 
     def "try to start server with no running server when there are a previous authtoken file"() {
@@ -61,8 +59,8 @@ class ServerOperationFromServerScriptSpec extends Specification {
         then:
         assertNeverUseStandardInputStream(p)
         with(p.err.text) {
-            it=~/WARN: old authtoken file is deleted: /
-            it=~/Server is successfully started up on [0-9]+ port/
+            it =~ /WARN: old authtoken file is deleted: /
+            it =~ /Server is successfully started up on [0-9]+ port/
         }
     }
 
@@ -75,7 +73,7 @@ class ServerOperationFromServerScriptSpec extends Specification {
 
         then:
         assertNeverUseStandardInputStream(p)
-        p.err.text=~/WARN: server is already running on [0-9]+ port/
+        p.err.text =~ /WARN: server is already running on [0-9]+ port/
     }
 
     def "try to start server with running server when there are an invalid authtoken file"() {
@@ -89,8 +87,8 @@ class ServerOperationFromServerScriptSpec extends Specification {
         then:
         assertNeverUseStandardInputStream(p)
         with(p.err.text) {
-            it=~/ERROR: invalid authtoken/
-            it=~/Hint:  Specify a right authtoken or kill the process somehow\./
+            it =~ /ERROR: invalid authtoken/
+            it =~ /Hint:  Specify a right authtoken or kill the process somehow\./
         }
 
         cleanup:
@@ -108,8 +106,8 @@ class ServerOperationFromServerScriptSpec extends Specification {
         then:
         assertNeverUseStandardInputStream(p)
         with(p.err.text) {
-            it=~/ERROR: could not open authtoken file: /
-            it=~/Hint:  Isn't the port being used by a non-groovyserv process\? Use another port or kill the process somehow\./
+            it =~ /ERROR: could not open authtoken file: /
+            it =~ /Hint:  Isn't the port being used by a non-groovyserv process\? Use another port or kill the process somehow\./
         }
 
         cleanup:
@@ -128,8 +126,8 @@ class ServerOperationFromServerScriptSpec extends Specification {
         then:
         assertNeverUseStandardInputStream(p)
         with(p.err.text) {
-            it=~/ERROR: could not read authtoken file: /
-            it=~/Hint:  Check the permission and file type of /
+            it =~ /ERROR: could not read authtoken file: /
+            it =~ /Hint:  Check the permission and file type of /
         }
 
         cleanup:
@@ -146,7 +144,7 @@ class ServerOperationFromServerScriptSpec extends Specification {
 
         then:
         assertNeverUseStandardInputStream(p)
-        p.err.text=~/WARN: server is not running/
+        p.err.text =~ /WARN: server is not running/
     }
 
     def "try to kill server with no running server when there are a previous authtoken file"() {
@@ -160,8 +158,8 @@ class ServerOperationFromServerScriptSpec extends Specification {
         then:
         assertNeverUseStandardInputStream(p)
         with(p.err.text) {
-            it=~/WARN: server is not running/
-            it=~/WARN: old authtoken file is deleted: /
+            it =~ /WARN: server is not running/
+            it =~ /WARN: old authtoken file is deleted: /
         }
         !WorkFiles.AUTHTOKEN_FILE.exists()
     }
@@ -175,7 +173,7 @@ class ServerOperationFromServerScriptSpec extends Specification {
 
         then:
         assertNeverUseStandardInputStream(p)
-        p.err.text=~/Server is successfully shut down/
+        p.err.text =~ /Server is successfully shut down/
     }
 
     def "try to kill server with running server when there are an invalid authtoken file"() {
@@ -189,8 +187,8 @@ class ServerOperationFromServerScriptSpec extends Specification {
         then:
         assertNeverUseStandardInputStream(p)
         with(p.err.text) {
-            it=~/ERROR: invalid authtoken/
-            it=~/Hint:  Specify a right authtoken or kill the process somehow\./
+            it =~ /ERROR: invalid authtoken/
+            it =~ /Hint:  Specify a right authtoken or kill the process somehow\./
         }
 
         cleanup:
@@ -208,8 +206,8 @@ class ServerOperationFromServerScriptSpec extends Specification {
         then:
         assertNeverUseStandardInputStream(p)
         with(p.err.text) {
-            it=~/ERROR: could not open authtoken file: /
-            it=~/Hint:  Isn't the port being used by a non-groovyserv process\? Use another port or kill the process somehow\./
+            it =~ /ERROR: could not open authtoken file: /
+            it =~ /Hint:  Isn't the port being used by a non-groovyserv process\? Use another port or kill the process somehow\./
         }
 
         cleanup:
@@ -228,8 +226,8 @@ class ServerOperationFromServerScriptSpec extends Specification {
         then:
         assertNeverUseStandardInputStream(p)
         with(p.err.text) {
-            it=~/ERROR: could not read authtoken file: /
-            it=~/Hint:  Check the permission and file type of /
+            it =~ /ERROR: could not read authtoken file: /
+            it =~ /Hint:  Check the permission and file type of /
         }
 
         cleanup:

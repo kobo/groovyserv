@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright 2009-2013 the original author or authors.
+# Copyright 2009-2014 the original author or authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -41,52 +41,51 @@ DIRNAME=`dirname "$PRG"`
 #-------------------------------------------
 
 check_groovyserv_home() {
-    if ! is_file_exists "$GROOVYSERV_HOME/native/src/main/c"; then
+    if ! is_file_exists "$GROOVYSERV_HOME/natives/"; then
         die "ERROR: invalid GROOVYSERV_HOME: $GROOVYSERV_HOME"
     fi
 }
 
-check_make_command() {
-    if ! is_command_available make; then
-        die "ERROR: command not found: make" \
-            "Hint:  Requires 'make' and 'gcc' command in PATH to build a native client from source code."
-    fi
+select_os_arch() {
+    local ext os arch
+    case `uname` in
+        Darwin)
+            os=darwin
+            ;;
+        CYGWIN*)
+            os=windows
+            ext=.exe
+            ;;
+        *)
+            os=linux
+            ;;
+    esac
+    case `uname -m` in
+        "x86_64" | "i686")
+            arch=amd64
+            ;;
+        *)
+            arch=386
+            ;;
+    esac
+    echo "${os}_${arch}"
 }
 
-build_nativeclient() {
-    local src_dir="$GROOVYSERV_HOME/native"
-    info_log "Source directory: $src_dir"
+copy_bin() {
+    local from_dir="$GROOVYSERV_HOME/natives/$1"
+    local bin_dir="$GROOVYSERV_HOME/bin"
 
-    cd "$src_dir"
-    make clean
-    make -e GROOVYSERV_VERSION="@GROOVYSERV_VERSION@" || die "ERROR: could not build native client: $?"
-}
-
-install_nativeclient() {
-    local src_dir="$GROOVYSERV_HOME/native"
-    local built_client_path="$src_dir/build/natives/groovyclient"
-    local bin_client_path="$GROOVYSERV_HOME/bin/groovyclient"
-
-    if [ -f "$bin_client_path" ]; then
-        # explicitly delete the 'groovyclinet' file because 'groovyclient.exe' cannot overwrite the file in windows
-        rm -f "$bin_client_path"
-    fi
-    cp "$built_client_path" "$bin_client_path"
-    chmod +x "$bin_client_path"
+    mkdir -p "$bin_dir" 2>/dev/null
+    cp -r "$from_dir/"* "$bin_dir"
+    chmod +x "$bin_dir/$bin_name"
 
     info_log
-    info_log "Successfully installed: $bin_client_path"
+    info_log "Successfully setup bin from $from_dir"
 }
 
 #-------------------------------------------
 # Main
 #-------------------------------------------
 
-# Pre-processing
 check_groovyserv_home
-check_make_command
-
-# Building and installing
-build_nativeclient
-install_nativeclient
-
+copy_bin `select_os_arch`

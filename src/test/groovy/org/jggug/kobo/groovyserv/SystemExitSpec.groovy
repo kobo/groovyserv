@@ -15,7 +15,7 @@
  */
 package org.jggug.kobo.groovyserv
 
-import org.jggug.kobo.groovyserv.test.IgnoreForShellClient
+
 import org.jggug.kobo.groovyserv.test.IntegrationTest
 import org.jggug.kobo.groovyserv.test.TestUtils
 import spock.lang.Specification
@@ -25,7 +25,6 @@ import spock.lang.Specification
  * Before running this, you must start groovyserver.
  */
 @IntegrationTest
-@IgnoreForShellClient
 class SystemExitSpec extends Specification {
 
     def "using System.exit() doesn't cause a kill of server process"() {

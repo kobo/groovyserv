@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
+
 import org.apache.tools.ant.filters.ReplaceTokens
+import org.fusesource.jansi.Ansi
+import org.fusesource.jansi.AnsiConsole
 
 //===========================================
 // Basic
@@ -70,34 +73,7 @@ AnsiColor.init()
 //----------------------------------
 // copySpec
 
-def nativeBinSpec = copySpec {
-    from("$projectDir") {
-        include "*.txt"
-        include "*.md"
-    }
-    into('lib') {
-        from configurations.archives
-        from "$buildDir/libs"
-    }
-    into('bin') {
-        fileMode = 0755
-        // TODO including cmds for all support env and to make user be able to choose the appropriate one for user's env
-        from "$buildDir/natives/local/groovyclient"     // ignored if not exists
-        from "$buildDir/natives/local/groovyclient.exe" // ignored if not exists
-    }
-    into('bin') { // scripts with filter
-        fileMode = 0755
-        from "$projectDir/src/main/ruby"
-        from "$projectDir/src/main/sh", {
-            rename 'groovyserver.sh', 'groovyserver'
-            exclude 'groovyserv-setup-nativeclient.sh'
-        }
-        from "$projectDir/src/main/bat"
-        filter(ReplaceTokens, tokens: ["GROOVYSERV_VERSION": project.version])
-    }
-}
-
-def platformIndependentBinSpec = copySpec {
+def binSpec = copySpec {
     from("$projectDir") {
         include "*.txt"
         include "*.md"
@@ -108,21 +84,16 @@ def platformIndependentBinSpec = copySpec {
     }
     into('bin') { // scripts with filter
         fileMode = 0755
-        from "$projectDir/src/main/ruby"
         from "$projectDir/src/main/sh", {
-            rename 'groovyclient.sh', 'groovyclient'
             rename 'groovyserver.sh', 'groovyserver'
-            rename 'groovyserv-setup-nativeclient.sh', 'groovyserv-setup-nativeclient'
         }
-        from "$projectDir/src/main/sh/groovyclient.sh" // for using after 'groovyclient' is replaced by native client
         from "$projectDir/src/main/bat"
         filter(ReplaceTokens, tokens: ["GROOVYSERV_VERSION": project.version])
     }
-    into('native') {
-        from "$projectDir/Makefile"
-        into('src/main/c') {
-            from "$projectDir/src/main/c"
-        }
+    into('natives') {
+        fileMode = 0755
+        from "$buildDir/natives"
+        exclude "local"
     }
 }
 
@@ -170,28 +141,10 @@ task compileGroovy(overwrite: true, type: Copy) {
     filter(ReplaceTokens, tokens: ["GROOVYSERV_VERSION": project.version])
 }
 
-// Deprecated
-task compileC {
-    mustRunAfter "compileGo" // to be able to overwrite go
-    inputs.dir file("$projectDir/src/main/c")
-    //outputs.dir file("$buildDir/natives/local") // always run
-
-    doLast {
-        AnsiColor.printlnAsInfo ">> Compiling C sources..."
-        def options = ['-e', "GROOVYSERV_VERSION=${project.version}"]
-        if (Boolean.valueOf(System.properties['debug'])) {
-            options << 'DEBUG=true'
-        }
-        def makeCommand = isDos() ? 'mingw32-make' : 'make'
-        executeCommand([makeCommand, * options])
-    }
-}
-
 task compileGo {
     //inputs.dir file("$projectDir/src/main/go")
     //outputs.dir file("$buildDir/natives")
 
-    // FIXME currently, from a go source to a go exe.
     doLast {
         AnsiColor.printlnAsInfo ">> Compiling Go sources..."
 
@@ -207,11 +160,11 @@ task compileGo {
 
             // for all support environment
             [
-                [GOOS:"darwin", GOARCH:"amd64"],
-                [GOOS:"linux", GOARCH:"386"],
-                [GOOS:"linux", GOARCH:"amd64"],
-                [GOOS:"windows", GOARCH:"386"],
-                [GOOS:"windows", GOARCH:"amd64"],
+                [GOOS: "darwin", GOARCH: "amd64"],
+                [GOOS: "linux", GOARCH: "386"],
+                [GOOS: "linux", GOARCH: "amd64"],
+                [GOOS: "windows", GOARCH: "386"],
+                [GOOS: "windows", GOARCH: "amd64"],
             ].each { env ->
                 def extension = (env.GOOS == "windows") ? ".exe" : ""
                 executeCommand(baseCmd + ["-o", "$buildDir/natives/${env.GOOS}_${env.GOARCH}/$outputFileName$extension", srcFile], env)
@@ -221,41 +174,30 @@ task compileGo {
 }
 
 task assemble(overwrite: true, dependsOn: ['jar', 'compileGo'])
-//task assemble(overwrite: true, dependsOn: ['jar', 'compileGo', 'compileC'])
 
-task executables(dependsOn: ['executablesNativeBin', 'executablesPlatformIndependentBin'])
-
-task executablesNativeBin(type: Copy, dependsOn: ['assemble']) {
-    destinationDir = file("$buildDir/executables/native")
+task executables(type: Copy, dependsOn: ['assemble']) {
+    destinationDir = file("$buildDir/executables")
     inputs.dir file("$projectDir/src/main")
     outputs.dir destinationDir
-    with nativeBinSpec
-}
+    with binSpec
 
-task executablesPlatformIndependentBin(type: Copy, dependsOn: ['assemble']) {
-    destinationDir = file("$buildDir/executables/platformIndependent")
-    inputs.dir file("$projectDir/src/main")
-    outputs.dir destinationDir
-    with platformIndependentBinSpec
+    // for testing
+    into('bin') {
+        fileMode = 0755
+        from "$buildDir/natives/local"
+    }
 }
 
 //----------------------------------
 // Distribution
 
-task dist(dependsOn: ['distNativeBin', 'distPlatformIndependentBin', 'distSrc'])
+task dist(dependsOn: ['distBin', 'distSrc'])
 
-task distNativeBin(type: Zip, dependsOn: ['assemble']) {
+task distBin(type: Zip, dependsOn: ['assemble']) {
     baseName = project.name
-    classifier = getOsSuffix() + '-bin'
+    classifier = '-bin'
     into "$baseName-$version"
-    with nativeBinSpec
-}
-
-task distPlatformIndependentBin(type: Zip) {
-    baseName = project.name
-    classifier = 'platform-independent-bin'
-    into "$baseName-$version"
-    with platformIndependentBinSpec
+    with binSpec
 }
 
 task distSrc(type: Zip) {
@@ -289,55 +231,35 @@ task unitTest(type: Test) {
     }
 }
 
-// integrationTest tasks
-def integrationTestSpecs = [
-    //[id: 'Java'],
-    [id: 'CUnix', targetOs: ["macosx", "linux", "windows7"]],
-    //[id: 'CWin', extension: '.exe', targetOs: ["windowsxp", "windows7"]],
-    //[id: 'Ruby', extension: '.rb', invoker: 'ruby'],
-    //[id: 'Shell', asPlatformIndependent: true],
-].collect { new IntegrationTestSpec(it) }
-integrationTestSpecs.each { spec ->
-    // generate dynamically
-    task "${spec.taskName}"(type: Test, dependsOn: 'executables') {
-        mustRunAfter "unitTest"
-        onlyIf { spec.shouldRun() }
+task integrationTest(type: Test, dependsOn: 'executables') {
+    mustRunAfter "unitTest"
 
-        // Unfortunatelly, these cause no effect for UP-TO-DATE skipping due to systemProperty call in doFirst.
-        inputs.dir file("$projectDir/src")
-        outputs.dir file("$buildDir/test-results/${spec.taskId}")
+    reports.html.destination = file("$buildDir/reports/integration")
+    reports.junitXml.destination = file("$buildDir/test-results/integration")
 
-        reports.html.destination = file("$buildDir/reports/${spec.taskId}")
-        reports.junitXml.destination = file("$buildDir/test-results/${spec.taskId}")
+    // Unfortunatelly, these cause no effect for UP-TO-DATE skipping due to systemProperty call in doFirst.
+    inputs.dir file("$projectDir/src")
+    outputs.dir file("$buildDir/test-results/integration")
 
-        def binDir = convertMixedPath(file("${buildDir}/executables/${(spec.asPlatformIndependent) ? "platformIndependent" : "native"}/bin"))
-        def clientExecutableExpression = "${spec.invoker ?: ''} ${binDir}/groovyclient${spec.extension}".trim()
-        def serverExecutableExpression = "$binDir/groovyserver"
+    def binDir = convertMixedPath(file("${buildDir}/executables/bin"))
+    def clientExecutableExpression = "$binDir/groovyclient"
+    def serverExecutableExpression = "$binDir/groovyserver"
 
-        doFirst {
-            // Support for -Dtest.single
-            if (System.properties['test.single']) {
-                include "**/${System.properties['test.single']}.*"
-            } else {
-                systemProperty 'spock.configuration', "spock/${spec.taskId}.groovy"
-            }
-
-            // prop for TestUtils
-            systemProperties 'groovyserv.executable.client': clientExecutableExpression
-            systemProperties 'groovyserv.executable.server': serverExecutableExpression
-
-            restartGroovyServer()
+    doFirst {
+        // Support for -Dtest.single
+        if (System.properties['test.single']) {
+            include "**/${System.properties['test.single']}.*"
+        } else {
+            // This causes running this task even though UP-TO-DATE skipping condition is met.
+            systemProperty 'spock.configuration', "spock/integration.groovy"
         }
-        doLast {
-            def canShutdownAtIntegrationTestTask = gradle.taskGraph.allTasks.contains(integrationTest)
-            if (!canShutdownAtIntegrationTestTask) {
-                shutdownGroovyServer()
-            }
-        }
+
+        // prop for TestUtils
+        systemProperties 'groovyserv.executable.client': clientExecutableExpression
+        systemProperties 'groovyserv.executable.server': serverExecutableExpression
+
+        restartGroovyServer()
     }
-}
-
-task integrationTest(dependsOn: ['executables', integrationTestSpecs*.taskName]) {
     doLast {
         shutdownGroovyServer()
     }
@@ -347,7 +269,6 @@ task integrationTest(dependsOn: ['executables', integrationTestSpecs*.taskName])
 tasks.withType(Test) each {
     // show standard out and standard error of the test JVM(s) on the console
     it.testLogging.showStandardStreams = true
-
 
     it.beforeTest { desc ->
         AnsiColor.printlnAsTestResult """ - (${desc.className}) "${desc.name}" => """, true
@@ -393,12 +314,12 @@ def shutdownGroovyServer() {
 }
 
 def handleServer(List options) {
-    def binDir = convertMixedPath(file("${buildDir}/executables/native/bin"))
+    def binDir = convertMixedPath(file("${buildDir}/executables/bin"))
     def groovyserverPath = "$binDir/groovyserver"
     executeCommand([* scriptExecutor, groovyserverPath, * options])
 }
 
-def executeCommand(List command, Map env =  [:]) {
+def executeCommand(List command, Map env = [:]) {
     AnsiColor.printlnAsInfo ">> Executing command..."
     AnsiColor.printlnAsInfo "\$ ${command.join(' ')}"
     def pb = new ProcessBuilder(command as String[])
@@ -423,12 +344,6 @@ def convertMixedPath(File file) {
     file.canonicalPath.replaceAll('\\\\', '/')
 }
 
-def getOsSuffix() {
-    def osName = System.properties['os.name'].replaceAll(' ', '').toLowerCase()
-    def osArch = System.properties['os.arch']
-    return "${osName}-${osArch}"
-}
-
 def isWindows() {
     ant.condition(property: "os", value: "windows") { os(family: "windows") }
     return ant.properties['os'] == "windows"
@@ -445,33 +360,6 @@ def isCygwin() {
 def isDos() {
     return isWindows() && !isCygwin()
 }
-
-class IntegrationTestSpec {
-    def id
-    def extension = ''
-    def invoker
-    def asPlatformIndependent = false
-    def targetOs = ["*"]
-
-    def getTaskId() {
-        "integration-${id}"
-    }
-
-    def getTaskName() {
-        "integrationTestFor${id}"
-    }
-
-    def shouldRun() {
-        targetOs.contains("*") || targetOs.contains(osName)
-    }
-
-    private getOsName() {
-        System.properties['os.name'].replaceAll(' ', '').toLowerCase()
-    }
-}
-
-import org.fusesource.jansi.AnsiConsole
-import org.fusesource.jansi.Ansi
 
 class AnsiColor {
     static init() {

@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-import org.jggug.kobo.groovyserv.test.IgnoreForShellClient
 import org.jggug.kobo.groovyserv.test.IntegrationTest
-import org.jggug.kobo.groovyserv.test.IndependentForSpecificClient
 
 runner {
     include IntegrationTest
-    exclude IndependentForSpecificClient, IgnoreForShellClient
 }

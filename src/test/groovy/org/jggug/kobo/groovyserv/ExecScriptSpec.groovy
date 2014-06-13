@@ -15,7 +15,7 @@
  */
 package org.jggug.kobo.groovyserv
 
-import org.jggug.kobo.groovyserv.test.IgnoreForShellClient
+
 import org.jggug.kobo.groovyserv.test.IntegrationTest
 import org.jggug.kobo.groovyserv.test.TestUtils
 import spock.lang.Specification
@@ -47,7 +47,6 @@ class ExecScriptSpec extends Specification {
         p.err.text == ""
     }
 
-    @IgnoreForShellClient
     def "executes an one-liner which reads and prints multi lines"() {
         when:
         def p = TestUtils.executeClientScript(["-e", '"System.in.eachLine { line, index -> println(line * 2); if (index >= 3) { System.exit 0 } }"']) { p ->
