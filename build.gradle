@@ -16,8 +16,6 @@
 
 
 import org.apache.tools.ant.filters.ReplaceTokens
-import org.fusesource.jansi.Ansi
-import org.fusesource.jansi.AnsiConsole
 
 //===========================================
 // Basic
@@ -25,20 +23,12 @@ import org.fusesource.jansi.AnsiConsole
 
 apply plugin: 'groovy'
 apply plugin: 'idea'
+apply plugin: AnsiColorConsoleLogPlugin
 
 defaultTasks 'clean', 'test', 'dist' // whole tasks
 
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
-
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'org.fusesource.jansi:jansi:1.11'
-    }
-}
 
 repositories {
     mavenCentral()
@@ -67,8 +57,6 @@ tasks.withType(GroovyCompile) each { it.groovyOptions.encoding = defaultEncoding
 //===========================================
 // Tasks
 //===========================================
-
-AnsiColor.init()
 
 //----------------------------------
 // copySpec
@@ -146,19 +134,18 @@ task compileGo {
     //outputs.dir file("$buildDir/natives")
 
     doLast {
-        AnsiColor.printlnAsInfo ">> Compiling Go sources..."
+        ansi.printlnAsInfo ">> Compiling Go sources..."
 
         def baseCmd = ["go", "build", "--ldflags", "-X main.GROOVYSERV_VERSION ${project.version}"]
 
-        // TODO if user want to build exe only for him, exes for other envs are anoying.
-        // especially it is required cross-compile features.
+        // TODO if user want to build exe only for him, exes for other envs are anoying. especially it is required cross-compile features.
         file("$projectDir/src/main/go").eachFileMatch(groovy.io.FileType.FILES, ~/.*\.go/) { srcFile ->
             def outputFileName = srcFile.name - '.go'
 
             // for local environment by default for testing
             executeCommand(baseCmd + ["-o", "$buildDir/natives/local/$outputFileName", srcFile])
 
-            // for all support environment
+            // for all support environments
             [
                 [GOOS: "darwin", GOARCH: "amd64"],
                 [GOOS: "linux", GOARCH: "386"],
@@ -265,23 +252,6 @@ task integrationTest(type: Test, dependsOn: 'executables') {
     }
 }
 
-// Common configuration for unitTest and integrationTest
-tasks.withType(Test) each {
-    // show standard out and standard error of the test JVM(s) on the console
-    it.testLogging.showStandardStreams = true
-
-    it.beforeTest { desc ->
-        def packageName = desc.className.replaceFirst(/\.[^.]*$/, '')
-        def shortenPackageName = packageName.split(/\./).collect { it[0] }.join(".")
-        def simpleClassName = desc.className.replaceFirst(/^.*\./, '')
-        AnsiColor.printlnAsTestResult """ - (${shortenPackageName}.${simpleClassName}) "${desc.name}" => """, true
-        ext.watch = StopWatch.start()
-    }
-    it.afterTest { desc, result ->
-        AnsiColor.printlnAsTestResult "${result.resultType} (${String.format('%.3f', ext.watch.wrap())} sec)"
-    }
-}
-
 //------------------------
 // Gradle wrapper
 
@@ -307,12 +277,12 @@ task docs << {
 //===========================================
 
 def restartGroovyServer() {
-    AnsiColor.printlnAsInfo ">> Restarting groovyserver..."
+    ansi.printlnAsInfo ">> Restarting groovyserver..."
     handleServer(["-r", "-v"])
 }
 
 def shutdownGroovyServer() {
-    AnsiColor.printlnAsInfo ">> Shutting down groovyserver..."
+    ansi.printlnAsInfo ">> Shutting down groovyserver..."
     handleServer(["-k"])
 }
 
@@ -323,8 +293,8 @@ def handleServer(List options) {
 }
 
 def executeCommand(List command, Map env = [:]) {
-    AnsiColor.printlnAsInfo ">> Executing command..."
-    AnsiColor.printlnAsInfo "\$ ${command.join(' ')}"
+    ansi.printlnAsInfo ">> Executing command..."
+    ansi.printlnAsInfo "\$ ${command.join(' ')}"
     def pb = new ProcessBuilder(command as String[])
     pb.environment().with {
         if (env) putAll(env)
@@ -362,50 +332,5 @@ def isCygwin() {
 
 def isDos() {
     return isWindows() && !isCygwin()
-}
-
-class AnsiColor {
-    static init() {
-        AnsiConsole.systemInstall()
-        if (Boolean.valueOf(System.properties['no.color'] ?: false)) {
-            Ansi.enabled = false
-        }
-    }
-
-    static printlnAsInfo(text) {
-        println Ansi.ansi().fg(Ansi.Color.CYAN).a(text).reset()
-    }
-
-    static printlnAsWarn(text) {
-        println Ansi.ansi().fg(Ansi.Color.YELLOW).a(text).reset()
-    }
-
-    static printlnAsError(text) {
-        println Ansi.ansi().fg(Ansi.Color.RED).a(text).reset()
-    }
-
-    static printlnAsTestResult(text, noLF = false) {
-        def message = Ansi.ansi().render(text.replaceAll(/(SUCCESS)/, "@|green \$1|@").replaceAll(/(ERROR|FAILURE|FAILED)/, "@|red \$1|@"))
-        if (noLF) {
-            print message
-            System.out.flush()
-        } else {
-            println message
-        }
-    }
-}
-
-class StopWatch {
-    def startTime
-
-    static start() { new StopWatch() }
-
-    private StopWatch() {
-        this.startTime = System.currentTimeMillis()
-    }
-
-    def wrap() {
-        (System.currentTimeMillis() - startTime) / 1000
-    }
 }
 
