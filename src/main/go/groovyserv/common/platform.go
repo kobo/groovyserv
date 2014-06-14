@@ -13,12 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package main
+package common
 
 import (
-	gs "./groovyserv/server"
+	"os"
+	"runtime"
 )
 
-func main() {
-	gs.Run()
+func HomeDir() string {
+	if Windows() {
+		return os.Getenv("USERPROFILE")
+	}
+	return os.Getenv("HOME")
+}
+
+func ClasspathDelimiter() string {
+	return Termary(Windows(), ";", ":")
+}
+
+func Windows() bool {
+	return runtime.GOOS == "windows"
 }

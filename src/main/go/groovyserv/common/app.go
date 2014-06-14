@@ -13,12 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package main
+package common
 
 import (
-	gs "./groovyserv/server"
+	"path/filepath"
 )
 
-func main() {
-	gs.Run()
+func GroovyServWorkDir() string {
+	return ExpandPath(Env("GROOVYSERV_WORK_DIR", filepath.Join(HomeDir(), ".groovy", "groovyserv")))
+}
+
+func GroovyServHome(commandPath string) string {
+	return ExpandPath(Env("GROOVYSERV_HOME", filepath.Join(filepath.Dir(commandPath), "..")))
 }

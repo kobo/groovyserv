@@ -13,12 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package main
+package common
 
 import (
-	gs "./groovyserv/server"
+	"fmt"
+	"net"
 )
 
-func main() {
-	gs.Run()
+func Connect(host string, port int) (net.Conn, error) {
+	servAddr := fmt.Sprintf("%s:%d", host, port)
+	tcpAddr, err := net.ResolveTCPAddr("tcp", servAddr)
+	if err != nil {
+		return nil, err
+	}
+	conn, err := net.DialTCP("tcp", nil, tcpAddr)
+	if err != nil {
+		return nil, err
+	}
+	return conn, nil
 }

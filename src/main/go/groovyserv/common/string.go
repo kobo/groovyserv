@@ -13,12 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package main
+package common
 
-import (
-	gs "./groovyserv/server"
-)
+func ArrayAny(slice []string, expected ...string) bool {
+	for _, v := range slice {
+		for _, e := range expected {
+			if v == e {
+				return true
+			}
+		}
+	}
+	return false
+}
 
-func main() {
-	gs.Run()
+func ArrayFuncAny(slice []string, condition func(string) bool) bool {
+	for _, v := range slice {
+		if condition(v) {
+			return true
+		}
+	}
+	return false
+}
+
+func Coalesce(slice ...string) string {
+	for _, v := range slice {
+		if len(v) > 0 {
+			return v
+		}
+	}
+	return ""
+}
+
+func Termary(condition bool, trueValue string, falseValue string) string {
+	if condition {
+		return trueValue
+	} else {
+		return falseValue
+	}
 }
