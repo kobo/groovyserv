@@ -20,9 +20,9 @@ import org.jggug.kobo.groovyserv.ExitStatus
 import org.jggug.kobo.groovyserv.GroovyClient
 import org.jggug.kobo.groovyserv.GroovyServer
 import org.jggug.kobo.groovyserv.WorkFiles
-import org.jggug.kobo.groovyserv.platform.PlatformMethods
 import org.jggug.kobo.groovyserv.utils.Holders
 import org.jggug.kobo.groovyserv.utils.LogUtils
+
 /**
  * Facade for script of groovyserver.*
  *
@@ -219,7 +219,7 @@ class ServerCLI {
         }
         def opt = cli.parse(args)
         if (!opt) die "ERROR: could not parse arguments: ${args.join(' ')}"
-        assert !opt.help: "help usage should be shown by a front script"
+        assert !opt.help: "help usage should be shown by a front launcher command"
         if (opt.kill && opt.restart) {
             die "ERROR: invalid arguments: ${args.join(' ')}",
                 "Hint: You cannot specify --kill and --restart options at the same time."
@@ -232,16 +232,9 @@ class ServerCLI {
     }
 
     private void daemonize() {
-        def command = convertExecutableCommand([serverScriptPath.absolutePath, "--daemonized", "-q", * args])
+        def command = [serverScriptPath.absolutePath, "--daemonized", "-q", *args]
         LogUtils.debugLog "Daemonizing by restarting a server script: $command"
         command.execute()
-    }
-
-    private static List<String> convertExecutableCommand(List<String> command) {
-        if (PlatformMethods.isWindows()) {
-            return ["cmd.exe", "/c"] + command
-        }
-        return command
     }
 
     private println(message) {
