@@ -40,12 +40,6 @@ DIRNAME=`dirname "$PRG"`
 # Functions
 #-------------------------------------------
 
-check_groovyserv_home() {
-    if ! is_file_exists "$GROOVYSERV_HOME/natives/"; then
-        die "ERROR: invalid GROOVYSERV_HOME: $GROOVYSERV_HOME"
-    fi
-}
-
 select_os_arch() {
     local ext os arch
     case `uname` in
@@ -72,9 +66,13 @@ select_os_arch() {
 }
 
 copy_bin() {
-    local from_dir="$GROOVYSERV_HOME/natives/$1"
+    local platform=$1
+    local from_dir="$GROOVYSERV_HOME/platforms/$platforms"
     local bin_dir="$GROOVYSERV_HOME/bin"
 
+    if [ ! -d "$from_dir" ]; then
+        die "ERROR: your platform not supported: $platform"
+    fi
     mkdir -p "$bin_dir" 2>/dev/null
     cp -r "$from_dir/"* "$bin_dir"
     chmod +x "$bin_dir/$bin_name"
@@ -87,5 +85,4 @@ copy_bin() {
 # Main
 #-------------------------------------------
 
-check_groovyserv_home
 copy_bin `select_os_arch`

@@ -70,17 +70,9 @@ def binSpec = copySpec {
         from configurations.archives
         from "$buildDir/libs"
     }
-    into('bin') { // scripts with filter
+    into('platforms') {
         fileMode = 0755
-        from "$projectDir/src/main/sh", {
-            rename 'groovyserver.sh', 'groovyserver'
-        }
-        from "$projectDir/src/main/bat"
-        filter(ReplaceTokens, tokens: ["GROOVYSERV_VERSION": project.version])
-    }
-    into('natives') {
-        fileMode = 0755
-        from "$buildDir/natives"
+        from "$buildDir/platforms"
         exclude "local"
     }
 }
@@ -130,31 +122,27 @@ task compileGroovy(overwrite: true, type: Copy) {
 }
 
 task compileGo {
-    //inputs.dir file("$projectDir/src/main/go")
-    //outputs.dir file("$buildDir/natives")
-
     doLast {
         ansi.printlnAsInfo ">> Compiling Go sources..."
-
-        def baseCmd = ["go", "build", "--ldflags", "-X main.GROOVYSERV_VERSION ${project.version}"]
-
-        // TODO if user want to build exe only for him, exes for other envs are anoying. especially it is required cross-compile features.
         file("$projectDir/src/main/go").eachFileMatch(groovy.io.FileType.FILES, ~/.*\.go/) { srcFile ->
-            def outputFileName = srcFile.name - '.go'
-
             // for local environment by default for testing
-            executeCommand(baseCmd + ["-o", "$buildDir/natives/local/$outputFileName", srcFile])
+            compileGoSrc(srcFile, "local")
+        }
+    }
+}
 
-            // for all support environments
+task crossCompileGo {
+    doLast {
+        ansi.printlnAsInfo ">> Cross compiling Go sources..."
+        file("$projectDir/src/main/go").eachFileMatch(groovy.io.FileType.FILES, ~/.*\.go/) { srcFile ->
             [
                 [GOOS: "darwin", GOARCH: "amd64"],
                 [GOOS: "linux", GOARCH: "386"],
                 [GOOS: "linux", GOARCH: "amd64"],
-                [GOOS: "windows", GOARCH: "386"],
-                [GOOS: "windows", GOARCH: "amd64"],
-            ].each { env ->
-                def extension = (env.GOOS == "windows") ? ".exe" : ""
-                executeCommand(baseCmd + ["-o", "$buildDir/natives/${env.GOOS}_${env.GOARCH}/$outputFileName$extension", srcFile], env)
+                [GOOS: "windows", GOARCH: "386", ext: ".exe"],
+                [GOOS: "windows", GOARCH: "amd64", ext: ".exe"],
+            ].each { platform ->
+                compileGoSrc(srcFile, "${platform.GOOS}_${platform.GOARCH}")
             }
         }
     }
@@ -171,7 +159,7 @@ task executables(type: Copy, dependsOn: ['assemble']) {
     // for testing
     into('bin') {
         fileMode = 0755
-        from "$buildDir/natives/local"
+        from "$buildDir/platforms/local"
     }
 }
 
@@ -180,14 +168,25 @@ task executables(type: Copy, dependsOn: ['assemble']) {
 
 task dist(dependsOn: ['distBin', 'distSrc'])
 
-task distBin(type: Zip, dependsOn: ['assemble']) {
+task distBin(type: Zip, dependsOn: ['assemble', 'crossCompileGo']) {
+    inputs.dir file(projectDir)
     baseName = project.name
-    classifier = '-bin'
+    classifier = 'bin'
     into "$baseName-$version"
     with binSpec
+
+    // for multiple platoforms
+    into('bin') { // scripts with filter
+        fileMode = 0755
+        from "$projectDir/src/main/sh", {
+            include "groovyserv-setup-bin.sh"
+            include "_common.sh"
+        }
+    }
 }
 
 task distSrc(type: Zip) {
+    inputs.dir file(projectDir)
     baseName = project.name
     classifier = 'src'
     into "$baseName-$version"
@@ -332,5 +331,14 @@ def isCygwin() {
 
 def isDos() {
     return isWindows() && !isCygwin()
+}
+
+def compileGoSrc(File srcFile, String platform) {
+    def outputFileName = srcFile.name - '.go'
+    if (isWindows()) {
+        outputFileName += ".exe"
+    }
+    def baseCmd = ["go", "build", "--ldflags", "-X main.GROOVYSERV_VERSION ${project.version}"]
+    executeCommand(baseCmd + ["-o", "$buildDir/platforms/$platform/$outputFileName", srcFile.path])
 }
 
