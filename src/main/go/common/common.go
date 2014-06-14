@@ -22,6 +22,8 @@ import (
 	"log"
 	"net"
 	"os"
+	"os/exec"
+	"path/filepath"
 	"runtime"
 	"strconv"
 )
@@ -47,6 +49,23 @@ func ArrayFuncAny(slice []string, condition func(string) bool) bool {
 		}
 	}
 	return false
+}
+
+func Coalesce(slice ...string) string {
+	for _, v := range slice {
+		if len(v) > 0 {
+			return v
+		}
+	}
+	return ""
+}
+
+func Termary(condition bool, trueValue string, falseValue string) string {
+	if condition {
+		return trueValue
+	} else {
+		return falseValue
+	}
 }
 
 //--------------------
@@ -82,6 +101,14 @@ func FileExists(name string) bool {
 	return !os.IsNotExist(err)
 }
 
+func ExpandPath(path string) string {
+	if filepath.IsAbs(path) {
+		return path
+	}
+	wd, _ := os.Getwd()
+	return filepath.Join(wd, path)
+}
+
 //--------------------
 // net
 
@@ -99,14 +126,7 @@ func Connect(host string, port int) (net.Conn, error) {
 }
 
 //--------------------
-// script
-
-func ExitIfPanic() {
-	if r := recover(); r != nil {
-		fmt.Fprintf(os.Stderr, "ERROR: %s\n", r)
-		os.Exit(1)
-	}
-}
+// script/platform
 
 type Args []string
 
@@ -120,10 +140,18 @@ func (args Args) Param(argIndex int, option string) (paramIndex int, param strin
 }
 
 func HomeDir() string {
-	if runtime.GOOS == "windows" {
+	if Windows() {
 		return os.Getenv("USERPROFILE")
 	}
 	return os.Getenv("HOME")
+}
+
+func ClasspathDelimiter() string {
+	return Termary(Windows(), ";", ":")
+}
+
+func Windows() bool {
+	return runtime.GOOS == "windows"
 }
 
 func Env(name string, defaultValue string) string {
@@ -145,4 +173,31 @@ func EnvInt(name string, defaultValue int) int {
 		return defaultValue
 	}
 	return value
+}
+
+func CommandExists(name string) bool {
+	// If there is the command in PATH, Command.Path() returns its full path.
+	return exec.Command(name).Path != name
+}
+
+func Dump(obj interface{}) {
+	fmt.Printf("%#v\n", obj)
+}
+
+func ExitIfPanic() {
+	if r := recover(); r != nil {
+		fmt.Fprintf(os.Stderr, "ERROR: %s\n", r)
+		os.Exit(1)
+	}
+}
+
+//--------------------
+// groovyserv
+
+func GroovyServWorkDir() string {
+	return ExpandPath(Env("GROOVYSERV_WORK_DIR", filepath.Join(HomeDir(), ".groovy", "groovyserv")))
+}
+
+func GroovyServHome(commandPath string) string {
+	return ExpandPath(Env("GROOVYSERV_HOME", filepath.Join(filepath.Dir(commandPath), "..")))
 }

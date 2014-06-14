@@ -60,8 +60,9 @@ options:
 )
 
 var (
-	HOME_DIR            = gs.HomeDir()
-	GROOVYSERV_HOME_DIR = gs.Env("GROOVYSERV_HOME", path.Join(path.Dir(os.Args[0]), ".."))
+	HOME                = gs.HomeDir()
+	GROOVYSERV_WORK_DIR = gs.GroovyServWorkDir()
+	GROOVYSERV_HOME     = gs.Env("GROOVYSERV_HOME", filepath.Join(path.Dir(os.Args[0]), ".."))
 	VERSION_MESSAGE     = "GroovyServ Version: Client: " + GROOVYSERV_VERSION
 	GROOVYSERV_VERSION  = "x.x" // replaced by ldflags
 )
@@ -350,7 +351,7 @@ func AuthToken(port int, opts Options) string {
 	}
 
 	// Reading a stored token from a file.
-	authTokenPath := filepath.Join(HOME_DIR, ".groovy", "groovyserv", fmt.Sprintf("authtoken-%d", port))
+	authTokenPath := filepath.Join(GROOVYSERV_WORK_DIR, fmt.Sprintf("authtoken-%d", port))
 	body, err := ioutil.ReadFile(authTokenPath)
 	if err != nil {
 		panic(fmt.Sprintf("could not read authtoken file: %s", err.Error()))
@@ -361,7 +362,7 @@ func AuthToken(port int, opts Options) string {
 }
 
 func StartServer(opts Options) {
-	serverCmdFile := filepath.Join(GROOVYSERV_HOME_DIR, "bin", "groovyserver")
+	serverCmdFile := filepath.Join(GROOVYSERV_HOME, "bin", "groovyserver")
 	if !gs.FileExists(serverCmdFile) {
 		panic(fmt.Sprintf("server command not found %s", serverCmdFile))
 	}
@@ -372,8 +373,7 @@ func StartServer(opts Options) {
 		fmt.Fprintf(os.Stderr, "Start server: %s -p %d %s\n", serverCmdFile, opts.client.port, strings.Join(opts.client.startServerOpts, " "))
 		cmd.Stdout, cmd.Stderr = os.Stdout, os.Stderr
 	}
-	err := cmd.Run()
-	if err != nil {
+	if err := cmd.Run(); err != nil {
 		panic(fmt.Sprintf("could not start groovyserver: %s", err.Error()))
 	}
 }
