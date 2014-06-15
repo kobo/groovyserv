@@ -18,6 +18,7 @@ package org.jggug.kobo.groovyserv
 import org.jggug.kobo.groovyserv.exception.GServException
 import org.jggug.kobo.groovyserv.platform.EnvironmentVariables
 import org.jggug.kobo.groovyserv.stream.StandardStreams
+import org.jggug.kobo.groovyserv.utils.Holders
 import org.jggug.kobo.groovyserv.utils.LogUtils
 
 /**
@@ -126,5 +127,30 @@ class GroovyServer {
         activeThreadGroups << threadGroup
 
         new Thread(threadGroup, new RequestWorker(authToken, socket), "RequestWorker:${socket.port}")
+    }
+
+    public static void main(String... args) {
+        if (Holders.groovyServer) {
+            LogUtils.errorLog "GroovyServer is already started in the same JVM"
+            exit ExitStatus.UNEXPECTED_ERROR
+        }
+
+        // Setup GroovyServer instance
+        def groovyServer = new GroovyServer()
+        groovyServer.port = args[0] as int
+        if (args.size() > 1) groovyServer.authToken = new AuthToken(args[1])
+        if (args.size() > 2) groovyServer.allowFrom = args[2].split(',')
+        if (args.size() > 3) {
+            // Setup logging
+            LogUtils.debug = Boolean.valueOf(args[3])
+            LogUtils.debugLog "Received arguments: ${args}"
+        }
+
+        // Set holders for global access
+        // This is necessary for RequestWorker's call of shutdown.
+        Holders.groovyServer = groovyServer
+
+        // Start server (blocking operation)
+        groovyServer.start()
     }
 }

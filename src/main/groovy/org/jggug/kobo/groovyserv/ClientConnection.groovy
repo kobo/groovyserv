@@ -115,7 +115,7 @@ class ClientConnection implements Closeable {
                 write(data)
                 flush()
             }
-            LogUtils.debugLog "Sent exit status: ${status} ${message ? " with the message: $message" : ""}"
+            LogUtils.debugLog "Sent exit status ${status} ${message ? "with the message: $message" : ""}"
         } catch (IOException e) {
             throw new GServIOException("Failed to send exit status", e)
         }

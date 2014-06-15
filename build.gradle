@@ -288,7 +288,7 @@ def shutdownGroovyServer() {
 def handleServer(List options) {
     def binDir = convertMixedPath(file("${buildDir}/executables/bin"))
     def groovyserverPath = "$binDir/groovyserver"
-    executeCommand([* scriptExecutor, groovyserverPath, * options])
+    executeCommand([groovyserverPath, * options])
 }
 
 def executeCommand(List command, Map env = [:]) {
@@ -302,14 +302,6 @@ def executeCommand(List command, Map env = [:]) {
     def p = pb.start()
     p.consumeProcessOutput(System.out, System.err)
     p.waitFor()
-}
-
-def getScriptExecutor() {
-    if (isDos()) {
-        return ["cmd.exe", "/c",]
-    } else {
-        return ["bash"]
-    }
 }
 
 def convertMixedPath(File file) {
@@ -338,7 +330,7 @@ def compileGoSrc(File srcFile, String platform) {
     if (isWindows()) {
         outputFileName += ".exe"
     }
-    def baseCmd = ["go", "build", "--ldflags", "-X main.GROOVYSERV_VERSION ${project.version}"]
+    def baseCmd = ["go", "build", "--ldflags", "-X main.GroovyServVersion ${project.version}"]
     executeCommand(baseCmd + ["-o", "$buildDir/platforms/$platform/$outputFileName", srcFile.path])
 }
 

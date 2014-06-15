@@ -15,22 +15,31 @@
  */
 package common
 
-import (
-	"os"
-	"runtime"
-)
-
-func HomeDir() string {
-	if Windows() {
-		return os.Getenv("USERPROFILE")
+func ArrayAny(slice []string, expected ...string) bool {
+	for _, v := range slice {
+		for _, e := range expected {
+			if v == e {
+				return true
+			}
+		}
 	}
-	return os.Getenv("HOME")
+	return false
 }
 
-func ClasspathDelimiter() string {
-	return Termary(Windows(), ";", ":")
+func ArrayFuncAny(slice []string, condition func(string) bool) bool {
+	for _, v := range slice {
+		if condition(v) {
+			return true
+		}
+	}
+	return false
 }
 
-func Windows() bool {
-	return runtime.GOOS == "windows"
+func Coalesce(slice ...string) string {
+	for _, v := range slice {
+		if len(v) > 0 {
+			return v
+		}
+	}
+	return ""
 }

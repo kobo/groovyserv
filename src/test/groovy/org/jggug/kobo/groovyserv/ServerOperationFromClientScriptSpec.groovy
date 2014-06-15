@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 package org.jggug.kobo.groovyserv
-
 import org.jggug.kobo.groovyserv.test.IntegrationTest
 import org.jggug.kobo.groovyserv.test.TestUtils
 import spock.lang.IgnoreIf
@@ -22,7 +21,6 @@ import spock.lang.Specification
 import spock.lang.Timeout
 
 import java.util.concurrent.TimeUnit
-
 /**
  * Specifications for the {@code groovyclient}.
  * Before running this, you must start groovyserver.
@@ -133,7 +131,6 @@ class ServerOperationFromClientScriptSpec extends Specification {
     }
 
     private static void assertIncludingServerInvocationLog(text) {
-        assert text.contains("Start server: ")
         assert text.contains("Starting server")
         assert text.contains("Server is successfully started up")
     }

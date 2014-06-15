@@ -18,24 +18,24 @@ package org.jggug.kobo.groovyserv.test
 import org.jggug.kobo.groovyserv.GroovyClient
 
 import static org.junit.Assert.*
+
 /**
  * Utilities only for tests.
  */
 class TestUtils {
 
-    static Process executeClientScriptWithEnv(args, Map envMap, closure = null) {
-        def client = clientExecutablePath.split(" ") as List
-        def p = createProcessBuilder([* client, * args], envMap).start()
+    static Process executeClientScriptWithEnv(List<String> args, Map<String, String> envMap, Closure closure = null) {
+        def p = createProcessBuilder([clientExecutablePath, *args], envMap).start()
         if (closure) closure.call(p)
         p.waitFor()
         return p
     }
 
-    static Process executeClientScript(args, closure = null) {
+    static Process executeClientScript(List<String> args, Closure closure = null) {
         executeClientScriptWithEnv(args, null, closure)
     }
 
-    static Process executeClientScriptOkWithEnv(args, Map envMap, closure = null) {
+    static Process executeClientScriptOkWithEnv(List<String> args, Map<String, String> envMap, Closure closure = null) {
         def p = executeClientScriptWithEnv(args, envMap, closure)
         if (p.exitValue() != 0) {
             fail "ERROR: exitValue:${p.exitValue()}, in:[${p.in.text}], err:[${p.err.text}]"
@@ -43,7 +43,7 @@ class TestUtils {
         return p
     }
 
-    static Process executeClientScriptOk(args, closure = null) {
+    static Process executeClientScriptOk(List<String> args, Closure closure = null) {
         executeClientScriptOkWithEnv(args, null, closure)
     }
 
@@ -69,13 +69,13 @@ class TestUtils {
         }
     }
 
-    static Process executeServerScript(List options) {
-        def p = createProcessBuilder(["sh", serverExecutablePath] + options).start()
+    static Process executeServerScript(List<String> options) {
+        def p = createProcessBuilder([serverExecutablePath, *options]).start()
         p.waitFor()
         return p
     }
 
-    private static createProcessBuilder(List commandLine, Map envMap = [:]) {
+    private static createProcessBuilder(List<String> commandLine, Map<String, String> envMap = [:]) {
         ProcessBuilder processBuilder = new ProcessBuilder()
         def actualCommand = processBuilder.command()
 
@@ -99,11 +99,11 @@ class TestUtils {
         return processBuilder
     }
 
-    private static getClientExecutablePath() {
+    private static String getClientExecutablePath() {
         System.getProperty("groovyserv.executable.client")
     }
 
-    private static getServerExecutablePath() {
+    private static String getServerExecutablePath() {
         System.getProperty("groovyserv.executable.server")
     }
 }

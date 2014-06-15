@@ -24,8 +24,8 @@ import (
 	"path/filepath"
 )
 
-func ReadLine(rd *bufio.Reader) (string, error) {
-	lineBytes, isPrefix, err := rd.ReadLine()
+func ReadLine(reader *bufio.Reader) (string, error) {
+	lineBytes, isPrefix, err := reader.ReadLine() // TODO use isPrefix
 	line := string(lineBytes)
 	if len(line) == 0 {
 		return line, nil
@@ -37,16 +37,17 @@ func ReadLine(rd *bufio.Reader) (string, error) {
 	return line, nil
 }
 
-func WriteLine(writer io.Writer, text string) {
-	Write(writer, text+"\n")
+func WriteLine(writer io.Writer, text string) error {
+	return Write(writer, text+"\n")
 }
 
-func Write(writer io.Writer, text string) {
+func Write(writer io.Writer, text string) error {
 	_, err := writer.Write([]byte(text))
 	if err != nil {
-		panic(fmt.Sprintf("could not write: %s", err.Error())) // TODO It seems a bad way to use a panic in utility code
+		return fmt.Errorf("could not write: %s", err.Error())
 	}
 	log.Println("Wrote: ", text)
+	return nil
 }
 
 func FileExists(name string) bool {

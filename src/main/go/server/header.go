@@ -13,41 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package common
+package server
 
-func ArrayAny(slice []string, expected ...string) bool {
-	for _, v := range slice {
-		for _, e := range expected {
-			if v == e {
-				return true
-			}
-		}
-	}
-	return false
-}
+import "strings"
 
-func ArrayFuncAny(slice []string, condition func(string) bool) bool {
-	for _, v := range slice {
-		if condition(v) {
-			return true
-		}
-	}
-	return false
-}
+type Headers map[string]string
 
-func Coalesce(slice ...string) string {
-	for _, v := range slice {
-		if len(v) > 0 {
-			return v
-		}
-	}
-	return ""
-}
-
-func Termary(condition bool, trueValue string, falseValue string) string {
-	if condition {
-		return trueValue
-	} else {
-		return falseValue
-	}
+func (headers Headers) Value(key string) (value string, ok bool) {
+	value, ok = headers[key]
+	return strings.Trim(value, " "), ok
 }

@@ -17,6 +17,8 @@ package common
 
 import (
 	"fmt"
+	"io/ioutil"
+	"log"
 	"os"
 	"os/exec"
 	"strconv"
@@ -25,7 +27,7 @@ import (
 type Args []string
 
 func (args Args) Param(argIndex int, option string) (paramIndex int, param string) {
-	paramIndex = argIndex+1
+	paramIndex = argIndex + 1
 	if len(args) <= paramIndex {
 		panic(fmt.Sprintf("option %s requires a parameter", option)) // TODO It seems a bad way to use a panic in utility code
 	}
@@ -68,4 +70,11 @@ func ExitIfPanic() {
 		fmt.Fprintf(os.Stderr, "ERROR: %s\n", r)
 		os.Exit(1)
 	}
+}
+
+func SetupGlobalLogger(discard bool) {
+	if discard {
+		log.SetOutput(ioutil.Discard)
+	}
+	log.SetFlags(log.Ldate | log.Ltime | log.Lmicroseconds | log.Lshortfile)
 }
