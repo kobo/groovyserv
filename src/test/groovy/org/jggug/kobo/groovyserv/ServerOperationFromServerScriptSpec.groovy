@@ -89,7 +89,6 @@ class ServerOperationFromServerScriptSpec extends Specification {
         p.err.text =~ /WARN: server is already running on [0-9]+ port/
     }
 
-    @IgnoreRest
     def "try to start server with running server when there are an invalid authtoken file"() {
         given:
         startServerIfNotRunning()

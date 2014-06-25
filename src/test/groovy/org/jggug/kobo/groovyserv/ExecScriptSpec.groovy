@@ -65,4 +65,12 @@ class ExecScriptSpec extends Specification {
         p.err.text == ""
     }
 
+    def "executs an one-liner which prints a lot of text over a buffer of command"() {
+        when:
+        def p = TestUtils.executeClientScriptOk(["-e", 'println("x"*10000)'])
+
+        then:
+        p.in.text == "x" * 10000 + SEP
+
+    }
 }
