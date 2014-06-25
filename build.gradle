@@ -207,13 +207,8 @@ task unitTest(type: Test) {
     outputs.dir file("$buildDir/test-results/unit")
 
     doFirst {
-        // Support for -Dtest.single
-        if (System.properties['test.single']) {
-            include "**/${System.properties['test.single']}.*"
-        } else {
-            // This causes running this task even though UP-TO-DATE skipping condition is met.
-            systemProperty 'spock.configuration', "spock/unit.groovy"
-        }
+        // This causes running this task even though UP-TO-DATE skipping condition is met.
+        systemProperty 'spock.configuration', "spock/unit.groovy"
     }
 }
 
@@ -232,13 +227,8 @@ task integrationTest(type: Test, dependsOn: 'executables') {
     def serverExecutableExpression = "$binDir/groovyserver"
 
     doFirst {
-        // Support for -Dtest.single
-        if (System.properties['test.single']) {
-            include "**/${System.properties['test.single']}.*"
-        } else {
-            // This causes running this task even though UP-TO-DATE skipping condition is met.
-            systemProperty 'spock.configuration', "spock/integration.groovy"
-        }
+        // This causes running this task even though UP-TO-DATE skipping condition is met.
+        systemProperty 'spock.configuration', "spock/integration.groovy"
 
         // prop for TestUtils
         systemProperties 'groovyserv.executable.client': clientExecutableExpression
