@@ -313,17 +313,6 @@ def isWindows() {
     return ant.properties['os'] == "windows"
 }
 
-def isCygwin() {
-    try {
-        return "uname".execute().text.toLowerCase().contains("cygwin")
-    } catch (IOException e) {
-        return false
-    }
-}
-
-def isDos() {
-    return isWindows() && !isCygwin()
-}
 
 def compileGoSrc(File srcFile, String platform) {
     def outputFileName = srcFile.name - '.go'
