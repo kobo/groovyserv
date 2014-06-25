@@ -32,12 +32,28 @@ import java.util.concurrent.TimeUnit
 @Timeout(value = 30, unit = TimeUnit.SECONDS)
 class ServerOperationFromClientScriptSpec extends Specification {
 
+    static int port = GroovyServer.DEFAULT_PORT
+
+    def setup() {
+        port++
+        WorkFiles.setUp(port)
+    }
+
+    def cleanup() {
+        shutdownServerIfRunning()
+    }
+
+    def cleanupSpec() {
+        port = GroovyServer.DEFAULT_PORT
+        WorkFiles.setUp(port)
+    }
+
     def "try to execute client with no running server (when there are no authtoken file)"() {
         given:
-        TestUtils.shutdownServerIfRunning()
+        shutdownServerIfRunning()
 
         when:
-        def p = TestUtils.executeClientScriptOk(["-v"])
+        def p = executeClientScriptOk(["-v"])
 
         then:
         assertIncludingVersion(p.in.text)
@@ -46,11 +62,11 @@ class ServerOperationFromClientScriptSpec extends Specification {
 
     def "try to execute client with no running server when there are previous an authtoken file"() {
         given:
-        TestUtils.shutdownServerIfRunning()
+        shutdownServerIfRunning()
         createAuthTokenFile()
 
         when:
-        def p = TestUtils.executeClientScriptOk(["-v"])
+        def p = executeClientScriptOk(["-v"])
 
         then:
         assertIncludingVersion(p.in.text)
@@ -59,10 +75,10 @@ class ServerOperationFromClientScriptSpec extends Specification {
 
     def "try to execute client with running server (when there are an authtoken file)"() {
         given:
-        TestUtils.startServerIfNotRunning()
+        startServerIfNotRunning()
 
         when:
-        def p = TestUtils.executeClientScriptOk(["-v"])
+        def p = executeClientScriptOk(["-v"])
 
         then:
         assertIncludingVersion(p.in.text)
@@ -71,11 +87,11 @@ class ServerOperationFromClientScriptSpec extends Specification {
 
     def "try to execute client with running server when there are an invalid authtoken file"() {
         given:
-        TestUtils.startServerIfNotRunning()
+        startServerIfNotRunning()
         def originalToken = updateAuthTokenFile("INVALID_TOKEN")
 
         when:
-        def p = TestUtils.executeClientScript(["-v"])
+        def p = executeClientScript(["-v"])
 
         then:
         p.err.text =~ /ERROR: invalid authtoken/
@@ -86,11 +102,11 @@ class ServerOperationFromClientScriptSpec extends Specification {
 
     def "try to execute client with running server when there are no authtoken file"() {
         given:
-        TestUtils.startServerIfNotRunning()
+        startServerIfNotRunning()
         def originalToken = deleteAuthTokenFile()
 
         when:
-        def p = TestUtils.executeClientScript(["-v"])
+        def p = executeClientScript(["-v"])
 
         then:
         p.err.text =~ /ERROR: could not read authtoken file: /
@@ -101,12 +117,12 @@ class ServerOperationFromClientScriptSpec extends Specification {
 
     def "try to execute client with running server when there are no permission for an authtoken file"() {
         given:
-        TestUtils.startServerIfNotRunning()
+        startServerIfNotRunning()
         def originalToken = deleteAuthTokenFile()
         WorkFiles.AUTHTOKEN_FILE.mkdir() // to fail to read as file
 
         when:
-        def p = TestUtils.executeClientScript(["-v"])
+        def p = executeClientScript(["-v"])
 
         then:
         p.err.text =~ /ERROR: could not read authtoken file: /
@@ -149,5 +165,23 @@ class ServerOperationFromClientScriptSpec extends Specification {
         def oldToken = WorkFiles.AUTHTOKEN_FILE.text
         WorkFiles.AUTHTOKEN_FILE.delete()
         return oldToken
+    }
+
+    private static startServerIfNotRunning() {
+        TestUtils.startServerIfNotRunning(port)
+    }
+
+    private static shutdownServerIfRunning() {
+        TestUtils.shutdownServerIfRunning(port)
+    }
+
+    private static executeClientScriptOk(args) {
+        args += ["-Cp", port]
+        TestUtils.executeClientScriptOk(args)
+    }
+
+    private static executeClientScript(args) {
+        args += ["-Cp", port]
+        TestUtils.executeClientScript(args)
     }
 }

@@ -47,19 +47,23 @@ class TestUtils {
         executeClientScriptOkWithEnv(args, null, closure)
     }
 
-    static void startServerIfNotRunning() {
+    static void startServerIfNotRunning(int port = null) {
         if (new GroovyClient().isServerAvailable()) return
 
-        def p = executeServerScript(["-r", "-v"])
+        def args = ["-r", "-v"]
+        if (port) args += ["-p", port]
+        def p = executeServerScript(args)
         if (p.exitValue() != 0) {
             fail "ERROR: exitValue:${p.exitValue()}, in:[${p.in.text}], err:[${p.err.text}]"
         }
     }
 
-    static void shutdownServerIfRunning() {
+    static void shutdownServerIfRunning(int port = null) {
         if (new GroovyClient().isServerShutdown()) return
 
-        def p = executeServerScript(["-k"])
+        def args = ["-k"]
+        if (port) args += ["-p", port]
+        def p = executeServerScript(args)
         if (p.exitValue() != 0) {
             fail "ERROR: exitValue:${p.exitValue()}, in:[${p.in.text}], err:[${p.err.text}]"
         }
