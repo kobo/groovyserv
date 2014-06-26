@@ -155,5 +155,3 @@ func main() {
 		panic(err.Error())
 	}
 }
-
-// TODO windows support
