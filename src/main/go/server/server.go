@@ -292,7 +292,7 @@ func (server Server) startInBackground() (err error) {
 func (server Server) connect() (connected *ConnectedServer, err error) {
 	log.Println("connect: begin")
 	defer func() {
-		log.Println("connect: end:", connected, err)
+		log.Printf("connect: end: %#v\n, %#v\n", connected, err)
 	}()
 
 	conn, err := cmn.Connect(server.Host, server.Port)

@@ -24,17 +24,16 @@ import (
 	"path/filepath"
 )
 
-func ReadLine(reader *bufio.Reader) (string, error) {
-	lineBytes, isPrefix, err := reader.ReadLine() // TODO use isPrefix
-	line := string(lineBytes)
-	if len(line) == 0 {
-		return line, nil
+func ReadLine(reader *bufio.Reader) (line string, err error) {
+	var lineBytes, buf []byte
+	var isPrefix bool = true
+	for isPrefix && err == nil {
+		buf, isPrefix, err = reader.ReadLine()
+		lineBytes = append(lineBytes, buf...)
+		log.Printf("ReadLine: %#v (prefix:%v)\n", string(lineBytes), isPrefix)
 	}
-	if err != nil {
-		return line, err
-	}
-	log.Printf("Read: %s (prefix:%v)\n", line, isPrefix)
-	return line, nil
+	line = string(lineBytes)
+	return
 }
 
 func WriteLine(writer io.Writer, text string) error {
