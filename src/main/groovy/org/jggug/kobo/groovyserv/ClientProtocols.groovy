@@ -15,6 +15,7 @@
  */
 package org.jggug.kobo.groovyserv
 
+import org.jggug.kobo.groovyserv.exception.EmptyRequestException
 import org.jggug.kobo.groovyserv.exception.GServIOException
 import org.jggug.kobo.groovyserv.exception.InvalidAuthTokenException
 import org.jggug.kobo.groovyserv.exception.InvalidRequestHeaderException
@@ -109,6 +110,9 @@ class ClientProtocols {
      */
     static InvocationRequest readInvocationRequest(ClientConnection conn) {
         Map<String, List<String>> headers = readHeaders(conn)
+        if (!headers) {
+            throw new EmptyRequestException("Request is empty")
+        }
         def request = new InvocationRequest(
             port: conn.socket.port,
             cwd: headers[HEADER_CURRENT_WORKING_DIR]?.getAt(0),
@@ -150,8 +154,7 @@ class ClientProtocols {
     }
 
     private static Map<String, List<String>> readHeaders(ClientConnection conn) {
-        def ins = conn.socket.inputStream // raw stream
-        return parseHeaders(ins)
+        return parseHeaders(conn.socket.inputStream)
     }
 
     static Map<String, List<String>> parseHeaders(InputStream ins) {

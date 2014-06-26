@@ -15,6 +15,7 @@
  */
 package org.jggug.kobo.groovyserv
 
+import org.jggug.kobo.groovyserv.exception.EmptyRequestException
 import org.jggug.kobo.groovyserv.exception.GServException
 import org.jggug.kobo.groovyserv.exception.GServInterruptedException
 import org.jggug.kobo.groovyserv.exception.InvalidAuthTokenException
@@ -74,7 +75,6 @@ class RequestWorker extends ThreadPoolExecutor implements Runnable {
         // Parse request
         InvocationRequest request = parseRequest()
         if (request == null) {
-            LogUtils.debugLog "Empty request"
             return
         }
 
@@ -98,6 +98,8 @@ class RequestWorker extends ThreadPoolExecutor implements Runnable {
     private InvocationRequest parseRequest() {
         try {
             return conn.openSession()
+        } catch (EmptyRequestException e) {
+            LogUtils.debugLog "Empty request"
         } catch (InvalidAuthTokenException e) {
             LogUtils.errorLog "Invalid authtoken", e
             conn.sendExit(e.exitStatus, e.message)

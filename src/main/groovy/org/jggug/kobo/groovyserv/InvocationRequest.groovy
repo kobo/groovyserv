@@ -15,6 +15,7 @@
  */
 package org.jggug.kobo.groovyserv
 
+import org.jggug.kobo.groovyserv.exception.EmptyRequestException
 import org.jggug.kobo.groovyserv.exception.InvalidAuthTokenException
 import org.jggug.kobo.groovyserv.utils.LogUtils
 
@@ -39,7 +40,7 @@ class InvocationRequest {
      * @throws InvalidAuthTokenException
      */
     void check() {
-        if (!clientAuthToken | !serverAuthToken || !serverAuthToken.isValid(clientAuthToken)) {
+        if (!clientAuthToken || !serverAuthToken || !serverAuthToken.isValid(clientAuthToken)) {
             LogUtils.errorLog "Authentication failed. AuthToken is unmatched: ${clientAuthToken} <=> ******"
             Thread.sleep(waitTime) // to prevent from brute force attack
             throw new InvalidAuthTokenException("Authentication failed. AuthToken is unmatched: ${clientAuthToken} <=> ******")
