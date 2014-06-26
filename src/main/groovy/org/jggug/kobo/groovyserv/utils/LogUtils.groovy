@@ -47,7 +47,7 @@ class LogUtils {
         def timestamp = currentTimestamp() // use same timestamp per call of formatLog
         String messageText = (message instanceof Closure) ? message.call() : message
         messageText.eachLine { line ->
-            pw.println "${timestamp} [${level}] ($caller) ${line}"
+            pw.println "${timestamp} [${level}] (${Thread.currentThread()?.threadGroup}) ($caller) ${line}"
         }
         if (e) {
             pw.println formatStackTrace(e)
