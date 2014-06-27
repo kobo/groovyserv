@@ -221,7 +221,9 @@ func (server Server) Start() (err error) {
 	// From here, it has made sure that the port is unused by any other process.
 
 	// Starting up
-	server.startInBackground()
+	if err := server.startInBackground(); err != nil {
+		return err
+	}
 	server.printConsole("Starting server...")
 
 	// Waiting for server up
@@ -257,7 +259,7 @@ func (server Server) startInBackground() (err error) {
 	classpath := filepath.Join(GroovyServHome, "lib", "*")
 	classpathEnv := os.Getenv("CLASSPATH")
 	if len(classpathEnv) > 0 {
-		classpath = classpath+cmn.ClasspathDelimiter()+classpathEnv
+		classpath = classpath + cmn.ClasspathDelimiter() + classpathEnv
 	}
 	server.printlnConsole("Original classpath: " + cmn.Coalesce(classpathEnv, "(none)"))
 	server.printlnConsole("GroovyServ default classpath: " + classpath)
