@@ -23,6 +23,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"time"
 )
@@ -269,6 +270,20 @@ func (server Server) startInBackground() (err error) {
 	// -Djava.awt.headless=true: without this, annoying to switch an active process to it when new process is created as daemon
 	javaOpts := "-server -Djava.awt.headless=true " + cmn.Env("JAVA_OPTS", "")
 
+	// Settings environment variables
+	var env []string
+	for _, item := range os.Environ() { // must replace an entry not but just append it because it's ignored at specfic platform like windows.
+		if regexp.MustCompile("CLASSPATH=.*").MatchString(item) {
+			// just ignored because it must be added
+		} else if regexp.MustCompile("JAVAOPTS=.*").MatchString(item) {
+			// just ignored because it must be added
+		} else {
+			env = append(env, item)
+		}
+	}
+	env = append(env, "CLASSPATH="+classpath)
+	env = append(env, "JAVAOPTS="+javaOpts)
+
 	// Preparing a command
 	cmd := exec.Command(groovyCmdPath)
 	if len(GroovyServOpts) > 0 {
@@ -278,7 +293,7 @@ func (server Server) startInBackground() (err error) {
 	for _, arg := range server.Args {
 		cmd.Args = append(cmd.Args, arg)
 	}
-	cmd.Env = append(os.Environ(), "CLASSPATH="+classpath, "JAVAOPTS="+javaOpts)
+	cmd.Env = env
 	if !server.Quiet {
 		cmd.Stdout, cmd.Stderr = os.Stdout, os.Stderr
 	}
