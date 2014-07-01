@@ -227,7 +227,11 @@ func (server Server) Start() (err error) {
 	server.printConsole("Starting server...")
 
 	// Waiting for server up
-	for {
+	for i := 0; ; i++ {
+		if i > 100 { // 200 * 100 = 20sec
+			server.printlnConsole("")
+			return fmt.Errorf("timed out while waiting for server startup")
+		}
 		server.printConsole(".")
 		time.Sleep(200 * time.Millisecond)
 		if server.authTokenExists() {
@@ -278,8 +282,16 @@ func (server Server) startInBackground() (err error) {
 	// -Djava.awt.headless=true: without this, annoying to switch an active process to it when new process is created as daemon
 	javaOpts := "-server -Djava.awt.headless=true " + cmn.Env("JAVA_OPTS", "")
 
-	// Environment variables for passing to server
-	var env = []string{
+	// Preparing a command
+	cmd := exec.Command(groovyCmdPath)
+	if len(GroovyServOpts) > 0 {
+		cmd.Args = append(cmd.Args, GroovyServOpts)
+	}
+	cmd.Args = append(cmd.Args, "-e", "org.jggug.kobo.groovyserv.GroovyServer.main(args)", "--", fmt.Sprintf("%d", server.Port), server.AuthToken, server.AllowFrom, fmt.Sprintf("%v", server.Verbose))
+	for _, arg := range server.Args {
+		cmd.Args = append(cmd.Args, arg)
+	}
+	cmd.Env = []string{
 		"JAVA_HOME=" + javaHome,
 		"CLASSPATH=" + classpath,
 		"JAVA_OPTS=" + javaOpts,
@@ -294,19 +306,8 @@ func (server Server) startInBackground() (err error) {
 		if strings.HasPrefix(item, "JAVA_HOME=") {
 			continue // just ignored if exists because it must be replaced surely
 		}
-		env = append(env, item)
+		cmd.Env = append(cmd.Env, item)
 	}
-
-	// Preparing a command
-	cmd := exec.Command(groovyCmdPath)
-	if len(GroovyServOpts) > 0 {
-		cmd.Args = append(cmd.Args, GroovyServOpts)
-	}
-	cmd.Args = append(cmd.Args, "-e", "org.jggug.kobo.groovyserv.GroovyServer.main(args)", "--", fmt.Sprintf("%d", server.Port), server.AuthToken, server.AllowFrom, fmt.Sprintf("%v", server.Verbose))
-	for _, arg := range server.Args {
-		cmd.Args = append(cmd.Args, arg)
-	}
-	cmd.Env = env
 	if !server.Quiet {
 		cmd.Stdout, cmd.Stderr = os.Stdout, os.Stderr
 	}
