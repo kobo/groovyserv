@@ -65,12 +65,18 @@ class ExecScriptSpec extends Specification {
         p.err.text == ""
     }
 
-    def "executs an one-liner which prints a lot of text over a buffer of command"() {
+    def "executes an one-liner which prints a lot of text over a buffer of command"() {
+        given:
+        def out = new ByteArrayOutputStream()
+        def err = new ByteArrayOutputStream()
+
         when:
-        def p = TestUtils.executeClientScriptOk(["-e", '"println(\'x\'*10000)"'])
+        TestUtils.executeClientScriptOk(["-e", '"println(\'x\'*10000)"']) { p ->
+            p.consumeProcessOutput(out, err)
+        }
 
         then:
-        p.in.text == "x" * 10000 + SEP
-        p.err.text == ""
+        out.toString() == "x" * 10000 + SEP
+        err.toString() == ""
     }
 }
