@@ -291,7 +291,11 @@ def executeCommand(List command, Map env = [:]) {
     }
     def p = pb.start()
     p.consumeProcessOutput(System.out as OutputStream, System.err as OutputStream) // Gradle's wrapper stream writes nothing to console
-    p.waitFor()
+    int statusCode = p.waitFor()
+    if (statusCode != 0) {
+        ansi.printlnAsError "Exit for status code $statusCode"
+        throw new GradleScriptException("Exit for status code $statusCode while executing '${command.join(' ')}'", null)
+    }
 }
 
 def convertMixedPath(File file) {
@@ -302,7 +306,6 @@ def isWindows() {
     ant.condition(property: "os", value: "windows") { os(family: "windows") }
     return ant.properties['os'] == "windows"
 }
-
 
 def compileGoSrc(File srcFile, String platform) {
     def outputFileName = srcFile.name - '.go'
