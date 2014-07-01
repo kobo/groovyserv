@@ -22,9 +22,9 @@ import (
 )
 
 func groovyServWorkDir() string {
-	return cmn.ExpandPath(cmn.Env("GROOVYSERV_WORK_DIR", filepath.Join(cmn.HomeDir(), ".groovy", "groovyserv")))
+	return cmn.NativePath(cmn.ExpandPath(cmn.Env("GROOVYSERV_WORK_DIR", filepath.Join(cmn.HomeDir(), ".groovy", "groovyserv"))))
 }
 
 func groovyServHome() string {
-	return cmn.ExpandPath(cmn.Env("GROOVYSERV_HOME", filepath.Join(filepath.Dir(os.Args[0]), "..")))
+	return cmn.NativePath(cmn.ExpandPath(cmn.Env("GROOVYSERV_HOME", filepath.Join(filepath.Dir(os.Args[0]), ".."))))
 }
