@@ -261,7 +261,7 @@ func (server ConnectedServer) writeInvocationRequest() (err error) {
 	if authToken, err := server.authToken(); err != nil {
 		return err
 	} else {
-		if err = server.writeLine("Auth: "+authToken); err != nil {
+		if err = server.writeLine("Auth: " + authToken); err != nil {
 			return err
 		}
 	}

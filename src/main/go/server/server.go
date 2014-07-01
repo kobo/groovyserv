@@ -23,7 +23,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"regexp"
 	"strings"
 	"time"
 )
@@ -248,15 +247,24 @@ func (server Server) startInBackground() (err error) {
 		log.Println("startInBackground: end:", err)
 	}()
 
+	// JAVA_HOME (only for Cygwin support)
+	javaHome := cmn.NativePath(cmn.Env("JAVA_HOME", ""))
+	if len(javaHome) > 0 {
+		server.printlnConsole("Java home directory: " + javaHome)
+	}
+
+	// GROOVY_HOME
 	server.printlnConsole("Groovy home directory: " + GroovyHome)
 	groovyCmdPath, err := server.groovyCommand()
 	if err != nil {
 		return err
 	}
+
+	// GROOVYSERV_HOME and GROOVYSERV_WORK_DIR (only showing)
 	server.printlnConsole("GroovyServ home directory: " + GroovyServHome)
 	server.printlnConsole("GroovyServ work directory: " + GroovyServWorkDir)
 
-	// Setting CLASS_PATH
+	// CLASS_PATH
 	classpath := filepath.Join(GroovyServHome, "lib", "*")
 	classpathEnv := os.Getenv("CLASSPATH")
 	if len(classpathEnv) > 0 {
@@ -265,24 +273,29 @@ func (server Server) startInBackground() (err error) {
 	server.printlnConsole("Original classpath: " + cmn.Coalesce(classpathEnv, "(none)"))
 	server.printlnConsole("GroovyServ default classpath: " + classpath)
 
-	// Setting JAVA_OPTS
+	// JAVA_OPTS
 	// -server: for performance (experimental)
 	// -Djava.awt.headless=true: without this, annoying to switch an active process to it when new process is created as daemon
 	javaOpts := "-server -Djava.awt.headless=true " + cmn.Env("JAVA_OPTS", "")
 
-	// Settings environment variables
-	var env []string
-	for _, item := range os.Environ() { // must replace an entry not but just append it because it's ignored at specfic platform like windows.
-		if regexp.MustCompile("CLASSPATH=.*").MatchString(item) {
-			// just ignored because it must be added
-		} else if regexp.MustCompile("JAVAOPTS=.*").MatchString(item) {
-			// just ignored because it must be added
-		} else {
-			env = append(env, item)
-		}
+	// Environment variables for passing to server
+	var env = []string{
+		"JAVA_HOME=" + javaHome,
+		"CLASSPATH=" + classpath,
+		"JAVA_OPTS=" + javaOpts,
 	}
-	env = append(env, "CLASSPATH="+classpath)
-	env = append(env, "JAVAOPTS="+javaOpts)
+	for _, item := range os.Environ() { // must replace an entry not but just append it because it's ignored at specfic platform like windows.
+		if strings.HasPrefix(item, "CLASSPATH=") {
+			continue // just ignored if exists because it must be replaced surely
+		}
+		if strings.HasPrefix(item, "JAVA_OPTS=") {
+			continue // just ignored if exists because it must be replaced surely
+		}
+		if strings.HasPrefix(item, "JAVA_HOME=") {
+			continue // just ignored if exists because it must be replaced surely
+		}
+		env = append(env, item)
+	}
 
 	// Preparing a command
 	cmd := exec.Command(groovyCmdPath)
