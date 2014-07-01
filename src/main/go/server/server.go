@@ -252,7 +252,7 @@ func (server Server) startInBackground() (err error) {
 	}()
 
 	// JAVA_HOME (only for Cygwin support)
-	javaHome := cmn.NativePath(cmn.Env("JAVA_HOME", ""))
+	javaHome := cmn.Env("JAVA_HOME", "")
 	if len(javaHome) > 0 {
 		server.printlnConsole("Java home directory: " + javaHome)
 	}

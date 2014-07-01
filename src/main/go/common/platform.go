@@ -17,8 +17,6 @@ package common
 
 import (
 	"os"
-	"path/filepath"
-	"regexp"
 	"runtime"
 )
 
@@ -38,15 +36,4 @@ func ClasspathDelimiter() string {
 
 func Windows() bool {
 	return runtime.GOOS == "windows"
-}
-
-func NativePath(path string) string {
-	if !Windows() {
-		return path
-	}
-	cygpathRegex := regexp.MustCompile("/cygdrive/([a-z])") // supported converting cygwin path
-	if cygpathRegex.MatchString(path) {
-		path = cygpathRegex.ReplaceAllString(path, "$1:")
-	}
-	return filepath.FromSlash(path)
 }
