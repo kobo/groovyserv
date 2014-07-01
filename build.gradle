@@ -290,7 +290,7 @@ def executeCommand(List command, Map env = [:]) {
         remove('GROOVYSERV_HOME') // unset GROOVYSERV_HOME (which may be set by GVM) for a process invoked by gradle directly
     }
     def p = pb.start()
-    p.consumeProcessOutput(System.out, System.err)
+    p.consumeProcessOutput(System.out as OutputStream, System.err as OutputStream) // Gradle's wrapper stream writes nothing to console
     p.waitFor()
 }
 
