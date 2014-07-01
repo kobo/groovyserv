@@ -175,6 +175,7 @@ class EnvPropagateSpec extends Specification {
     }
 
     def "you can access to environment variables which is originally existed at server process"() {
+        expect:
         TestUtils.executeClientScriptOkWithEnv(["-e", '"print(System.getenv(\'USER\'))"'], [:]) { p ->
             p.in.text != "null"
             p.err.text == ""
