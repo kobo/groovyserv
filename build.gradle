@@ -312,7 +312,6 @@ def compileGoSrc(File srcFile, String platform) {
     if (isWindows()) {
         outputFileName += ".exe"
     }
-    def baseCmd = ["go", "build", "--ldflags", "-X main.GroovyServVersion ${project.version}"]
-    executeCommand(baseCmd + ["-o", "$buildDir/platforms/$platform/$outputFileName", srcFile.path])
+    executeCommand(["go", "build", "--ldflags", "-X main.GroovyServVersion ${project.version}", "-o", "$buildDir/platforms/$platform/$outputFileName", srcFile.path])
 }
 
