@@ -126,7 +126,11 @@ task compileGo {
         ansi.printlnAsInfo ">> Compiling Go sources..."
         file("$projectDir/src/main/go").eachFileMatch(groovy.io.FileType.FILES, ~/.*\.go/) { srcFile ->
             // for local environment by default for testing
-            compileGoSrc(srcFile, "local")
+            def outputFileName = srcFile.name - '.go'
+            if (isWindows()) {
+                outputFileName += ".exe"
+            }
+            compileGoSrc(srcFile, outputFileName, "local")
         }
     }
 }
@@ -142,7 +146,8 @@ task crossCompileGo {
                 [GOOS: "windows", GOARCH: "386", ext: ".exe"],
                 [GOOS: "windows", GOARCH: "amd64", ext: ".exe"],
             ].each { platform ->
-                compileGoSrc(srcFile, "${platform.GOOS}_${platform.GOARCH}")
+                def outputFileName = srcFile.name - '.go' + (platform.ext ?: '')
+                compileGoSrc(srcFile, outputFileName, "${platform.GOOS}_${platform.GOARCH}", platform.subMap('GOOS', 'GOARCH'))
             }
         }
     }
@@ -307,11 +312,7 @@ def isWindows() {
     return ant.properties['os'] == "windows"
 }
 
-def compileGoSrc(File srcFile, String platform) {
-    def outputFileName = srcFile.name - '.go'
-    if (isWindows()) {
-        outputFileName += ".exe"
-    }
-    executeCommand(["go", "build", "--ldflags", "-X main.GroovyServVersion ${project.version}", "-o", "$buildDir/platforms/$platform/$outputFileName", srcFile.path])
+def compileGoSrc(File srcFile, String outputFileName, String platform, Map<String, String> env = [:]) {
+    executeCommand(["go", "build", "--ldflags", "-X main.GroovyServVersion ${project.version}", "-o", "$buildDir/platforms/$platform/$outputFileName", srcFile.path], env)
 }
 
