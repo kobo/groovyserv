@@ -14,25 +14,26 @@
  * limitations under the License.
  */
 package org.jggug.kobo.groovyserv
+
 import org.jggug.kobo.groovyserv.test.IntegrationTest
 import org.jggug.kobo.groovyserv.test.TestUtils
-import spock.lang.IgnoreIf
 import spock.lang.Specification
 import spock.lang.Timeout
 
 import java.util.concurrent.TimeUnit
+
 /**
  * Specifications for the {@code groovyclient}.
  * Before running this, you must start groovyserver.
  */
 @IntegrationTest
-@IgnoreIf({ properties["os.name"].startsWith("Windows") })
 @Timeout(value = 30, unit = TimeUnit.SECONDS)
-class ServerOperationFromClientScriptSpec extends Specification {
+class ServerOperationFromClientCommandSpec extends Specification {
 
     static int port = GroovyServer.DEFAULT_PORT
 
     def setup() {
+        // using an individual port for each test case.
         port++
         WorkFiles.setUp(port)
     }
@@ -51,11 +52,11 @@ class ServerOperationFromClientScriptSpec extends Specification {
         shutdownServerIfRunning()
 
         when:
-        def p = executeClientScriptOk(["-v"])
+        def result = executeClientCommandSuccessfully()
 
         then:
-        assertIncludingVersion(p.in.text)
-        assertIncludingServerInvocationLog(p.err.text)
+        assertIncludingVersion(result.out)
+        assertIncludingServerInvocationLog(result.err)
     }
 
     def "try to execute client with no running server when there are previous an authtoken file"() {
@@ -64,11 +65,11 @@ class ServerOperationFromClientScriptSpec extends Specification {
         createAuthTokenFile()
 
         when:
-        def p = executeClientScriptOk(["-v"])
+        def result = executeClientCommandSuccessfully()
 
         then:
-        assertIncludingVersion(p.in.text)
-        assertIncludingServerInvocationLog(p.err.text)
+        assertIncludingVersion(result.out)
+        assertIncludingServerInvocationLog(result.err)
     }
 
     def "try to execute client with running server (when there are an authtoken file)"() {
@@ -76,11 +77,11 @@ class ServerOperationFromClientScriptSpec extends Specification {
         startServerIfNotRunning()
 
         when:
-        def p = executeClientScriptOk(["-v"])
+        def result = executeClientCommandSuccessfully()
 
         then:
-        assertIncludingVersion(p.in.text)
-        assertNotIncludingServerInvocationLog(p.err.text)
+        assertIncludingVersion(result.out)
+        assertNotIncludingServerInvocationLog(result.err)
     }
 
     def "try to execute client with running server when there are an invalid authtoken file"() {
@@ -89,10 +90,10 @@ class ServerOperationFromClientScriptSpec extends Specification {
         def originalToken = updateAuthTokenFile("INVALID_TOKEN")
 
         when:
-        def p = executeClientScript(["-v"])
+        def result = executeClientCommand(["-v"])
 
         then:
-        p.err.text =~ /ERROR: invalid authtoken/
+        result.err =~ /ERROR: invalid authtoken/
 
         cleanup:
         updateAuthTokenFile(originalToken)
@@ -104,10 +105,10 @@ class ServerOperationFromClientScriptSpec extends Specification {
         def originalToken = deleteAuthTokenFile()
 
         when:
-        def p = executeClientScript(["-v"])
+        def result = executeClientCommand(["-v"])
 
         then:
-        p.err.text =~ /ERROR: could not read authtoken file: /
+        result.err =~ /ERROR: could not read authtoken file: /
 
         cleanup:
         createAuthTokenFile(originalToken)
@@ -120,10 +121,10 @@ class ServerOperationFromClientScriptSpec extends Specification {
         WorkFiles.AUTHTOKEN_FILE.mkdir() // to fail to read as file
 
         when:
-        def p = executeClientScript(["-v"])
+        def result = executeClientCommand()
 
         then:
-        p.err.text =~ /ERROR: could not read authtoken file: /
+        result.err =~ /ERROR: could not read authtoken file: /
 
         cleanup:
         WorkFiles.AUTHTOKEN_FILE.deleteDir()
@@ -172,13 +173,11 @@ class ServerOperationFromClientScriptSpec extends Specification {
         TestUtils.shutdownServerIfRunning(port)
     }
 
-    private static executeClientScriptOk(args) {
-        args += ["-Cp", port]
-        TestUtils.executeClientScriptOk(args)
+    private static executeClientCommandSuccessfully(List<String> options = []) {
+        return TestUtils.executeClientCommandSuccessfully(options + ["-v", "-Cp", port])
     }
 
-    private static executeClientScript(args) {
-        args += ["-Cp", port]
-        TestUtils.executeClientScript(args)
+    private static executeClientCommand(List<String> options = []) {
+        return TestUtils.executeClientCommand(options + ["-v", "-Cp", port])
     }
 }

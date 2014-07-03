@@ -15,8 +15,6 @@
  */
 package org.jggug.kobo.groovyserv.test
 
-import org.jggug.kobo.groovyserv.GroovyClient
-
 import static org.junit.Assert.*
 
 /**
@@ -24,66 +22,65 @@ import static org.junit.Assert.*
  */
 class TestUtils {
 
-    static Process executeClientScriptWithEnv(List<String> args, Map<String, String> envMap, Closure closure = null) {
-        def p = createProcessBuilder([clientExecutablePath, *args], envMap).start()
+    static ProcessResult executeClientCommandWithEnv(List<String> args, Map<String, String> envMap, Closure closure = null) {
+        def out = new ByteArrayOutputStream()
+        def err = new ByteArrayOutputStream()
+        def p = createProcessBuilder([clientExecutablePath, * args], envMap).start()
+        p.consumeProcessOutput(out, err)
         if (closure) closure.call(p)
         p.waitFor()
-        return p
+        return new ProcessResult(out: out.toString(), err: err.toString(), process: p)
     }
 
-    static Process executeClientScript(List<String> args, Closure closure = null) {
-        executeClientScriptWithEnv(args, null, closure)
+    static ProcessResult executeClientCommand(List<String> args, Closure closure = null) {
+        return executeClientCommandWithEnv(args, null, closure)
     }
 
-    static Process executeClientScriptOkWithEnv(List<String> args, Map<String, String> envMap, Closure closure = null) {
-        def p = executeClientScriptWithEnv(args, envMap, closure)
-        if (p.exitValue() != 0) {
-            fail "ERROR: exitValue:${p.exitValue()}, in:[${p.in.text}], err:[${p.err.text}]"
+    static ProcessResult executeClientCommandWithEnvSuccessfully(List<String> args, Map<String, String> envMap, Closure closure = null) {
+        def result = executeClientCommandWithEnv(args, envMap, closure)
+        if (result.process.exitValue() != 0) {
+            fail "ERROR: exitValue:${result.process.exitValue()}, in:[${result.out}], err:[${result.err}]"
         }
-        return p
+        return result
     }
 
-    static Process executeClientScriptOk(List<String> args, Closure closure = null) {
-        executeClientScriptOkWithEnv(args, null, closure)
+    static ProcessResult executeClientCommandSuccessfully(List<String> args, Closure closure = null) {
+        return executeClientCommandWithEnvSuccessfully(args, null, closure)
     }
 
-    static void startServerIfNotRunning(int port = null) {
-        if (new GroovyClient().isServerAvailable()) return
-
-        def args = ["-r", "-v"]
-        if (port) args += ["-p", port]
-        def p = executeServerScript(args)
-        if (p.exitValue() != 0) {
-            fail "ERROR: exitValue:${p.exitValue()}, in:[${p.in.text}], err:[${p.err.text}]"
+    static void startServerIfNotRunning(int port) {
+        def result = executeServerCommand(["-r", "-v", "-p", String.valueOf(port)])
+        if (result.process.exitValue() != 0) {
+            fail "ERROR: exitValue:${result.process.exitValue()}, in:[${result.out}], err:[${result.err}]"
         }
     }
 
-    static void shutdownServerIfRunning(int port = null) {
-        if (new GroovyClient().isServerShutdown()) return
-
-        def args = ["-k"]
-        if (port) args += ["-p", port]
-        def p = executeServerScript(args)
-        if (p.exitValue() != 0) {
-            fail "ERROR: exitValue:${p.exitValue()}, in:[${p.in.text}], err:[${p.err.text}]"
+    static void shutdownServerIfRunning(int port) {
+        def result = executeServerCommand(["-k", "-p", String.valueOf(port)])
+        if (result.process.exitValue() != 0) {
+            fail "ERROR: exitValue:${result.process.exitValue()}, in:[${result.out}], err:[${result.err}]"
         }
     }
 
-    static Process executeServerScript(List<String> options) {
-        def p = createProcessBuilder([serverExecutablePath, *options]).start()
+    static ProcessResult executeServerCommand(List<String> options) {
+        def out = new ByteArrayOutputStream()
+        def err = new ByteArrayOutputStream()
+        def p = createProcessBuilder([serverExecutablePath, * options]).start()
+        p.consumeProcessOutput(out, err)
         p.waitFor()
-        return p
+        return new ProcessResult(out: out.toString(), err: err.toString(), process: p)
     }
 
     private static createProcessBuilder(List<String> commandLine, Map<String, String> envMap = [:]) {
         ProcessBuilder processBuilder = new ProcessBuilder()
         def actualCommand = processBuilder.command()
 
-        // This doesn't work on cygwin/windows. command line is somehow split by white space.
-//        def env = processBuilder.environment()
-//        envMap.each { key, value ->
-//            env.put(key.toString(), value.toString()) // without this, ArrayStoreException may occur
-//        }
+        // This doesn't work on Cygwin/Windows. The command line is somehow split by a white space.
+        //def env = processBuilder.environment()
+        //envMap.each { key, value ->
+        //    env.put(key.toString(), value.toString()) // without this, ArrayStoreException may occur
+        //}
+        // Instead, this works both on Cygwin and DOS in Windows.
         actualCommand << "env"
         envMap.each { key, value ->
             actualCommand << "${key}=${value}".toString() // without this, ArrayStoreException may occur
@@ -105,5 +102,11 @@ class TestUtils {
 
     private static String getServerExecutablePath() {
         System.getProperty("groovyserv.executable.server")
+    }
+
+    static class ProcessResult {
+        Process process
+        String out
+        String err
     }
 }

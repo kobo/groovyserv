@@ -15,7 +15,6 @@
  */
 package org.jggug.kobo.groovyserv
 
-
 import org.jggug.kobo.groovyserv.test.IntegrationTest
 import org.jggug.kobo.groovyserv.test.TestUtils
 import spock.lang.Specification
@@ -29,20 +28,22 @@ class SystemExitSpec extends Specification {
 
     def "using System.exit() doesn't cause a kill of server process"() {
         when:
-        TestUtils.executeClientScript(['-e', '"System.exit()"'])
+        assert TestUtils.executeClientCommand(['-e', '"System.exit()"']).process.exitValue() == 0
 
         and:
-        def p = TestUtils.executeClientScript(['-e', '"print(\'Still There?\')"'])
-        p.waitFor()
+        def result = TestUtils.executeClientCommand(['-e', '"print(\'Still There?\')"'])
 
         then:
-        p.in.text == "Still There?"
-        p.err.text == ""
+        result.out == "Still There?"
+        result.err == ""
     }
 
     def "the value of System.exit() is returns as status code of client"() {
-        expect:
-        TestUtils.executeClientScript(['-e', script]).exitValue() == statusCode
+        when:
+        def result = TestUtils.executeClientCommand(['-e', script])
+
+        then:
+        result.process.exitValue() == statusCode
 
         where:
         script            | statusCode

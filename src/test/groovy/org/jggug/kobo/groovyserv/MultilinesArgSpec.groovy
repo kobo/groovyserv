@@ -36,7 +36,7 @@ class MultilinesArgSpec extends Specification {
             |print(':end')""".stripMargin()
 
         expect:
-        TestUtils.executeClientScriptOk(["-e", "\"$script\""]).text == """\
+        TestUtils.executeClientCommandSuccessfully(["-e", "\"$script\""]).out == """\
             |start:line1
             |line2
             |line3:end""".stripMargin()

@@ -15,7 +15,6 @@
  */
 package org.jggug.kobo.groovyserv
 
-
 import org.jggug.kobo.groovyserv.test.IntegrationTest
 import org.jggug.kobo.groovyserv.test.TestUtils
 import spock.lang.Specification
@@ -31,25 +30,25 @@ class ExecScriptSpec extends Specification {
 
     def "executes an simple one-liner"() {
         when:
-        def p = TestUtils.executeClientScriptOk(["-e", '"println(\'hello\')"'])
+        def result = TestUtils.executeClientCommandSuccessfully(["-e", '"println(\'hello\')"'])
 
         then:
-        p.in.text == "hello" + SEP
-        p.err.text == ""
+        result.out == "hello" + SEP
+        result.err == ""
     }
 
     def "executes an one-liner which prints multi lines"() {
         when:
-        def p = TestUtils.executeClientScriptOk(["-e", '"[0, 1, 2].each{ println(it) }"'])
+        def result = TestUtils.executeClientCommandSuccessfully(["-e", '"[0, 1, 2].each{ println(it) }"'])
 
         then:
-        p.in.text == "0" + SEP + "1" + SEP + "2" + SEP
-        p.err.text == ""
+        result.out == "0" + SEP + "1" + SEP + "2" + SEP
+        result.err == ""
     }
 
     def "executes an one-liner which reads and prints multi lines"() {
         when:
-        def p = TestUtils.executeClientScript(["-e", '"System.in.eachLine { line, index -> println(line * 2); if (index >= 3) { System.exit 0 } }"']) { p ->
+        def result = TestUtils.executeClientCommand(["-e", '"System.in.eachLine { line, index -> println(line * 2); if (index >= 3) { System.exit 0 } }"']) { p ->
             // improved to be able to detect the issue: https://github.com/kobo/groovyserv/issues/44
             // when two lines sequentially are inputted, it exists normally.
             // but if inputting three lines or with a interval, c client was frozen.
@@ -61,22 +60,16 @@ class ExecScriptSpec extends Specification {
         }
 
         then:
-        p.in.text == "AA" + SEP + "BB" + SEP + "CC" + SEP
-        p.err.text == ""
+        result.out == "AA" + SEP + "BB" + SEP + "CC" + SEP
+        result.err == ""
     }
 
     def "executes an one-liner which prints a lot of text over a buffer of command"() {
-        given:
-        def out = new ByteArrayOutputStream()
-        def err = new ByteArrayOutputStream()
-
         when:
-        TestUtils.executeClientScriptOk(["-e", '"println(\'x\'*10000)"']) { p ->
-            p.consumeProcessOutput(out, err)
-        }
+        def result = TestUtils.executeClientCommandSuccessfully(["-e", '"println(\'x\'*10000)"'])
 
         then:
-        out.toString() == "x" * 10000 + SEP
-        err.toString() == ""
+        result.out == "x" * 10000 + SEP
+        result.err == ""
     }
 }

@@ -17,8 +17,6 @@ package org.jggug.kobo.groovyserv
 
 import org.jggug.kobo.groovyserv.test.IntegrationTest
 import org.jggug.kobo.groovyserv.test.TestUtils
-import spock.lang.IgnoreIf
-import spock.lang.IgnoreRest
 import spock.lang.Specification
 import spock.lang.Timeout
 
@@ -29,13 +27,13 @@ import java.util.concurrent.TimeUnit
  * Before running this, you must start groovyserver.
  */
 @IntegrationTest
-@IgnoreIf({ properties["os.name"].startsWith("Windows") })
 @Timeout(value = 30, unit = TimeUnit.SECONDS)
-class ServerOperationFromServerScriptSpec extends Specification {
+class ServerOperationFromServerCommandSpec extends Specification {
 
     static int port = GroovyServer.DEFAULT_PORT
 
     def setup() {
+        // using an individual port for each test case.
         port++
         WorkFiles.setUp(port)
     }
@@ -54,11 +52,11 @@ class ServerOperationFromServerScriptSpec extends Specification {
         shutdownServerIfRunning()
 
         when:
-        def p = executeServerScript([])
+        def result = executeServerCommand()
 
         then:
-        assertNeverUseStandardInputStream(p)
-        p.err.text =~ /Server is successfully started up on [0-9]+ port/
+        result.out == ""
+        result.err =~ /Server is successfully started up on [0-9]+ port/
     }
 
     def "try to start server with no running server when there are a previous authtoken file"() {
@@ -67,13 +65,13 @@ class ServerOperationFromServerScriptSpec extends Specification {
         createAuthTokenFile()
 
         when:
-        def p = executeServerScript([])
+        def result = executeServerCommand()
 
         then:
-        assertNeverUseStandardInputStream(p)
-        with(p.err.text) {
-            it =~ /WARN: old authtoken file is deleted: /
-            it =~ /Server is successfully started up on [0-9]+ port/
+        result.out == ""
+        with(result.err) {
+            result.err =~ /WARN: old authtoken file is deleted: /
+            result.err =~ /Server is successfully started up on [0-9]+ port/
         }
     }
 
@@ -82,11 +80,11 @@ class ServerOperationFromServerScriptSpec extends Specification {
         startServerIfNotRunning()
 
         when:
-        def p = executeServerScript([])
+        def result = executeServerCommand()
 
         then:
-        assertNeverUseStandardInputStream(p)
-        p.err.text =~ /WARN: server is already running on [0-9]+ port/
+        result.out == ""
+        result.err =~ /WARN: server is already running on [0-9]+ port/
     }
 
     def "try to start server with running server when there are an invalid authtoken file"() {
@@ -95,11 +93,11 @@ class ServerOperationFromServerScriptSpec extends Specification {
         def originalToken = updateAuthTokenFile("INVALID_TOKEN")
 
         when:
-        def p = executeServerScript([])
+        def result = executeServerCommand()
 
         then:
-        assertNeverUseStandardInputStream(p)
-        with(p.err.text) {
+        result.out == ""
+        with(result.err) {
             it =~ /ERROR: invalid authtoken/
             it =~ /Hint:  Specify a right authtoken or kill the process somehow\./
         }
@@ -114,11 +112,11 @@ class ServerOperationFromServerScriptSpec extends Specification {
         def originalToken = deleteAuthTokenFile()
 
         when:
-        def p = executeServerScript([])
+        def result = executeServerCommand()
 
         then:
-        assertNeverUseStandardInputStream(p)
-        with(p.err.text) {
+        result.out == ""
+        with(result.err) {
             it =~ /ERROR: could not open authtoken file: /
             it =~ /Hint:  Isn't the port being used by a non-groovyserv process\? Use another port or kill the process somehow\./
         }
@@ -134,11 +132,11 @@ class ServerOperationFromServerScriptSpec extends Specification {
         WorkFiles.AUTHTOKEN_FILE.mkdir() // not readable as file
 
         when:
-        def p = executeServerScript([])
+        def result = executeServerCommand()
 
         then:
-        assertNeverUseStandardInputStream(p)
-        with(p.err.text) {
+        result.out == ""
+        with(result.err) {
             it =~ /ERROR: could not read authtoken file: /
             it =~ /Hint:  Check the permission and file type\./
         }
@@ -153,11 +151,11 @@ class ServerOperationFromServerScriptSpec extends Specification {
         shutdownServerIfRunning()
 
         when:
-        def p = executeServerScript(["-k"])
+        def result = executeServerCommand(["-k"])
 
         then:
-        assertNeverUseStandardInputStream(p)
-        p.err.text =~ /WARN: server is not running/
+        result.out == ""
+        result.err =~ /WARN: server is not running/
     }
 
     def "try to kill server with no running server when there are a previous authtoken file"() {
@@ -166,11 +164,11 @@ class ServerOperationFromServerScriptSpec extends Specification {
         createAuthTokenFile()
 
         when:
-        def p = executeServerScript(["-k"])
+        def result = executeServerCommand(["-k"])
 
         then:
-        assertNeverUseStandardInputStream(p)
-        with(p.err.text) {
+        result.out == ""
+        with(result.err) {
             it =~ /WARN: server is not running/
             it =~ /WARN: old authtoken file is deleted: /
         }
@@ -182,11 +180,11 @@ class ServerOperationFromServerScriptSpec extends Specification {
         startServerIfNotRunning()
 
         when:
-        def p = executeServerScript(["-k"])
+        def result = executeServerCommand(["-k"])
 
         then:
-        assertNeverUseStandardInputStream(p)
-        p.err.text =~ /Server is successfully shut down/
+        result.out == ""
+        result.err =~ /Server is successfully shut down/
     }
 
     def "try to kill server with running server when there are an invalid authtoken file"() {
@@ -195,11 +193,11 @@ class ServerOperationFromServerScriptSpec extends Specification {
         def originalToken = updateAuthTokenFile("INVALID_TOKEN")
 
         when:
-        def p = executeServerScript(["-k"])
+        def result = executeServerCommand(["-k"])
 
         then:
-        assertNeverUseStandardInputStream(p)
-        with(p.err.text) {
+        result.out == ""
+        with(result.err) {
             it =~ /ERROR: invalid authtoken/
             it =~ /Hint:  Specify a right authtoken or kill the process somehow\./
         }
@@ -214,11 +212,11 @@ class ServerOperationFromServerScriptSpec extends Specification {
         def originalToken = deleteAuthTokenFile()
 
         when:
-        def p = executeServerScript(["-k"])
+        def result = executeServerCommand(["-k"])
 
         then:
-        assertNeverUseStandardInputStream(p)
-        with(p.err.text) {
+        result.out == ""
+        with(result.err) {
             it =~ /ERROR: could not open authtoken file: /
             it =~ /Hint:  Isn't the port being used by a non-groovyserv process\? Use another port or kill the process somehow\./
         }
@@ -234,11 +232,11 @@ class ServerOperationFromServerScriptSpec extends Specification {
         WorkFiles.AUTHTOKEN_FILE.mkdir() // not readable as file
 
         when:
-        def p = executeServerScript(["-k"])
+        def result = executeServerCommand(["-k"])
 
         then:
-        assertNeverUseStandardInputStream(p)
-        with(p.err.text) {
+        result.out == ""
+        with(result.err) {
             it =~ /ERROR: could not read authtoken file: /
             it =~ /Hint:  Check the permission and file type\./
         }
@@ -246,10 +244,6 @@ class ServerOperationFromServerScriptSpec extends Specification {
         cleanup:
         WorkFiles.AUTHTOKEN_FILE.deleteDir()
         createAuthTokenFile(originalToken)
-    }
-
-    private static void assertNeverUseStandardInputStream(Process p) {
-        assert p.in.text == "" // server script doesn't use standard input stream
     }
 
     private static void createAuthTokenFile(token = "DUMMY_TOKEN_FOR_TEST") {
@@ -279,8 +273,7 @@ class ServerOperationFromServerScriptSpec extends Specification {
         TestUtils.shutdownServerIfRunning(port)
     }
 
-    private static executeServerScript(args) {
-        args += ["-p", port]
-        TestUtils.executeServerScript(args)
+    private static executeServerCommand(List<String> options = []) {
+        return TestUtils.executeServerCommand(options + ["-p", port])
     }
 }

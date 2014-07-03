@@ -32,12 +32,11 @@ class ClasspathSpec extends Specification {
         def env = [CLASSPATH: resolvePath('ForClasspathIT_env.jar')]
 
         when:
-        def p = TestUtils.executeClientScriptWithEnv(args, env)
-        p.waitFor()
+        def result = TestUtils.executeClientCommandWithEnv(args, env)
 
         then:
-        p.in.text.contains("Env:hello")
-        p.err.text == ""
+        result.out.contains("Env:hello")
+        result.err == ""
     }
 
     def "passing classpath from arguments"() {
@@ -45,12 +44,11 @@ class ClasspathSpec extends Specification {
         def args = ["--classpath", resolvePath("ForClasspathIT_arg.jar"), "-e", '"new ArgEcho().echo(\'hello\')"']
 
         when:
-        def p = TestUtils.executeClientScript(args)
-        p.waitFor()
+        def result = TestUtils.executeClientCommand(args)
 
         then:
-        p.in.text.contains("Arg:hello")
-        p.err.text == ""
+        result.out.contains("Arg:hello")
+        result.err == ""
     }
 
     def "using argument when classpath is passed from both environment variables and arguments"() {
@@ -59,12 +57,11 @@ class ClasspathSpec extends Specification {
         def env = [CLASSPATH: resolvePath('ForClasspathIT_env.jar')]
 
         when:
-        def p = TestUtils.executeClientScriptWithEnv(args, env)
-        p.waitFor()
+        def result = TestUtils.executeClientCommandWithEnv(args, env)
 
         then:
-        p.in.text.contains("Arg:hello")
-        p.err.text == ""
+        result.out.contains("Arg:hello")
+        result.err == ""
     }
 
     def "propagated classpath is disposed each invocation (except for shell client)"() {
@@ -72,12 +69,11 @@ class ClasspathSpec extends Specification {
         def args = ["-e", '"new ArgEcho().echo(\'hello\')"']
 
         when:
-        def p = TestUtils.executeClientScript(args)
-        p.waitFor()
+        def result = TestUtils.executeClientCommand(args)
 
         then:
-        p.in.text == ""
-        p.err.text.contains("org.codehaus.groovy.control.MultipleCompilationErrorsException")
+        result.out == ""
+        result.err.contains("org.codehaus.groovy.control.MultipleCompilationErrorsException")
     }
 
     private static resolvePath(jarFileName) {

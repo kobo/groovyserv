@@ -28,63 +28,68 @@ class VersionSpec extends Specification {
 
     def "'-v' option prints versions both of client and server"() {
         when:
-        def p = TestUtils.executeClientScriptOk(["-v"])
+        def result = TestUtils.executeClientCommandSuccessfully(["-v"])
 
         then:
-        def stdout = p.in.text
-        stdout.contains("Groovy Version:")
-        stdout.contains("GroovyServ Version: Server")
-        stdout.contains("GroovyServ Version: Client")
-        p.err.text == ""
+        with(result.out) {
+            it.contains("Groovy Version:")
+            it.contains("GroovyServ Version: Server")
+            it.contains("GroovyServ Version: Client")
+        }
+        result.err == ""
     }
 
     def "'-vXxxxx' option prints versions both of client and server"() {
         when:
         // the original Groovy considers the option value to a valid version option.
-        def p = TestUtils.executeClientScriptOk(["-vFOOBAR"])
+        def result = TestUtils.executeClientCommandSuccessfully(["-vFOOBAR"])
 
         then:
-        def stdout = p.in.text
-        stdout.contains("Groovy Version:")
-        stdout.contains("GroovyServ Version: Server")
-        stdout.contains("GroovyServ Version: Client")
-        p.err.text == ""
+        with(result.out) {
+            it.contains("Groovy Version:")
+            it.contains("GroovyServ Version: Server")
+            it.contains("GroovyServ Version: Client")
+        }
+        result.err == ""
     }
 
     def "'--version' option prints versions both of client and server"() {
         when:
-        def p = TestUtils.executeClientScriptOk(["--version"])
+        def result = TestUtils.executeClientCommandSuccessfully(["--version"])
 
         then:
-        def stdout = p.in.text
-        stdout.contains("Groovy Version:")
-        stdout.contains("GroovyServ Version: Server")
-        stdout.contains("GroovyServ Version: Client")
-        p.err.text == ""
+        with(result.out) {
+            it.contains("Groovy Version:")
+            it.contains("GroovyServ Version: Server")
+            it.contains("GroovyServ Version: Client")
+        }
+        result.err == ""
     }
 
     def "'-Cv' option prints only client version"() {
         when:
-        def p = TestUtils.executeClientScriptOk(["-Cv"])
+        def result = TestUtils.executeClientCommandSuccessfully(["-Cv"])
 
         then:
-        def stdout = p.in.text
-        stdout.contains("Groovy Version:") == false
-        stdout.contains("GroovyServ Version: Server") == false
-        stdout.contains("GroovyServ Version: Client")
-        p.err.text == ""
+        with(result.out) {
+            !it.contains("Groovy Version:")
+            !it.contains("GroovyServ Version: Server")
+            it.contains("GroovyServ Version: Client")
+        }
+        result.err == ""
     }
 
     def "'-Cversion' option prints only client version"() {
         when:
-        def p = TestUtils.executeClientScriptOk(["-Cversion"])
+        def result = TestUtils.executeClientCommandSuccessfully(["-Cversion"])
 
         then:
-        def stdout = p.in.text
-        stdout.contains("Groovy Version:") == false
-        stdout.contains("GroovyServ Version: Server") == false
-        stdout.contains("GroovyServ Version: Client")
-        p.err.text == ""
+        with(result.out) {
+            !it.contains("Groovy Version:")
+            !it.contains("GroovyServ Version: Server")
+            it.contains("GroovyServ Version: Client")
+        }
+        result.err == ""
     }
 
 }

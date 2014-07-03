@@ -30,12 +30,11 @@ class ThreadSpec extends Specification {
 
     def "using a simple thread"() {
         when:
-        def p = TestUtils.executeClientScriptOk(["-e", '"(new Thread({-> println(\'output from thread\') } as Runnable)).start()"'])
-        p.waitFor()
+        def result = TestUtils.executeClientCommandSuccessfully(["-e", '"(new Thread({-> println(\'output from thread\') } as Runnable)).start()"'])
 
         then:
-        p.in.text == 'output from thread' + SEP
-        p.err.text == ''
+        result.out == 'output from thread' + SEP
+        result.err == ''
     }
 
 }
