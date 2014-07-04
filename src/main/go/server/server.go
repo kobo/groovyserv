@@ -285,7 +285,7 @@ func (server Server) startInBackground() (err error) {
 	if len(GroovyServOpts) > 0 {
 		cmd.Args = append(cmd.Args, GroovyServOpts)
 	}
-	cmd.Args = append(cmd.Args, "-e", "org.jggug.kobo.groovyserv.GroovyServer.main(args)", "--", fmt.Sprintf("%d", server.Port), server.AuthToken, server.AllowFrom, fmt.Sprintf("%v", server.Verbose))
+	cmd.Args = append(cmd.Args, "-e", "groovyx.groovyserv.GroovyServer.main(args)", "--", fmt.Sprintf("%d", server.Port), server.AuthToken, server.AllowFrom, fmt.Sprintf("%v", server.Verbose))
 	for _, arg := range server.Args {
 		cmd.Args = append(cmd.Args, arg)
 	}

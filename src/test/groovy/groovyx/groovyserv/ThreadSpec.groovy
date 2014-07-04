@@ -13,9 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package groovyx.groovyserv
 
 import groovyx.groovyserv.test.IntegrationTest
+import groovyx.groovyserv.test.TestUtils
+import spock.lang.Specification
 
-runner {
-    include IntegrationTest
+/**
+ * Specifications for the {@code groovyclient}.
+ * Before running this, you must start groovyserver.
+ */
+@IntegrationTest
+class ThreadSpec extends Specification {
+
+    static final String SEP = System.getProperty("line.separator")
+
+    def "using a simple thread"() {
+        when:
+        def result = TestUtils.executeClientCommandSuccessfully(["-e", '"(new Thread({-> println(\'output from thread\') } as Runnable)).start()"'])
+
+        then:
+        result.out == 'output from thread' + SEP
+        result.err == ''
+    }
+
 }

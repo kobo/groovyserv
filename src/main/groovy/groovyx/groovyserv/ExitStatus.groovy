@@ -1,3 +1,4 @@
+#!/usr/bin/env groovy
 /*
  * Copyright 2009-2013 the original author or authors.
  *
@@ -5,7 +6,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,9 +14,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package groovyx.groovyserv
 
-import groovyx.groovyserv.test.UnitTest
+/**
+ * @author NAKANO Yasuharu
+ */
+public enum ExitStatus {
 
-runner {
-    include UnitTest
+    SUCCESS(0),
+    INTERRUPTED(1),
+    INVALID_REQUEST(2),
+    IO_ERROR(3),
+    ILLEGAL_STATE(4),
+    TERMINATED(5),
+    COMMAND_ERROR(6),
+    INVALID_AUTHTOKEN(201),
+    CLIENT_NOT_ALLOWED(202),
+    UNEXPECTED_ERROR(-1),
+    FORCELY_SHUTDOWN(99)
+
+    int code
+
+    private ExitStatus(code) {
+        this.code = code
+    }
+
 }
+

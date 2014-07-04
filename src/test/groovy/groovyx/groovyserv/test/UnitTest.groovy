@@ -13,9 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package groovyx.groovyserv.test
 
-import groovyx.groovyserv.test.UnitTest
+import java.lang.annotation.ElementType
+import java.lang.annotation.Retention
+import java.lang.annotation.RetentionPolicy
+import java.lang.annotation.Target
 
-runner {
-    include UnitTest
+@Target([ElementType.TYPE, ElementType.METHOD])
+@Retention(RetentionPolicy.RUNTIME)
+@interface UnitTest {
 }
