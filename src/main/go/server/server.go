@@ -37,8 +37,6 @@ var (
 	GroovyServWorkDir = groovyServWorkDir()
 	GroovyServHome    = groovyServHome()
 	GroovyServOpts    = cmn.Env("GROOVYSERV_OPTS", "")
-	GroovyServVersion = "x.x" // replaced by ldflags
-	VersionMessage    = "GroovyServ Version: Client: " + GroovyServVersion
 )
 
 type Server struct {

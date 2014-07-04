@@ -47,7 +47,7 @@ options:
 
 var (
 	VersionMessage    = "GroovyServ Version: Client: " + GroovyServVersion
-	GroovyServVersion = "x.x" // replaced by ldflags
+	GroovyServVersion = "X.X-SNAPSHOT" // replaced by ldflags
 )
 
 type (
