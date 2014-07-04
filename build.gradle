@@ -27,6 +27,7 @@ apply plugin: AnsiColorConsoleLogPlugin
 
 defaultTasks 'clean', 'test', 'dist' // whole tasks
 
+// keep same as groovy-core
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
 
@@ -51,8 +52,8 @@ dependencies {
 }
 
 def defaultEncoding = 'UTF-8'
-tasks.withType(AbstractCompile) each { it.options.encoding = defaultEncoding }
-tasks.withType(GroovyCompile) each { it.groovyOptions.encoding = defaultEncoding }
+tasks.withType(AbstractCompile).each { it.options.encoding = defaultEncoding }
+tasks.withType(GroovyCompile).each { it.groovyOptions.encoding = defaultEncoding }
 
 //===========================================
 // Tasks
@@ -228,7 +229,7 @@ task integrationTest(type: Test, dependsOn: 'executables') {
     inputs.dir file("$projectDir/src")
     outputs.dir file("$buildDir/test-results/integration")
 
-    def binDir = convertMixedPath(file("${buildDir}/executables/bin"))
+    def binDir = normalizePath(file("${buildDir}/executables/bin"))
     def clientExecutableExpression = "$binDir/groovyclient"
     def serverExecutableExpression = "$binDir/groovyserver"
 
@@ -282,7 +283,7 @@ def shutdownGroovyServer() {
 }
 
 def handleServer(List options) {
-    def binDir = convertMixedPath(file("${buildDir}/executables/bin"))
+    def binDir = normalizePath(file("${buildDir}/executables/bin"))
     def groovyserverPath = "$binDir/groovyserver"
     executeCommand([groovyserverPath, * options])
 }
@@ -304,7 +305,7 @@ def executeCommand(List command, Map env = [:]) {
     }
 }
 
-def convertMixedPath(File file) {
+def normalizePath(File file) {
     file.canonicalPath.replaceAll('\\\\', '/')
 }
 
