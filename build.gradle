@@ -125,32 +125,25 @@ task compileGroovy(overwrite: true, type: Copy) {
 task compileGo {
     doLast {
         ansi.printlnAsInfo ">> Compiling Go sources..."
-        file("$projectDir/src/main/go").eachFileMatch(groovy.io.FileType.FILES, ~/.*\.go/) { srcFile ->
-            // for local environment by default for testing
-            def outputFileName = srcFile.name - '.go'
-            def env = [:]
-            if (isWindows()) {
-                outputFileName += ".exe"
-                env += [GOOS: "windows", GOARCH: "386"] // using 386 binary even in 64-bit Windows
-            }
-            compileGoSrc(srcFile, outputFileName, "local")
+        // for local environment by default for testing
+        def platform = [:]
+        if (isWindows()) {
+            platform = [GOOS: "windows", GOARCH: "386", ext: ".exe"] // using 386 binary even in 64-bit Windows
         }
+        compileGoSrc(platform)
     }
 }
 
 task crossCompileGo {
     doLast {
         ansi.printlnAsInfo ">> Cross compiling Go sources..."
-        file("$projectDir/src/main/go").eachFileMatch(groovy.io.FileType.FILES, ~/.*\.go/) { srcFile ->
-            [
-                [GOOS: "darwin", GOARCH: "amd64"],
-                [GOOS: "linux", GOARCH: "386"],
-                [GOOS: "linux", GOARCH: "amd64"],
-                [GOOS: "windows", GOARCH: "386", ext: ".exe"],
-            ].each { platform ->
-                def outputFileName = srcFile.name - '.go' + (platform.ext ?: '')
-                compileGoSrc(srcFile, outputFileName, "${platform.GOOS}_${platform.GOARCH}", platform.subMap('GOOS', 'GOARCH'))
-            }
+        [
+            [GOOS: "darwin", GOARCH: "amd64"],
+            [GOOS: "linux", GOARCH: "386"],
+            [GOOS: "linux", GOARCH: "amd64"],
+            [GOOS: "windows", GOARCH: "386", ext: ".exe"],
+        ].each { platform ->
+            compileGoSrc(platform)
         }
     }
 }
@@ -314,7 +307,20 @@ def isWindows() {
     return ant.properties['os'] == "windows"
 }
 
-def compileGoSrc(File srcFile, String outputFileName, String platform, Map<String, String> env = [:]) {
-    executeCommand(["go", "build", "--ldflags", "-X main.GroovyServVersion ${project.version}", "-o", "$buildDir/platforms/$platform/$outputFileName", srcFile.path], env)
+def compileGoSrc(Map<String, String> platform) {
+    def args = ["GROOVYSERV_VERSION=${project.version}"]
+    if (platform.GOOS && platform.GOARCH) {
+        args << "OS_ARCH=${platform.GOOS}_${platform.GOARCH}"
+    }
+    if (platform.ext) {
+        args << "EXT=${platform.ext}"
+    }
+    if (platform.GOOS) {
+        args << "GOOS=${platform.GOOS}"
+    }
+    if (platform.GOARCH) {
+        args << "GOARCH=${platform.GOARCH}"
+    }
+    executeCommand(["make"] + args)
 }
 
