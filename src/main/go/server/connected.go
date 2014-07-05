@@ -148,10 +148,11 @@ func (server ConnectedServer) writeStreamRequest() {
 			server.write("Size: 0\n\n")
 			break
 		}
+		input += "\n" // an input line requires LF
 		if err := server.write(fmt.Sprintf("Size: %d\n\n", len(input))); err != nil {
 			log.Println("writeStreamRequest: Failed to write Size header:", err)
 		}
-		if err := server.write(input); err != nil { // without LF
+		if err := server.write(input); err != nil { // without extra LF
 			log.Println("writeStreamRequest: Failed to write Stdin:", input, err)
 		}
 	}
