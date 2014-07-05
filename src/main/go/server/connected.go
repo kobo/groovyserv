@@ -49,9 +49,10 @@ func (server ConnectedServer) handleSignal() {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 	for sig := range c {
-		log.Printf("Signaled: %#v", sig)
-		server.Interrupt()
-		os.Exit(1)
+		log.Printf("handleSignal: Signaled: %#v", sig)
+		if _, err := server.Interrupt(); err != nil {
+			log.Println("handleSignal: Failed to interrupt: %s", err.Error())
+		}
 	}
 }
 
@@ -126,7 +127,7 @@ func (server *ConnectedServer) Close() (err error) {
 	}()
 
 	if server.closed {
-		log.Println("connection is already closed")
+		log.Println("Close: connection is already closed")
 		return nil
 	}
 	if err := server.conn.Close(); err != nil {
@@ -142,16 +143,16 @@ func (server ConnectedServer) writeStreamRequest() {
 
 	reader := bufio.NewReaderSize(os.Stdin, MaxBufferSize)
 	for {
-		input, err := reader.ReadString('\n')
+		input, err := cmn.ReadLine(reader)
 		if err != nil {
 			server.write("Size: 0\n\n")
 			break
 		}
 		if err := server.write(fmt.Sprintf("Size: %d\n\n", len(input))); err != nil {
-			log.Println("Failed to write Size header:", err)
+			log.Println("writeStreamRequest: Failed to write Size header:", err)
 		}
 		if err := server.write(input); err != nil { // without LF
-			log.Println("Failed to write Stdin:", input, err)
+			log.Println("writeStreamRequest: Failed to write Stdin:", input, err)
 		}
 	}
 }
@@ -172,12 +173,12 @@ func (server ConnectedServer) readResponse() (statusCode int, err error) {
 		if len(headers) == 0 {
 			return -1, fmt.Errorf("no header")
 		}
-		log.Println("Headers:", headers)
+		log.Println("readResponse: Headers:", headers)
 
 		// Status:
 		statusCodeStr, ok := headers.Value("Status")
 		if ok {
-			log.Println("Status found:", statusCodeStr)
+			log.Println("readResponse: Status found:", statusCodeStr)
 			statusCode, _ := strconv.Atoi(statusCodeStr)
 			switch statusCode {
 			case InvalidAuthTokenErrorCode:

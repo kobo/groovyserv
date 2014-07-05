@@ -26,7 +26,7 @@ import (
 
 func ReadLine(reader *bufio.Reader) (line string, err error) {
 	var lineBytes, buf []byte
-	var isPrefix bool = true
+	var isPrefix = true
 	for isPrefix && err == nil {
 		buf, isPrefix, err = reader.ReadLine()
 		lineBytes = append(lineBytes, buf...)
