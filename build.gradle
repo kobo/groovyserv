@@ -79,6 +79,7 @@ def binSpec = copySpec {
     into('bin') {
         fileMode = 0755
         from "$projectDir/src/main/sh"
+        from "$projectDir/src/main/bat"
     }
 }
 
