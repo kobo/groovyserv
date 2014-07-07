@@ -76,6 +76,10 @@ def binSpec = copySpec {
         from "$buildDir/platforms"
         exclude "local"
     }
+    into('bin') {
+        fileMode = 0755
+        from "$projectDir/src/main/sh"
+    }
 }
 
 def srcSpec = copySpec {
@@ -155,9 +159,9 @@ task crossCompileGo {
     }
 }
 
-task assemble(overwrite: true, dependsOn: ['jar', 'compileGo'])
+task assemble(overwrite: true, dependsOn: ['jar'])
 
-task executables(type: Copy, dependsOn: ['assemble']) {
+task executables(type: Copy, dependsOn: ['assemble', 'compileGo', 'crossCompileGo']) {
     destinationDir = file("$buildDir/executables")
     inputs.dir file("$projectDir/src/main")
     outputs.dir destinationDir
@@ -181,15 +185,6 @@ task distBin(type: Zip, dependsOn: ['assemble', 'crossCompileGo']) {
     classifier = 'bin'
     into "$baseName-$version"
     with binSpec
-
-    // for multiple platforms
-    into('bin') { // scripts with filter
-        fileMode = 0755
-        from "$projectDir/src/main/sh", {
-            include "groovyserv-setup-bin.sh"
-            include "_common.sh"
-        }
-    }
 }
 
 task distSrc(type: Zip) {
