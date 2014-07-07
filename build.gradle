@@ -176,13 +176,13 @@ task executables(type: Copy, dependsOn: ['assemble']) {
 task dist(dependsOn: ['distBin', 'distSrc'])
 
 task distBin(type: Zip, dependsOn: ['assemble', 'crossCompileGo']) {
-    inputs.dir file(projectDir)
+    inputs.dir file("$projectDir/src/main")
     baseName = project.name
     classifier = 'bin'
     into "$baseName-$version"
     with binSpec
 
-    // for multiple platoforms
+    // for multiple platforms
     into('bin') { // scripts with filter
         fileMode = 0755
         from "$projectDir/src/main/sh", {
@@ -193,7 +193,7 @@ task distBin(type: Zip, dependsOn: ['assemble', 'crossCompileGo']) {
 }
 
 task distSrc(type: Zip) {
-    inputs.dir file(projectDir)
+    inputs.dir file("$projectDir/src/main")
     baseName = project.name
     classifier = 'src'
     into "$baseName-$version"
