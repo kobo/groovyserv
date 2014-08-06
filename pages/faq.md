@@ -54,11 +54,12 @@ So now, it doesn't require cygwin.dll and Cygwin environment at all.
 New groovyserver.bat are provided instead of groovyserver shell script.
 
 
-### Why is groovyclient written in C? Why isn't it written in Java?
+### Why is groovyclient written in Go, not in Java?
 
-The purpose of GroovyServ is to reduce startup-time of Groovy script and quick response is the most important factor.
-So we could not use Java for groovyclient.
-
+The purpose of GroovyServ is to reduce startup time of JVM process up.
+So you can't use Java to implement `groovyclient`.
+Go programming language can cross-compile binaries for other environments on everywhere.
+It's very powerful and useful feature for a tool developer like me.
 
 ### What is the server-client communication protocol?
 
@@ -80,7 +81,8 @@ For example, the values which you stored in System.getProperties() are shared am
 
 Yes, you can.
 But you might see OutOfMemoryError of PermGen if you use transitive dependencies and run the script repeatedly.
-It is probably comes from the way to resolve transitive dependencies is different of resolving direct dependencies in Groovy.
+It probably comes from the way to resolve a transitive dependency.
+It seems different to resolve a direct dependency in Groovy.
 You can avoid this error by specify SystemClassLoader to use:
 
 ```
@@ -89,7 +91,7 @@ You can avoid this error by specify SystemClassLoader to use:
 ```
 
 
-## When I built GroovyServ by myself in Windows, some errors occured. What's required?
+### When I built GroovyServ by myself in Windows, some errors occured. What's required?
 
 To build it in Windows, you need Cygwin and gcc-3 and MinGW.
 See [Build from source code in User Guide](./howtobuild.html).

@@ -1,19 +1,17 @@
-"top.html"(title: "Top")
+// Home
+"index.md"(title: "Home")
 
-"download.html"(title: "Download")
+// Documentation
+"howtoinstall.md"(title: "How to Install")
+"quickstart.md"(title: "Quick Start")
+"userguide.md"(title: "User Guide")
+"howtobuild.md"(title: "How to Build")
+"faq.md"(title: "FAQ")
+"license.md"(title: "License")
+"changelog.md"(title: "Change Log")
 
-"#document"(title: "Documentation") {
-    "#getting-started"(title: "Getting Started") {
-        "howtoinstall.html"(title: "How to Install")
-        "quickstart.html"(title: "Quick Start")
-    }
-    "#reference"(title: "Reference") {
-        "userguide.html"(title: "User Guide")
-        "howtobuild.html"(title: "How to Build")
-        "faq.html"(title: "FAQ")
-        "license.html"(title: "License")
-        "changelog.html"(title: "Change Log")
-    }
-}
+// Download
+"download.md"(title: "Download")
 
-"community.html"(title: "Community")
+// Community
+"community.md"(title: "Community")

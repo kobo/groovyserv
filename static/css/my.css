@@ -1,0 +1,55 @@
+html {
+    font-size: 120%;
+}
+
+.header .brand-icon {
+    background-image: url(../images/groovyserv-icon-white-noborder.png);
+    background-size: 24px;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.brand-logo {
+    width: 600px;
+    margin-bottom: 1.8em;
+    margin-left: -25px;
+}
+
+.fa {
+    margin-right: .5em;
+    color: #555;
+}
+
+.toc li {
+    font-style: italic;
+    color: #999;
+}
+
+.toc li i,
+.toc li a {
+    font-style: normal;
+}
+
+.toc a.active {
+    font-weight: bold;
+}
+
+h1, h2, h3, h4 {
+    margin-top: 1.5em;
+    margin-left: -5px;
+}
+
+.admontion {
+    border: 1px solid black;
+    padding: 1em 1.5em;
+}
+
+.admotion-info {
+    border-color:  #aa9;
+    background-color: #ffd;
+}
+
+.admotion-warn {
+    border-color:  #a99;
+    background-color: #fdd;
+}

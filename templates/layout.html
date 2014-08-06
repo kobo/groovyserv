@@ -7,13 +7,14 @@
     <link rel="stylesheet" href="${resource('/css/font-awesome.min.css')}">
     <link rel="stylesheet" href="${resource('/css/prettify.css')}">
     <link rel="stylesheet" href="${resource('/css/style.css')}">
+    <link rel="stylesheet" href="${resource('/css/my.css')}">
   </head>
   <body>
     <div class="wrapper">
       <% if (toc) { %>
         <div class="header">
-          <i class="fa fa-bars toc-toggle"></i>
-          <span class="title"><a href="$tocPath">$title</a></span>
+          <i class="brand-icon toc-toggle"></i>
+          <span class="title"><a href="index.html">$title</a></span>
         </div>
         <div class="toc">
           ${render('pages/nav.md')}
@@ -52,5 +53,6 @@
     <script src="${resource('/js/jquery-2.1.1.min.js')}"></script>
     <script src="${resource('/js/prettify.js')}"></script>
     <script src="${resource('/js/application.js')}"></script>
+    <script src="${resource('/js/my.js')}"></script>
   </body>
 </html>

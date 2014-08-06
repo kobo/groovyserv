@@ -2,84 +2,76 @@
 
 ## For each environment
 
-* For Anywhere:
-    - [binary package (bin.zip)](#howtoinstall-binary)
-* For all UNIX platform
-    - [GVM](#howtoinstall-gvm)
+* For all Un*x platform
+    - [GVM](#gvm)
 * Only for Mac OS X
-    - [Homebrew](#howtoinstall-homebrew)
+    - [Homebrew](#homebrew)
 * Only for Linux
-    - [An unofficial RPM package](#howtoinstall-rpm)
+    - [An unofficial RPM package](#rpm)
 * Only for Windows
-    - Groovy's Windows-Installer (including GroovyServ): http://groovy.codehaus.org/Download
+    - [Groovy's Windows-Installer (including GroovyServ)](http://groovy-lang.org/download.html)
+* For Anywhere:
+    - [binary package (bin.zip)](#binary)
 
 
-<span id="howtoinstall-binary"></span>
-## Install from binary package
+<span id="gvm"></span>
+## Install by [GVM](http://gvmtool.net/)
 
-Download and expand GroovyServ distribution package from [Download page](./download.html), e.g. `groovyserv-0.13-macosx-bin.zip` to any directory:
-
-```
-$ mkdir ~/opt
-$ cd ~/opt
-$ unzip groovyserv-0.13-macosx-x86_64-bin.zip
-```
-
-And add the bin directory to `PATH` environment variable.
-For example in bash/bourne shell::
+You can install the latest GroovyServ:
 
 ```
-export PATH=~/opt/groovyserv-0.13/bin:$PATH
+$ gvm install groovyserv
 ```
 
-That's all for preparing.
-When you invoke groovyclient, groovyserver automatically starts in background.
-At first, you might have to wait for a few seconds to startup:
+User commands aren't available just after the installation by GVM.
+So you have to run a setup script:
 
 ```
-$ groovyclient -v
-Invoking server: '/opt/groovyserv-0.13/bin/groovyserver' -p 1961
-...
-groovyserver 24008(1961) is successfully started
-Groovy Version: 2.1.5 JVM: 1.7.0_25 Vendor: Oracle Corporation OS: Mac OS X
-GroovyServ Version: Server: 0.13
-GroovyServ Version: Client: 0.13 (.c)
+$ ~/.gvm/groovyserv/current/bin/setup.sh
 ```
 
-If the binary downloaded doesn't work, try to build it from source code, according to [Build from source code](./howtobuild.html).
+The binary package includes binary files only for Mac OS X, Linux(amd64/i386) and Windows.
+But, no problem.
+In case that you want to install to other environments, it will be automatically built if only there is `go` command.
 
 
-<span id="howtoinstall-gvm"></span>
-## Install by GVM
+<span id="homebrew"></span>
+## Install by [Homebrew](http://mxcl.github.com/homebrew/)
 
-To install:
-
-```
-gvm install groovyserv
-```
-
-A `groovyclient` command installed by GVM is a limited shell version.
-If you have `make` and `gcc`, you can easily replace it with a native client built by yourself.
-See [Build native groovyclient on GVM](./howtobuild.html#gvm-nativeclient).
-
-See also: http://gvmtool.net/
-
-
-<span id="howtoinstall-homebrew"></span>
-## Install by Homebrew
-
-To install:
+You can install the latest GroovyServ:
 
 ```
 $ brew install groovyserv
 ```
 
-See also: http://mxcl.github.com/homebrew/
+
+<span id="binary"></span>
+## Install from a binary package
+
+Download and expand a GroovyServ binary package from [Download page](./download.html).
+
+```
+$ cd /tmp
+$ unzip groovyserv-<VERSION>-bin.zip
+$ groovyserv-<VERSION>-bin/bin/setup.sh
+```
+
+You should add the expanded `bin` directory to `PATH` environment variable.
+For example in bash/bourne shell:
+
+```
+export PATH=/tmp/groovyserv-<VERSION>/bin:$PATH
+```
+
+The binary package includes binary files only for Mac OS X, Linux(amd64/i386) and Windows.
+But, no problem.
+In case that you want to install to other environments, it will be automatically built if only there is `go` command.
 
 
-<span id="howtoinstall-rpm"></span>
-## Install from RPM package
+<span id="rpm"></span>
+## Install from a RPM package
 
-Currently we don't produce a RPM package officially. But there is the contributed SPEC file which is required to build a RPM file.
-So you can try to build it by yourself.
+Currently we don't provide a RPM package officially.
+But there is a contributed SPEC file which is required to build a RPM file.
+So you can try to build it if you want.
 See [Build RPM file](./howtobuild.html#rpm).

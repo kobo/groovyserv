@@ -1,22 +1,17 @@
 # Download
 
-## GroovyServ 0.13
+## GroovyServ 1.0.0
 
-See also: [Change Log](./changelog.html)
+This binary package is available for Mac OS X, Linux(amd64/i386), Windows(32bit/64bit).
+If you want to use GroovyServ in other environment, you can build it by yourself easily.
+Please see [How to Build](./howtobuild.html).
 
-If it doesn't work in your environment, see [FAQ](./faq.html) or contact us at [Mailing List](./community-ml.html).
-
-* [for Mac OS X (built at Mac OS X 10.8 (x86_64)](https://bitbucket.org/kobo/groovyserv-mirror/downloads/groovyserv-0.13-macosx-x86_64-bin.zip)
-* [for Linux (amd64) (linked with glibc 2.17)](https://bitbucket.org/kobo/groovyserv-mirror/downloads/groovyserv-0.13-linux-amd64-bin.zip)
-* [for Linux (i386) (linked with glibc 2.15)](https://bitbucket.org/kobo/groovyserv-mirror/downloads/groovyserv-0.13-linux-i386-bin.zip)
-* [for Windows (for both 32bit and 64bit environment)](https://bitbucket.org/kobo/groovyserv-mirror/downloads/groovyserv-0.13-windows-bin.zip)
-* [for all UNIX platform (without native binary)](https://bitbucket.org/kobo/groovyserv-mirror/downloads/groovyserv-0.13-platform-independent-bin.zip)
-* [source package for other environment](https://bitbucket.org/kobo/groovyserv-mirror/downloads/groovyserv-0.13-src.zip)
+* <i class="fa fa-cogs"></i>[Binary](https://bitbucket.org/kobo/groovyserv-mirror/downloads/groovyserv-1.0.0-bin.zip)
+* <i class="fa fa-code"></i>[Source](https://bitbucket.org/kobo/groovyserv-mirror/downloads/groovyserv-1.0.0-src.zip)
+* <i class="fa fa-file-text"></i>[Change Log](./changelog.html)
 
 
-## Previous versions
+## Old versions
 
-You can download old versions from:
-
-* [GitHub](http://github.com/kobo/groovyserv/downloads) (Before v0.10)
-* [BitBicket](https://bitbucket.org/kobo/groovyserv-mirror/downloads#download-205066) (After v0.11)
+* <i class="fa fa-github"></i>[GitHub](http://github.com/kobo/groovyserv/downloads) -- Before v0.10
+* <i class="fa fa-bitbucket"></i>[BitBicket](https://bitbucket.org/kobo/groovyserv-mirror/downloads#download-205066) -- After v0.11
