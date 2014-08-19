@@ -62,6 +62,21 @@ tasks.withType(GroovyCompile).each { it.groovyOptions.encoding = defaultEncoding
 //----------------------------------
 // copySpec
 
+def localBinSpec = copySpec {
+    from("$projectDir") {
+        include "*.txt"
+        include "*.md"
+    }
+    into('lib') {
+        from configurations.archives
+        from "$buildDir/libs"
+    }
+    into('bin') {
+        fileMode = 0755
+        from "$buildDir/platforms/local"
+    }
+}
+
 def binSpec = copySpec {
     from("$projectDir") {
         include "*.txt"
@@ -136,9 +151,9 @@ task compileGo {
             def env = [:]
             if (isWindows()) {
                 outputFileName += ".exe"
-                env += [GOOS: "windows", GOARCH: "386"] // using 386 binary even in 64-bit Windows
+                env += [GOOS: "windows", GOARCH: "386"] // using a '386' binary even in 64-bit Windows
             }
-            compileGoSrc(srcFile, outputFileName, "local")
+            compileGoSrc(srcFile, outputFileName, "local", env)
         }
     }
 }
@@ -162,17 +177,11 @@ task crossCompileGo {
 
 task assemble(overwrite: true, dependsOn: ['jar'])
 
-task executables(type: Copy, dependsOn: ['assemble', 'compileGo', 'crossCompileGo']) {
+task executables(type: Copy, dependsOn: ['assemble', 'compileGo']) {
     destinationDir = file("$buildDir/executables")
     inputs.dir file("$projectDir/src/main")
     outputs.dir destinationDir
-    with binSpec
-
-    // for testing
-    into('bin') {
-        fileMode = 0755
-        from "$buildDir/platforms/local"
-    }
+    with localBinSpec
 }
 
 //----------------------------------
@@ -194,6 +203,14 @@ task distSrc(type: Zip) {
     classifier = 'src'
     into "$baseName-$version"
     with srcSpec
+}
+
+task distLocalBin(type: Zip, dependsOn: ['assemble', 'compileGo']) { // only for a direct use for self-build
+    inputs.dir file("$projectDir/src/main")
+    baseName = project.name
+    classifier = 'bin-local'
+    into "$baseName-$version"
+    with localBinSpec
 }
 
 //----------------------------------
@@ -281,7 +298,7 @@ def shutdownGroovyServer() {
 def handleServer(List options) {
     def binDir = normalizePath(file("${buildDir}/executables/bin"))
     def groovyserverPath = "$binDir/groovyserver"
-    executeCommand([groovyserverPath, * options])
+    executeCommand([groovyserverPath, *options])
 }
 
 def executeCommand(List command, Map env = [:]) {
