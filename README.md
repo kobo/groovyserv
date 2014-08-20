@@ -1,7 +1,16 @@
-After you build html files, copy and apply to the gh-pages branch.
+# Documentation of GroovyServ
 
-Before you build docs, you must install gaiden by GVM as follows:
+## Requirements
+
+* Gaiden 1.0+
+
+
+## How to install Gaiden
 
     $ gvm install gaiden
+
+
+## How to build
+
     $ gaiden build
 

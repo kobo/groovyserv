@@ -1,0 +1,73 @@
+# How to Install
+
+## For each environment
+
+* For all Un*x platform
+    - [GVM](#gvm)
+* Only for Mac OS X
+    - [Homebrew](#homebrew)
+* Only for Linux
+    - [An unofficial RPM package](#rpm)
+* Only for Windows
+    - [Groovy's Windows-Installer (including GroovyServ)](http://groovy-lang.org/download.html)
+* For Anywhere:
+    - [binary package (bin.zip)](#binary)
+
+
+## Install by [GVM](http://gvmtool.net/) {#gvm}
+
+You can install the latest GroovyServ:
+
+```
+$ gvm install groovyserv
+```
+
+User commands aren't available just after the installation by GVM.
+So you have to run a setup script:
+
+```
+$ ~/.gvm/groovyserv/current/bin/setup.sh
+```
+
+The binary package includes binary files of user commands only for Mac OS X, Linux(amd64/i386) and Windows.
+But, no problem.
+In case that you want to install to other environments, it will be automatically built if only there is `go` command.
+
+
+## Install by [Homebrew](http://mxcl.github.com/homebrew/) {#homebrew}
+
+You can install the latest GroovyServ:
+
+```
+$ brew install groovyserv
+```
+
+
+## Install from a binary package {#binary}
+
+Download and expand a GroovyServ binary package from [Download page](download.md).
+
+```
+$ cd /tmp
+$ unzip groovyserv-<VERSION>-bin.zip
+$ groovyserv-<VERSION>-bin/bin/setup.sh
+```
+
+You should add the expanded `bin` directory to `PATH` environment variable.
+For example in bash/bourne shell:
+
+```
+export PATH=/tmp/groovyserv-<VERSION>/bin:$PATH
+```
+
+The binary package includes binary files of user commands only for Mac OS X, Linux(amd64/i386) and Windows.
+But, no problem.
+In case that you want to install to other environments, it will be automatically built if only there is `go` command.
+
+
+## Install from a RPM package {#rpm}
+
+Currently we don't provide a RPM package officially.
+But there is a contributed SPEC file which is required to build a RPM file.
+So you can try to build it if you want.
+See [Build RPM file](howtobuild.md#rpm).

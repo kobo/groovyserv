@@ -1,0 +1,90 @@
+.header .brand-icon {
+    background-image: url(../images/groovyserv-icon-white-noborder.png);
+    background-size: 24px;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.brand-logo {
+    width: 600px;
+    margin-bottom: 1.8em;
+    margin-left: -25px;
+}
+
+.fa,
+.fa::before {
+    color: #555;
+    margin-right: .3em;
+}
+
+.toc li {
+    font-style: italic;
+    color: #999;
+}
+
+.toc li i,
+.toc li a {
+    font-style: normal;
+}
+
+.toc a.active {
+    font-weight: bold;
+}
+
+h1, h2, h3, h4 {
+    margin-top: 1.5em;
+    margin-left: -5px;
+}
+
+.admonition {
+    border: 1px solid black;
+    padding: 1em 1.5em;
+    margin: 1em 0;
+}
+
+.admonition-info {
+    border-color:  #aa9;
+    background-color: #ffd;
+}
+
+.admonition-warn {
+    border-color:  #a99;
+    background-color: #fdd;
+}
+
+.pageToc {
+    float: right;
+    margin-top: 30px;
+    margin-bottom: 2em;
+    border: 1px solid #ccc;
+    background-color: #eee;
+    padding: 1em 2em .5em 0;
+    border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+}
+
+@media screen and (max-width: 1024px) {
+    .pageToc {
+        width: 100%;
+    }
+}
+
+.header {
+    z-index: 99;
+}
+
+.download-table {
+    text-align: center;
+    border: none;
+}
+
+.download-table td {
+    border: none;
+    width: 10em;
+}
+
+.download-table .fa,
+.download-table .fa::before {
+    margin: 0;
+}
