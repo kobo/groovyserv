@@ -110,7 +110,7 @@ code {
     display: table;
 }
 
-.header .toc-toggle {
+.header .brand-icon {
     vertical-align: middle;
     display: table-cell;
     width: 50px;
@@ -133,7 +133,7 @@ code {
     text-decoration: none;
 }
 
-.toc-toggle + .title {
+.brand-icon + .title {
     padding: 0;
 }
 
