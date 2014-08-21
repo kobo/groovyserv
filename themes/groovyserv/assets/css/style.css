@@ -138,9 +138,9 @@ code {
 }
 
 /*
- * Toc
+ * Sidebar
  */
-.toc {
+.sidebar {
     position: fixed;
     top: 50px;
     left: 0;
@@ -152,37 +152,37 @@ code {
     background: #eee;
 }
 
-.toc > ul {
+.sidebar > ul {
     margin: 0 20px 50px 0;
 }
 
-.toc ul, .toc li {
+.sidebar ul, .sidebar li {
     list-style-type: none;
 }
 
-.toc ul {
+.sidebar ul {
     padding: 0;
 }
 
-.toc li {
+.sidebar li {
     padding: 4px 0 0 25px;
 }
 
-.toc a {
+.sidebar a {
     color: #333;
 }
 
-.toc .current > a {
+.sidebar .current > a {
     font-weight: 700;
 }
 
 @media screen and (max-width: 480px) {
-    .toc {
+    .sidebar {
         display: none;
         width: 100%;
     }
 
-    .toc > ul {
+    .sidebar > ul {
         margin: 0 20px 20px 0;
     }
 }
@@ -194,7 +194,7 @@ code {
     padding: 70px 60px 20px 60px;
 }
 
-.content-toc-visible {
+.content-sidebar-visible {
     margin: 0 0 0 250px;
 }
 
@@ -247,7 +247,7 @@ code {
     left: 0;
 }
 
-.footer-toc-visible {
+.footer-sidebar-visible {
     padding: 0 0 0 250px;
 }
 
@@ -267,7 +267,7 @@ code {
         padding: 10px 0;
     }
 
-    .footer-toc-visible {
+    .footer-sidebar-visible {
         padding: 0;
     }
 }

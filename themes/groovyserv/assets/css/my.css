@@ -17,17 +17,17 @@
     margin-right: .3em;
 }
 
-.toc li {
+.sidebar li {
     font-style: italic;
     color: #999;
 }
 
-.toc li i,
-.toc li a {
+.sidebar li i,
+.sidebar li a {
     font-style: normal;
 }
 
-.toc a.active {
+.sidebar a.active {
     font-weight: bold;
 }
 

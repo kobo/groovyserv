@@ -15,10 +15,10 @@
         <i class="brand-icon"></i>
         <span class="title"><a href="${homePage?.path ?: '#'}">$title</a></span>
       </div>
-      <div class="toc">
+      <div class="sidebar">
         ${render('nav.md')}
       </div>
-      <div class="content content-toc-visible">
+      <div class="content content-sidebar-visible">
         <div class="content-nav">
           <% if (prevPage) { %>
           <a class="prev-page" href="${prevPage.path}"><i class="fa fa-angle-left"></i>${prevPage.title}</a>
@@ -35,8 +35,8 @@
         <div class="main-content">
           $content
         </div>
-        <div class="footer footer-toc-visible">
-          <p class="credit text-muted">Powered by <a href="https://github.com/kobo/gaiden">Gaiden</a>.</p>
+        <div class="footer footer-sidebar-visible">
+          <p class="credit text-muted">Powered by <a href="https://github.com/kobo/gaiden">Gaiden</a></p>
         </div>
       </div>
     </div>

@@ -16,43 +16,43 @@
 
 $(function () {
     var $content = $('.content');
-    var $toc = $('.toc');
-    var $tocToggle = $('.toc-toggle');
+    var $sidebar = $('.sidebar');
+    var $sidebarToggle = $('.brand-icon');
     var $footer = $('.footer');
     var $navLink = $('.content-nav a');
 
-    function hideToc() {
-        $toc.hide();
-        $content.removeClass('content-toc-visible');
-        $footer.removeClass('footer-toc-visible');
+    function hideSidebar() {
+        $sidebar.hide();
+        $content.removeClass('content-sidebar-visible');
+        $footer.removeClass('footer-sidebar-visible');
     }
 
-    function showToc() {
-        $toc.show();
-        $content.addClass('content-toc-visible');
-        $footer.addClass('footer-toc-visible');
+    function showSidebar() {
+        $sidebar.show();
+        $content.addClass('content-sidebar-visible');
+        $footer.addClass('footer-sidebar-visible');
     }
 
     // bind events
 
-    $tocToggle.on('click', function () {
-        if ($toc.is(':visible')) {
-            hideToc();
+    $sidebarToggle.on('click', function () {
+        if ($sidebar.is(':visible')) {
+            hideSidebar();
         } else {
-            showToc();
+            showSidebar();
         }
     });
     $navLink.on('click', function (e) {
-        if (!$toc.is(':visible')) {
+        if (!$sidebar.is(':visible')) {
             e.preventDefault();
-            location.href = $(this).attr('href') + "?toc=hidden";
+            location.href = $(this).attr('href') + "?sidebar=hidden";
         }
     });
 
     // initialize
 
-    if (location.search.indexOf('toc=hidden') !== -1) {
-        hideToc();
+    if (location.search.indexOf('sidebar=hidden') !== -1) {
+        hideSidebar();
     }
 
     $('pre').addClass('prettyprint');
@@ -60,4 +60,3 @@ $(function () {
 
     $('table').wrap('<div class="table-responsive"></div>');
 });
-
