@@ -16,8 +16,8 @@
 package main
 
 import (
-	cmn "./common"
-	srv "./server"
+	cmn "../../common"
+	srv "../../server"
 	"fmt"
 	"log"
 	"os"

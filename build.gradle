@@ -145,7 +145,7 @@ task compileGroovy(overwrite: true, type: Copy) {
 task compileGo {
     doLast {
         ansi.printlnAsInfo ">> Compiling Go sources..."
-        file("$projectDir/src/main/go").eachFileMatch(groovy.io.FileType.FILES, ~/.*\.go/) { srcFile ->
+        fileTree("$projectDir/src/main/go/cmd").include("**/*.go").each { srcFile ->
             // for local environment by default for testing
             def outputFileName = srcFile.name - '.go'
             def env = [:]
@@ -161,7 +161,7 @@ task compileGo {
 task crossCompileGo {
     doLast {
         ansi.printlnAsInfo ">> Cross compiling Go sources..."
-        file("$projectDir/src/main/go").eachFileMatch(groovy.io.FileType.FILES, ~/.*\.go/) { srcFile ->
+        fileTree("$projectDir/src/main/go/cmd").include("**/*.go").each { srcFile ->
             [
                 [GOOS: "darwin", GOARCH: "amd64"],
                 [GOOS: "linux", GOARCH: "386"],
