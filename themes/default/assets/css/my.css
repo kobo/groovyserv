@@ -1,0 +1,75 @@
+.header {
+    background-color: #3498db;
+    padding: 0 1em;
+}
+
+.header .sidebar-toggle {
+    background-image: url(../images/groovyserv-icon-white-noborder.png);
+    background-size: 24px;
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 3em;
+}
+
+.header .sidebar-toggle:before {
+    content: '';
+}
+
+.brand-logo {
+    width: 600px;
+    margin-top: 0;
+    margin-bottom: 1.5em;
+    margin-left: -10px;
+}
+
+.demo {
+    margin: .5em 0 0 1.5em;
+}
+
+.fa,
+.fa::before {
+    color: #555;
+    margin-right: .2em;
+}
+
+/*
+ * sidebar as a site structure
+ */
+.sidebar {
+    font-size: 115%;
+    padding-left: 3.5em;
+}
+
+.sidebar li {
+    font-style: italic;
+    color: #999;
+    margin-top: .3em;
+}
+
+.sidebar .fa,
+.sidebar .fa::before {
+    margin-right: 0;
+}
+
+.sidebar li i,
+.sidebar li a {
+    font-style: normal;
+}
+
+/*
+ * download table
+ */
+.download-table {
+    text-align: center;
+    border: none;
+}
+
+.download-table td {
+    border: none;
+    width: 10em;
+}
+
+.download-table .fa,
+.download-table .fa::before {
+    margin: 0;
+}

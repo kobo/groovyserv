@@ -17,41 +17,20 @@
 // The base title of page
 title = "GroovyServ"
 
-// The title of TOC
-//tocTitle = "Table of contents"
+// The version of this documantation
+version = "1.0-SNAPSHOT"
 
 // The path of source files directory
 sourceDirectoryPath = "source"
 
-// The encoding of input Markdown resource
-//inputEncoding = "UTF-8"
-
-// The encoding of output document
-//outputEncoding = "UTF-8"
-
-// The path of pages file path
-pagesFilePath = "source/pages.groovy"
-
+// Turn off numbering for topics
 numbering = false
 
-theme = "groovyserv"
-
-version = "1.0-SNAPSHOT"
+groovyVersion = "2.3.6"
+javaVersion = "1.8.0_11"
 
 // Filters
 filters = {
-    admonition {
-        before = { text ->
-            text.replaceAll(/(?m)^> ###### (INFO|WARN)(?:: *(.+))?\n((?:.|\n)+?)^$/) { all, type, title, lines ->
-                def header = title ? "###### $title" : ""
-                """<div class="admonition admonition-${type.toLowerCase()}" markdown="1">
-                  |$header
-                  |${lines.replaceAll(/(?m)^> ?/, '')}
-                  |</div>
-                  |""".stripMargin()
-            }
-        }
-    }
     fontAwesome {
         before = { text ->
             text.replaceAll(/(?m)^( *[*-]) (.+) \{\.fa\.fa-([a-z-]+)\}$/, '$1 <i class="fa fa-$3"></i>$2')
@@ -59,7 +38,10 @@ filters = {
     }
     expandVersion {
         before = { text ->
-            text.replaceAll(/(?m)<VERSION>/, version)
+            text.
+                replaceAll(/(?m)<VERSION>/, version).
+                replaceAll(/(?m)<GROOVY_VERSION>/, groovyVersion).
+                replaceAll(/(?m)<JAVA_VERSION>/, javaVersion)
         }
     }
 }
