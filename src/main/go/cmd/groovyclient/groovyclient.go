@@ -30,18 +30,18 @@ const (
 	USAGE = `usage: groovyclient -C[option for groovyclient] [args/options for groovy]
 options:
   -Ch,-Chelp                       show this usage
-  -Cs,-Chost                       specify the host to connect to groovyserver
-  -Cp,-Cport <port>                specify the port to connect to groovyserver
-  -Ca,-Cauthtoken <authtoken>      specify the authtoken
-  -Ck,-Ckill-server                kill the running groovyserver
-  -Cr,-Crestart-server             restart the running groovyserver
+  -Cs,-Chost                       specify host to connect to server
+  -Cp,-Cport <port>                specify port to connect to server
+  -Ca,-Cauthtoken <authtoken>      specify authtoken
+  -Ck,-Ckill-server                kill the running server
+  -Cr,-Crestart-server             restart the running server
   -Cq,-Cquiet                      suppress statring messages
   -Cenv <substr>                   pass environment variables of which a name
                                    includes specified substr
   -Cenv-all                        pass all environment variables
   -Cenv-exclude <substr>           don't pass environment variables of which a
                                    name includes specified substr
-  -Cv,-Cversion                    display the GroovyServ version
+  -Cv,-Cversion                    display the version
   -Cdebug                          display console log`
 )
 

@@ -28,15 +28,15 @@ import (
 const (
 	USAGE = `usage: groovyserver [options]
 options:
-  -h,--help                     show this usage
-  -k,--kill                     kill the running groovyserver
-  -r,--restart                  restart the running groovyserver
-  -q,--quiet                    suppress statring messages
-  -v,--verbose                  verbose output to a log file
-  -p,--port <port>              specify the port to listen
-     --allow-from <addresses>   specify optional acceptable client addresses (delimiter: comma)
-     --authtoken <authtoken>    specify authtoken (which is automatically generated if not specified)
-     --debug                    display console log`
+  -h,--help                        show this usage
+  -k,--kill                        kill the running server
+  -r,--restart                     restart the running server
+  -q,--quiet                       suppress statring messages
+  -v,--verbose                     verbose output to a log file
+  -p,--port <port>                 specify port to listen
+     --allow-from <addresses>      specify optional acceptable client addresses (delimiter: comma)
+     --authtoken <authtoken>       specify authtoken (which is automatically generated if not specified)
+     --debug                       display console log`
 )
 
 type Options struct {
