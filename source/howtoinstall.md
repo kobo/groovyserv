@@ -1,4 +1,5 @@
-# How to Install
+How to Install
+==============
 
 ## For each environment
 
@@ -18,14 +19,14 @@
 
 You can install the latest GroovyServ:
 
-```
+```sh
 $ gvm install groovyserv
 ```
 
 User commands aren't available just after the installation by GVM.
 So you have to run a setup script:
 
-```
+```sh
 $ ~/.gvm/groovyserv/current/bin/setup.sh
 ```
 
@@ -38,7 +39,7 @@ In case that you want to install to other environments, it will be automatically
 
 You can install the latest GroovyServ:
 
-```
+```sh
 $ brew install groovyserv
 ```
 
@@ -47,7 +48,7 @@ $ brew install groovyserv
 
 Download and expand a GroovyServ binary package from [Download page](download.md).
 
-```
+```sh
 $ cd /tmp
 $ unzip groovyserv-<VERSION>-bin.zip
 $ groovyserv-<VERSION>-bin/bin/setup.sh
@@ -56,7 +57,7 @@ $ groovyserv-<VERSION>-bin/bin/setup.sh
 You should add the expanded `bin` directory to `PATH` environment variable.
 For example in bash/bourne shell:
 
-```
+```sh
 export PATH=/tmp/groovyserv-<VERSION>/bin:$PATH
 ```
 

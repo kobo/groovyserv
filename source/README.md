@@ -1,11 +1,11 @@
-<img src="groovyserv-logo.png" class="brand-logo"/>
+<img src="groovyserv-logo.png" class="brand-logo" />
 
-# Quick startup, by using a JVM process running in background {.fa.fa-forward}
+## Quick startup, by using a JVM process running in background {.fa.fa-forward}
 
 GroovyServ reduces startup time of the JVM for runnning Groovy significantly.
 It depends on your environments, but in most case, it's **10 to 20 times faster than regular Groovy**.
 
-![demo](groovyserv-demo.gif)
+![demo](groovyserv-demo.gif){.demo}
 
 
 ## Features {.fa.fa-star}
@@ -25,3 +25,8 @@ GroovyServ provides following features:
 * Selectable propagation of any environment variables from a client to a server.
 * User commands written by [Go programming language](http://golang.org/).
 * Works on Linux, Mac and even Windows without Cygwin.
+
+
+## License {.fa.fa-info-circle}
+
+GroovyServ is released under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0).

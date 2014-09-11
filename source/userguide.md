@@ -1,124 +1,207 @@
-# User Guide
+User Guide
+==========
 
-## Introduction
+## Overview
 
-GroovyServ makes startup time quicker, by pre-invoking groovy as a TCP/IP server.
-If you know gnuserv(gnudoit)/emacsserver/emacsclient, this is like that.
+GroovyServ reduces the startup time of JVM for Groovy significantly, by using a JVM process running in background.
+If you know gnuserv(gnudoit)/emacsserver/emacsclient, this is similar to them.
 
-In the case of scripting in dynamic-type languages, quick response about invocation is very important.
-Try-and-run cycles is repeated frequently than static-type languages, so sometimes 2 seconds or even a second might be intolerable.
-
-GroovyServ reduces the startup time of JVM and Groovy runtime significantly.
-In most situations it is 10 to 20 times faster than regular Groovy.
-The following times are averages of 5 times which measured invocation in Groovy 2.1.5 on Mac OS X 10.8.4 (2.3GHz Intel Core i7).
-
-|Command           |Result(sec)
-|------------------|-----------
-|Groovy            |0.803
-|GroovyServ        |0.023
+![overview](groovyserv-overview.png){.overview}
 
 
 ## Requirements
 
-GroovyServ can be used in following environment/OS:
+GroovyServ needs the following programs
+Version of JDK/Groovy using at build is following:
 
-* Mac OS X 10.8 (Intel Mac)
-* Ubuntu Linux 10.04
-* Windows XP/7 with/without Cygwin
-* And more
+* [Java SDK 7+](http://www.oracle.com/technetwork/java/javase/downloads) (<JAVA_VERSION> on build-time)
+* [Groovy](http://groovy-lang.org/download.html) (<GROOVY_VERSION> on build-time)
 
-Version of JDK using at build is following:
+There are binary files for following environment/OS as default:
 
-* JDK 7u25
+* Mac OS X
+* Linux (amd64/i386)
+* Windows 7+ (64bit/32bit)
 
-Version of Groovy is following:
+But if you build the user commands written in Go language, you can use them anywhere.
+To build by yourself is required:
 
-* Groovy 1.8.6+
+* [Java SDK 7+](http://www.oracle.com/technetwork/java/javase/downloads)
+* [Go 1.3+](http://golang.org/doc/install)
 
 
-## How to use
+## Command usage
 
-You can use `groovyclient` command instead of `groovy` command.
-If the server is not running yet, it automatically starts:
+### Start/stop a server process
 
+There are two ways to run a server process.
+The way is an implicit operation via a `groovyclient` command.
+If a server process isn't running, the `groovyclient` automatically starts a server process up at the background:
+
+```sh
+$ groovyclient -v
+Java home directory: /Library/Java/JavaVirtualMachines/current/Contents/Home
+Groovy home directory: /Users/me/.gvm/groovy/current
+Groovy command path: /Users/me/.gvm/groovy/current/bin/groovy (found at GROOVY_HOME)
+GroovyServ home directory: /Users/me/groovyserv/current
+GroovyServ work directory: /Users/me/.groovy/groovyserv
+Original classpath: (none)
+GroovyServ default classpath: /Users/me/.groovy/groovyserv/lib/*
+Starting server..............
+Server is successfully started up on 1961 port
+Groovy Version: <GROOVY_VERSION> JVM: <JAVA_VERSION> Vendor: Oracle Corporation OS: Mac OS X
+GroovyServ Version: Server: <VERSION>
+GroovyServ Version: Client: <VERSION>
 ```
-$ groovyclient -e "println('Hello, GroovyServ.')"
-Hello, GroovyServ.
-```
 
-You can also invoke the server explicitly:
+The another way is using a `groovyserver` command:
 
-```
+```sh
 $ groovyserver
 ```
 
-With -v option, the verbose messages are written into a log file.
+For example, with `-v/--vebose` option, the verbose messages are written into a [log file](#log-file).
 It's useful to analyze a problem about invoking server:
 
-```
+```sh
 $ groovyserver -v
 ```
 
+A `-r/--restart` option is handy because it can start a new server when there is no server process.
+When you want a server to be running, you can always use the option like:
 
-## Differences from normal Groovy
-
-* You can't concurrently use different current directory on a server.
-    It also meets conditions if you invoke `groovyclient` simultaneously from two or more consoles.
-    But if the running periods of each `groovyclient` are not overlapping, it can run without exception.
-
-    If needed, you can simultaneously run multiple servers with different ports.
-
-* A static variable is shared among Groovy program invocations.
-    For instance, the system properties are shared:
-
-    ```
-    $ groovyclient -e "System.setProperty('a','abc')"
-    $ groovyclient -e "println System.getProperty('a')"
-    abc
-    ```
-
-    However, System.out, System.in and System.err are rightly used which are individually prepared for each invocation.
-
-* Normally, environment variables of when `groovyserver` was invoked are used instead of those of `groovyclient` side.
-    But if you specify `-Cenv/-Cenv-all` option, you can reflect the values of environment variables of client to the server.
-
-    Only the `CLASSPATH` environment variable, however, whichever with or without those options, is always reflected to the server.
-    The values are cleared at the end of each client invocation.
-    It doesn't affect to next invocation.
+```sh
+$ groovyserver -r
+```
 
 
-## Security
+### Run a Groovy script
 
-GroovyServ has a possibility to run any Groovy script from client at default.
-So server-client connection is limited to the connection from the same machine (localhost).
-And the connection is authenticated by simple authtoken mechanism.
-The authtoken file is stored at `~/.groovy/groovyserv/authtoken-<port>` and the file mode set to `0600`.
-But in Windows environment, it is not effective.
-So appropriately protect access to the file in Windows if needed.
+You can run a Groovy script by a `groovyclient` command instead of a `groovy` command.
+In most of cases, you can specify an one-liner script as a parameter of `-e` option:
+
+```sh
+$ groovyclient -e "println 'Hello, GroovyServ.'"
+Hello, GroovyServ.
+```
+
+Or specify just a file path:
+
+```sh
+$ cat hello.groovy
+println 'Hello from a file.'
+
+$ groovyclient hello.groovy
+Hello from a file.
+```
+
+
+### Options
+
+#### groovyclient
+
+A `groovyclient` command accept all options of a `groovy` command.
+Besides, there are dedicated options of `groovyclient`, a name of which starts with `-C`.
+Those options are analyzed and consumed by `groovyclient`, and aren't passed to groovy command:
+
+```
+  -Ch,-Chelp                       show this usage
+  -Cs,-Chost                       specify host to connect to server
+  -Cp,-Cport <port>                specify port to connect to server
+  -Ca,-Cauthtoken <authtoken>      specify authtoken
+  -Ck,-Ckill-server                kill the running server
+  -Cr,-Crestart-server             restart the running server
+  -Cq,-Cquiet                      suppress statring messages
+  -Cenv <substr>                   pass environment variables of which a name includes specified substr
+  -Cenv-all                        pass all environment variables
+  -Cenv-exclude <substr>           don't pass environment variables of which a name includes specified substr
+  -Cv,-Cversion                    display the version
+  -Cdebug                          display console log
+```
+
+
+#### groovyserver
+
+Options of `groovyserver` command are as follows:
+
+```
+  -h,--help                        show this usage
+  -k,--kill                        kill the running server
+  -r,--restart                     restart the running server
+  -q,--quiet                       suppress statring messages
+  -v,--verbose                     verbose output to a log file
+  -p,--port <port>                 specify port to listen
+     --allow-from <addresses>      specify optional acceptable client addresses (delimiter: comma)
+     --authtoken <authtoken>       specify authtoken (which is automatically generated if not specified)
+     --debug                       display console log
+```
+
+
+## Access control
+
+GroovyServ can reject an evil request from an evil client, by using two methods; *authtoken* and *whitelist*.
+
+### Authtoken
+
+In GroovyServ, a request is authenticated by a simple authtoken mechanism.
+
+1. An authtoken is generated when a server process is started up and writes into the authtoken file.
+2. A `groovyclient` reads the authtoken file when running, and then sends it as a part of a request to a server process.
+3. A server process compares the authtoken in the request with the one the server having.
+   If they weren't matched, the request would be rejected.
+
+You can also specify an authtoken as you want when starting a server process up, instead of generating automatically.
+
+```sh
+$ groovyserver --authtoken GROOVYSERV
+```
+
+Or:
+
+```sh
+$ groovyclient -Cauthtoken GROOVYSERV ....
+```
+
+**IMPORTANT**: Too simple authtoken might cause less security.
+
+
+### Whitelist of IP addressses
+
+A server process allows a request only from a loopback address by default.
+However, you can allow an access between different computers at your own risk.
+See [Remote accessing](#remote-accessing) section.
 
 
 ## Environment variables
 
-GroovyServ uses the following environment variables in runtime.
+### Required/optional at runtime
 
-`HOME` (only on Linux or Mac OS X)
-:   It's used to decide ~/.groovy/groovyserv directory path which is used for logging, storing a authtoken and a PID.
-    It's set by default on unix-like OS.
+GroovyServ uses the following environment variables at runtime.
 
-`USERPROFILE` (only on Windows)
-:   It's used to decide ~\.groovy\groovyserv directory path which is used for logging, storing a authtoken and a PID.
-    It's set by default on Windows. If server process is invoked by groovyserver.bat, PID file doesn't exist.
+`HOME` (required only on Linux or Mac OS X, namely UN*X-like OS)
+:   It's used to decide a working directory `$HOME/.groovy/groovyserv` which is used for logging and storing an authtoken.
+    You need do nothing because it's set by default on UN*X-like OS.
 
-`JAVA_HOME`
-:   It's required for Groovy. Generally, it has been already set by installing Groovy.
+`USERPROFILE` (required only on Windows)
+:   It's used to decide a working directory `%USERPROFILE%\.groovy\groovyserv` which is used for logging and storing an authtoken.
+    You need do nothing because it's set by default on Windows.
+
+`JAVA_HOME` (required indirectly)
+:   It's required for Groovy. Generally, it must be set by installing Groovy.
 
 `GROOVY_HOME` (optional)
-:   It's used to specify groovy command path.
-    If you've set groovy command into PATH environment variable, GroovyServ can find groovy command via PATH, so you don't have to set GROOVY_HOME.
+:   It's used to specify a `groovy` command path.
+    If you've set a path of a `groovy` command into `PATH`, you don't have to set `GROOVY_HOME` because GroovyServ can find the command via `PATH`.
 
 `PATH` (optional)
-:   It's used to specify groovy command path.
-    If you've set GROOVY_HOME environment variable, GroovyServ uses it in order to find a groovy command, so you don't have to set the groovy command path to PATH.
+:   It's used to specify a `groovy `command path.
+    If you've set `GROOVY_HOME`, you don't have to set the `groovy` command path to PATH because GroovyServ can find the command via `GROOVY_HOME`.
+
+`CLASSPATH` (optional)
+:   In addition to some JAR files of GroovyServ itself, the values of a `CLASSPATH` in which a `groovyserver` command runs are applied to a `CLASSPATH` of a server process.
+    It's used for each an evaluation of a script as *default classpath*.
+    Additionally, a `CLASSPATH` of a client process affects to a evaluation of a script on a server temporarily.
+    See also [Propagation of CLASSPATH](#propagation-of-classpath) section.
 
 `GROOVYSERV_HOST` (optional)
 :   It's used to specify the host address for client.
@@ -128,129 +211,68 @@ GroovyServ uses the following environment variables in runtime.
 :   It's used to specify the port number for server or client.
     Alternately, you can specify it as a command option.
 
-`CLASSPATH` (optional)
-:   CLASSPATH environment variable on where groovyserver starts up composes the environment variable of the groovyserver process, with Jars of GroovyServ.
-    It's used as "default classpath" and affects invocations of every script.
+`GROOVYSERV_WORK_DIR` (optional)
+:   It's used to specify the work directory at which GroovyServ uses to store an authtoken file and a log file.
+    If not specified, the default paths are used. See [Files](#files) section.
 
-    CLASSPATH environment variable on where groovyclient is invoked is transferred to the groovyserver and is dynamically set to the compiler's configuration of the script.
-    (CLASSPATH environment variable of groovyserver is never modified.)
-    The temporary classpath doesn't affect the next script invocation because it's reset on the tear-down phase of each script invocation.
-    When searching a class, groovyserver's CLASSPATH environment variable is used priorly.
-    The above behavior is quite same as groovyclient's -cp option.
+`GROOVYSERV_LOG_DIR` (optional)
+:   It's used to specify the log directory for a log file of a server process which is running with a `--verbose` options.
+    If not specified, the default paths are used. See [Files](#files) section.
 
-
-## groovyclient's option
-
-groovyclient's options start with "-C".
-Those options are analyzed and consumed by groovyclient, and aren't passed to groovy command::
-
-```
-  -Ch,-Chelp                       show this usage
-  -Cs,-Chost <address>             specify the host to connect to groovyserver
-  -Cp,-Cport <port>                specify the port to connect to groovyserver
-  -Ca,-Cauthtoken <authtoken>      specify the authtoken
-  -Ck,-Ckill-server                kill the running groovyserver
-  -Cr,-Crestart-server             restart the running groovyserver
-  -Cq,-Cquiet                      suppress statring messages
-  -Cenv <substr>                   pass environment variables of which a name
-                                   includes specified substr
-  -Cenv-all                        pass all environment variables
-  -Cenv-exclude <substr>           don't pass environment variables of which a
-                                   name includes specified substr
-  -Cv,-Cversion                    display the GroovyServ version
-```
-
-Since v0.12, groovyclient.sh written by bash script has been added.
-Now you can easily use GroovyServ on the environment where there is no appropriate native client and ruby isn't installed.
-But there are some restrictions due to the limitation of the power of bash.
-
- - Signal handling on client side (Ctrl+C)
- - System.in from client
- - Distinguishable stdout from stderr on client (all responses to stdout)
- - Status code from server ($?)
-
-They may be improved at future version.
-If you want to use a full featured client, use `groovyclient.rb`.
-Or, run `groovyserv-setup-nativeclient` command including platform independent package in order to build a native client and replace `groovyclient` with it.
-See [Build from source code in User Guide](howtobuild.md).
+> **WARNING**: For Windows users
+>
+> If you want to use GroovyServ on Cygwin, you should take care with the environment variables having a file path.
+> GroovyServ cannot understand a "cygpath" format (e.g. `/cygdrive/c/your/dir/path`).
+> So you should convert the value of environment variable to a Windows native path format, by a `cygpath` command.
+> It's a good idea to create an alias or a wrapper script.
 
 
-## groovyserver's option
+### Propagation of CLASSPATH
 
-groovyserver's options are as follows:
+The values of a `CLASSPATH` in which a `groovyclient` command runs are automatically sent to a server process.
+And it's dynamically set to the compiler's configuration of a script specified by the client.
+A `CLASSPATH` of a server process is never modified.
+So, the temporary classpath doesn't affect the next script evaluation because it's reset on the tear-down phase of each script evaluation.
+This behavior is quite same as a `groovyclient`'s `-cp` option.
 
-```
-  -v                       verbose output to the log file
-  -q                       suppress starting messages
-  -k                       kill the running groovyserver (unsupported in groovyserver.bat)
-  -r                       restart the running groovyserver (unsupported in groovyserver.bat)
-  -p <port>                specify the port to listen
-  --allow-from <addresses> specify optional acceptable client addresses (delimiter: comma)
-  --authtoken <authtoken>  specify authtoken (which is automatically generated if not specified)
-```
+> **NOTE**:
+> The propagation of CLASSPATH works temporarily only for a certain client running.
+> So, variables added to a server are available only in a script of the client, and vanish from the server after the client terminates.
 
-## Start and stop groovyserver
+The order to search a class is the following:
 
-There are two ways to invoke `groovyserver`; the one is, called "explicit server invocation", the way of using `groovyserver` or `groovyserver.bat`.
-The another is, called "transparent server invocation", the way of just using `groovyclient`.
-If `groovyserver` hasn't run yet, `groovyclient` automatically invokes `groovyserver` at the background.
-
-The commands for explicit server invocation are:
-
-* `groovyserver`      (for Mac OS X, Linux, Windows with Cygwin)
-* `groovyserver.bat`  (for Windows without Cygwin)
-
-Following table shows the availability of those commands: (OK: Available, N/A: Not available)
-
-Script            |Windows w/ Cygwin |Windows w/o Cygwin |Mac OS X, Linux
-------------------|------------------|-------------------|----------------
-groovyserver      |OK                |N/A                |OK
-groovyserver.bat  |OK                |OK                 |N/A
-
-`groovyserver.bat` doesn't support `-r` and `-k` options for technical reasons.
-So, on the command line, You can neither stop nor restart the server started by `groovyserver.bat`.
-Instead, a minimized window is shown when server is started by `groovyserver.bat`.
-You can stop the server by closing the window.
-As a result, then you can restart server by invoking `groovyclient` as transparent server invocation.
-
-On Cygwin, `groovyclient` internally uses `groovyserver.bat` for transparent server invocation.
-Therefore, the behavior on Cygwin is as follows:
-
-- In the case of server explicitly invoked by `groovyserver` shell script, you can stop or restart the server by invoking `groovyserver` shell script with `-k` or `-r` options.
-- In the case of server explicitly invoked by `groovyserver.bat` (bat file), you can stop the server by closing the window of the server.
-- In the case of groovyserver transparently invoked by `groovyclient.exe`, you can stop the server by closing the window of the server.
-
-It seems be confusing enough.
-So, we are considering to support `-r` and `-k` options of groovyserver.bat.
-
-In transparent server invocation, you cannot supply options(e.g. `-v`) for `groovyserver` or `groovyserver.bat` which is invoked internally by `groovyclient`.
-If you need, explicitly invoke `groovyserver` with options.
+1. `CLASSPATH` of a server
+2. `-cp/--classpath` options of a `groovyclient`
+3. `CLASSPATH` of a client
 
 
-## Propagation of environment variable
+### Propagation of environment variables
 
-With `-Cenv` option of `groovyclient`, you can pass environment variables of which a name includes the specified substring to `groovyserver`.
-The values of those variables on the client process are sent to the server process, and the values of same environment variables on the server are set to or overwritten by the passed values.
-This feature is especially useful for tools (e.g. IDE, TextMate, Sublime Text 2) which invoke an external command written by Groovy, and which uses environment variables to pass parameters to the command.
+Like the prior seciton, `CLASSPATH` environment variable is propagated to a server process automatically and implicitly.
+But other environment variables are not so.
+So you must explicitly specify options `-Cenv`, `-Cenv-all` and `-Cenv-exclude` if you want to do so.
 
-When you specify the option `-Cenv-all`, all environment variables of the `groovyclient` process are sent to the groovyserver.
-Additionally with the option `-Cenv-exclude`, the variables of which a name includes specified substring are excluded.
+With `-Cenv` option of a `groovyclient`, you can send all environment variables of which a name includes the specified substring to a server process.
+The variables on the client process are sent to the server process, and they are set at the server newly or overwrite the values of existed variables.
 
-If you specify option:
+When specifying the option `-Cenv-all`, you can send all environment variables of a `groovyclient` command to the server process.
+Additionally, with the option `-Cenv-exclude`, the variables of which a name includes specified substring are excluded.
+
+For example, if you specify the option like:
 
 ```
 -Cenv SUBSTRING
 ```
 
-the set of environment variables sent to the server are determined by the following pseudo code:
+the set of environment variables which are sent to the server are determined by the following pseudo code:
 
-```
-allEnvironmentVariables.entrySet().findAll {
+```groovy
+allEnvironmentVariables.findAll {
     it.name.contains("SUBSTRING")
 }
 ```
 
-Consider the combination of `-Cenv`, `-Cenv-all` and `-Cenv-exclude`, like:
+Consider the combination of `-Cenv`, `-Cenv-all` and `-Cenv-exclude` like:
 
 ```
 -Cenv SUBSTRING
@@ -260,101 +282,337 @@ Consider the combination of `-Cenv`, `-Cenv-all` and `-Cenv-exclude`, like:
 
 The result of the following pseudo code are sent to the server:
 
-```
-allEnvironmentVariables.entrySet().findAll {
+```groovy
+allEnvironmentVariables.findAll {
     if (isSpecifiedEnvAll || it.name.contains("SUBSTRING")) {
         if (!it.name.contains("EXCLUDE_SUBSTRING")) {
             return true
         }
     }
-    return false
+    false
 }
 ```
 
-Note that the environment variables which is set to the server remain after the `groovyclient` terminates.
-And modifying an environment variable on a server are not thread-safe.
-So when multiple `groovyclient` instances are invoked simultaneously, a variable which one of them needs might be overwritten by another client subsequently invoked.
+> **WARNING**:
+> The propagation of environment variables globally changes a server process.
+> Namely, variables added to a server still remain after a client terminates.
+> So if some clients are running simultaneously, an environment variable which a script of a client uses might be overwritten suddenly by another client
+
+**NOTE**: This feature is especially useful for a tool (e.g. IDE, TextMate, Sublime Text) which runs an external command written by Groovy, and which uses environment variables to pass parameters to the command.
 
 
-## Port number
+## Files
 
-As a default, TCP port number which is used for communication between a server and a client is `1961`.
-To change a port number used by a server, you can use `GROOVYSERV_PORT` environment variable or `-p` option.
-The `-p` option is used more prior than `GROOVYSERV_PORT` environment variable:
+### Log file
 
-```
-$ export GROOVYSERV_PORT=1963
-$ groovyserver
-```
+By default, logs of a server are written to the following file:
 
-or:
+* Linux, Mac OS X: `$HOME/.groovy/groovyserv/groovyserver-<port>.log`
+* Windows: `%USERPROFILE%/.groovy/groovyserv/groovyserver-<port>.log`
 
-```
+If `GROOVYSERV_WORK_DIR` environment variable is set, its value is used as the path, instead.
+Or, if `GROOVYSERV_LOG_DIR` is set, it's used even though `GROOVYSERV_WORK_DIR` is set or not.
+
+
+### Authtoken file
+
+In GroovyServ, a request is authenticated by a simple authtoken mechanism.
+By default, the authtoken file is stored at:
+
+* Linux, Mac OS X: `$HOME/.groovy/groovyserv/authtoken-<port>`
+* Windows: `%USERPROFILE%/.groovy/groovyserv/authtoken-<port>`
+
+If `GROOVYSERV_WORK_DIR` environment variable is set, its value is used as the path, instead.
+
+> **WARNING**: For Windows users
+>
+> The file mode is set to `0600` in Linux, Mac OS X, etc., in order to avoid to steal an authtoken.
+> But in Windows, the UN*X-like file permission doesn't work.
+> So, protect an access to the file appropriately in Windows if you needs.
+
+
+## Networking
+
+### Port number
+
+A communication between a `groovyclient` command and a server process uses a TCP connection.
+Its port number is `1961` by default.
+
+You can change the port number as you want.
+
+`-p/--port` option of `groovyserver`
+:   It specifies a port number for a server process.
+    When a server process starts up, it uses as a port to listen to a request from a client.
+
+`-Cp/-Cport` option of `groovyclient`
+:   It specifies a port to connect to server.
+    When a command operates a server process, it also specifies a port for the server process.
+    Especially, when a server process starts up, it uses as a port to listen to a request from a client.
+
+```sh
 $ groovyserver -p 1963
+....
+Server is successfully started up on 1963 port
+
+$ groovyclient -Cp 1963 -e "println 'Hello, GroovyServ.'"
+Hello, GroovyServ.
 ```
 
-On the other hand, for a groovyclient, you can use `-Cp` option instead of `-p` which is used by Groovy and `GROOVYSERV_PORT` environment variable.
-In transparent server invocation, the port number is also supplied to the server with `-p` option::
 
-```
-$ groovyclient -Cp 1963 -e '...'
-```
+You can also use `GROOVYSERV_PORT` environment variable instead of the options.
+It's handy because it affects both of a `groovyclient` command and a server process.
 
+```sh
+$ export GROOVYSERV_PORT=1963
 
-## Log file
+$ groovyserver
+....
+Server is successfully started up on 1963 port
 
-The output from server is written to the following file:
-
-* Linux, Mac OS X: `$HOME/.groovy/groovyserver/groovyserver-<port>.log`
-* Windows: `%USERPROFILE%/.groovy/groovyserver/groovyserver-<port>.log`
-
-
-## Remote access
-
-When invoking `groovyserver`, you specify a client address as a parameter.
-For example, assume that the server's ip address is `192.168.1.1` and the client's one is `192.168.1.2`:
-
-```
-server$ groovyserver --allow-from 192.168.1.2
+$ groovyclient -e "println 'Hello, GroovyServ.'"
+Hello, GroovyServ.
 ```
 
-When invoking `groovyclient` on the client, the authtoken which is stored in `~/.groovy/groovyserv/authtoken-<port>` must be specified:
 
+### Remote accessing
+
+GroovyServ allows a request only from a loopback address by default.
+However, you can allow an access between different computers at your own risk.
+
+1. Start a server process with `--allow-from` option of `groovyserver` in a server computer.
+2. Run a `groovyclient` command with `-Cs/-Chost` and `-Ca/-Cauthtoken` options in a client computer.
+
+
+For example, assume that a server computer's IP address is `192.168.1.1` and the client computer's one is `192.168.1.2`.
+At first, you specify a client address to allow a request by `--allow-from` option of `groovyserver`:
+
+```sh
+[server]$ groovyserver --allow-from 192.168.1.2
 ```
-server$ cat ~/.groovy/groovyserv/authtoken-1961
+
+**NOTE**: You can specify multiple IP addresses of clients to `--allow-from` option with a comma as a delimiter.
+
+You need an [authtoken](#authtoken-file) in the server:
+
+```sh
+[server]$ cat ~/.groovy/groovyserv/authtoken-1961
 7d3dc4d7a2b8b5ca
 ```
 
-```
-client$ groovyclient -Chost 192.168.1.1 -Cauthtoken 7d3dc4d7a2b8b5ca -e "println('Hello from remote client.')"
+> **IMPORTANT**
+> The authtoken is very important for security.
+> So, you should keep it secret and safe.
+
+
+```sh
+[client]$ groovyclient -Chost 192.168.1.1 -Cauthtoken 7d3dc4d7a2b8b5ca -e "println('Hello from remote client.')"
 Hello from remote client.
 ```
 
-You can also provide an authtoken explicitly as you want.
-But it might cause less security if the authtoken is too simple:
-
-```
-server$ groovyserver --allow-from 192.168.1.2 --authtoken GROOVYSERV
-server$ cat ~/.groovy/groovyserv/authtoken-1961
-GROOVYSERV
-client$ groovyclient -Chost 192.168.1.1 -Cauthtoken GROOVYSERV -e "println('Hello from remote client.')"
-Hello from remote client.
-```
-
-When invoking groovyclient with `-Chost` option, you cannot use options to control server process in localhost like `-Cr` option.
-You can provide multi ip addresses of clients to `--allow-from` option with a comma as a delimiter.
+> **WARNING**
+>
+> When running `groovyclient` with `-Chost` option, you cannot use options to control a server process in `localhost` like `-Cr` option.
 
 
-## Tips
+## Other stuff
 
-Following aliases might be useful. For bash::
+### Standard I/O streams via TCP/IP
 
-```
-alias groovy=groovyclient
+`System.out`, `System.in` and `System.err` are used as normal, which are transported over TCP/IP and individually separated for each a request.
+
+Until now, you've often seen the following example code.
+This example indicates the `System.out.println()` can write to a console in a client:
+
+```sh
+$ groovyclient -e "println 'Hello, GroovyServ.'"
+Hello, GroovyServ.
 ```
 
-For Windows:
+Next, this is an example of `System.err.println()`:
 
+```sh
+$ groovyclient -e "System.err.println 'This is an error.'"
+This is an error.
 ```
-doskey groovy=groovyclient $*
+
+An error message also shows as a standard error when an exception occurs:
+
+```sh
+$ groovyclient -e "notDeclaredVariable"
+Caught: groovy.lang.MissingPropertyException: No such property: notDeclaredVariable for class: script_from_command_line
+...
+```
+
+The message is written as a standard error.
+So, you can omit it like this in UN*X-like OS:
+
+```sh
+$ groovyclient -e "notDeclaredVariable" 2>/dev/null
+```
+
+Then, `System.in` is also available:
+
+```sh
+$ groovyclient -e "System.in.eachLine { println it * 2 }"
+a   # <-- input by user
+aa  # <-- output from server
+b   # <-- input by user
+bb  # <-- output from server
+^C  # <-- CTRL-C
+```
+
+You can interrupt a infinte loop of a script by CTRL-C.
+See [Interrupt by CTRL-C](#@) section.
+
+
+### Exit code
+
+A exit value of a `groovyclient` command is equivalent to a `System.exit(status)`:
+
+```sh
+$ groovyclient -e ";"
+$ echo $?
+0
+
+$ groovyclient -e "System.exit(1)"
+$ echo $?
+1
+
+$ groovyclient -e "System.exit(123)"
+$ echo $?
+123
+```
+
+An exit code is `1` when an exception occurs:
+
+```sh
+$ groovyclient -e "notDeclaredVariable"
+Caught: groovy.lang.MissingPropertyException: No such property: notDeclaredVariable for class: script_from_command_line
+...
+$ echo $?
+1
+```
+
+So, you can use the exit code of a script to cooperate with other stuff like:
+
+```sh
+$ groovyclient -e "println new File('notFound.txt').text" 2>/dev/null || echo "ERROR: could not read"
+ERROR: could not read
+```
+
+
+### Dynamic CWD
+
+A current working directory (CWD) of a `groovyclient` is dynamically applied to a server process for each a request.
+And an original CWD of a server process is restored when a request ends.
+
+For example, a server process runs at `/tmp/dir1/`:
+
+```sh
+$ cd /tmp/dir1
+$ groovyserver
+```
+
+If the dynamic CWD feature weren't supported, a CWD of a server process would be fixed at `/tmp/dir1`.
+So, the following command would be failed:
+
+```sh
+$ cat /tmp/dir2/test.txt
+Can you read me?
+
+$ cd /tmp/dir2
+$ groovyclient -e "println(new File('test.txt').text)"
+...
+Caught: java.io.FileNotFoundException: test.txt (No such file or directory)
+...
+```
+
+But, GroovyServ actually works well expectedly:
+
+```sh
+$ cd /tmp/dir2
+$ groovyclient -e "println(new File('test.txt').text)"
+Can you read me?
+```
+
+This feature is very handy for a script, but it brings a side-effect.
+See also [Cannot run concurrently for different working directories](#@) section.
+
+
+### Interrupt by CTRL-C
+
+You can interrupt a running script in a server process with `CTRL-C` simply.
+When you send a signal by `CTRL-C` while a script is running, a thread of the script in a server process is certainly killed.
+
+
+### Detoxicate System.exit()
+
+When a script uses `System.exit()`, it causes only the end of a thread for the script.
+A server process is still alive after it.
+
+
+## Restrictions
+
+There are some restrictions caused by issues or its architecture.
+
+
+### Cannot run concurrently for different working directories
+
+You can't concurrently run a script for different working directory in a server process.
+For example, when two Groovy scripts are concurrently invoked by using a sub-shell and a pipe, an exception occurs internally and there is no output:
+
+```sh
+$ ( cd /tmp/dir1; groovyclient -e "(1..3).each { println it }; sleep 3" ) | ( cd  /tmp/dir2; groovyclient -ne "println line * 2" )
+```
+
+Instead, this for the same directory works well:
+
+```sh
+$ ( cd /tmp/dir1; groovyclient -e "(1..3).each { println it }; sleep 3" ) | ( cd  /tmp/dir1; groovyclient -ne "println line * 2" )
+11
+22
+33
+```
+
+You can use multiple servers [with different ports](#port-number) as a workaround.
+
+```sh
+$ ( cd /tmp/dir1; groovyclient -Cport 1963 -e "(1..3).each { println it }; sleep 3" ) | ( cd  /tmp/dir2; groovyclient -Cport 1964 -ne "println line * 2" )
+11
+22
+33
+```
+
+
+### Global variables are request-globally shared
+
+If the static variables are defined in the script or Groovy classes you run, they are defined on a `GroovyClassLoader` created for each a request.
+In this case, static variables aren't shared because a class loader is individual.
+
+On the other hand, if the static variables are defined by a system/bootstrap class loader, they are shared.
+For example, the values which you stored in `System.getProperties()` are shared among all scripts invoked on the server process:
+
+```sh
+$ groovyclient -e "System.setProperty('hello', 'Hello')"
+$ groovyclient -e "println System.getProperty('hello')"
+Hello
+```
+
+Groovy's `metaClass` is also shared among different requests:
+
+```sh
+$ groovyclient -e "String.metaClass.hello = { println 'Hello' }"
+$ groovyclient -e "'x'.hello()"
+Hello
+```
+
+
+### Console I/O
+
+`System.out`, `System.in` and `System.err` are used as normal, which are transported over TCP/IP and individually separated for each a request.
+But `System.console()` cannot be used so far.
+
+```sh
+$ groovyclient -e "println System.console()"
+null
 ```

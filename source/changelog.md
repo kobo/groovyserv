@@ -1,5 +1,33 @@
+Change Log
+==========
 
-# Change Log
+## Version 1.0.0 (yyyy-MM-dd)
+
+#### New Features
+
+* [Log/File] You can specify a path of a log file and an authtoken file by `GROOVYSERV_WORK_DIR` and `GROOVYSERV_LOG_DIR` environmant variable. See [User Guide](userguide.md#files).
+    - Request 58: https://github.com/kobo/groovyserv/issues/58
+
+#### Improvements
+
+* [Command] User commands are thoroughly rewritten by Go language.
+    Now you can use full-featured `groovyclient` and `groovyserver` at all environments Go language supports.
+    Instead, commands written in Bash and Ruby are removed.
+* [Command] A server process can shut down itself by a special request.
+    So, finally you can control a server process even on Windows by user commands.
+* [Log] A log format is tweaked.
+* [Env] `GROOVYSERVER_*` environment variables are renamed to `GROOVYSERV_*`. See [User Guide](userguide.md#environment-variables).
+* [Internal] A package name is changed to `groovyx.groovyserv`.
+* [Internal] A protocol between a user command and a server process is tweaked:
+    - `Cwd` header is to be optional.
+    - `AuthToken` header is renamed to just `Auth`.
+    - New 'Cmd' header for request of both shutdown and interrupt is introduced.
+* [Internal] Many many refactoring and restructuring.
+
+#### Bug Fixes
+
+TBD
+
 
 ## Version 0.13 (2013-07-26)
 
@@ -87,7 +115,7 @@
 
 * [Env] Now you can use PWD environment variable. PWD is individually changed to the current directory for each invocation of user script.
 * [Build] You can build GroovyServ by Gradle. Maven's pom.xml is temporarily still there, but maybe it will be removed at next version.
-* [Performance] The overhead at sequential invocation of groovyclient was reduced. You needed at least one second as a interval of each sequential invocation at v0.8, but at v0.9 you might not be able to notice the overhead.
+* [Performance] The overhead at sequential invocation of groovyclient was reduced. You needed at least one second as an interval of each sequential invocation at v0.8, but at v0.9 you might not be able to notice the overhead.
 * [Internal] To close connections and to terminate threads are improved. GroovyServ will probably behave more similarly to the regular Groovy than before.
 
 #### Bug Fixes
@@ -103,7 +131,7 @@
 
 #### Contributions
 
-* [Build] The spec file required to build a RPM package is there. See: [Build RPM file](howtobuild.md#rpm) (Thanks, Oliver and Kazuhisha)
+* [Build] The spec file required to build a RPM package is there. See: [Build RPM file](howtobuild.md#rpm) (Thanks, Oliver and Kazuhisya)
 
 
 ## Version 0.8 (2011-06-16)
@@ -208,7 +236,7 @@
   This is useful for trouble shooting.
 * [Only Linux/Mac OS X]Now GROOVY_HOME environment variable become optional. Supported some ways to find a groovy command in the following order:
   (1)from PATH environment variable.
-  (2)as GROOVY_HOME/bin/groovy. If not exists, a intent revealing message
+  (2)as GROOVY_HOME/bin/groovy. If not exists, an intent revealing message
   is emitted to the console.
 
 #### Bug fixes
@@ -229,7 +257,7 @@
 
 * Supported -p, -n options of groovyclient (See help of groovy command).
 * Filters written in Groovy works well.
-* Using a environment variable USERPROFILE instead of HOME in Windows.
+* Using an environment variable USERPROFILE instead of HOME in Windows.
 * Improved support of invoking groovyserver on Cygwin.
 * Improved a process of invoking groovyserver.
 * Packaged not-compiled Groovy scripts into jar file in order not to depend on a particular JDK version.

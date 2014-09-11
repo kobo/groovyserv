@@ -26,6 +26,10 @@
     margin: .5em 0 0 1.5em;
 }
 
+.overview {
+    width: 600px;
+}
+
 .fa,
 .fa::before {
     color: #555;

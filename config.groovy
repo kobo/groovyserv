@@ -18,7 +18,7 @@
 title = "GroovyServ"
 
 // The version of this documantation
-version = "1.0-SNAPSHOT"
+version = "1.0.0-SNAPSHOT"
 
 // The path of source files directory
 sourceDirectoryPath = "source"
@@ -26,6 +26,7 @@ sourceDirectoryPath = "source"
 // Turn off numbering for topics
 numbering = false
 
+// Build information
 groovyVersion = "2.3.6"
 javaVersion = "1.8.0_11"
 

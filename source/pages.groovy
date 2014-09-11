@@ -7,7 +7,6 @@
 "userguide.md"(title: "User Guide")
 "howtobuild.md"(title: "How to Build")
 "faq.md"(title: "FAQ")
-"license.md"(title: "License", showPageToc: false)
 "changelog.md"(title: "Change Log", pageTocDepth: 2)
 
 // Download
