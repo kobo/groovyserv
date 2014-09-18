@@ -20,7 +20,7 @@ package groovyx.groovyserv
  */
 class WorkFiles {
 
-    static final File DATA_DIR = new File("${System.getProperty('user.home')}/.groovy/groovyserv")
+    static final File DATA_DIR = new File(System.getenv("GROOVYSERV_WORK_DIR") ?: "${System.getProperty('user.home')}/.groovy/groovyserv")
     static File LOG_FILE
     static File AUTHTOKEN_FILE
 
