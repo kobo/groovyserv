@@ -20,7 +20,8 @@ package groovyx.groovyserv
  */
 class WorkFiles {
 
-    static final File DATA_DIR = new File(System.getenv("GROOVYSERV_WORK_DIR") ?: "${System.getProperty('user.home')}/.groovy/groovyserv")
+    private static final File WORK_DIR = new File(System.getenv("GROOVYSERV_WORK_DIR") ?: "${System.getProperty('user.home')}/.groovy/groovyserv")
+    private static final LOG_DIR = new File(System.getenv("GROOVYSERV_LOG_DIR") ?: WORK_DIR.absolutePath)
     static File LOG_FILE
     static File AUTHTOKEN_FILE
 
@@ -28,16 +29,19 @@ class WorkFiles {
         setUp(GroovyServer.DEFAULT_PORT)
     }
 
-    private static initWorkDir() {
-        if (!DATA_DIR.isDirectory()) {
-            DATA_DIR.mkdirs()
-        }
+    static setUp(int port) {
+        makeSureDirs()
+        LOG_FILE = new File(LOG_DIR, "groovyserver-${port}.log")
+        AUTHTOKEN_FILE = new File(WORK_DIR, "authtoken-${port}")
     }
 
-    static setUp(int port) {
-        initWorkDir()
-        LOG_FILE = new File(DATA_DIR, "groovyserver-${port}.log")
-        AUTHTOKEN_FILE = new File(DATA_DIR, "authtoken-${port}")
+    private static makeSureDirs() {
+        if (!WORK_DIR.isDirectory()) {
+            WORK_DIR.mkdirs()
+        }
+        if (!LOG_DIR.isDirectory()) {
+            LOG_DIR.mkdirs()
+        }
     }
 }
 
