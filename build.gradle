@@ -304,12 +304,7 @@ def handleServer(List options) {
 def executeCommand(List command, Map env = [:]) {
     ansi.printlnAsInfo ">> Executing command..."
     ansi.printlnAsInfo "\$ ${command.join(' ')}"
-    def pb = new ProcessBuilder(command as String[])
-    pb.environment().with {
-        if (env) putAll(env)
-        remove('GROOVYSERV_HOME') // unset GROOVYSERV_HOME (which may be set by GVM) for a process invoked by gradle directly
-    }
-    def p = pb.start()
+    def p = new ProcessBuilder(command as String[]).start()
     p.consumeProcessOutput(System.out as OutputStream, System.err as OutputStream) // Gradle's wrapper stream writes nothing to console
     int statusCode = p.waitFor()
     if (statusCode != 0) {

@@ -86,9 +86,6 @@ class TestUtils {
             actualCommand << "${key}=${value}".toString() // without this, ArrayStoreException may occur
         }
 
-        // unset GROOVYSERV_HOME (which may be set by GVM) for a process invoked by a test
-        processBuilder.environment().remove('GROOVYSERV_HOME')
-
         commandLine.each { arg ->
             actualCommand << arg.toString() // without this, ArrayStoreException may occur
         }

@@ -26,5 +26,8 @@ func groovyServWorkDir() string {
 }
 
 func groovyServHome() string {
-	return cmn.ExpandPath(cmn.Env("GROOVYSERV_HOME", filepath.Join(filepath.Dir(os.Args[0]), "..")))
+	// GroovyServ's home directory path should be decided from not an environment variable like GROOVYSERV_HOME but only a path of invoked command.
+	// Because to use GROOVYSERV_HOME often causes a confusion that jar files which were installed with a stable version
+	// of GroovyServ by GVM are unexpectedly used when you try to use a SNAPSHOT version of GroovyServ in a development.
+	return cmn.ExpandPath(filepath.Join(filepath.Dir(os.Args[0]), ".."))
 }
