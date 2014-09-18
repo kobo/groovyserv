@@ -249,7 +249,7 @@ func (server Server) startInBackground() (err error) {
 		log.Println("startInBackground: end:", err)
 	}()
 
-	// JAVA_HOME (only for Cygwin support)
+	// JAVA_HOME (only showing if exists)
 	javaHome := cmn.Env("JAVA_HOME", "")
 	if len(javaHome) > 0 {
 		server.printlnConsole("Java home directory: " + javaHome)
@@ -262,7 +262,7 @@ func (server Server) startInBackground() (err error) {
 		return err
 	}
 
-	// GROOVYSERV_HOME and GROOVYSERV_WORK_DIR (only showing)
+	// GroovyServ's home directory and GROOVYSERV_WORK_DIR
 	server.printlnConsole("GroovyServ home directory: " + GroovyServHome)
 	server.printlnConsole("GroovyServ work directory: " + GroovyServWorkDir)
 
@@ -290,7 +290,6 @@ func (server Server) startInBackground() (err error) {
 		cmd.Args = append(cmd.Args, arg)
 	}
 	cmd.Env = []string{
-		"JAVA_HOME=" + javaHome,
 		"CLASSPATH=" + classpath,
 		"JAVA_OPTS=" + javaOpts,
 	}
@@ -301,9 +300,6 @@ func (server Server) startInBackground() (err error) {
 		if strings.HasPrefix(item, "JAVA_OPTS=") {
 			continue // just ignored if exists because it must be replaced surely
 		}
-		if strings.HasPrefix(item, "JAVA_HOME=") {
-			continue // just ignored if exists because it must be replaced surely
-		}
 		cmd.Env = append(cmd.Env, item)
 	}
 	if !server.Quiet {
@@ -311,7 +307,7 @@ func (server Server) startInBackground() (err error) {
 	}
 	log.Printf("startInBackground: command: %#v", cmd)
 
-	// Running the command
+	// Running the command as another process (doen't block)
 	if err := cmd.Start(); err != nil {
 		return fmt.Errorf("could not start groovyserver: %s", err.Error())
 	}
