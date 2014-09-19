@@ -59,7 +59,7 @@ func NewOptions() *Options {
 		restart:         false,
 		quiet:           false,
 		verbose:         false,
-		port:            srv.DefaultPort,
+		port:            cmn.EnvInt("GROOVYSERV_PORT", srv.DefaultPort),
 		allowFrom:       "",
 		authToken:       "",
 		debug:           false,
