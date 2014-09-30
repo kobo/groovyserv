@@ -22,24 +22,12 @@ import groovyx.groovyserv.ClientConnection
  */
 class StandardStreams {
 
-    static final ORIGINAL = [
-        ins: System.in,
-        out: System.out,
-        err: System.err
-    ]
-
-    private static final ALTERNATES = [
-        ins: newInAsInputStream(),
-        out: newOutAsPrintStream(),
-        err: newErrAsPrintStream(),
-    ]
-
     static void setUp() {
         // The standard streams are replaced with GroovyServ's ones
         // which can handle the socket for each request thread.
-        System.in = ALTERNATES.ins
-        System.out = ALTERNATES.out
-        System.err = ALTERNATES.err
+        System.in = newInAsInputStream()
+        System.out = newOutAsPrintStream()
+        System.err = newErrAsPrintStream()
     }
 
     private static InputStream newInAsInputStream() {
