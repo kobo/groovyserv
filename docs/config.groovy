@@ -17,8 +17,8 @@
 // The base title of page
 title = "GroovyServ"
 
-// The version of this documantation
-version = "1.0.0-SNAPSHOT"
+// The version of this documantation depends on the product version
+version = System.getenv("GROOVYSERV_VERSION") ?: "X.X.X-SNAPSHOT"
 
 // The path of source files directory
 sourceDirectoryPath = "source"
@@ -30,7 +30,7 @@ outputDirectoryPath = "../build/docs"
 numbering = false
 
 // Build information
-groovyVersion = "2.3.6"
+groovyVersion = System.getenv("GROOVY_VERSION") ?: "X.X.X"
 javaVersion = "1.8.0_11"
 
 // Filters

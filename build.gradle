@@ -43,7 +43,7 @@ configurations {
 }
 
 dependencies {
-    compile 'org.codehaus.groovy:groovy-all:2.3.7'
+    compile "org.codehaus.groovy:groovy-all:${groovyVersion}"
     compile 'commons-cli:commons-cli:1.2'
     archives 'net.java.dev.jna:jna:4.1.0'
     testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
@@ -279,15 +279,24 @@ task wrapper(type: Wrapper) {
 task docs(description: "Build documentation by Gaiden.", group: "Documentation") {
     ext.srcDir = file("$projectDir/docs")
     ext.outputDir = file("$buildDir/docs")
+    ext.env = [
+        GROOVYSERV_VERSION: project.version,
+        GROOVY_VERSION: groovyVersion
+    ]
     inputs.dir srcDir
+    inputs.file file("$projectDir/gradle.properties")
     outputs.dir outputDir
     doLast {
-        executeCommand(['gaiden', 'build'], null, srcDir)
+        executeCommand(['gaiden', 'build'], env, srcDir)
     }
 }
 
+task watchDocs(description: "Build documentation continually by Gaiden.", group: "Documentation") << {
+    executeCommand(['gaiden', 'watch'], docs.env, docs.srcDir)
+}
+
 task publishToGhpages(dependsOn: "docs", description: "Copy documentation to gh-pages branch.", group: "Documentation") << {
-    executeCommand(['git', 'checkout', 'gh-pages'], null, docs.srcDir)
+    executeCommand(['git', 'checkout', 'gh-pages'])
     delete "*.html", "sources", "static", "css", "extensions", "fonts", "images", "js"
     copy {
         into "$projectDir"
