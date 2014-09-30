@@ -139,7 +139,7 @@ task compileGroovy(overwrite: true, type: Copy) {
     // are used by integration tests.
     into "$buildDir/classes/main"
     from "$projectDir/src/main/groovy"
-    filter(ReplaceTokens, tokens: ["GROOVYSERV_VERSION": project.version])
+    filter(ReplaceTokens, tokens: [GROOVYSERV_VERSION: project.version])
 }
 
 task compileGo {
@@ -256,8 +256,8 @@ task integrationTest(type: Test, dependsOn: 'executables', description: "Run all
         systemProperty 'spock.configuration', "spock/integration.groovy"
 
         // prop for TestUtils
-        systemProperties 'groovyserv.executable.client': clientExecutableExpression
-        systemProperties 'groovyserv.executable.server': serverExecutableExpression
+        systemProperty 'groovyserv.executable.client', clientExecutableExpression
+        systemProperty 'groovyserv.executable.server', serverExecutableExpression
 
         restartGroovyServer()
     }
@@ -318,7 +318,9 @@ def operateServer(List options) {
 def executeCommand(List command, Map env = [:], File workDir = null) {
     ansi.printlnAsInfo ">> Executing command..."
     ansi.printlnAsInfo "\$ ${command.join(' ')}"
-    def p = new ProcessBuilder(command as String[]).directory(workDir).start()
+    def processBuilder = new ProcessBuilder(command as String[]).directory(workDir)
+    processBuilder.environment() << env
+    def p = processBuilder.start()
     p.consumeProcessOutput(System.out as OutputStream, System.err as OutputStream) // Gradle's wrapper stream writes nothing to console
     int statusCode = p.waitFor()
     if (statusCode != 0) {
