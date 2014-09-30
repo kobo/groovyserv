@@ -35,10 +35,6 @@ case `uname` in
         ;;
     CYGWIN*)
         os=windows
-
-        # Original Groovy's shell script uses only HOME instead of USERPROFILE.
-        # In GroovyServ, let it be in order to unify the work directory for both cygwin and DOS prompt.
-        HOME=`cygpath --unix --ignore "$USERPROFILE"`
         ;;
     *)
         os=linux
