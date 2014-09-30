@@ -143,6 +143,8 @@ task compileGroovy(overwrite: true, type: Copy) {
 }
 
 task compileGo {
+    inputs.dir file("$projectDir/src/main/go")
+    outputs.dir file("$buildDir/platforms/local")
     doLast {
         ansi.printlnAsInfo ">> Compiling Go sources..."
         fileTree("$projectDir/src/main/go/cmd").include("**/*.go").each { srcFile ->
@@ -159,6 +161,8 @@ task compileGo {
 }
 
 task crossCompileGo {
+    inputs.dir file("$projectDir/src/main/go")
+    outputs.dir file("$buildDir/platforms/")
     doLast {
         ansi.printlnAsInfo ">> Cross compiling Go sources..."
         fileTree("$projectDir/src/main/go/cmd").include("**/*.go").each { srcFile ->
@@ -187,9 +191,9 @@ task executables(type: Copy, dependsOn: ['assemble', 'compileGo']) {
 //----------------------------------
 // Distribution
 
-task dist(dependsOn: ['distBin', 'distSrc'])
+task dist(dependsOn: ['distBin', 'distSrc'], description: "Make all distribution archives.", group: "Distribution")
 
-task distBin(type: Zip, dependsOn: ['assemble', 'crossCompileGo']) {
+task distBin(type: Zip, dependsOn: ['assemble', 'crossCompileGo'], description: "Make a distribution archive of binaries.", group: "Distribution") {
     inputs.dir file("$projectDir/src/main")
     baseName = project.name
     classifier = 'bin'
@@ -197,7 +201,7 @@ task distBin(type: Zip, dependsOn: ['assemble', 'crossCompileGo']) {
     with binSpec
 }
 
-task distSrc(type: Zip) {
+task distSrc(type: Zip, description: "Make a distribution archive of source code.", group: "Distribution") {
     inputs.dir file("$projectDir/src/main")
     baseName = project.name
     classifier = 'src'
@@ -205,7 +209,7 @@ task distSrc(type: Zip) {
     with srcSpec
 }
 
-task distLocalBin(type: Zip, dependsOn: ['assemble', 'compileGo']) { // only for a direct use for self-build
+task distLocalBin(type: Zip, dependsOn: ['assemble', 'compileGo'], description: "Make a distribution archive of binaries only for a direct use by self-built.", group: "Distribution") {
     inputs.dir file("$projectDir/src/main")
     baseName = project.name
     classifier = 'bin-local'
@@ -216,9 +220,10 @@ task distLocalBin(type: Zip, dependsOn: ['assemble', 'compileGo']) { // only for
 //----------------------------------
 // Test
 
-task test(overwrite: true, dependsOn: ['unitTest', 'integrationTest'])
+task test(overwrite: true, dependsOn: ['unitTest', 'integrationTest'], description: "Run all tests.", group: "Verification")
+check.dependsOn "test"
 
-task unitTest(type: Test) {
+task unitTest(type: Test, description: "Run all unit tests.", group: "Verification") {
     reports.html.destination = file("$buildDir/reports/unit")
     reports.junitXml.destination = file("$buildDir/test-results/unit")
 
@@ -232,7 +237,7 @@ task unitTest(type: Test) {
     }
 }
 
-task integrationTest(type: Test, dependsOn: 'executables') {
+task integrationTest(type: Test, dependsOn: 'executables', description: "Run all integration tests.", group: "Verification") {
     mustRunAfter "unitTest"
 
     reports.html.destination = file("$buildDir/reports/integration")
@@ -271,21 +276,22 @@ task wrapper(type: Wrapper) {
 //------------------------
 // Documentation
 
-task docs {
-    def docsDir = file("$projectDir/docs")
-    inputs.dir docsDir
-    outputs.dir file("$buildDir/docs")
+task docs(description: "Build documentation by Gaiden.", group: "Documentation") {
+    ext.srcDir = file("$projectDir/docs")
+    ext.outputDir = file("$buildDir/docs")
+    inputs.dir srcDir
+    outputs.dir outputDir
     doLast {
-        executeCommand(['gaiden', 'build'], null, docsDir)
+        executeCommand(['gaiden', 'build'], null, srcDir)
     }
 }
 
-task publishToGhpages(dependsOn: "docs") << {
-    executeCommand(['git', 'checkout', 'gh-pages'], null, docsDir)
+task publishToGhpages(dependsOn: "docs", description: "Copy documentation to gh-pages branch.", group: "Documentation") << {
+    executeCommand(['git', 'checkout', 'gh-pages'], null, docs.srcDir)
     delete "*.html", "sources", "static", "css", "extensions", "fonts", "images", "js"
     copy {
         into "$projectDir"
-        from "$projectDir/build/docs"
+        from docs.outputDir
     }
 }
 
