@@ -1,0 +1,50 @@
+.admonition {
+    margin: 2em 0em;
+    display: table;
+}
+
+.admonition-icon {
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 3em;
+    width: 2em;
+}
+
+.admonition-icon .fa {
+    margin: 0;
+}
+
+.admonition-content {
+    display: table-cell;
+    border-left: 3px solid #ddd;
+    padding: 1.2em;
+    vertical-align: middle;
+}
+
+.admonition-caption {
+    color: #999;
+    margin: 0 0 .6em 0;
+    font-size: 1.3em;
+}
+
+.admonition-note .admonition-icon i:before {
+    content: "\f05a";
+    color: #428bca;
+}
+
+.admonition-tip .admonition-icon i:before {
+    content: "\f0eb";
+    color: #5cb85c;
+}
+
+.admonition-warning .admonition-icon i:before {
+    content: "\f071";
+    color: #f0ad4e;
+}
+
+.admonition-important .admonition-icon i:before {
+    content: "\f06a";
+    color: #d9534f;
+}
+
