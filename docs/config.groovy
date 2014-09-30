@@ -23,6 +23,9 @@ version = "1.0.0-SNAPSHOT"
 // The path of source files directory
 sourceDirectoryPath = "source"
 
+// The path of directory to be outputted a document
+outputDirectoryPath = "../build/docs"
+
 // Turn off numbering for topics
 numbering = false
 
