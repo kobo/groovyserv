@@ -31,7 +31,7 @@ import groovyx.groovyserv.utils.IOUtils
  */
 class ClientConnection implements Closeable {
 
-    private static InheritableThreadLocal<ClientConnection> connectionHolder = new InheritableThreadLocal<ClientConnection>()
+    private static final InheritableThreadLocal<ClientConnection> CONNECTION_HOLDER = new InheritableThreadLocal<ClientConnection>()
 
     final AuthToken authToken
     Socket socket
@@ -61,7 +61,7 @@ class ClientConnection implements Closeable {
         this.out = new PrintStream(StreamResponseOutputStream.newOut(socketOutputStream))
         this.err = new PrintStream(StreamResponseOutputStream.newErr(socketOutputStream))
 
-        connectionHolder.set(this)
+        CONNECTION_HOLDER.set(this)
     }
 
     /**
@@ -143,7 +143,7 @@ class ClientConnection implements Closeable {
             LogUtils.debugLog "Socket is closed"
             socket = null
         }
-        connectionHolder.set(null)
+        CONNECTION_HOLDER.set(null)
         closed = true
     }
 
@@ -170,7 +170,7 @@ class ClientConnection implements Closeable {
     }
 
     static getCurrentConnection() {
-        def connection = connectionHolder.get()
+        def connection = CONNECTION_HOLDER.get()
         if (connection == null) {
             throw new GServIllegalStateException("Not found client connection: ${Thread.currentThread()}")
         }
