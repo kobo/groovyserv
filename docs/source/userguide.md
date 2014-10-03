@@ -483,7 +483,7 @@ $ echo $?
 123
 ```
 
-The exit code is `1` when an exception occurs:
+The exit code is `1` when an exception occurs like a normal Groovy:
 
 ```sh
 $ groovyclient -e "notDeclaredVariable"

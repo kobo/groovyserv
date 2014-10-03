@@ -15,6 +15,7 @@ Change Log
     Instead, commands written in Bash and Ruby are removed.
 * [Command] A server process can shut down itself by a special request.
     So, finally you can control a server process even on Windows by user commands.
+* [Command] A status code of a script is 1 when an exception causes like a normal Groovy.
 * [Log] A log format is tweaked.
 * [Env] `GROOVYSERVER_*` environment variables are renamed to `GROOVYSERV_*`. See [User Guide](userguide.md#environment-variables).
 * [Security] An implementation of an authtoken is changed to UUID.
