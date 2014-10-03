@@ -35,8 +35,6 @@ const (
 var (
 	GroovyHome        = cmn.Env("GROOVY_HOME", "")
 	GroovyServWorkDir = groovyServWorkDir()
-	GroovyServHome    = groovyServHome()
-	GroovyServOpts    = cmn.Env("GROOVYSERV_OPTS", "")
 )
 
 type Server struct {
@@ -263,11 +261,12 @@ func (server Server) startInBackground() (err error) {
 	}
 
 	// GroovyServ's home directory and GROOVYSERV_WORK_DIR
-	server.printlnConsole("GroovyServ home directory: " + GroovyServHome)
+	groovyServHome := groovyServHome()
+	server.printlnConsole("GroovyServ home directory: " + groovyServHome)
 	server.printlnConsole("GroovyServ work directory: " + GroovyServWorkDir)
 
 	// CLASS_PATH
-	classpath := filepath.Join(GroovyServHome, "lib", "*")
+	classpath := filepath.Join(groovyServHome, "lib", "*")
 	classpathEnv := os.Getenv("CLASSPATH")
 	if len(classpathEnv) > 0 {
 		classpath = classpath + cmn.ClasspathDelimiter() + classpathEnv
@@ -281,9 +280,10 @@ func (server Server) startInBackground() (err error) {
 	javaOpts := "-server -Djava.awt.headless=true " + cmn.Env("JAVA_OPTS", "")
 
 	// Preparing a command
+	groovyServOpts := cmn.Env("GROOVYSERV_OPTS", "")
 	cmd := exec.Command(groovyCmdPath)
-	if len(GroovyServOpts) > 0 {
-		cmd.Args = append(cmd.Args, GroovyServOpts)
+	if len(groovyServOpts) > 0 {
+		cmd.Args = append(cmd.Args, groovyServOpts)
 	}
 	cmd.Args = append(cmd.Args, "-e", "groovyx.groovyserv.GroovyServer.main(args)", "--", fmt.Sprintf("%d", server.Port), server.AuthToken, server.AllowFrom, fmt.Sprintf("%v", server.Verbose))
 	for _, arg := range server.Args {

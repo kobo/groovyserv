@@ -17,7 +17,9 @@ package server
 
 import (
 	cmn "../common"
+	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 )
 
@@ -29,5 +31,9 @@ func groovyServHome() string {
 	// GroovyServ's home directory path should be decided from not an environment variable like GROOVYSERV_HOME but only a path of invoked command.
 	// Because to use GROOVYSERV_HOME often causes a confusion that jar files which were installed with a stable version
 	// of GroovyServ by GVM are unexpectedly used when you try to use a SNAPSHOT version of GroovyServ in a development.
-	return cmn.ExpandPath(filepath.Join(filepath.Dir(os.Args[0]), ".."))
+	cmdPath, err := exec.LookPath(os.Args[0])
+	if err != nil {
+		panic(fmt.Sprintf("could not resolve a command path: %s", err.Error())) // using panic because here must be unreachable.
+	}
+	return cmn.ExpandPath(filepath.Join(filepath.Dir(cmdPath), ".."))
 }
