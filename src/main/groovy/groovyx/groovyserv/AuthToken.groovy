@@ -32,7 +32,7 @@ class AuthToken {
     }
 
     private static createNewAuthToken() {
-        Long.toHexString(new Random().nextLong())
+        UUID.randomUUID()
     }
 
     void save() {

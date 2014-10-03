@@ -396,7 +396,7 @@ You need an [authtoken](#authtoken-file) in the server:
 
 ```sh
 [server]$ cat ~/.groovy/groovyserv/authtoken-1961
-7d3dc4d7a2b8b5ca
+1fc05d8a-5b92-41f6-82ca-41e6a53470c1
 ```
 
 > **IMPORTANT**
@@ -405,7 +405,7 @@ You need an [authtoken](#authtoken-file) in the server:
 
 
 ```sh
-[client]$ groovyclient -Chost 192.168.1.1 -Cauthtoken 7d3dc4d7a2b8b5ca -e "println('Hello from remote client.')"
+[client]$ groovyclient -Chost 192.168.1.1 -Cauthtoken 1fc05d8a-5b92-41f6-82ca-41e6a53470c1 -e "println('Hello from remote client.')"
 Hello from remote client.
 ```
 

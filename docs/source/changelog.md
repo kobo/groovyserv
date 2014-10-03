@@ -17,6 +17,7 @@ Change Log
     So, finally you can control a server process even on Windows by user commands.
 * [Log] A log format is tweaked.
 * [Env] `GROOVYSERVER_*` environment variables are renamed to `GROOVYSERV_*`. See [User Guide](userguide.md#environment-variables).
+* [Security] An implementation of an authtoken is changed to UUID.
 * [Internal] A package name is changed to `groovyx.groovyserv`.
 * [Internal] A protocol between a user command and a server process is tweaked:
     - `Cwd` header is to be optional.
