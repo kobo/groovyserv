@@ -165,7 +165,7 @@ $ groovyclient -Cauthtoken GROOVYSERV ....
 **IMPORTANT**: Too simple authtoken might cause less security.
 
 
-### Whitelist of IP addressses
+### Whitelist of IP addresses
 
 A server process allows a request only from a loopback address by default.
 However, you can allow an access between different computers at your own risk.
