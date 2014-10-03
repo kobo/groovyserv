@@ -461,13 +461,13 @@ bb  # <-- output from server
 ^C  # <-- CTRL-C
 ```
 
-You can interrupt a infinte loop of a script by CTRL-C.
+You can interrupt the infinte loop of the script by CTRL-C.
 See [Interrupt by CTRL-C](#@) section.
 
 
 ### Exit code
 
-A exit value of a `groovyclient` command is equivalent to a `System.exit(status)`:
+An exit value of a `groovyclient` command is equivalent to a `System.exit(status)`:
 
 ```sh
 $ groovyclient -e ";"
@@ -483,7 +483,7 @@ $ echo $?
 123
 ```
 
-An exit code is `1` when an exception occurs:
+The exit code is `1` when an exception occurs:
 
 ```sh
 $ groovyclient -e "notDeclaredVariable"
