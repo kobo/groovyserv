@@ -28,17 +28,20 @@ class SystemExitSpec extends Specification {
 
     def "using System.exit() doesn't cause a kill of server process"() {
         when:
-        assert TestUtils.executeClientCommand(['-e', '"System.exit(0)"']).process.exitValue() == 0
-
-        and:
-        def result = TestUtils.executeClientCommand(['-e', '"print(\'Still There?\')"'])
+        def result = TestUtils.executeClientCommand(['-e', '"System.exit(0)"'])
 
         then:
-        result.out == "Still There?"
-        result.err == ""
+        result.process.exitValue() == 0
+
+        when:
+        def result2 = TestUtils.executeClientCommand(['-e', '"print(\'Still There?\')"'])
+
+        then:
+        result2.out == "Still There?"
+        result2.err == ""
     }
 
-    def "the value of System.exit() is returns as status code of client"() {
+    def "a exit code of client is the argument of System.exit()"() {
         when:
         def result = TestUtils.executeClientCommand(['-e', "System.exit($exitArg)"])
 
@@ -54,5 +57,15 @@ class SystemExitSpec extends Specification {
         99      | 99
         255     | 255
         256     | 0
+    }
+
+    def "a exit code of client is 1 when an exception causes"() {
+        when:
+        def result = TestUtils.executeClientCommand(['-e', '"notDeclaredVariable"'])
+
+        then:
+        result.process.exitValue() == 1
+        result.out == ""
+        result.err.startsWith "Caught: groovy.lang.MissingPropertyException: No such property: notDeclaredVariable for class"
     }
 }
