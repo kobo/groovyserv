@@ -15,19 +15,20 @@
  */
 package groovyx.groovyserv;
 
-import org.codehaus.groovy.tools.shell.util.NoExitSecurityManager;
-
+import java.security.Permission;
 
 /**
  * @author UEHARA Junji
  * @author NAKANO Yasuharu
  */
-public class NoExitSecurityManager2 extends NoExitSecurityManager {
+public class NoExitSecurityManager2 extends SecurityManager {
 
-    /**
-     * Always throws {@link SystemExitException}.
-     * @throws SystemExitException when System.exit() is called
-     */
+    @Override
+    public void checkPermission(final Permission perm) {
+        // Do nothing
+    }
+
+    @Override
     public void checkExit(final int code) {
         throw new SystemExitException(code, "System.exit(" + code + ") is called");
     }
