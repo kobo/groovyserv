@@ -15,18 +15,18 @@
 # limitations under the License.
 #
 
-# resolve links - $0 may be a soft-link
-PRG="$0"
-while [ -h "$PRG" ] ; do
-    ls=`ls -ld "$PRG"`
+# Resolving a path
+script_path="$0"
+while [ -h "$script_path" ] ; do
+    ls=`ls -ld "$script_path"`
     link=`expr "$ls" : '.*-> \(.*\)$'`
     if expr "$link" : '/.*' > /dev/null; then
-        PRG="$link"
+        script_path="$link"
     else
-        PRG=`dirname "$PRG"`/"$link"
+        script_path=`dirname "$script_path"`/"$link"
     fi
 done
-DIRNAME=`dirname "$PRG"`
+current_dir=`dirname "$script_path"`
 
 # Specifying platform (os, arch)
 case `uname` in
@@ -51,16 +51,23 @@ esac
 platform="${os}_${arch}"
 
 # Confirming a platform directory existence
-from_dir="$DIRNAME/../platforms/$platform"
+from_dir="$current_dir/../platforms/$platform"
 if [ ! -d "$from_dir" ]; then
     echo "ERROR: your platform not supported: $platform" >&2
     echo "Sorry, please build by yourself. See http://kobo.github.io/groovyserv/howtobuild.html" >&2
     exit 1
 fi
 
+# Removing dummy scripts
+bin_dir="$current_dir"
+rm "$bin_dir/"{groovyserver{,.bat},groovyclient{,.bat},setup.{sh,bat}}
+
 # Copying commands
-bin_dir="$DIRNAME"
 cp "$from_dir/"* "$bin_dir"
 chmod +x "$bin_dir/"*
 
-echo "Setup completed successfully for $platform"
+# End messages
+echo "Setup completed successfully for $platform."
+if [ `basename $script_path` != "setup.sh" ]; then
+    echo "It's required only just after installation. Please run the same command once again."
+fi

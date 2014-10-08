@@ -20,19 +20,21 @@ setlocal
 :begin
 
 @rem ----------------------------------------
-@rem Save script path
+@rem Resolving a path
 @rem ----------------------------------------
 
 set SCRIPT_PATH=%~f0
-set DIRNAME=%~dp0
-if "%DIRNAME%" == "" set DIRNAME=.\
+for /f %%A in ("%SCRIPT_PATH%") do set PROG_NAME=%%~nxA
+if "%PROG_NAME%" == "" set PROG_NAME=setup.bat
+set DIR_NAME=%~dp0
+if "%DIR_NAME%" == "" set DIR_NAME=.\
 
 @rem ----------------------------------------
 @rem Confirming a platform directory existence
 @rem ----------------------------------------
 
 set PLATFORM=windows_386
-set FROM_DIR="%DIRNAME%\..\platforms\%PLATFORM%"
+set FROM_DIR="%DIR_NAME%\..\platforms\%PLATFORM%"
 if not exist "%FROM_DIR%" (
     echo ERROR: your platform not supported: %PLATFORM% >&2
     echo Sorry, please build by yourself. See http://kobo.github.io/groovyserv/howtobuild.html >&2
@@ -43,8 +45,20 @@ if not exist "%FROM_DIR%" (
 @rem Copying commands
 @rem ----------------------------------------
 
-set BIN_DIR="%DIRNAME%"
-copy "%FROM_DIR%\*" "%BIN_DIR%"
+set BIN_DIR="%DIR_NAME%"
+copy "%FROM_DIR%\*" "%BIN_DIR%" > NUL
+
+@rem ----------------------------------------
+@rem End messages
+@rem ----------------------------------------
 
 echo Setup completed successfully for %PLATFORM%
+if not "%PROG_NAME%" == "setup.bat" (
+    echo It's required only just after installation. Please run the same command once again.
+)
 
+@rem ----------------------------------------
+@rem Removing dummy scripts
+@rem ----------------------------------------
+
+start /B "" cmd /C del /F "%BIN_DIR%\groovyclient" "%BIN_DIR%\groovyclient.bat" "%BIN_DIR%\groovyserver" "%BIN_DIR%\groovyserver.bat" "%BIN_DIR%\setup.sh" "%BIN_DIR%\setup.bat" & exit /B

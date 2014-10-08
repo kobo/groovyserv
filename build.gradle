@@ -95,6 +95,13 @@ def binSpec = copySpec {
         fileMode = 0755
         from "$projectDir/src/main/sh"
         from "$projectDir/src/main/bat"
+
+        // dummy commands for setup
+        from "$projectDir/src/main/sh", { rename 'setup.sh', 'groovyclient' }
+        from "$projectDir/src/main/sh", { rename 'setup.sh', 'groovyserver' }
+        from "$projectDir/src/main/bat", { rename 'setup.bat', 'groovyserver.bat' }
+        from "$projectDir/src/main/bat", { rename 'setup.bat', 'groovyclient.bat' }
+
     }
 }
 
@@ -186,6 +193,15 @@ task executables(type: Copy, dependsOn: ['assemble', 'compileGo']) {
     inputs.dir file("$projectDir/src/main")
     outputs.dir destinationDir
     with localBinSpec
+
+    ext.executablesDir = destinationDir
+}
+
+task expandDistBin(type: Copy, dependsOn: ['assemble', 'crossCompileGo'], description: "Expand a distBin archive to work directory") {
+    destinationDir = file("$buildDir/executables-dist")
+    inputs.dir file("$projectDir/src/main")
+    outputs.dir destinationDir
+    with binSpec
 }
 
 //----------------------------------
@@ -247,7 +263,7 @@ task integrationTest(type: Test, dependsOn: 'executables', description: "Run all
     inputs.dir file("$projectDir/src")
     outputs.dir file("$buildDir/test-results/integration")
 
-    def binDir = normalizePath(file("${buildDir}/executables/bin"))
+    def binDir = normalizePath(file("${executables.executablesDir}/bin"))
     def clientExecutableExpression = "$binDir/groovyclient"
     def serverExecutableExpression = "$binDir/groovyserver"
 
@@ -319,7 +335,7 @@ def shutdownGroovyServer() {
 }
 
 def operateServer(List options) {
-    def binDir = normalizePath(file("${buildDir}/executables/bin"))
+    def binDir = normalizePath(file("${executables.executablesDir}/bin"))
     def groovyserverPath = "$binDir/groovyserver"
     executeCommand([groovyserverPath, *options])
 }
