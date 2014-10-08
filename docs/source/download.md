@@ -12,7 +12,7 @@ Download
 </table>
 
 
-## Old versions
+## Previous versions
 
 <table class="download-table">
     <tr>
