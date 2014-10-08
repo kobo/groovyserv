@@ -45,12 +45,12 @@ class StreamRequestHandler implements Runnable {
         try {
             while (true) {
                 def request = conn.readStreamRequest()
-                if (request.isInterrupted()) {
-                    LogUtils.debugLog "Recieved interruption request from client"
+                if (request.interrupted) {
+                    LogUtils.debugLog "Received interruption request from client"
                     throw new GServInterruptedException("By client request")
                 }
-                if (request.isEmpty()) {
-                    LogUtils.debugLog "Recieved empty request from client (Closed stdin on client)"
+                if (request.empty) {
+                    LogUtils.debugLog "Received empty request from client (Closed stdin on client)"
                     conn.tearDownTransferringPipes()
                     continue // continue to check the client interruption
                 }
