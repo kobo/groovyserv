@@ -103,3 +103,10 @@ $ CLASSPATH=/tmp/clojure.jar groovyserver
 $ groovyclient -e 'import clojure.main;main.main(args)' -- -e "(println 'Clojure)"
 Clojure
 ```
+
+
+### Ctrl-C doesn't work in some cases. Why?
+
+Is your script interruptable?
+If not, GroovyServ can't stop it unfortunately.
+See [User Guide](userguide.md#interrupt-by-ctrl-c).

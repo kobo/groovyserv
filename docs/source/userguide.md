@@ -542,10 +542,35 @@ See also [Cannot run concurrently for different working directories](#@) section
 ### Interrupt by CTRL-C
 
 You can interrupt a running script in a server process with `CTRL-C` simply.
-When you send a signal by `CTRL-C` while a script is running, a thread of the script in a server process is certainly killed.
+When you send a signal by `CTRL-C` while a script is running, a thread of the script in a server process is certainly stopped.
 
+> **WARNING**
+>
+> If the main thread of a user script ignores interruptions, GroovyServ can't stop it.
+> For example, you can stop the following script expectedly because JDK's `Thread#sleep()` is interruptable API:
+>
+>```groovy
+> while (true) { Thread.sleep 1000 }
+>```
+>
+> On the other hand, the following script keeps working infinitely in background because GDK's `Object#sleep()` ignores interruptions intentionally.
+>
+>```groovy
+> while (true) { sleep 1000 }
+>```
 
-### Detoxicate System.exit()
+> **NOTE**
+>
+> GroovyServ can stop any sub threads created from a main thread of a user script,
+> even which aren't interruptable like:
+>
+>```groovy
+> Thread.start {
+>     while (true) { sleep 1000 }
+> }
+>```
+
+### Detoxication of System.exit()
 
 When a script uses `System.exit()`, it causes only the end of a thread for the script.
 A server process is still alive after it.
