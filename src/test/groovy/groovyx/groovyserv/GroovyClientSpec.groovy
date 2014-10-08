@@ -72,7 +72,7 @@ class GroovyClientSpec extends Specification {
 
     def "interrupted by client"() {
         when:
-        client.run('-e', 'println "CCCC"; while (true) { sleep 1000 }')
+        client.run('-e', 'println "CCCC"; while (true) { Thread.sleep 1000 }') // Don't use Object#sleep() in a main thread because it's not interruptable.
 
         then:
         client.waitForResponse()

@@ -21,6 +21,10 @@ import spock.lang.Specification
 /**
  * Specifications for the {@code groovyclient}.
  * Before running this, you must start groovyserver.
+ *
+ * NOTE: A main thread of a user script must be composed of interruptable code to succeed in interruption.
+ * Otherwise, you couldn't stop it and the thread would keep working in background infinitely.
+ * JDK's {@code Thread.sleep()} is interruptable. But GDK's {@code Object#sleep()} isn't interruptable.
  */
 @IntegrationTest
 class ClientInterruptionSpec extends Specification {
@@ -47,7 +51,7 @@ class ClientInterruptionSpec extends Specification {
             |Thread.start {
             |    println('started')
             |    while (true) {
-            |        Thread.sleep 1000
+            |        sleep 1000
             |    }
             |    println("end")
             |}
@@ -61,7 +65,7 @@ class ClientInterruptionSpec extends Specification {
             |Thread.start {
             |    println('started')
             |    while (true) {
-            |        Thread.sleep 1000
+            |        sleep 1000
             |    }
             |    println("end")
             |}
@@ -72,7 +76,7 @@ class ClientInterruptionSpec extends Specification {
         expect:
         assertInterruptable """\
             |println('started')
-            |while (true) { sleep 1000 }
+            |while (true) { Thread.sleep 1000 }
             |"""
     }
 
