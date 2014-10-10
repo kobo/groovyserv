@@ -50,13 +50,11 @@ class SystemExitSpec extends Specification {
 
         where:
         exitArg | statusCode
-        -2      | 254
-        -1      | 255
         0       | 0
         1       | 1
         99      | 99
         255     | 255
-        256     | 0
+        // The exit code of -1 or 256 (which is out of range) depends on OS.
     }
 
     def "a exit code of client is 1 when an exception causes"() {
