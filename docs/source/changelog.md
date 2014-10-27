@@ -7,6 +7,7 @@ Change Log
 
 * [Log/File] You can specify a path of a log file and an authtoken file by `GROOVYSERV_WORK_DIR` and `GROOVYSERV_LOG_DIR` environmant variable. See [User Guide](userguide.md#files).
     - Request 58: https://github.com/kobo/groovyserv/issues/58
+* [Setup] You can automatically choose appropriate binary files of user commands for your environment and remove unused otherse. See [How to Install](howtoinstall.md).
 
 #### Improvements
 
@@ -28,7 +29,8 @@ Change Log
 
 #### Bug Fixes
 
-TBD
+* Fixed 53: Memory leak due to ThreadGroup not being destroyed
+    - https://github.com/kobo/groovyserv/issues/53
 
 
 ## Version 0.13 (2013-07-26)
