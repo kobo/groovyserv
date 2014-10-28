@@ -302,7 +302,10 @@ func (server Server) startInBackground() (err error) {
 		}
 		cmd.Env = append(cmd.Env, item)
 	}
-	if !server.Quiet {
+	if server.Debug {
+		// NOTE: This causes a problem when a command was used with a pipe;
+		// the server process would be shut down together with the pipe because the streams are connected each other tightly.
+		// So, this must be an option only for debugging.
 		cmd.Stdout, cmd.Stderr = os.Stdout, os.Stderr
 	}
 	log.Printf("startInBackground: command: %#v", cmd)
