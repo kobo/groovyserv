@@ -32,7 +32,6 @@ class InvocationRequest {
     String clientAuthToken     // required
     AuthToken serverAuthToken  // required
     List<String> envVars       // optional
-    String protocol            // optional
     String command             // optional
 
     /**

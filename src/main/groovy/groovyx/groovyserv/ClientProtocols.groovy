@@ -30,7 +30,6 @@ import groovyx.groovyserv.utils.LogUtils
  * Response ::= ( StreamResponse ) *
  *
  * InvocationRequest ::=
- *    'Protocol:' <protocol> LF
  *    'Cwd:' <cwd> LF
  *    'Arg:' <arg1> LF
  *    'Arg:' <arg2> LF
@@ -46,7 +45,6 @@ import groovyx.groovyserv.utils.LogUtils
  *    LF
  *
  *   where:
- *     <protocol> is a type of protocol, like 'simple'. (optional)
  *     <cwd> is current working directory. (optional)
  *     <arg1>,<arg2>..<argN> are commandline arguments which must be encoded by Base64. (optional)
  *     <env1>,<env2>..<envN> are environment variable names which sent to the server. (optional)
@@ -99,7 +97,6 @@ class ClientProtocols {
     private final static String HEADER_STREAM_ID = "Channel"
     private final static String HEADER_SIZE = "Size"
     private final static String HEADER_ENV = "Env"
-    private final static String HEADER_PROTOCOL = "Protocol"
     private final static String HEADER_COMMAND = "Cmd"
     private final static String LINE_SEPARATOR = "\n"
 
@@ -121,7 +118,6 @@ class ClientProtocols {
             clientAuthToken: headers[HEADER_AUTHTOKEN]?.getAt(0),
             serverAuthToken: conn.authToken,
             envVars: headers[HEADER_ENV],
-            protocol: headers[HEADER_PROTOCOL]?.getAt(0),
             command: headers[HEADER_COMMAND]?.getAt(0),
         )
         request.check()
