@@ -24,18 +24,19 @@ public enum ExitStatus {
     UNEXPECTED_ERROR(1),
     INVALID_REQUEST(2),
     IO_ERROR(3),
-    ILLEGAL_STATE(4),
     TERMINATED(5),
     INTERRUPTED(6),
     FORCELY_SHUTDOWN(7),
-    INVALID_AUTHTOKEN(201), // NOTE: no change because it's used from a user command
-    CLIENT_NOT_ALLOWED(202) // NOTE: no change because it's used from a user command
+    // NOTE: no change as follows because it's used from a user command
+    INVALID_AUTHTOKEN(201),
+    CLIENT_NOT_ALLOWED(202),
+    CURRENT_DIR_CONFLICTED(203),
+    ILLEGAL_STATE(204)
 
     int code
 
     private ExitStatus(int code) {
         this.code = code
     }
-
 }
 

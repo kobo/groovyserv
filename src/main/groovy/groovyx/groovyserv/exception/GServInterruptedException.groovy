@@ -23,7 +23,7 @@ import groovyx.groovyserv.ExitStatus
 class GServInterruptedException extends GServException {
 
     GServInterruptedException(String message, Throwable e = null) {
-        super(ExitStatus.INTERRUPTED.code, message, e)
+        super(ExitStatus.INTERRUPTED, message, e)
     }
 
 }

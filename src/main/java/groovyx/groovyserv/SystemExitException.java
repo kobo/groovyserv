@@ -22,15 +22,15 @@ package groovyx.groovyserv;
  */
 public class SystemExitException extends RuntimeException {
 
-    private int exitStatus;
+    private int exitStatusCode;
 
     public SystemExitException(int status, String message) {
         super(message);
-        this.exitStatus = status;
+        this.exitStatusCode = status;
     }
 
-    public int getExitStatus() {
-        return exitStatus;
+    public int getExitStatusCode() {
+        return exitStatusCode;
     }
 
 }

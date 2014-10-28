@@ -59,10 +59,12 @@ func (server Server) RunScript() (statusCode int, err error) {
 		log.Println("RunScript: end:", statusCode, err)
 	}()
 
+	log.Println("RunScript: connecting...")
 	connected, err := server.connect()
 	if err != nil {
 		return -1, err
 	}
+	log.Println("RunScript: connected")
 	defer connected.Close()
 	statusCode, err = connected.RunScript()
 	return
@@ -95,18 +97,18 @@ func (server Server) makeSureServerAvailable() (err error) {
 	// If there is no authtoken, it's impossible to access server.
 	if !server.authTokenExists() {
 		// It's already checked to be able to connect to server before this function is called.
-		return NewHintError("could not open authtoken file: "+server.authTokenFile(), "Isn't the port being used by a non-groovyserv process? Use another port or kill the process somehow.")
+		return &AppError{Err: "could not open authtoken file: " + server.authTokenFile(), Hint: "Isn't the port being used by a non-groovyserv process? Use another port or kill the process somehow."}
 	}
 
 	// If authtoken file is invalid, it's impossible to access server.
 	if _, err := server.authToken(); err != nil {
-		return NewHintError("could not read authtoken file: "+server.authTokenFile(), "Check the permission and file type.")
+		return &AppError{Err: "could not read authtoken file: " + server.authTokenFile(), Hint: "Check the permission and file type."}
 	}
 
 	// Is server really alive?
 	if _, err := server.Alive(); err != nil {
-		if _, ok := err.(*InvalidAuthTokenError); ok {
-			return NewHintError("invalid authtoken", "Specify a right authtoken or kill the process somehow.")
+		if appErr, ok := err.(*AppError); ok && appErr.IsInvalidAuthTokenError() {
+			return err
 		}
 		return fmt.Errorf("server exiting abnormally: %s", err.Error())
 	}
@@ -178,7 +180,7 @@ func (server Server) Shutdown() (err error) {
 	if _, err := connected.Shutdown(); err != nil {
 		log.Println("Shutdown: could not kill server:", err.Error())
 		server.printlnConsole("") // clear for print
-		return NewHintError("could not kill server", "Make sure the server process is still alive. If so, kill the process somehow.")
+		return &AppError{Err: "could not kill server", Hint: "Make sure the server process is still alive. If so, kill the process somehow."}
 	}
 
 	// Waiting for server up
@@ -391,7 +393,7 @@ func (server Server) groovyCommand() (string, error) {
 		server.printlnConsole("Groovy command path: " + groovyCmdName + " (found at PATH)")
 		return groovyCmdName, nil
 	}
-	return "", NewHintError("groovy command not found", "Requires either PATH having groovy command or GROOVY_HOME.")
+	return "", &AppError{Err: "groovy command not found", Hint: "Requires either PATH having groovy command or GROOVY_HOME."}
 }
 
 func (server Server) printlnConsole(message string) {

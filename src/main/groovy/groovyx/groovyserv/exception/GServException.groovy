@@ -22,13 +22,9 @@ import groovyx.groovyserv.ExitStatus
  */
 class GServException extends RuntimeException {
 
-    int exitStatus
+    ExitStatus exitStatus
 
-    GServException(String message, Throwable e = null) {
-        this(ExitStatus.UNEXPECTED_ERROR.code, message, e)
-    }
-
-    GServException(int exitStatus, String message, Throwable e = null) {
+    GServException(ExitStatus exitStatus, String message, Throwable e = null) {
         super(message, e)
         this.exitStatus = exitStatus
     }

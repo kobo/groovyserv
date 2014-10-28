@@ -23,8 +23,7 @@ import groovyx.groovyserv.ExitStatus
 class InvalidAuthTokenException extends InvalidRequestHeaderException {
 
     InvalidAuthTokenException(String message, Throwable e = null) {
-        super(message, e)
-        exitStatus = ExitStatus.INVALID_AUTHTOKEN.code
+        super(ExitStatus.INVALID_AUTHTOKEN, message, e)
     }
 }
 

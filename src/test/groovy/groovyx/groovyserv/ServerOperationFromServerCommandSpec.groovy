@@ -99,7 +99,7 @@ class ServerOperationFromServerCommandSpec extends Specification {
         result.out == ""
         with(result.err) {
             it =~ /ERROR: invalid authtoken/
-            it =~ /Hint:  Specify a right authtoken or kill the process somehow\./
+            it =~ /Hint:  Specify a valid authtoken or kill the process somehow\./
         }
 
         cleanup:
@@ -199,7 +199,7 @@ class ServerOperationFromServerCommandSpec extends Specification {
         result.out == ""
         with(result.err) {
             it =~ /ERROR: invalid authtoken/
-            it =~ /Hint:  Specify a right authtoken or kill the process somehow\./
+            it =~ /Hint:  Specify a valid authtoken or kill the process somehow\./
         }
 
         cleanup:

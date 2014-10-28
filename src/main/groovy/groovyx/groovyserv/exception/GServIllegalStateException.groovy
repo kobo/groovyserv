@@ -22,8 +22,12 @@ import groovyx.groovyserv.ExitStatus
  */
 class GServIllegalStateException extends GServException {
 
+    GServIllegalStateException(ExitStatus exitStatus, String message, Throwable e = null) {
+        super(exitStatus, message, e)
+    }
+
     GServIllegalStateException(String message, Throwable e = null) {
-        super(ExitStatus.ILLEGAL_STATE.code, message, e)
+        this(ExitStatus.ILLEGAL_STATE, message, e)
     }
 
 }

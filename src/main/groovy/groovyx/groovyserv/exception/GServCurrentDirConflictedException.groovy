@@ -20,10 +20,10 @@ import groovyx.groovyserv.ExitStatus
 /**
  * @author NAKANO Yasuharu
  */
-class EmptyRequestException extends InvalidRequestHeaderException {
+class GServCurrentDirConflictedException extends GServIllegalStateException {
 
-    EmptyRequestException(String message, Throwable e = null) {
-        super(message, e)
+    GServCurrentDirConflictedException(String message, Throwable e = null) {
+        super(ExitStatus.CURRENT_DIR_CONFLICTED, message, e)
     }
-}
 
+}

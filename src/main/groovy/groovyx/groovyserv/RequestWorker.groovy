@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 package groovyx.groovyserv
-
 import groovyx.groovyserv.exception.EmptyRequestException
 import groovyx.groovyserv.exception.GServException
-import groovyx.groovyserv.exception.GServInterruptedException
-import groovyx.groovyserv.exception.InvalidAuthTokenException
 import groovyx.groovyserv.utils.Holders
 import groovyx.groovyserv.utils.IOUtils
 import groovyx.groovyserv.utils.LogUtils
@@ -32,7 +29,6 @@ import java.util.concurrent.ThreadFactory
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
-
 /**
  * @author UEHARA Junji
  * @author NAKANO Yasuharu
@@ -99,12 +95,10 @@ class RequestWorker extends ThreadPoolExecutor implements Runnable {
             return conn.openSession()
         } catch (EmptyRequestException e) {
             LogUtils.debugLog "Empty request"
-        } catch (InvalidAuthTokenException e) {
-            LogUtils.errorLog "Invalid authtoken", e
-            conn.sendExit(e.exitStatus, e.message)
+            // pass through as normal
         } catch (GServException e) {
             LogUtils.debugLog "Failed to open new session: ${e.message}", e
-            conn.sendExit(e.exitStatus, e.message)
+            conn.sendExit(e.exitStatus.code, e.message)
         }
         return null
     }
@@ -144,7 +138,7 @@ class RequestWorker extends ThreadPoolExecutor implements Runnable {
             Thread.sleep 10
         }
 
-        int exitStatus = getExitStatus(runnable)
+        int exitStatusCode = getExitStatusCode(runnable)
         def anotherFuture = (runnable == invokeFuture) ? streamFuture : invokeFuture
         if (anotherFuture.isDone()) {
             LogUtils.debugLog "Another handler ${anotherFuture} is already done", e
@@ -159,21 +153,21 @@ class RequestWorker extends ThreadPoolExecutor implements Runnable {
         // SocketInputStream#read() is a blocking method and cannot be interrupted.
         // If the reading socket is closed, it can be forcely interrupt by throwing IOException.
         // That's why this needs.
-        closeSafely(exitStatus)
+        closeSafely(exitStatusCode)
     }
 
-    private synchronized closeSafely(int exitStatus, String message = null) {
+    private synchronized closeSafely(int exitStatusCode, String message = null) {
         // While stream handler is blocking to read from the input stream,
         // this closing makes a socket error, and then blocking in stream handler is cancelled.
         if (!conn) return
         try {
-            conn.sendExit(exitStatus)
+            conn.sendExit(exitStatusCode)
         } catch (e) {
-            LogUtils.errorLog "Failed to send the exit status: ${exitStatus} ${message ? " with the message: $message" : ""}", e
+            LogUtils.errorLog "Failed to send the exit status: ${exitStatusCode} ${message ? " with the message: $message" : ""}", e
         }
         IOUtils.close(conn)
         conn = null
-        LogUtils.debugLog "Closed safely: ${exitStatus} ${message ? " with the message: $message" : ""}"
+        LogUtils.debugLog "Closed safely: ${exitStatusCode} ${message ? " with the message: $message" : ""}"
     }
 
     @Override
@@ -182,7 +176,7 @@ class RequestWorker extends ThreadPoolExecutor implements Runnable {
         LogUtils.debugLog "Terminated"
     }
 
-    private int getExitStatus(Runnable runnable) {
+    private int getExitStatusCode(Runnable runnable) {
         try {
             if (runnable instanceof Future) {
                 IOUtils.awaitFuture(runnable)
@@ -197,17 +191,13 @@ class RequestWorker extends ThreadPoolExecutor implements Runnable {
             LogUtils.debugLog "Interrupted as thread: ${e.message}"
             return ExitStatus.INTERRUPTED.code
         }
-        catch (GServInterruptedException e) {
-            LogUtils.debugLog "Interrupted by client: ${e.message}"
-            return ExitStatus.INTERRUPTED.code
-        }
         catch (SystemExitException e) {
-            LogUtils.debugLog "Exited: ${e.exitStatus}: ${e.message}", e
-            return e.exitStatus
+            LogUtils.debugLog "Exited: ${e.exitStatusCode}: ${e.message}", e
+            return e.exitStatusCode
         }
         catch (GServException e) {
-            LogUtils.errorLog "Error: ${e.exitStatus}", e
-            return e.exitStatus
+            LogUtils.errorLog "Exception: ${e.exitStatus}", e
+            return e.exitStatus.code
         }
         catch (Throwable e) {
             LogUtils.errorLog "Unexpected error", e

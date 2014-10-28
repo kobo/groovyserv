@@ -23,7 +23,7 @@ import groovyx.groovyserv.ExitStatus
 class GServIOException extends GServException {
 
     GServIOException(String message, Throwable e = null) {
-        super(ExitStatus.IO_ERROR.code, message, e)
+        super(ExitStatus.IO_ERROR, message, e)
     }
 
 }

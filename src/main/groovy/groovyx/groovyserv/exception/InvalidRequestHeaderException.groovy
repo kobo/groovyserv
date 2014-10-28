@@ -22,8 +22,11 @@ import groovyx.groovyserv.ExitStatus
  */
 class InvalidRequestHeaderException extends GServException {
 
-    InvalidRequestHeaderException(String message, Throwable e = null) {
-        super(ExitStatus.INVALID_REQUEST.code, message, e)
+    InvalidRequestHeaderException(ExitStatus exitStatus, String message, Throwable e = null) {
+        super(exitStatus, message, e)
     }
 
+    InvalidRequestHeaderException(String message, Throwable e = null) {
+        this(ExitStatus.INVALID_REQUEST, message, e)
+    }
 }

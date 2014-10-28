@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 package groovyx.groovyserv.platform
-
-import groovyx.groovyserv.exception.GServIllegalStateException
-
+import groovyx.groovyserv.exception.GServCurrentDirConflictedException
 /**
  * @author NAKANO Yasuharu
  */
@@ -29,7 +27,7 @@ class CurrentDirHolder {
     private volatile currentDir
 
     /**
-     * @throws GServIllegalStateException
+     * @throws GServCurrentDirConflictedException
      *              When changed current directory after set different directory by another session
      */
     synchronized void setDir(String newDir) {
@@ -37,7 +35,7 @@ class CurrentDirHolder {
             return
         }
         if (isSetCurrentDir()) {
-            throw new GServIllegalStateException("Cannot change current directory because another session is running on different directory: ${currentDir} -X-> ${newDir}")
+            throw new GServCurrentDirConflictedException("Cannot change current directory because another session is running on different directory: ${currentDir} -X-> ${newDir}")
         }
         System.properties['user.dir'] = newDir
         PlatformMethods.chdir(newDir)

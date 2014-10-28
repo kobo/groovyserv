@@ -30,10 +30,8 @@ import (
 )
 
 const (
-	StatusSuccess         = 0
-	ErrorInvalidAuthToken = 201
-	ErrorClientNotAllowed = 202
-	MaxBufferSize         = 4096
+	StatusSuccess = 0
+	MaxBufferSize = 4096
 )
 
 type ConnectedServer struct {
@@ -84,8 +82,8 @@ func (server ConnectedServer) runCommand(command string) (statusCode int, err er
 	}
 	server.writeCommandRequest(command)
 	statusCode, err = server.readResponse()
-	if _, ok := err.(*InvalidAuthTokenError); ok {
-		return statusCode, err
+	if appErr, ok := err.(*AppError); ok && appErr.IsInvalidAuthTokenError() {
+		return statusCode, err // pass through
 	}
 	if err != nil {
 		return statusCode, fmt.Errorf("could not run a command %s: %s", command, err)
@@ -181,11 +179,8 @@ func (server ConnectedServer) readResponse() (statusCode int, err error) {
 		if ok {
 			log.Println("readResponse: Status found:", statusCodeStr)
 			statusCode, _ := strconv.Atoi(statusCodeStr)
-			switch statusCode {
-			case InvalidAuthTokenErrorCode:
-				return -1, NewInvalidAuthTokenError()
-			case ClientNotAllowedErrorCode:
-				return -1, NewClientNotAllowedError(server.Host, server.Port)
+			if err, ok := server.AppErrorOf(statusCode); ok {
+				return -1, err
 			}
 			return statusCode, nil
 		}

@@ -20,61 +20,40 @@ import (
 )
 
 const (
-	InvalidAuthTokenErrorCode = 201
-	ClientNotAllowedErrorCode = 202
+	UndefinedErrorCode            = -1
+	InvalidAuthTokenErrorCode     = 201
+	ClientNotAllowedErrorCode     = 202
+	CurrentDirConflictedErrorCode = 203
+	IllegalStateErrorCode         = 204
 )
 
-//----------------------------------------------------------
-// HintError
-
-type HintError struct {
+type AppError struct {
+	Code int
 	Err  string
 	Hint string
 }
 
-func NewHintError(err string, hint string) *HintError {
-	return &HintError{Err: err, Hint: hint}
-}
-
-func (err HintError) Error() string {
+func (err AppError) Error() string {
 	if len(err.Hint) > 0 {
 		return err.Err + "\nHint:  " + err.Hint
 	}
 	return err.Err
 }
 
-//----------------------------------------------------------
-// InvalidAuthTokenError
-
-type InvalidAuthTokenError struct {
-	Err string
+func (err AppError) IsInvalidAuthTokenError() bool {
+	return err.Code == InvalidAuthTokenErrorCode
 }
 
-func NewInvalidAuthTokenError() *InvalidAuthTokenError {
-	return &InvalidAuthTokenError{Err: "invalid authtoken"}
-}
-
-func (err InvalidAuthTokenError) Error() string {
-	return err.Err
-}
-
-//----------------------------------------------------------
-// ClientNotAllowedError
-
-type ClientNotAllowedError struct {
-	Err  string
-	Host string
-	Port int
-}
-
-func NewClientNotAllowedError(host string, port int) *ClientNotAllowedError {
-	return &ClientNotAllowedError{
-		Err:  fmt.Sprintf("client address not allowed %s:%d", host, port),
-		Host: host,
-		Port: port,
+func (server Server) AppErrorOf(code int) (*AppError, bool) {
+	switch code {
+	case InvalidAuthTokenErrorCode:
+		return &AppError{Code: code, Err: "invalid authtoken", Hint: "Specify a valid authtoken or kill the process somehow."}, true
+	case ClientNotAllowedErrorCode:
+		return &AppError{Code: code, Err: fmt.Sprintf("client address not allowed %s:%d", server.Host, server.Port)}, true
+	case CurrentDirConflictedErrorCode:
+		return &AppError{Code: code, Err: "could not change working directory", Hint: "Another thread may be running on a different working directory. Wait a moment."}, true
+	case IllegalStateErrorCode:
+		return &AppError{Code: code, Err: "illegal state"}, true
 	}
-}
-
-func (err ClientNotAllowedError) Error() string {
-	return err.Err
+	return nil, false
 }

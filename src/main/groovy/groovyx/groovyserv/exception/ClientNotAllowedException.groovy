@@ -23,7 +23,7 @@ import groovyx.groovyserv.ExitStatus
 class ClientNotAllowedException extends GServException {
 
     ClientNotAllowedException(String message, Throwable e = null) {
-        super(ExitStatus.CLIENT_NOT_ALLOWED.code, message, e)
+        super(ExitStatus.CLIENT_NOT_ALLOWED, message, e)
     }
 
 }
