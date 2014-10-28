@@ -154,7 +154,7 @@ func ParseOptions(args cmn.Args) *Options {
 		case "-Cr", "-Crestart-server":
 			opts.server.restart = true
 		default:
-			if m, _ := regexp.MatchString("-C.*", arg); m {
+			if m, _ := regexp.MatchString("^-C.*", arg); m {
 				panic(fmt.Sprintf("unrecognized option %s", arg))
 			}
 			opts.server.args = append(opts.server.args, arg)
