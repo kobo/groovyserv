@@ -42,7 +42,7 @@ class StreamRequest {
      * @throws InvalidRequestHeaderException
      */
     void check() {
-        if ((!empty && command) || (empty && !command)) {
+        if (command && !command.matches("interrupt|shutdown|ping")) {
             throw new InvalidRequestHeaderException("Invalid StreamRequest: size=${size}, command=${command}")
         }
     }
