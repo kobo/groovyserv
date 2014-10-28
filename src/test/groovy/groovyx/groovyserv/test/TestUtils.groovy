@@ -15,7 +15,7 @@
  */
 package groovyx.groovyserv.test
 
-import static org.junit.Assert.*
+import org.junit.Assert
 
 /**
  * Utilities only for tests.
@@ -39,7 +39,7 @@ class TestUtils {
     static ProcessResult executeClientCommandWithEnvSuccessfully(List<String> args, Map<String, String> envMap, Closure closure = null) {
         def result = executeClientCommandWithEnv(args, envMap, closure)
         if (result.process.exitValue() != 0) {
-            fail "ERROR: exitValue:${result.process.exitValue()}, in:[${result.out}], err:[${result.err}]"
+            Assert.fail "ERROR: exitValue:${result.process.exitValue()}, in:[${result.out}], err:[${result.err}]"
         }
         return result
     }
@@ -51,14 +51,14 @@ class TestUtils {
     static void startServerIfNotRunning(int port) {
         def result = executeServerCommand(["-r", "-v", "-p", String.valueOf(port)])
         if (result.process.exitValue() != 0) {
-            fail "ERROR: exitValue:${result.process.exitValue()}, in:[${result.out}], err:[${result.err}]"
+            Assert.fail "ERROR: exitValue:${result.process.exitValue()}, in:[${result.out}], err:[${result.err}]"
         }
     }
 
     static void shutdownServerIfRunning(int port) {
         def result = executeServerCommand(["-k", "-p", String.valueOf(port)])
         if (result.process.exitValue() != 0) {
-            fail "ERROR: exitValue:${result.process.exitValue()}, in:[${result.out}], err:[${result.err}]"
+            Assert.fail "ERROR: exitValue:${result.process.exitValue()}, in:[${result.out}], err:[${result.err}]"
         }
     }
 
