@@ -138,15 +138,22 @@ jar {
     outputs.dir file("$buildDir/libs")
 }
 
-task compileGroovy(overwrite: true, type: Copy) {
-    // Groovy sources shouldn't be compiled in order to avoid a trouble
-    // of unmatch of Java version between compile-time and runtime.
-    // Compiled Groovy classes under src/main/groovy directory are used only by unit tests.
-    // Instead, Groovy sources including JAR file under build/executables directory
-    // are used by integration tests.
-    into "$buildDir/classes/main"
-    from "$projectDir/src/main/groovy"
-    filter(ReplaceTokens, tokens: [GROOVYSERV_VERSION: project.version])
+compileGroovy {
+    // Compiling just for checking at a compile time
+    source = [file("$projectDir/src/main/java"), file("$projectDir/src/main/groovy")]
+    destinationDir = file("$buildDir/classes/compile-static")
+
+    doLast {
+        // Groovy sources shouldn't be compiled in order to avoid a trouble
+        // of unmatch of Java version between compile-time and runtime.
+        // Groovy classes compiled from src/main/groovy are used only by unit tests.
+        // Instead, Groovy sources including JAR file under build/executables directory are used by integration tests.
+        copy {
+            into "$buildDir/classes/main"
+            from "$projectDir/src/main/groovy"
+            filter(ReplaceTokens, tokens: [GROOVYSERV_VERSION: project.version])
+        }
+    }
 }
 
 task compileGo {
