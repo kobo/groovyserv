@@ -196,7 +196,7 @@ class ClientProtocols {
         formatAsHeader(header, body)
     }
 
-    private static byte[] formatAsHeader(Map map, String body = null) {
+    static byte[] formatAsHeader(Map map, String body = null) {
         def buff = new StringBuilder()
         map.each { key, value ->
             if (key) {

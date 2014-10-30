@@ -41,7 +41,7 @@ class LogUtils {
     }
 
     private static String formatLog(String level, Object message, Throwable e) {
-        def caller = callerInfo
+        def caller = getCallerInfo()
         def sw = new StringWriter()
         def pw = new PrintWriter(sw)
         def timestamp = currentTimestamp() // use same timestamp per call of formatLog
