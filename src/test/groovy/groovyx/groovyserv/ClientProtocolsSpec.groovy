@@ -66,13 +66,11 @@ class ClientProtocolsSpec extends Specification {
             |LINE2
             |LINE3
             |""".stripMargin().replaceAll(/\r/, '').bytes)
-        socket.port >> 8888
 
         when:
         def request = ClientProtocols.readStreamRequest(connection)
 
         then:
-        request.port == 8888
         request.size == 19
     }
 
@@ -99,13 +97,11 @@ class ClientProtocolsSpec extends Specification {
         socket.inputStream >> new ByteArrayInputStream("""\
             |Cmd: interrupt
             |""".stripMargin().replaceAll(/\r/, '').bytes)
-        socket.port >> 8888
 
         when:
         def request = ClientProtocols.readStreamRequest(connection)
 
         then:
-        request.port == 8888
         request.size == 0
         request.command == 'interrupt'
     }

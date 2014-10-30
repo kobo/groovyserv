@@ -22,7 +22,6 @@ import groovyx.groovyserv.exception.InvalidRequestHeaderException
  */
 class StreamRequest {
 
-    int port        // required
     String sizeText // optional: size of input stream
     String command  // optional
 
