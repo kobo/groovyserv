@@ -23,7 +23,7 @@ import groovyx.groovyserv.utils.LogUtils
  */
 class InvocationRequest {
 
-    private waitTime = 5000 // sec
+    private long waitTime = 5000 // sec
 
     int port
     String cwd                 // optional

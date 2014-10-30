@@ -15,6 +15,9 @@
  */
 package groovyx.groovyserv.stream
 
+import groovy.transform.TypeChecked
+import groovy.transform.TypeCheckingMode
+
 /**
  * Dynamically delegatable PrintStream.
  *
@@ -29,6 +32,7 @@ class DynamicDelegatedPrintStream extends PrintStream {
         this.delegate = delegate
     }
 
+    @TypeChecked(TypeCheckingMode.SKIP)
     private PrintStream getPrintStream() {
         delegate.call()
     }
@@ -175,7 +179,7 @@ class DynamicDelegatedPrintStream extends PrintStream {
 
     @Override
     PrintStream append(CharSequence csq) {
-        getPrintStream().append()
+        getPrintStream().append(csq)
     }
 
     @Override

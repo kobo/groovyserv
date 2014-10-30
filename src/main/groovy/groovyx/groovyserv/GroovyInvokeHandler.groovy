@@ -27,12 +27,12 @@ import groovyx.groovyserv.utils.LogUtils
 class GroovyInvokeHandler implements Runnable {
 
     private static final long TIMEOUT_FOR_JOINING_SUBTHREADS = 1000 // sec
-    private static final CLASSPATH_OPTIONS = ["--classpath", "-cp", "-classpath"]
+    private static final List<String> CLASSPATH_OPTIONS = ["--classpath", "-cp", "-classpath"]
 
     private InvocationRequest request
     private boolean interrupted = false
 
-    GroovyInvokeHandler(request) {
+    GroovyInvokeHandler(InvocationRequest request) {
         this.request = request
     }
 
@@ -57,7 +57,7 @@ class GroovyInvokeHandler implements Runnable {
                 CurrentDirHolder.instance.setDir(request.cwd)
             }
             setupEnvVars(request.envVars)
-            def classpath = removeClasspathFromArgs(request)
+            String classpath = removeClasspathFromArgs(request)
             invokeGroovy(request.args, classpath)
             awaitAllSubThreads()
         }
@@ -97,7 +97,7 @@ class GroovyInvokeHandler implements Runnable {
      * Setting a classpath using the -cp or -classpath option means not to use the global classpath.
      * GroovyServ behaves then the same as the java interpreter and Groovy.
      */
-    private removeClasspathFromArgs(request) {
+    private removeClasspathFromArgs(InvocationRequest request) {
         def paths = [] as LinkedHashSet
 
         // parse classpath option's values from arguments.
@@ -128,13 +128,13 @@ class GroovyInvokeHandler implements Runnable {
         return paths.join(File.pathSeparator)
     }
 
-    private invokeGroovy(args, classpath) {
+    private invokeGroovy(List<String> args, String classpath) {
         LogUtils.debugLog "Invoking groovy: ${args} with classpath=${classpath}"
         GroovyMain2.processArgs(args as String[], System.out, classpath)
         appendServerVersion(args)
     }
 
-    private appendServerVersion(args) {
+    private appendServerVersion(List<String> args) {
         if (args.any { it.startsWith("-v") } || args.contains("--version")) {
             println "GroovyServ Version: Server: @GROOVYSERV_VERSION@"
         }
@@ -177,13 +177,13 @@ class GroovyInvokeHandler implements Runnable {
         LogUtils.debugLog "All sub threads stopped by force"
     }
 
-    private getAllAliveSubThreads() {
+    private Collection<Thread> getAllAliveSubThreads() {
         def threadGroup = Thread.currentThread().threadGroup
         Thread[] threads = new Thread[threadGroup.activeCount() + 1] // need at lease one extra space (see Javadoc of ThreadGroup)
         int count = threadGroup.enumerate(threads)
         if (count < threads.size()) {
             // convert to list for convenience except own thread
-            def list = (threads as List).findAll { it && it != Thread.currentThread() }
+            def list = threads.toList().findAll { it && it != Thread.currentThread() }
             LogUtils.debugLog "Found ${list.size()} sub thread(s): ${list}"
             return list
         }

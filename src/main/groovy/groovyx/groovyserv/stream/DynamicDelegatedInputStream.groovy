@@ -15,6 +15,9 @@
  */
 package groovyx.groovyserv.stream
 
+import groovy.transform.TypeChecked
+import groovy.transform.TypeCheckingMode
+
 /**
  * Dynamically delegatable InputStream.
  *
@@ -28,6 +31,7 @@ class DynamicDelegatedInputStream extends InputStream {
         this.delegate = delegate
     }
 
+    @TypeChecked(TypeCheckingMode.SKIP)
     private InputStream getInputStream() {
         delegate.call()
     }
@@ -59,7 +63,7 @@ class DynamicDelegatedInputStream extends InputStream {
 
     @Override
     void mark(int readlimit) {
-        getInputStream().mark()
+        getInputStream().mark(readlimit)
     }
 
     @Override

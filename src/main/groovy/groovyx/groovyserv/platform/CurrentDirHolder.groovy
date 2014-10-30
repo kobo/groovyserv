@@ -32,7 +32,7 @@ class CurrentDirHolder {
      * @throws GServIllegalStateException
      *              When changed current directory after set different directory by another session
      */
-    synchronized void setDir(newDir) {
+    synchronized void setDir(String newDir) {
         if (!isChanged(newDir)) {
             return
         }

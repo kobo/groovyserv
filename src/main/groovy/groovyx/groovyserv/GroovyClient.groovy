@@ -17,6 +17,7 @@ package groovyx.groovyserv
 
 import groovyx.groovyserv.utils.IOUtils
 import groovyx.groovyserv.utils.LogUtils
+
 /**
  * GroovyServ's client implemented by Groovy.
  *
@@ -52,7 +53,7 @@ class GroovyClient {
             Cwd: "/tmp",
             Auth: authtoken,
         ]
-        if (args) headers.Arg = args.collect { it.bytes.encodeBase64() }
+        if (args) headers.Arg = args.collect { String arg -> arg.bytes.encodeBase64() }
         if (environments) headers.Env = environments
         out << ClientProtocols.formatAsHeader(headers)
         return this // for method-chain
@@ -203,7 +204,7 @@ class GroovyClient {
     private void readAllAsPossible() {
         checkActive()
 
-        def availableText = IOUtils.readAvailableText(ins)
+        String availableText = IOUtils.readAvailableText(ins)
         if (availableText.empty) return
 
         def availableInputStream = new ByteArrayInputStream(availableText.bytes)
@@ -211,10 +212,10 @@ class GroovyClient {
             def headers = ClientProtocols.parseHeaders(availableInputStream)
             if (!headers) break
 
-            if (headers.Channel?.getAt(0)==~/out|err/) {
-                def buff = this."${headers.Channel?.get(0)}Bytes"
+            if (headers.Channel?.getAt(0) ==~ /out|err/) {
+                def buff = (headers.Channel?.get(0) == "out") ? outBytes : errBytes
                 int size = headers.Size?.getAt(0) as int
-                buff.addAll ClientProtocols.readBody(availableInputStream, size)
+                buff.addAll ClientProtocols.readBody(availableInputStream, size).toList()
             } else if (headers.Status) {
                 exitStatus = headers.Status?.getAt(0) as int
             }

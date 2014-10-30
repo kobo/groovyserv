@@ -33,7 +33,7 @@ public enum ExitStatus {
 
     int code
 
-    private ExitStatus(code) {
+    private ExitStatus(int code) {
         this.code = code
     }
 

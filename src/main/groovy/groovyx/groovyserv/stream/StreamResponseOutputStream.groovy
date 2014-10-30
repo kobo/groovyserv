@@ -47,7 +47,7 @@ class StreamResponseOutputStream extends OutputStream {
     void write(int b) {
         if (closed) throw new IOException("Stream of channel '$streamId' already closed")
         byte[] buf = new byte[1]
-        buf[0] = (b >> 8 * 0) & 0x0000ff
+        buf[0] = (byte) b
         write(buf, 0, 1)
     }
 

@@ -74,7 +74,7 @@ class StreamRequestInputStream extends InputStream {
     @Override
     void mark(int readlimit) {
         if (closed) throw new IOException("Stream of channel 'in' already closed")
-        inputStream.mark()
+        inputStream.mark(readlimit)
     }
 
     /**

@@ -15,6 +15,8 @@
  */
 package groovyx.groovyserv.platform
 
+import groovy.transform.TypeChecked
+import groovy.transform.TypeCheckingMode
 import groovyx.groovyserv.utils.LogUtils
 
 /**
@@ -24,9 +26,9 @@ import groovyx.groovyserv.utils.LogUtils
 @Singleton
 class EnvironmentVariables {
 
-    private final cache = [:]
-    private final origGetenv = System.metaClass.getMetaMethod("getenv", [String] as Object[])
-    private final origGetenvAll = System.metaClass.getMetaMethod("getenv", null)
+    private final Map cache = [:]
+    private final MetaMethod origGetenv = System.metaClass.getMetaMethod("getenv", [String] as Object[])
+    private final MetaMethod origGetenvAll = System.metaClass.getMetaMethod("getenv", null)
 
     /**
      * Initializes something necessary.
@@ -38,9 +40,10 @@ class EnvironmentVariables {
     /**
      * Replace System.getenv by the platform native method.
      */
+    @TypeChecked(TypeCheckingMode.SKIP)
     private void replaceSystemGetenv() {
         // for System.getenv("xxx")
-        System.metaClass.'static'.getenv = { String envVarName ->
+        System.metaClass.static.getenv = { String envVarName ->
             String value = cache[envVarName]
             if (value == null) {
                 value = origGetenv.doMethodInvoke(System, envVarName)
@@ -49,14 +52,14 @@ class EnvironmentVariables {
             return value
         }
         // for System.getenv()["xxx"] or System.getenv().xxx
-        System.metaClass.'static'.getenv = { ->
+        System.metaClass.static.getenv = { ->
             def envMap = new HashMap(origGetenvAll.doMethodInvoke(System))
             envMap.putAll(cache) // overwritten by cache entries
             LogUtils.debugLog "getenv() => $envMap"
             return envMap
         }
         // for System.env["xxx"] or System.env.xxx
-        System.metaClass.'static'.getEnv = { ->
+        System.metaClass.static.getEnv = { ->
             def envMap = new HashMap(origGetenvAll.doMethodInvoke(System))
             envMap.putAll(cache) // overwritten by cache entries
             LogUtils.debugLog "getenv() => $envMap"

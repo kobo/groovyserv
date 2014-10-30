@@ -142,7 +142,7 @@ class ClientProtocols {
         Map<String, List<String>> headers = readHeaders(conn)
         def request = new StreamRequest(
             port: conn.socket.port,
-            size: headers[HEADER_SIZE]?.getAt(0),
+            sizeText: headers[HEADER_SIZE]?.getAt(0),
             command: headers[HEADER_COMMAND]?.getAt(0),
         )
         request.check()

@@ -159,7 +159,7 @@ class ClientConnection implements Closeable {
         toreDownPipes = true
     }
 
-    static getCurrentConnection() {
+    static ClientConnection getCurrentConnection() {
         def connection = CONNECTION_HOLDER.get()
         if (connection == null) {
             throw new GServIllegalStateException("Not found client connection: ${Thread.currentThread()}")
@@ -173,9 +173,9 @@ class ClientConnection implements Closeable {
         }
     }
 
-    private static boolean isAllowedClientAddress(socket) {
+    private static boolean isAllowedClientAddress(Socket socket) {
         // always OK from loopback address
-        if (socket.localSocketAddress.address.isLoopbackAddress()) {
+        if ((socket.localSocketAddress as InetSocketAddress).address.isLoopbackAddress()) {
             return true
         }
         return getAllowedAddresses().any { address ->

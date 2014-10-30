@@ -37,7 +37,7 @@ class IOUtils {
         }
     }
 
-    static close(closeable) {
+    static close(Closeable closeable) {
         try {
             if (closeable) closeable.close()
         } catch (IOException e) {

@@ -139,7 +139,7 @@ class GroovyServer {
         def groovyServer = new GroovyServer()
         groovyServer.port = args[0] as int
         if (args.size() > 1) groovyServer.authToken = new AuthToken(args[1])
-        if (args.size() > 2) groovyServer.allowFrom = args[2].split(',')
+        if (args.size() > 2) groovyServer.allowFrom = args[2].split(',').toList()
         if (args.size() > 3) {
             // Setup logging
             LogUtils.debug = Boolean.valueOf(args[3])

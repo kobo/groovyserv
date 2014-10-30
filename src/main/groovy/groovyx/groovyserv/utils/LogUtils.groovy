@@ -40,7 +40,7 @@ class LogUtils {
         writeLog(formatLog("DEBUG", message, e))
     }
 
-    private static formatLog(String level, Object message, Throwable e) {
+    private static String formatLog(String level, Object message, Throwable e) {
         def caller = callerInfo
         def sw = new StringWriter()
         def pw = new PrintWriter(sw)
@@ -106,7 +106,7 @@ class LogUtils {
             def elementsAtLine = buf[startIndex..<endIndex]
             def completed = (0..15).collect { elementsAtLine[it] ?: null }
             def digitPart = completed.collect { toDisplayDigit(it) }.join(" ")
-            def asciiPart = completed.collect { toDisplayAscii(it) }.join()
+            def asciiPart = completed.collect { toDisplayAscii(it) }.join("")
             pw.println(digitPart + " | " + asciiPart)
         }
         pw.print(separatorLine)

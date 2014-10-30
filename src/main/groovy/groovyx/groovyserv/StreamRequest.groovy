@@ -23,11 +23,11 @@ import groovyx.groovyserv.exception.InvalidRequestHeaderException
 class StreamRequest {
 
     int port        // required
-    String size     // optional: size of input stream
+    String sizeText // optional: size of input stream
     String command  // optional
 
     boolean isEmpty() {
-        getSize() == 0
+        size == 0
     }
 
     boolean isInterrupted() {
@@ -35,7 +35,7 @@ class StreamRequest {
     }
 
     int getSize() {
-        size?.isInteger() ? (size as int) : 0
+        sizeText?.isInteger() ? (sizeText as int) : 0
     }
 
     /**
@@ -43,7 +43,7 @@ class StreamRequest {
      */
     void check() {
         if (command && !command.matches("interrupt|shutdown|ping")) {
-            throw new InvalidRequestHeaderException("Invalid StreamRequest: size=${size}, command=${command}")
+            throw new InvalidRequestHeaderException("Invalid StreamRequest: size=${sizeText}, command=${command}")
         }
     }
 }

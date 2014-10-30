@@ -17,11 +17,14 @@ package groovyx.groovyserv.platform
 
 import com.sun.jna.Native
 import com.sun.jna.Platform
+import groovy.transform.TypeChecked
+import groovy.transform.TypeCheckingMode
 
 /**
  * @author UEHARA Junji
  * @author NAKANO Yasuharu
  */
+@TypeChecked(TypeCheckingMode.SKIP)
 class PlatformMethods {
 
     private static final LIBC

@@ -27,7 +27,7 @@ class StreamRequestHandler implements Runnable {
 
     private ClientConnection conn
 
-    StreamRequestHandler(clientConnection) {
+    StreamRequestHandler(ClientConnection clientConnection) {
         this.conn = clientConnection
     }
 

@@ -53,13 +53,12 @@ class RequestWorker extends ThreadPoolExecutor implements Runnable {
         // for management sub threads in invoke handler.
         setThreadFactory(
             new ThreadFactory() {
-                def index = new AtomicInteger(0)
-
+                AtomicInteger index = new AtomicInteger(0) // it's important to be declared in enveloped scope of the follows
                 Thread newThread(Runnable runnable) {
                     // Giving individual sub thread group for each thread in order to handle unexpected exception
                     // and collect all sub threads from GroovyInvokeHandler to kill.
                     def rootThreadGroup = Thread.currentThread().threadGroup
-                    def subThreadGroup = new GServThreadGroup(rootThreadGroup, "${rootThreadGroup.name}:${index.getAndIncrement()}")
+                    def subThreadGroup = new GServThreadGroup(rootThreadGroup, "${rootThreadGroup.name}:${index.andIncrement}")
                     def thread = new Thread(subThreadGroup, runnable)
                     LogUtils.debugLog "Thread is created: $thread"
                     return thread
@@ -107,6 +106,7 @@ class RequestWorker extends ThreadPoolExecutor implements Runnable {
             LogUtils.debugLog "Failed to open new session: ${e.message}", e
             conn.sendExit(e.exitStatus, e.message)
         }
+        return null
     }
 
     private void handleRequest(InvocationRequest request) {
@@ -182,9 +182,11 @@ class RequestWorker extends ThreadPoolExecutor implements Runnable {
         LogUtils.debugLog "Terminated"
     }
 
-    private int getExitStatus(runnable) {
+    private int getExitStatus(Runnable runnable) {
         try {
-            IOUtils.awaitFuture(runnable)
+            if (runnable instanceof Future) {
+                IOUtils.awaitFuture(runnable)
+            }
             return ExitStatus.SUCCESS.code
         }
         catch (CancellationException e) {
