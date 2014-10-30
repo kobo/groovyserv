@@ -136,6 +136,7 @@ compileGroovy {
     // Compiling just for checking at a compile time
     source = [file("$projectDir/src/main/java"), file("$projectDir/src/main/groovy")]
     destinationDir = file("$buildDir/classes/compile-static")
+    groovyOptions.configurationScript = file("myConfigScript.groovy")
 
     doLast {
         // Groovy sources shouldn't be compiled in order to avoid a trouble
