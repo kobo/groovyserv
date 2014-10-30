@@ -132,12 +132,6 @@ def srcSpec = copySpec {
 //----------------------------------
 // Build
 
-jar {
-    baseName = project.name
-    inputs.dir file("$projectDir/src/main")
-    outputs.dir file("$buildDir/libs")
-}
-
 compileGroovy {
     // Compiling just for checking at a compile time
     source = [file("$projectDir/src/main/java"), file("$projectDir/src/main/groovy")]
@@ -192,8 +186,6 @@ task crossCompileGo {
         }
     }
 }
-
-task assemble(overwrite: true, dependsOn: ['jar'])
 
 task executables(type: Copy, dependsOn: ['assemble', 'compileGo']) {
     destinationDir = file("$buildDir/executables")
