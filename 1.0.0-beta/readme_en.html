@@ -1,0 +1,537 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>README &mdash; GroovyServ v0.8 documentation</title>
+    <link rel="stylesheet" href="static/default.css" type="text/css" />
+    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.8',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="static/jquery.js"></script>
+    <script type="text/javascript" src="static/underscore.js"></script>
+    <script type="text/javascript" src="static/doctools.js"></script>
+    <link rel="top" title="GroovyServ v0.8 documentation" href="index.html" /> 
+  </head>
+  <body>
+<div class="container">
+  <div class="header">
+    <img class="logo" src="static/images/logo.png" alt="GroovyServ" />
+    <div class="project">
+      by <a href="http://github.com/kobo">kobo</a> project
+    </div>
+  </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="readme">
+<span id="ref-readme"></span><h1>README<a class="headerlink" href="#readme" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>GroovyServ makes startup time quicker, by pre-invoking groovy as a TCP/IP
+server. If you know gnuserv(gnudoit)/emacsserver/emacsclient, this is like that.</p>
+<p>In the case of scripting in dynamic-type languages, quick response about
+invocation is very important. Try-and-run cycles is repeated frequently
+than static-type languages, so sometimes 2 seconds or even a second might
+be intolerable.</p>
+<p>GroovyServ reduces the startup time of JVM and Groovy runtime
+significantly. In most situations it is 10 to 20 times faster than
+regular Groovy. The following times are averages of 5 times which
+measured invocation in Groovy 1.8.0 on Mac OS X (Core(TM) 2 Duo 2.53GHz).</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="62%" />
+<col width="38%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Command</th>
+<th class="head">Result(sec)</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>Groovy</td>
+<td>1.1058</td>
+</tr>
+<tr><td>GroovyServ</td>
+<td>0.0412</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</div>
+<div class="section" id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
+<p>GroovyServ is developed for following environment/OS. Please report if it
+runs on the others.</p>
+<blockquote>
+<div><ul class="simple">
+<li>Mac OS X 10.5/6 (Intel Mac)</li>
+<li>Ubuntu Linux 9.10</li>
+<li>Ubuntu Linux 10.04</li>
+<li>Windows XP + Cygwin 1.7.x</li>
+<li>Windows XP without Cygwin</li>
+<li>Windows 7(64bit) + Cygwin 1.7.x</li>
+<li>Windows 7(64bit) without Cygwin</li>
+</ul>
+</div></blockquote>
+<p>Version of JDK is following:</p>
+<blockquote>
+<div><ul class="simple">
+<li>JDK 6u24 or later (Mac OS X)</li>
+<li>JDK 6u21 or later (Windows, Linux)</li>
+</ul>
+</div></blockquote>
+<p>Version of Groovy is following:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Groovy 1.7 or later</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="language">
+<h2>Language<a class="headerlink" href="#language" title="Permalink to this headline">¶</a></h2>
+<p>The Server is written in Java and Groovy with JNA(Java Native Access).
+There are two types of clients, one is written in C and another is
+written in Ruby.</p>
+</div>
+<div class="section" id="security">
+<h2>Security<a class="headerlink" href="#security" title="Permalink to this headline">¶</a></h2>
+<p>GroovyServ has a possibility to run any groovy script from client.
+So server-client connection is limited to the connection from the same
+machine (localhost). And the connection is authenticated by simple
+cookie mechanism.
+The cookie file is stored at ~/.groovy/groovyserv/cookie-&lt;port&gt;
+and the file mode set to 0400. But in Windows environment, it is not
+effective. So appropriately protect access to the file in Windows if
+needed.</p>
+</div>
+<div class="section" id="install-from-binary-package">
+<h2>Install from binary package<a class="headerlink" href="#install-from-binary-package" title="Permalink to this headline">¶</a></h2>
+<p>Download and expand GroovyServ distribution package, e.g.
+groovyserv-0.8-macosx-bin.zip to any directory:</p>
+<div class="highlight-python"><pre>$ mkdir ~/opt
+$ cd ~/opt
+$ unzip groovyserv-0.8-macosx-bin.zip</pre>
+</div>
+<p>And add bin directory to PATH environment variable.
+For example in bash/bourne shell:</p>
+<div class="highlight-python"><pre>export PATH=~/opt/groovyserv-0.8/bin:$PATH</pre>
+</div>
+<p>That&#8217;s all for preparing. When you invoke groovyclient, groovyserver
+automatically starts in background. At first, you might have to wait
+for a few seconds to startup:</p>
+<div class="highlight-python"><pre>$ groovyclient -v
+Invoking server: '/xxx/groovyserv-0.8/bin/groovyserver' -p 1961
+Groovy home directory: (none)
+Groovy command path: /usr/local/bin/groovy (found at PATH)
+GroovyServ home directory: /xxx/groovyserv-0.8
+GroovyServ work directory: /Users/ynak/.groovy/groovyserv
+Original classpath: (none)
+GroovyServ default classpath: /xxx/groovyserv-0.8/lib/*
+Starting...
+groovyserver 75808(1961) is successfully started
+Groovy Version: 1.8.0 JVM: 1.6.0_24</pre>
+</div>
+</div>
+<div class="section" id="build-from-source-code">
+<span id="ref-readme-build"></span><h2>Build from source code<a class="headerlink" href="#build-from-source-code" title="Permalink to this headline">¶</a></h2>
+<p>Download and expand GroovyServ source package groovyserv-0.8-src.zip
+to any directory. For example:</p>
+<div class="highlight-python"><pre>$ mkdir -p ~/opt/src
+$ cd ~/opt/src
+$ unzip groovyserv-0.8-src.zip</pre>
+</div>
+<p>Build with Maven as follows (recommended Maven3.x since v0.6):</p>
+<div class="highlight-python"><pre>$ cd ~/opt/src/groovyserv-0.8/
+$ mvn clean verify</pre>
+</div>
+<p>Then some zip files will be generated. According to &#8220;Install from
+binary package&#8221;, install the bin package:</p>
+<div class="highlight-python"><pre>~/opt/src/groovyserv-0.8/target/groovyserv-0.8-&lt;OS&gt;-&lt;arch&gt;-bin.zip</pre>
+</div>
+<p>If some tests fail, you can try as follows:</p>
+<div class="highlight-python"><pre>with UTF-8 encoding::
+
+  $ export _JAVA_OPTIONS=-Dfile.encoding=UTF-8
+  $ mvn clean verify
+
+skip integration tests::
+
+  $ mvn clean package
+
+skip all tests::
+
+  $ mvn -Dmaven.test.skip=true clean package</pre>
+</div>
+<p>To build it in Windows, you need gcc-3 and MinGW (recommended on Cygwin).
+You must install them before trying to build.</p>
+</div>
+<div class="section" id="environment-variables">
+<span id="ref-readme-env"></span><h2>Environment variables<a class="headerlink" href="#environment-variables" title="Permalink to this headline">¶</a></h2>
+<p>GroovyServ uses the following environment variables in runtime.</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>HOME (only on Linux or Mac OS X)</dt>
+<dd>It&#8217;s used to decide ~/.groovy/groovyserv directory path which is
+used for logging, storing a cookie and a PID. It&#8217;s set by default
+on unix-like OS.</dd>
+<dt>USERPROFILE (only on Windows)</dt>
+<dd>It&#8217;s used to decide ~.groovygroovyserv directory path which is
+used for logging, storing a cookie and a PID. It&#8217;s set by default
+on Windows. If server process is invoked by groovyserver.bat, PID
+file doesn&#8217;t exist.</dd>
+<dt>JAVA_HOME</dt>
+<dd>It&#8217;s used by Groovy. Generally, it has been already set through
+installing Groovy.</dd>
+<dt>GROOVY_HOME (optional)</dt>
+<dd>It&#8217;s used to specify groovy command path.
+If you&#8217;ve set groovy command into PATH environment variable, GroovyServ can find groovy command via PATH, so you don&#8217;t have to set GROOVY_HOME.</dd>
+<dt>A path of a groovy command in PATH (optional)</dt>
+<dd>It&#8217;s used to specify groovy command path.
+If you&#8217;ve set GROOVY_HOME environment variable, GroovyServ uses it in order to find a groovy command, so you don&#8217;t have to set the groovy command path to PATH.</dd>
+<dt>GROOVYSERVER_PORT (optional)</dt>
+<dd>It&#8217;s used to specify the port number for server or client.
+Alternately, you can specify the port as a command option.</dd>
+<dt>CLASSPATH (optional)</dt>
+<dd><p class="first">CLASSPATH environment variable on where groovyserver starts up
+composes the environment variable of the groovyserver process,
+with Jars of GroovyServ. It&#8217;s used as &#8220;default classpath&#8221; and
+affects invocations of every script.</p>
+<p class="last">CLASSPATH environment variable on where groovyclient is invoked
+is transferred to the groovyserver and is dynamically set to
+the compiler&#8217;s configuration of the script. (CLASSPATH environment
+variable of groovyserver is never modified.) The temporary classpath
+doesn&#8217;t affect the next script invocation because it&#8217;s reset on the
+tear-down phase of each script invocation.  When searching a class,
+groovyserver&#8217;s CLASSPATH environment variable is used priorly.
+The above behavior is quite same as groovyclient&#8217;s -cp option.</p>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+<div class="section" id="how-to-use">
+<h2>How to use<a class="headerlink" href="#how-to-use" title="Permalink to this headline">¶</a></h2>
+<p>You can use &#8220;groovyclient&#8221; command instead of &#8220;groovy&#8221; command.
+If the server is not running yet, it automatically starts.</p>
+<p>You can also invoke the server explicitly:</p>
+<div class="highlight-python"><pre>$ groovyserver</pre>
+</div>
+<p>With -v option, the verbose messages are written into a log file.
+it&#8217;s useful to analyze a problem about invoking server:</p>
+<div class="highlight-python"><pre>$ groovyserver -v</pre>
+</div>
+<p>About groovyserver command options, refer to &#8220;groovyserver&#8217;s option&#8221;
+section.</p>
+</div>
+<div class="section" id="restriction-differences">
+<h2>Restriction/Differences<a class="headerlink" href="#restriction-differences" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p class="first">You can&#8217;t concurrently use different current directory on a server.
+It also meets conditions if you invoke groovyclient simultaneously
+from two or more consoles. But if the running periods of each
+groovyclient are not overlapping, it can run without exception.</p>
+<p>If needed, you can simultaneously run multiple groovyservers with
+different ports.</p>
+</li>
+<li><p class="first">A static variable is shared among Groovy program invocations.
+For instance, the system properties are shared:</p>
+<div class="highlight-python"><pre>$ groovyclient -e "System.setProperty('a','abc')"
+$ groovyclient -e "println System.getProperty('a')"
+abc</pre>
+</div>
+<p>However, System.out, System.in and System.err are rightly used
+which are individually prepared for each invocation.</p>
+</li>
+<li><p class="first">Normally, environment variables of when groovyserver was invoked
+are used instead of those of groovyclient side. But if you specify
+-Cenv/-Cenv-all option, you can reflect the values of environment
+variables of client to the server.</p>
+<p>Only the CLASSPATH environment variable, however, whichever with or
+without those options, is always reflected to the server. The values
+are cleared at the end of each client invocation. It doesn&#8217;t affect
+to next invocation.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="groovyclient-s-option">
+<h2>groovyclient&#8217;s option<a class="headerlink" href="#groovyclient-s-option" title="Permalink to this headline">¶</a></h2>
+<p>groovyclient&#8217;s options start with &#8220;-C&#8221;. Those options are analyzed
+and consumed by groovyclient, and aren&#8217;t passed to groovy command:</p>
+<div class="highlight-python"><pre>-Ch,-Chelp               show this usage
+-Cp,-Cport &lt;port&gt;        specify the port to connect to groovyserver
+-Ck,-Ckill-server        kill the running groovyserver
+-Cr,-Crestart-server     restart the running groovyserver
+-Cq,-Cquiet              suppress statring messages
+-Cenv &lt;substr&gt;           pass environment variables of which a name
+                         includes specified substr
+-Cenv-all                pass all environment variables
+-Cenv-exclude &lt;substr&gt;   don't pass environment variables of which
+                         a name includes specified substr</pre>
+</div>
+</div>
+<div class="section" id="groovyserver-s-option">
+<h2>groovyserver&#8217;s option<a class="headerlink" href="#groovyserver-s-option" title="Permalink to this headline">¶</a></h2>
+<p>groovyserver&#8217;s options are as follows:</p>
+<div class="highlight-python"><pre>-v         verbose output to the log file
+-q         suppress starting messages
+-k         kill the running groovyserver (groovyserver.bat cannot use this)
+-r         restart the running groovyserver (groovyserver.bat cannot use this)
+-p &lt;port&gt;  specify the port to listen</pre>
+</div>
+</div>
+<div class="section" id="start-and-stop-groovyserver">
+<h2>Start and stop groovyserver<a class="headerlink" href="#start-and-stop-groovyserver" title="Permalink to this headline">¶</a></h2>
+<p>There are two ways to invoke groovyserver; the one is, called &#8220;explicit
+server invocation&#8221;, the way of using &#8220;groovyserver&#8221; or &#8220;groovyserver.bat&#8221;.
+The another is, called &#8220;transparent server invocation&#8221;,the way of just
+using groovyclient. If groovyserver hasn&#8217;t run yet, groovyclient
+automatically invokes groovyserver at the background.</p>
+<p>The commands for explicit server invocation are:</p>
+<blockquote>
+<div><ul class="simple">
+<li>groovyserver      (for Mac OS X, Linux, Windows with Cygwin)</li>
+<li>groovyserver.bat  (for Windows without Cygwin)</li>
+</ul>
+</div></blockquote>
+<p>Following table shows the availability of those commands: (OK: Available, N/A: Not available)</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="25%" />
+<col width="25%" />
+<col width="27%" />
+<col width="22%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Script</th>
+<th class="head">Windows w/ Cygwin</th>
+<th class="head">Windows w/o Cygwin</th>
+<th class="head">Mac OS X, Linux</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>groovyserver</td>
+<td>OK</td>
+<td>N/A</td>
+<td>OK</td>
+</tr>
+<tr><td>groovyserver.bat</td>
+<td>OK</td>
+<td>OK</td>
+<td>N/A</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p>groovyserver.bat doesn&#8217;t support -r and -k options for technical
+reasons. So, on the command line, You can neither stop nor restart
+the groovyserver started by groovyserver.bat. Instead, a minimized
+window is shown when groovyserver is started by groovyserver.bat.
+You can stop the groovyserver by closing the window. As a result,
+then you can restart groovyserver by invoking groovyclient as
+transparent server invocation.</p>
+<p>On Cygwin, groovyclient internally uses groovyserver.bat for
+transparent server invocation. Therefore, the behavior on Cygwin
+is as follows:</p>
+<ul class="simple">
+<li>In the case of groovyserver explicitly invoked by groovyserver shell
+script, you can stop or restart the server by invoking groovyserver
+shell script with -k or -r options.</li>
+<li>In the case of groovyserver explicitly invoked by groovyserver.bat
+(bat file), you can stop the server by closing the window of the
+groovyserver.</li>
+<li>In the case of groovyserver transparently invoked by groovyclient.exe,
+you can stop the server by closing the window of the groovyserver.</li>
+</ul>
+<p>It seems be confusing enough. So, we are considering to support -r and
+-k options of groovyserver.bat.</p>
+<p>In transparent server invocation, you cannot supply options(e.g. -v)
+for groovyserver or groovyserver.bat which is invoked internally by
+groovyclient. If you need, explicitly invoke groovyserver with options.</p>
+</div>
+<div class="section" id="propagation-of-environment-variable">
+<h2>Propagation of environment variable<a class="headerlink" href="#propagation-of-environment-variable" title="Permalink to this headline">¶</a></h2>
+<p>With -Cenv option of groovyclient, you can pass environment variables
+of which a name includes the specified substring to groovyserver. The
+values of those variables on the client process are sent to the server
+process, and the values of same environment variables on the server are
+set to or overwritten by the passed values. This feature is especially
+useful for tools (e.g. IDE, TextMate) which invoke an external command
+written by Groovy, and which uses environment variables to pass
+parameters to the command.</p>
+<p>When you specify the option -Cenv-all, all environment variables of the
+groovyclient process are sent to the groovyserver. Additionally with the
+option -Cenv-exclude, the variables of which a name includes specified
+substring are excluded.</p>
+<p>If you specify option:</p>
+<div class="highlight-python"><pre>-Cenv SUBSTRING</pre>
+</div>
+<p>the set of environment variables sent to the server are determined
+by the following pseudo code:</p>
+<div class="highlight-python"><pre>allEnvironmentVariables.entrySet().findAll {
+  it.name.contains("SUBSTRING")
+}</pre>
+</div>
+<p>Consider the combination of Cenv, -Cenv-all and -Cenv-exclude, like:</p>
+<div class="highlight-python"><pre>-Cenv SUBSTRING
+-Cenv-all
+-Cenv-exclude EXCLUDE_SUBSTRING</pre>
+</div>
+<p>The result of the following pseudo code are sent to the groovyserver:</p>
+<div class="highlight-python"><pre>allEnvironmentVariables.entrySet().findAll {
+  if (isSpecifiedEnvAll || it.name.contains("SUBSTRING")) {
+    if (!it.name.contains("EXCLUDE_SUBSTRING")) {
+      return true
+    }
+  }
+  return false
+}</pre>
+</div>
+<p>Note that the environment variables which is set to the groovyserver
+remain after the groovyclient terminates. And modifying an environment
+variable on a server are not thread-safe. So when multiple groovyclient
+instances are invoked simultaneously, a variable which one of them needs
+might be overwritten by another groovyclient subsequently invoked.</p>
+</div>
+<div class="section" id="port-number">
+<h2>Port number<a class="headerlink" href="#port-number" title="Permalink to this headline">¶</a></h2>
+<p>As a default, TCP port number which is used for communication between a
+groovyserver and a groovyclient is 1961. To change a port number used by
+a groovyserver, you can use GROOVYSERVER_PORT environment variable or -p
+option. The -p option is used more prior than GROOVYSERVER_PORT environment
+variable:</p>
+<div class="highlight-python"><pre>$ export GROOVYSERVER_PORT=1963
+$ groovyserver</pre>
+</div>
+<p>or:</p>
+<div class="highlight-python"><pre>$ groovyserver -p 1963</pre>
+</div>
+<p>On the other hand, for a groovyclient, you can use -Cp option instead
+of -p which is used by Groovy and GROOVYSERVER_PORT environment variable.
+In transparent server invocation, the port number is also supplied
+to the server with -p option:</p>
+<div class="highlight-python"><pre>$ groovyclient -Cp 1963 -e '...'</pre>
+</div>
+</div>
+<div class="section" id="log-file">
+<h2>Log file<a class="headerlink" href="#log-file" title="Permalink to this headline">¶</a></h2>
+<p>The output from groovyserver is written to the following file:</p>
+<div class="highlight-python"><pre>~/.groovy/groovyserv/groovyserver-&lt;port&gt;.log</pre>
+</div>
+</div>
+<div class="section" id="tips">
+<h2>Tips<a class="headerlink" href="#tips" title="Permalink to this headline">¶</a></h2>
+<p>Following aliases might be useful. For bash:</p>
+<div class="highlight-python"><pre>alias groovy=groovyclient</pre>
+</div>
+<p>For Windows:</p>
+<div class="highlight-python"><pre>doskey groovy=groovyclient $*</pre>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><div class="toctree-wrapper compound globaltoc">
+  <h3><a href="sitemenu.html">Site Menu</a></h3>
+  <ul>
+    <li class="toctree-l1"><a class="reference internal" href="index.html">Top</a></li>
+    <li class="toctree-l1"><a class="reference internal" href="document.html">Documentation</a>
+      <ul>
+        <li class="toctree-l2"><a class="reference internal" href="document.html#get-started">Get Started</a>
+          <ul>
+            <li class="toctree-l3"><a class="reference internal" href="readme_en.html">README(English)</a></li>
+            <li class="toctree-l3"><a class="reference internal" href="readme_ja.html">README(Japanese)</a></li>
+            <li class="toctree-l3"><a class="reference internal" href="screencast.html">Screencast</a></li>
+          </ul>
+        </li>
+        <li class="toctree-l2"><a class="reference internal" href="document.html#reference">Reference</a>
+          <ul>
+            <li class="toctree-l3"><a class="reference internal" href="changelog.html">Change Log</a></li>
+            <li class="toctree-l3"><a class="reference internal" href="faq.html">FAQ</a></li>
+            <li class="toctree-l3"><a class="reference internal" href="license.html">License</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li class="toctree-l1"><a class="reference internal" href="download.html">Download</a></li>
+    <li class="toctree-l1"><a class="reference internal" href="community.html">Community</a>
+      <ul>
+        <li class="toctree-l2"><a class="reference internal" href="community.html#mailing-list-google-group">Mailing List (Google Group)</a></li>
+        <li class="toctree-l2"><a class="reference internal" href="community.html#source-code-github">Source Code (GitHub)</a></li>
+        <li class="toctree-l2"><a class="reference internal" href="community.html#issues-github">Issues (GitHub)</a></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+  <h3>Contents of This Page</h3>
+  <ul>
+<li><a class="reference internal" href="#">README</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#requirements">Requirements</a></li>
+<li><a class="reference internal" href="#language">Language</a></li>
+<li><a class="reference internal" href="#security">Security</a></li>
+<li><a class="reference internal" href="#install-from-binary-package">Install from binary package</a></li>
+<li><a class="reference internal" href="#build-from-source-code">Build from source code</a></li>
+<li><a class="reference internal" href="#environment-variables">Environment variables</a></li>
+<li><a class="reference internal" href="#how-to-use">How to use</a></li>
+<li><a class="reference internal" href="#restriction-differences">Restriction/Differences</a></li>
+<li><a class="reference internal" href="#groovyclient-s-option">groovyclient&#8217;s option</a></li>
+<li><a class="reference internal" href="#groovyserver-s-option">groovyserver&#8217;s option</a></li>
+<li><a class="reference internal" href="#start-and-stop-groovyserver">Start and stop groovyserver</a></li>
+<li><a class="reference internal" href="#propagation-of-environment-variable">Propagation of environment variable</a></li>
+<li><a class="reference internal" href="#port-number">Port number</a></li>
+<li><a class="reference internal" href="#log-file">Log file</a></li>
+<li><a class="reference internal" href="#tips">Tips</a></li>
+</ul>
+</li>
+</ul>
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+</div>
+<script type="text/javascript">
+  var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+  document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+  try {
+    var pageTracker = _gat._getTracker("UA-3438563-4");
+    pageTracker._trackPageview();
+  } catch(err) {}
+</script>
+
+  </body>
+</html>

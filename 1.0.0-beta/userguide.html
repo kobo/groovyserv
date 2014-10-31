@@ -1,0 +1,605 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>User Guide - GroovyServ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/highlight.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="extensions/admonition/css/admonition.css">
+    <link rel="stylesheet" href="css/my.css">
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="header">
+        <i class="fa fa-bars sidebar-toggle"></i>
+        <span class="title"><a href="index.html">GroovyServ</a></span>
+      </div>
+      <div class="sidebar">
+        <ul>
+          <li><i class="fa fa-home"></i><a href="index.html">Home</a></li>
+          <li>
+            <i class="fa fa-book"></i>Documentation
+            <ul>
+              <li>
+                <i class="fa fa-graduation-cap"></i>Getting Started
+                <ul>
+                  <li><i class="fa fa-hdd-o"></i><a href="howtoinstall.html">How to Install</a></li>
+                  <li><i class="fa fa-hand-o-right"></i><a href="quickstart.html">Quick Start</a></li>
+                </ul>
+              </li>
+              <li>
+                <i class="fa fa-file-text"></i>Reference
+                <ul>
+                  <li><i class="fa fa-file-text-o"></i><a href="userguide.html">User Guide</a></li>
+                  <li><i class="fa fa-cog"></i><a href="howtobuild.html">How to Build</a></li>
+                  <li><i class="fa fa-question-circle"></i><a href="faq.html">FAQ</a></li>
+                  <li><i class="fa fa-list"></i><a href="changelog.html">Change Log</a></li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li><i class="fa fa-cloud-download"></i><a href="download.html">Download</a></li>
+          <li><i class="fa fa-comments-o"></i><a href="community.html">Community</a></li>
+        </ul>
+      </div>
+      <div class="content">
+        <div class="content-handle"></div>
+        <div class="content-container">
+          <div class="content-nav content-nav-top">
+            <a class="prev-page" href="quickstart.html">
+            <i class="fa fa-angle-left"></i>
+            Quick Start
+            </a>
+            <a class="next-page" href="howtobuild.html">
+            How to Build
+            <i class="fa fa-angle-right"></i>
+            </a>
+          </div>
+          <div class="page-toc">
+            <ul>
+              <li class="unnumbered visible">
+                <a href="#user-guide">User Guide</a>
+                <ul>
+                  <li class="unnumbered visible"><a href="#overview">Overview</a></li>
+                  <li class="unnumbered visible"><a href="#requirements">Requirements</a></li>
+                  <li class="unnumbered visible">
+                    <a href="#command-usage">Command usage</a>
+                    <ul>
+                      <li class="unnumbered visible"><a href="#startstop-a-server-process">Start/stop a server process</a></li>
+                      <li class="unnumbered visible"><a href="#run-a-groovy-script">Run a Groovy script</a></li>
+                      <li class="unnumbered visible">
+                        <a href="#options">Options</a>
+                        <ul>
+                          <li class="unnumbered visible"><a href="#groovyclient">groovyclient</a></li>
+                          <li class="unnumbered visible"><a href="#groovyserver">groovyserver</a></li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </li>
+                  <li class="unnumbered visible">
+                    <a href="#access-control">Access control</a>
+                    <ul>
+                      <li class="unnumbered visible"><a href="#authtoken">Authtoken</a></li>
+                      <li class="unnumbered visible"><a href="#whitelist-of-ip-addresses">Whitelist of IP addresses</a></li>
+                    </ul>
+                  </li>
+                  <li class="unnumbered visible">
+                    <a href="#environment-variables">Environment variables</a>
+                    <ul>
+                      <li class="unnumbered visible"><a href="#requiredoptional-at-runtime">Required/optional at runtime</a></li>
+                      <li class="unnumbered visible"><a href="#propagation-of-classpath">Propagation of CLASSPATH</a></li>
+                      <li class="unnumbered visible"><a href="#propagation-of-environment-variables">Propagation of environment variables</a></li>
+                    </ul>
+                  </li>
+                  <li class="unnumbered visible">
+                    <a href="#files">Files</a>
+                    <ul>
+                      <li class="unnumbered visible"><a href="#log-file">Log file</a></li>
+                      <li class="unnumbered visible"><a href="#authtoken-file">Authtoken file</a></li>
+                    </ul>
+                  </li>
+                  <li class="unnumbered visible">
+                    <a href="#networking">Networking</a>
+                    <ul>
+                      <li class="unnumbered visible"><a href="#port-number">Port number</a></li>
+                      <li class="unnumbered visible"><a href="#remote-accessing">Remote accessing</a></li>
+                    </ul>
+                  </li>
+                  <li class="unnumbered visible">
+                    <a href="#other-stuff">Other stuff</a>
+                    <ul>
+                      <li class="unnumbered visible"><a href="#standard-io-streams-via-tcpip">Standard I/O streams via TCP/IP</a></li>
+                      <li class="unnumbered visible"><a href="#exit-code">Exit code</a></li>
+                      <li class="unnumbered visible"><a href="#dynamic-cwd">Dynamic CWD</a></li>
+                      <li class="unnumbered visible"><a href="#interrupt-by-ctrl-c">Interrupt by CTRL-C</a></li>
+                      <li class="unnumbered visible"><a href="#detoxication-of-systemexit">Detoxication of System.exit()</a></li>
+                    </ul>
+                  </li>
+                  <li class="unnumbered visible">
+                    <a href="#restrictions">Restrictions</a>
+                    <ul>
+                      <li class="unnumbered visible"><a href="#cannot-run-concurrently-for-different-working-directories">Cannot run concurrently for different working directories</a></li>
+                      <li class="unnumbered visible"><a href="#global-variables-are-request-globally-shared">Global variables are request-globally shared</a></li>
+                      <li class="unnumbered visible"><a href="#console-io">Console I/O</a></li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+          <div class="main-content">
+            <h1 id="user-guide">User Guide</h1>
+            <h2 id="overview">Overview</h2>
+            <p>GroovyServ reduces the startup time of JVM for Groovy significantly, by using a JVM process running in background. If you know gnuserv(gnudoit)/emacsserver/emacsclient, this is similar to them.</p>
+            <p><img src="groovyserv-overview.png" alt="overview" class="overview"/></p>
+            <h2 id="requirements">Requirements</h2>
+            <p>GroovyServ needs the following programs Version of JDK/Groovy using at build is following:</p>
+            <ul>
+              <li><a href="http://www.oracle.com/technetwork/java/javase/downloads">Java SDK 7+</a> (1.8.0_11 on build-time)</li>
+              <li><a href="http://groovy-lang.org/download.html">Groovy</a> (2.3.7 on build-time)</li>
+            </ul>
+            <p>There are binary files for following environment/OS as default:</p>
+            <ul>
+              <li>Mac OS X</li>
+              <li>Linux (amd64/i386)</li>
+              <li>Windows 7+ (64bit/32bit)</li>
+            </ul>
+            <p>But if you build the user commands written in Go language, you can use them anywhere. To build by yourself is required:</p>
+            <ul>
+              <li><a href="http://www.oracle.com/technetwork/java/javase/downloads">Java SDK 7+</a></li>
+              <li><a href="http://golang.org/doc/install">Go 1.3+</a></li>
+            </ul>
+            <h2 id="command-usage">Command usage</h2>
+            <h3 id="startstop-a-server-process">Start/stop a server process</h3>
+            <p>There are two ways to run a server process. The way is an implicit operation via a <code>groovyclient</code> command. If a server process isn&rsquo;t running, the <code>groovyclient</code> automatically starts a server process up at the background:</p>
+            <pre><code class="sh">$ groovyclient -v
+Java home directory: /Library/Java/JavaVirtualMachines/current/Contents/Home
+Groovy home directory: /Users/me/.gvm/groovy/current
+Groovy command path: /Users/me/.gvm/groovy/current/bin/groovy (found at GROOVY_HOME)
+GroovyServ home directory: /Users/me/groovyserv/current
+GroovyServ work directory: /Users/me/.groovy/groovyserv
+Original classpath: (none)
+GroovyServ default classpath: /Users/me/.groovy/groovyserv/lib/*
+Starting server..............
+Server is successfully started up on 1961 port
+Groovy Version: 2.3.7 JVM: 1.8.0_11 Vendor: Oracle Corporation OS: Mac OS X
+GroovyServ Version: Server: 1.0.0
+GroovyServ Version: Client: 1.0.0
+</code></pre>
+            <p>The another way is using a <code>groovyserver</code> command:</p>
+            <pre><code class="sh">$ groovyserver
+</code></pre>
+            <p>For example, with <code>-v/--vebose</code> option, the verbose messages are written into a <a href="#log-file">log file</a>. It&rsquo;s useful to analyze a problem about invoking server:</p>
+            <pre><code class="sh">$ groovyserver -v
+</code></pre>
+            <p>A <code>-r/--restart</code> option is handy because it can start a new server when there is no server process. When you want a server to be running, you can always use the option like:</p>
+            <pre><code class="sh">$ groovyserver -r
+</code></pre>
+            <h3 id="run-a-groovy-script">Run a Groovy script</h3>
+            <p>You can run a Groovy script by a <code>groovyclient</code> command instead of a <code>groovy</code> command. In most of cases, you can specify an one-liner script as a parameter of <code>-e</code> option:</p>
+            <pre><code class="sh">$ groovyclient -e &quot;println &#39;Hello, GroovyServ.&#39;&quot;
+Hello, GroovyServ.
+</code></pre>
+            <p>Or specify just a file path:</p>
+            <pre><code class="sh">$ cat hello.groovy
+println &#39;Hello from a file.&#39;
+
+$ groovyclient hello.groovy
+Hello from a file.
+</code></pre>
+            <h3 id="options">Options</h3>
+            <h4 id="groovyclient">groovyclient</h4>
+            <p>A <code>groovyclient</code> command accept all options of a <code>groovy</code> command. Besides, there are dedicated options of <code>groovyclient</code>, a name of which starts with <code>-C</code>. Those options are analyzed and consumed by <code>groovyclient</code>, and aren&rsquo;t passed to groovy command:</p>
+            <pre><code class="nohighlight">  -Ch,-Chelp                       show this usage
+  -Cs,-Chost                       specify host to connect to server
+  -Cp,-Cport &lt;port&gt;                specify port to connect to server
+  -Ca,-Cauthtoken &lt;authtoken&gt;      specify authtoken
+  -Ck,-Ckill-server                kill the running server
+  -Cr,-Crestart-server             restart the running server
+  -Cq,-Cquiet                      suppress statring messages
+  -Cenv &lt;substr&gt;                   pass environment variables of which a name includes specified substr
+  -Cenv-all                        pass all environment variables
+  -Cenv-exclude &lt;substr&gt;           don&#39;t pass environment variables of which a name includes specified substr
+  -Cv,-Cversion                    display the version
+  -Cdebug                          display console log
+</code></pre>
+            <h4 id="groovyserver">groovyserver</h4>
+            <p>Options of <code>groovyserver</code> command are as follows:</p>
+            <pre><code class="nohighlight">  -h,--help                        show this usage
+  -k,--kill                        kill the running server
+  -r,--restart                     restart the running server
+  -q,--quiet                       suppress statring messages
+  -v,--verbose                     verbose output to a log file
+  -p,--port &lt;port&gt;                 specify port to listen
+     --allow-from &lt;addresses&gt;      specify optional acceptable client addresses (delimiter: comma)
+     --authtoken &lt;authtoken&gt;       specify authtoken (which is automatically generated if not specified)
+     --debug                       display console log
+</code></pre>
+            <h2 id="access-control">Access control</h2>
+            <p>GroovyServ can reject an evil request from an evil client, by using two methods; <em>authtoken</em> and <em>whitelist</em>.</p>
+            <h3 id="authtoken">Authtoken</h3>
+            <p>In GroovyServ, a request is authenticated by a simple authtoken mechanism.</p>
+            <ol>
+              <li>An authtoken is generated when a server process is started up and writes into the authtoken file.</li>
+              <li>A <code>groovyclient</code> reads the authtoken file when running, and then sends it as a part of a request to a server process.</li>
+              <li>A server process compares the authtoken in the request with the one the server having.  If they weren&rsquo;t matched, the request would be rejected.</li>
+            </ol>
+            <p>You can also specify an authtoken as you want when starting a server process up, instead of generating automatically.</p>
+            <pre><code class="sh">$ groovyserver --authtoken GROOVYSERV
+</code></pre>
+            <p>Or:</p>
+            <pre><code class="sh">$ groovyclient -Cauthtoken GROOVYSERV ....
+</code></pre>
+            <div class="admonition admonition-important">
+              <div class="admonition-icon">
+                <i class="fa"></i>
+              </div>
+              <div class="admonition-content">
+                <p>Too simple authtoken might cause less security.</p>
+              </div>
+            </div>
+            <h3 id="whitelist-of-ip-addresses">Whitelist of IP addresses</h3>
+            <p>A server process allows a request only from a loopback address by default. However, you can allow an access between different computers at your own risk. See <a href="#remote-accessing">Remote accessing</a> section.</p>
+            <h2 id="environment-variables">Environment variables</h2>
+            <h3 id="requiredoptional-at-runtime">Required/optional at runtime</h3>
+            <p>GroovyServ uses the following environment variables at runtime.</p>
+            <dl>
+              <dt><code>HOME</code> (required only on Linux or Mac OS X, namely UN*X-like OS)</dt>
+              <dd>It&rsquo;s used to decide a working directory <code>$HOME/.groovy/groovyserv</code> which is used for logging and storing an authtoken. You need do nothing because it&rsquo;s set by default on UN*X-like OS.</dd>
+              <dt><code>USERPROFILE</code> (required only on Windows)</dt>
+              <dd>It&rsquo;s used to decide a working directory <code>%USERPROFILE%\.groovy\groovyserv</code> which is used for logging and storing an authtoken. You need do nothing because it&rsquo;s set by default on Windows.</dd>
+              <dt><code>JAVA_HOME</code> (required indirectly)</dt>
+              <dd>It&rsquo;s required for Groovy. Generally, it must be set by installing Groovy.</dd>
+              <dt><code>GROOVY_HOME</code> (optional)</dt>
+              <dd>It&rsquo;s used to specify a <code>groovy</code> command path. If you&rsquo;ve set a path of a <code>groovy</code> command into <code>PATH</code>, you don&rsquo;t have to set <code>GROOVY_HOME</code> because GroovyServ can find the command via <code>PATH</code>.</dd>
+              <dt><code>PATH</code> (optional)</dt>
+              <dd>It&rsquo;s used to specify a <code>groovy</code>command path. If you&rsquo;ve set <code>GROOVY_HOME</code>, you don&rsquo;t have to set the <code>groovy</code> command path to PATH because GroovyServ can find the command via <code>GROOVY_HOME</code>.</dd>
+              <dt><code>CLASSPATH</code> (optional)</dt>
+              <dd>In addition to some JAR files of GroovyServ itself, the values of a <code>CLASSPATH</code> in which a <code>groovyserver</code> command runs are applied to a <code>CLASSPATH</code> of a server process. It&rsquo;s used for each an evaluation of a script as <em>default classpath</em>. Additionally, a <code>CLASSPATH</code> of a client process affects to a evaluation of a script on a server temporarily. See also <a href="#propagation-of-classpath">Propagation of CLASSPATH</a> section.</dd>
+              <dt><code>GROOVYSERV_HOST</code> (optional)</dt>
+              <dd>It&rsquo;s used to specify the host address for client. Alternately, you can specify it as a command option.</dd>
+              <dt><code>GROOVYSERV_PORT</code> (optional)</dt>
+              <dd>It&rsquo;s used to specify the port number for server or client. Alternately, you can specify it as a command option.</dd>
+              <dt><code>GROOVYSERV_WORK_DIR</code> (optional)</dt>
+              <dd>It&rsquo;s used to specify the work directory at which GroovyServ uses to store an authtoken file and a log file. If not specified, the default paths are used. See <a href="#files">Files</a> section.</dd>
+              <dt><code>GROOVYSERV_LOG_DIR</code> (optional)</dt>
+              <dd>It&rsquo;s used to specify the log directory for a log file of a server process which is running with a <code>--verbose</code> options. If not specified, the default paths are used. See <a href="#files">Files</a> section.</dd>
+            </dl>
+            <div class="admonition admonition-warning">
+              <div class="admonition-icon">
+                <i class="fa"></i>
+              </div>
+              <div class="admonition-content">
+                <p>
+                <div class="admonition-caption"> For Windows users</div>
+                </p>
+                <p>If you want to use GroovyServ on Cygwin, you should take care with the environment variables having a file path.  GroovyServ cannot understand a &ldquo;cygpath&rdquo; format (e.g. <code>/cygdrive/c/your/dir/path</code>).  So you should convert the value of environment variable to a Windows native path format, by a <code>cygpath</code> command.  It&rsquo;s a good idea to create an alias or a wrapper script.</p>
+              </div>
+            </div>
+            <h3 id="propagation-of-classpath">Propagation of CLASSPATH</h3>
+            <p>The values of a <code>CLASSPATH</code> in which a <code>groovyclient</code> command runs are automatically sent to a server process. And it&rsquo;s dynamically set to the compiler&rsquo;s configuration of a script specified by the client. A <code>CLASSPATH</code> of a server process is never modified. So, the temporary classpath doesn&rsquo;t affect the next script evaluation because it&rsquo;s reset on the tear-down phase of each script evaluation. This behavior is quite same as a <code>groovyclient</code>&rsquo;s <code>-cp</code> option.</p>
+            <div class="admonition admonition-note">
+              <div class="admonition-icon">
+                <i class="fa"></i>
+              </div>
+              <div class="admonition-content">
+                <p>The propagation of CLASSPATH works temporarily only for a certain client running.  So, variables added to a server are available only in a script of the client, and vanish from the server after the client terminates.</p>
+              </div>
+            </div>
+            <p>The order to search a class is the following:</p>
+            <ol>
+              <li><code>CLASSPATH</code> of a server</li>
+              <li><code>-cp/--classpath</code> options of a <code>groovyclient</code></li>
+              <li><code>CLASSPATH</code> of a client</li>
+            </ol>
+            <h3 id="propagation-of-environment-variables">Propagation of environment variables</h3>
+            <p>Like the prior seciton, <code>CLASSPATH</code> environment variable is propagated to a server process automatically and implicitly. But other environment variables are not so. So you must explicitly specify options <code>-Cenv</code>, <code>-Cenv-all</code> and <code>-Cenv-exclude</code> if you want to do so.</p>
+            <p>With <code>-Cenv</code> option of a <code>groovyclient</code>, you can send all environment variables of which a name includes the specified substring to a server process. The variables on the client process are sent to the server process, and they are set at the server newly or overwrite the values of existed variables.</p>
+            <p>When specifying the option <code>-Cenv-all</code>, you can send all environment variables of a <code>groovyclient</code> command to the server process. Additionally, with the option <code>-Cenv-exclude</code>, the variables of which a name includes specified substring are excluded.</p>
+            <p>For example, if you specify the option like:</p>
+            <pre><code class="nohighlight">-Cenv SUBSTRING
+</code></pre>
+            <p>the set of environment variables which are sent to the server are determined by the following pseudo code:</p>
+            <pre><code class="groovy">allEnvironmentVariables.findAll {
+    it.name.contains(&quot;SUBSTRING&quot;)
+}
+</code></pre>
+            <p>Consider the combination of <code>-Cenv</code>, <code>-Cenv-all</code> and <code>-Cenv-exclude</code> like:</p>
+            <pre><code class="nohighlight">-Cenv SUBSTRING
+-Cenv-all
+-Cenv-exclude EXCLUDE_SUBSTRING
+</code></pre>
+            <p>The result of the following pseudo code are sent to the server:</p>
+            <pre><code class="groovy">allEnvironmentVariables.findAll {
+    if (isSpecifiedEnvAll || it.name.contains(&quot;SUBSTRING&quot;)) {
+        if (!it.name.contains(&quot;EXCLUDE_SUBSTRING&quot;)) {
+            return true
+        }
+    }
+    false
+}
+</code></pre>
+            <div class="admonition admonition-warning">
+              <div class="admonition-icon">
+                <i class="fa"></i>
+              </div>
+              <div class="admonition-content">
+                <p>The propagation of environment variables globally changes a server process.  Namely, variables added to a server still remain after a client terminates.  So if some clients are running simultaneously, an environment variable which a script of a client uses might be overwritten suddenly by another client</p>
+              </div>
+            </div>
+            <div class="admonition admonition-note">
+              <div class="admonition-icon">
+                <i class="fa"></i>
+              </div>
+              <div class="admonition-content">
+                <p>This feature is especially useful for a tool (e.g. IDE, TextMate, Sublime Text) which runs an external command written by Groovy, and which uses environment variables to pass parameters to the command.</p>
+              </div>
+            </div>
+            <h2 id="files">Files</h2>
+            <h3 id="log-file">Log file</h3>
+            <p>By default, logs of a server are written to the following file:</p>
+            <ul>
+              <li>Linux, Mac OS X: <code>$HOME/.groovy/groovyserv/groovyserver-&lt;port&gt;.log</code></li>
+              <li>Windows: <code>%USERPROFILE%/.groovy/groovyserv/groovyserver-&lt;port&gt;.log</code></li>
+            </ul>
+            <p>If <code>GROOVYSERV_WORK_DIR</code> environment variable is set, its value is used as the path, instead. Or, if <code>GROOVYSERV_LOG_DIR</code> is set, it&rsquo;s used even though <code>GROOVYSERV_WORK_DIR</code> is set or not.</p>
+            <h3 id="authtoken-file">Authtoken file</h3>
+            <p>In GroovyServ, a request is authenticated by a simple authtoken mechanism. By default, the authtoken file is stored at:</p>
+            <ul>
+              <li>Linux, Mac OS X: <code>$HOME/.groovy/groovyserv/authtoken-&lt;port&gt;</code></li>
+              <li>Windows: <code>%USERPROFILE%/.groovy/groovyserv/authtoken-&lt;port&gt;</code></li>
+            </ul>
+            <p>If <code>GROOVYSERV_WORK_DIR</code> environment variable is set, its value is used as the path, instead.</p>
+            <div class="admonition admonition-warning">
+              <div class="admonition-icon">
+                <i class="fa"></i>
+              </div>
+              <div class="admonition-content">
+                <p>
+                <div class="admonition-caption"> For Windows users</div>
+                </p>
+                <p>The file mode is set to <code>0600</code> in Linux, Mac OS X, etc., in order to avoid to steal an authtoken.  But in Windows, the UN*X-like file permission doesn&rsquo;t work.  So, protect an access to the file appropriately in Windows if you needs.</p>
+              </div>
+            </div>
+            <h2 id="networking">Networking</h2>
+            <h3 id="port-number">Port number</h3>
+            <p>A communication between a <code>groovyclient</code> command and a server process uses a TCP connection. Its port number is <code>1961</code> by default.</p>
+            <p>You can change the port number as you want.</p>
+            <dl>
+              <dt><code>-p/--port</code> option of <code>groovyserver</code></dt>
+              <dd>It specifies a port number for a server process. When a server process starts up, it uses as a port to listen to a request from a client.</dd>
+              <dt><code>-Cp/-Cport</code> option of <code>groovyclient</code></dt>
+              <dd>It specifies a port to connect to server. When a command operates a server process, it also specifies a port for the server process. Especially, when a server process starts up, it uses as a port to listen to a request from a client.</dd>
+            </dl>
+            <pre><code class="sh">$ groovyserver -p 1963
+....
+Server is successfully started up on 1963 port
+
+$ groovyclient -Cp 1963 -e &quot;println &#39;Hello, GroovyServ.&#39;&quot;
+Hello, GroovyServ.
+</code></pre>
+            <p>You can also use <code>GROOVYSERV_PORT</code> environment variable instead of the options. It&rsquo;s handy because it affects both of a <code>groovyclient</code> command and a server process.</p>
+            <pre><code class="sh">$ export GROOVYSERV_PORT=1963
+
+$ groovyserver
+....
+Server is successfully started up on 1963 port
+
+$ groovyclient -e &quot;println &#39;Hello, GroovyServ.&#39;&quot;
+Hello, GroovyServ.
+</code></pre>
+            <h3 id="remote-accessing">Remote accessing</h3>
+            <p>GroovyServ allows a request only from a loopback address by default. However, you can allow an access between different computers at your own risk.</p>
+            <ol>
+              <li>Start a server process with <code>--allow-from</code> option of <code>groovyserver</code> in a server computer.</li>
+              <li>Run a <code>groovyclient</code> command with <code>-Cs/-Chost</code> and <code>-Ca/-Cauthtoken</code> options in a client computer.</li>
+            </ol>
+            <p>For example, assume that a server computer&rsquo;s IP address is <code>192.168.1.1</code> and the client computer&rsquo;s one is <code>192.168.1.2</code>. At first, you specify a client address to allow a request by <code>--allow-from</code> option of <code>groovyserver</code>:</p>
+            <pre><code class="sh">[server]$ groovyserver --allow-from 192.168.1.2
+</code></pre>
+            <div class="admonition admonition-note">
+              <div class="admonition-icon">
+                <i class="fa"></i>
+              </div>
+              <div class="admonition-content">
+                <p>You can specify multiple IP addresses of clients to <code>--allow-from</code> option with a comma as a delimiter.</p>
+              </div>
+            </div>
+            <p>You need an <a href="#authtoken-file">authtoken</a> in the server:</p>
+            <pre><code class="sh">[server]$ cat ~/.groovy/groovyserv/authtoken-1961
+1fc05d8a-5b92-41f6-82ca-41e6a53470c1
+</code></pre>
+            <div class="admonition admonition-important">
+              <div class="admonition-icon">
+                <i class="fa"></i>
+              </div>
+              <div class="admonition-content">
+                <p>The authtoken is very important for security.  So, you should keep it secret and safe.</p>
+              </div>
+            </div>
+            <pre><code class="sh">[client]$ groovyclient -Chost 192.168.1.1 -Cauthtoken 1fc05d8a-5b92-41f6-82ca-41e6a53470c1 -e &quot;println(&#39;Hello from remote client.&#39;)&quot;
+Hello from remote client.
+</code></pre>
+            <div class="admonition admonition-warning">
+              <div class="admonition-icon">
+                <i class="fa"></i>
+              </div>
+              <div class="admonition-content">
+                <p>When running <code>groovyclient</code> with <code>-Chost</code> option, you cannot use options to control a server process in <code>localhost</code> like <code>-Cr</code> option.</p>
+              </div>
+            </div>
+            <h2 id="other-stuff">Other stuff</h2>
+            <h3 id="standard-io-streams-via-tcpip">Standard I/O streams via TCP/IP</h3>
+            <p><code>System.out</code>, <code>System.in</code> and <code>System.err</code> are used as normal, which are transported over TCP/IP and individually separated for each a request.</p>
+            <p>Until now, you&rsquo;ve often seen the following example code. This example indicates the <code>System.out.println()</code> can write to a console in a client:</p>
+            <pre><code class="sh">$ groovyclient -e &quot;println &#39;Hello, GroovyServ.&#39;&quot;
+Hello, GroovyServ.
+</code></pre>
+            <p>Next, this is an example of <code>System.err.println()</code>:</p>
+            <pre><code class="sh">$ groovyclient -e &quot;System.err.println &#39;This is an error.&#39;&quot;
+This is an error.
+</code></pre>
+            <p>An error message also shows as a standard error when an exception occurs:</p>
+            <pre><code class="sh">$ groovyclient -e &quot;notDeclaredVariable&quot;
+Caught: groovy.lang.MissingPropertyException: No such property: notDeclaredVariable for class: script_from_command_line
+...
+</code></pre>
+            <p>The message is written as a standard error. So, you can omit it like this in UN*X-like OS:</p>
+            <pre><code class="sh">$ groovyclient -e &quot;notDeclaredVariable&quot; 2&gt;/dev/null
+</code></pre>
+            <p>Then, <code>System.in</code> is also available:</p>
+            <pre><code class="sh">$ groovyclient -e &quot;System.in.eachLine { println it * 2 }&quot;
+a   # &lt;-- input by user
+aa  # &lt;-- output from server
+b   # &lt;-- input by user
+bb  # &lt;-- output from server
+^C  # &lt;-- CTRL-C
+</code></pre>
+            <p>You can interrupt the infinte loop of the script by CTRL-C. See <a href="#interrupt-by-ctrl-c">Interrupt by CTRL-C</a> section.</p>
+            <h3 id="exit-code">Exit code</h3>
+            <p>An exit value of a <code>groovyclient</code> command is equivalent to a <code>System.exit(status)</code>:</p>
+            <pre><code class="sh">$ groovyclient -e &quot;;&quot;
+$ echo $?
+0
+
+$ groovyclient -e &quot;System.exit(1)&quot;
+$ echo $?
+1
+
+$ groovyclient -e &quot;System.exit(123)&quot;
+$ echo $?
+123
+</code></pre>
+            <p>The exit code is <code>1</code> when an exception occurs like a normal Groovy:</p>
+            <pre><code class="sh">$ groovyclient -e &quot;notDeclaredVariable&quot;
+Caught: groovy.lang.MissingPropertyException: No such property: notDeclaredVariable for class: script_from_command_line
+...
+$ echo $?
+1
+</code></pre>
+            <p>So, you can use the exit code of a script to cooperate with other stuff like:</p>
+            <pre><code class="sh">$ groovyclient -e &quot;println new File(&#39;notFound.txt&#39;).text&quot; 2&gt;/dev/null || echo &quot;ERROR: could not read&quot;
+ERROR: could not read
+</code></pre>
+            <h3 id="dynamic-cwd">Dynamic CWD</h3>
+            <p>A current working directory (CWD) of a <code>groovyclient</code> is dynamically applied to a server process for each a request. And an original CWD of a server process is restored when a request ends.</p>
+            <p>For example, a server process runs at <code>/tmp/dir1/</code>:</p>
+            <pre><code class="sh">$ cd /tmp/dir1
+$ groovyserver
+</code></pre>
+            <p>If the dynamic CWD feature weren&rsquo;t supported, a CWD of a server process would be fixed at <code>/tmp/dir1</code>. So, the following command would be failed:</p>
+            <pre><code class="sh">$ cat /tmp/dir2/test.txt
+Can you read me?
+
+$ cd /tmp/dir2
+$ groovyclient -e &quot;println(new File(&#39;test.txt&#39;).text)&quot;
+...
+Caught: java.io.FileNotFoundException: test.txt (No such file or directory)
+...
+</code></pre>
+            <p>But, GroovyServ actually works well expectedly:</p>
+            <pre><code class="sh">$ cd /tmp/dir2
+$ groovyclient -e &quot;println(new File(&#39;test.txt&#39;).text)&quot;
+Can you read me?
+</code></pre>
+            <p>This feature is very handy for a script, but it brings a side-effect. See also <a href="#cannot-run-concurrently-for-different-working-directories">Cannot run concurrently for different working directories</a> section.</p>
+            <h3 id="interrupt-by-ctrl-c">Interrupt by CTRL-C</h3>
+            <p>You can interrupt a running script in a server process with <code>CTRL-C</code> simply. When you send a signal by <code>CTRL-C</code> while a script is running, a thread of the script in a server process is certainly stopped.</p>
+            <div class="admonition admonition-warning">
+              <div class="admonition-icon">
+                <i class="fa"></i>
+              </div>
+              <div class="admonition-content">
+                <p>If the main thread of a user script ignores interruptions, GroovyServ can&rsquo;t stop it.  For example, you can stop the following script expectedly because JDK&rsquo;s <code>Thread#sleep()</code> is interruptable API:</p>
+                <pre><code class="groovy"> while (true) { Thread.sleep 1000 }
+</code></pre>
+                <p>On the other hand, the following script keeps working infinitely in background because GDK&rsquo;s <code>Object#sleep()</code> ignores interruptions intentionally.</p>
+                <pre><code class="groovy"> while (true) { sleep 1000 }
+</code></pre>
+              </div>
+            </div>
+            <div class="admonition admonition-note">
+              <div class="admonition-icon">
+                <i class="fa"></i>
+              </div>
+              <div class="admonition-content">
+                <p>GroovyServ can stop any sub threads created from a main thread of a user script,  even which aren&rsquo;t interruptable like:</p>
+                <pre><code class="groovy"> Thread.start {
+   while (true) { sleep 1000 }
+ }
+</code></pre>
+              </div>
+            </div>
+            <h3 id="detoxication-of-systemexit">Detoxication of System.exit()</h3>
+            <p>When a script uses <code>System.exit()</code>, it causes only the end of a thread for the script. A server process is still alive after it.</p>
+            <h2 id="restrictions">Restrictions</h2>
+            <p>There are some restrictions caused by issues or its architecture.</p>
+            <h3 id="cannot-run-concurrently-for-different-working-directories">Cannot run concurrently for different working directories</h3>
+            <p>You can&rsquo;t concurrently run a script for different working directory in a server process. For example, when two Groovy scripts are concurrently invoked by using a sub-shell and a pipe, the error occurs:</p>
+            <pre><code class="sh">$ ( cd /tmp/dir1; groovyclient -e &quot;(1..3).each { println it }; sleep 3&quot; ) | ( cd  /tmp/dir2; groovyclient -ne &quot;println line * 2&quot; )
+ERROR: could not change working directory
+Hint:  Another thread may be running on a different working directory. Wait a moment.
+</code></pre>
+            <p>Instead, this for the same directory works well:</p>
+            <pre><code class="sh">$ ( cd /tmp/dir1; groovyclient -e &quot;(1..3).each { println it }; sleep 3&quot; ) | ( cd  /tmp/dir1; groovyclient -ne &quot;println line * 2&quot; )
+11
+22
+33
+</code></pre>
+            <p>You can also use multiple servers <a href="#port-number">with different ports</a> as a workaround.</p>
+            <pre><code class="sh">$ ( cd /tmp/dir1; groovyclient -Cport 1963 -e &quot;(1..3).each { println it }; sleep 3&quot; ) | ( cd  /tmp/dir2; groovyclient -Cport 1964 -ne &quot;println line * 2&quot; )
+11
+22
+33
+</code></pre>
+            <h3 id="global-variables-are-request-globally-shared">Global variables are request-globally shared</h3>
+            <p>If the static variables are defined in the script or Groovy classes you run, they are defined on a <code>GroovyClassLoader</code> created for each a request. In this case, static variables aren&rsquo;t shared because a class loader is individual.</p>
+            <p>On the other hand, if the static variables are defined by a system/bootstrap class loader, they are shared. For example, the values which you stored in <code>System.getProperties()</code> are shared among all scripts invoked on the server process:</p>
+            <pre><code class="sh">$ groovyclient -e &quot;System.setProperty(&#39;hello&#39;, &#39;Hello&#39;)&quot;
+$ groovyclient -e &quot;println System.getProperty(&#39;hello&#39;)&quot;
+Hello
+</code></pre>
+            <p>Groovy&rsquo;s <code>metaClass</code> is also shared among different requests:</p>
+            <pre><code class="sh">$ groovyclient -e &quot;String.metaClass.hello = { println &#39;Hello&#39; }&quot;
+$ groovyclient -e &quot;&#39;x&#39;.hello()&quot;
+Hello
+</code></pre>
+            <h3 id="console-io">Console I/O</h3>
+            <p><code>System.out</code>, <code>System.in</code> and <code>System.err</code> are used as normal, which are transported over TCP/IP and individually separated for each a request. But <code>System.console()</code> cannot be used so far.</p>
+            <pre><code class="sh">$ groovyclient -e &quot;println System.console()&quot;
+null
+</code></pre>
+          </div>
+          <div class="content-nav content-nav-bottom">
+            <a class="prev-page" href="quickstart.html">
+            <i class="fa fa-angle-left"></i>
+            Quick Start
+            </a>
+            <a class="next-page" href="howtobuild.html">
+            How to Build
+            <i class="fa fa-angle-right"></i>
+            </a>
+          </div>
+          <script>
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+            })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+            ga('create', 'UA-3438563-4', 'auto');
+            ga('send', 'pageview');
+          </script>
+          <div class="footer">
+            <p class="version text-muted">Version 1.0.0</p>
+            <p class="credit text-muted">Powered by <a href="https://github.com/kobo/gaiden">Gaiden</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="js/jquery-2.1.1.min.js"></script>
+    <script src="js/highlight.js"></script>
+    <script src="js/application.js"></script>
+    <script src="js/my.js"></script>
+  </body>
+</html>

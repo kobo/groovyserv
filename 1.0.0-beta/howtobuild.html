@@ -1,0 +1,153 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>How to Build - GroovyServ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/highlight.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="extensions/admonition/css/admonition.css">
+    <link rel="stylesheet" href="css/my.css">
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="header">
+        <i class="fa fa-bars sidebar-toggle"></i>
+        <span class="title"><a href="index.html">GroovyServ</a></span>
+      </div>
+      <div class="sidebar">
+        <ul>
+          <li><i class="fa fa-home"></i><a href="index.html">Home</a></li>
+          <li>
+            <i class="fa fa-book"></i>Documentation
+            <ul>
+              <li>
+                <i class="fa fa-graduation-cap"></i>Getting Started
+                <ul>
+                  <li><i class="fa fa-hdd-o"></i><a href="howtoinstall.html">How to Install</a></li>
+                  <li><i class="fa fa-hand-o-right"></i><a href="quickstart.html">Quick Start</a></li>
+                </ul>
+              </li>
+              <li>
+                <i class="fa fa-file-text"></i>Reference
+                <ul>
+                  <li><i class="fa fa-file-text-o"></i><a href="userguide.html">User Guide</a></li>
+                  <li><i class="fa fa-cog"></i><a href="howtobuild.html">How to Build</a></li>
+                  <li><i class="fa fa-question-circle"></i><a href="faq.html">FAQ</a></li>
+                  <li><i class="fa fa-list"></i><a href="changelog.html">Change Log</a></li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li><i class="fa fa-cloud-download"></i><a href="download.html">Download</a></li>
+          <li><i class="fa fa-comments-o"></i><a href="community.html">Community</a></li>
+        </ul>
+      </div>
+      <div class="content">
+        <div class="content-handle"></div>
+        <div class="content-container">
+          <div class="content-nav content-nav-top">
+            <a class="prev-page" href="userguide.html">
+            <i class="fa fa-angle-left"></i>
+            User Guide
+            </a>
+            <a class="next-page" href="faq.html">
+            FAQ
+            <i class="fa fa-angle-right"></i>
+            </a>
+          </div>
+          <div class="page-toc">
+            <ul>
+              <li class="unnumbered visible">
+                <a href="#how-to-build">How to Build</a>
+                <ul>
+                  <li class="unnumbered visible"><a href="#requirements">Requirements</a></li>
+                  <li class="unnumbered visible"><a href="#build-a-binary-package-dedicated-to-your-environment">Build a binary package dedicated to your environment</a></li>
+                  <li class="unnumbered visible"><a href="#build-a-general-binary-package">Build a general binary package</a></li>
+                  <li class="unnumbered visible"><a href="#rpm">Build a RPM package</a></li>
+                  <li class="unnumbered visible"><a href="#testing">Testing</a></li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+          <div class="main-content">
+            <h1 id="how-to-build">How to Build</h1>
+            <h2 id="requirements">Requirements</h2>
+            <p>To build is required:</p>
+            <ul>
+              <li><a href="http://www.oracle.com/technetwork/java/javase/downloads">Java SDK 7+</a></li>
+              <li><a href="http://golang.org/doc/install">Go 1.3+</a></li>
+            </ul>
+            <div class="admonition admonition-warning">
+              <div class="admonition-icon">
+                <i class="fa"></i>
+              </div>
+              <div class="admonition-content">
+                <p>
+                <div class="admonition-caption"> For Windows users</div>
+                </p>
+                <p>I think you can build on Cygwin in Windows.  But if there are environment variables specialized for Cygwin (e.g. <code>/cygdrive/c/your/dir/path</code>), you will fail.  So I recommend building on a DOS prompt or PowerShell, instead.</p>
+              </div>
+            </div>
+            <h2 id="build-a-binary-package-dedicated-to-your-environment">Build a binary package dedicated to your environment</h2>
+            <p>After downloading and expanding a GroovyServ&rsquo;s source package <code>groovyserv-1.0.0-src.zip</code> to any directory, build it with Gradle as follows:</p>
+            <pre><code class="sh">$ cd /tmp
+$ unzip groovyserv-1.0.0-src.zip
+$ cd groovyserv-1.0.0-src
+$ ./gradlew clean distLocalBin
+</code></pre>
+            <p>Then a ZIP file will be generated.</p>
+            <pre><code class="nohighlight">build/distributions/groovyserv-1.0.0-bin-local.zip
+</code></pre>
+            <p>This zip file is dedicated to your environment. So you can use it immediately just after expanding it.</p>
+            <h2 id="build-a-general-binary-package">Build a general binary package</h2>
+            <p>After downloading and expanding a GroovyServ&rsquo;s source package <code>groovyserv-1.0.0-src.zip</code> to any directory, build it with Gradle as follows:</p>
+            <pre><code class="sh">$ cd /tmp
+$ unzip groovyserv-1.0.0-src.zip
+$ cd groovyserv-1.0.0-src
+$ ./gradlew clean dist
+</code></pre>
+            <p>Then some ZIP files will be generated.</p>
+            <pre><code class="nohighlight">build/distributions/groovyserv-1.0.0-bin.zip
+</code></pre>
+            <p>According to <a href="howtoinstall.html#binary">Install from binary package</a>, install it.</p>
+            <h2 id="rpm">Build a RPM package</h2>
+            <p>If you want to install GroovyServ from a RPM package, you can build it by yourself. The sample SPEC file which is required to build a RPM package was contributed by Oliver at first. Then, Kazuhisya keeps update it. Thank you, Oliver and Kazuhiyha! The samples of the SPEC file is in <a href="https://github.com/kobo/groovyserv/tree/master/contrib/rpm">contrib/rpm-spec</a>. Well, I don&rsquo;t know how to build a RPM package, so I cannot support about it. Sorry in advance ;-)</p>
+            <h2 id="testing">Testing</h2>
+            <p>If you want to run tests (including unit tests and integration tests), run Gradle with following arguments:</p>
+            <pre><code class="sh">$ export _JAVA_OPTIONS=-Dfile.encoding=UTF-8
+$ ./gradlew test
+</code></pre>
+          </div>
+          <div class="content-nav content-nav-bottom">
+            <a class="prev-page" href="userguide.html">
+            <i class="fa fa-angle-left"></i>
+            User Guide
+            </a>
+            <a class="next-page" href="faq.html">
+            FAQ
+            <i class="fa fa-angle-right"></i>
+            </a>
+          </div>
+          <script>
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+            })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+            ga('create', 'UA-3438563-4', 'auto');
+            ga('send', 'pageview');
+          </script>
+          <div class="footer">
+            <p class="version text-muted">Version 1.0.0</p>
+            <p class="credit text-muted">Powered by <a href="https://github.com/kobo/gaiden">Gaiden</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="js/jquery-2.1.1.min.js"></script>
+    <script src="js/highlight.js"></script>
+    <script src="js/application.js"></script>
+    <script src="js/my.js"></script>
+  </body>
+</html>

@@ -1,0 +1,612 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Change Log - GroovyServ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/highlight.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="extensions/admonition/css/admonition.css">
+    <link rel="stylesheet" href="css/my.css">
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="header">
+        <i class="fa fa-bars sidebar-toggle"></i>
+        <span class="title"><a href="index.html">GroovyServ</a></span>
+      </div>
+      <div class="sidebar">
+        <ul>
+          <li><i class="fa fa-home"></i><a href="index.html">Home</a></li>
+          <li>
+            <i class="fa fa-book"></i>Documentation
+            <ul>
+              <li>
+                <i class="fa fa-graduation-cap"></i>Getting Started
+                <ul>
+                  <li><i class="fa fa-hdd-o"></i><a href="howtoinstall.html">How to Install</a></li>
+                  <li><i class="fa fa-hand-o-right"></i><a href="quickstart.html">Quick Start</a></li>
+                </ul>
+              </li>
+              <li>
+                <i class="fa fa-file-text"></i>Reference
+                <ul>
+                  <li><i class="fa fa-file-text-o"></i><a href="userguide.html">User Guide</a></li>
+                  <li><i class="fa fa-cog"></i><a href="howtobuild.html">How to Build</a></li>
+                  <li><i class="fa fa-question-circle"></i><a href="faq.html">FAQ</a></li>
+                  <li><i class="fa fa-list"></i><a href="changelog.html">Change Log</a></li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li><i class="fa fa-cloud-download"></i><a href="download.html">Download</a></li>
+          <li><i class="fa fa-comments-o"></i><a href="community.html">Community</a></li>
+        </ul>
+      </div>
+      <div class="content">
+        <div class="content-handle"></div>
+        <div class="content-container">
+          <div class="content-nav content-nav-top">
+            <a class="prev-page" href="faq.html">
+            <i class="fa fa-angle-left"></i>
+            FAQ
+            </a>
+            <a class="next-page" href="download.html">
+            Download
+            <i class="fa fa-angle-right"></i>
+            </a>
+          </div>
+          <div class="page-toc">
+            <ul>
+              <li class="unnumbered visible">
+                <a href="#change-log">Change Log</a>
+                <ul>
+                  <li class="unnumbered visible">
+                    <a href="#version-100-2014-11-04">Version 1.0.0 (2014-11-04)</a>
+                    <ul>
+                      <li class="unnumbered invisible"><a href="#new-features">New Features</a></li>
+                      <li class="unnumbered invisible"><a href="#improvements">Improvements</a></li>
+                      <li class="unnumbered invisible"><a href="#bug-fixes">Bug Fixes</a></li>
+                    </ul>
+                  </li>
+                  <li class="unnumbered visible">
+                    <a href="#version-013-2013-07-26">Version 0.13 (2013-07-26)</a>
+                    <ul>
+                      <li class="unnumbered invisible"><a href="#id-73408aa5c7b33a55b2573f85437ccf568e628314">New Features</a></li>
+                      <li class="unnumbered invisible"><a href="#id-e08a67c146aec9dfbe713b0e086e549f3c5b2751">Improvements</a></li>
+                      <li class="unnumbered invisible"><a href="#id-b7bd675133273a0bed554b2d1444a743eeb983f0">Bug Fixes</a></li>
+                    </ul>
+                  </li>
+                  <li class="unnumbered visible">
+                    <a href="#version-012-2013-07-04">Version 0.12 (2013-07-04)</a>
+                    <ul>
+                      <li class="unnumbered invisible"><a href="#id-7d21ac5c8fe2f7d1a235bb6fd0cfb4dbedc254aa">New Features</a></li>
+                      <li class="unnumbered invisible"><a href="#id-af43b33d74016e3207a2371e7243cba6cb210e13">Improvements</a></li>
+                      <li class="unnumbered invisible"><a href="#id-6cee00f40f3532ca702cec4de7c8e41a4271698f">Bug Fixes</a></li>
+                    </ul>
+                  </li>
+                  <li class="unnumbered visible">
+                    <a href="#version-011-2013-02-01">Version 0.11 (2013-02-01)</a>
+                    <ul>
+                      <li class="unnumbered invisible"><a href="#id-52de63f5089ae44b1599e803ddf25286abed8041">New Features</a></li>
+                      <li class="unnumbered invisible"><a href="#id-d4a2c7dd458ca42b49c1a04451636d4e283475fe">Improvements</a></li>
+                      <li class="unnumbered invisible"><a href="#id-bc1b9af72f4e185421f5779de2356010b1e5b8d7">Bug Fixes</a></li>
+                    </ul>
+                  </li>
+                  <li class="unnumbered visible">
+                    <a href="#version-010-2012-03-30">Version 0.10 (2012-03-30)</a>
+                    <ul>
+                      <li class="unnumbered invisible"><a href="#id-25be8444efe19831d09f7b5e02a6086eaf260309">New Features</a></li>
+                      <li class="unnumbered invisible"><a href="#id-c37af22bc3a4b39fd1710f200be323ab8310fc7e">Bug Fixes</a></li>
+                    </ul>
+                  </li>
+                  <li class="unnumbered visible">
+                    <a href="#version-09-2011-08-04">Version 0.9 (2011-08-04)</a>
+                    <ul>
+                      <li class="unnumbered invisible"><a href="#id-d7317c55a480ca637628733c77df71661308a671">Improvements</a></li>
+                      <li class="unnumbered invisible"><a href="#id-58a23d018933b029aad14450c8c71a019e603654">Bug Fixes</a></li>
+                      <li class="unnumbered invisible"><a href="#contributions">Contributions</a></li>
+                    </ul>
+                  </li>
+                  <li class="unnumbered visible">
+                    <a href="#version-08-2011-06-16">Version 0.8 (2011-06-16)</a>
+                    <ul>
+                      <li class="unnumbered invisible"><a href="#id-b15222b95ba92b5747022775401aa352660dd121">Improvements</a></li>
+                      <li class="unnumbered invisible"><a href="#id-5451a6604cfe50efe998ca4f14dc7c617a2b637c">Bug Fixes</a></li>
+                    </ul>
+                  </li>
+                  <li class="unnumbered visible">
+                    <a href="#version-07-2011-04-27">Version 0.7 (2011-04-27)</a>
+                    <ul>
+                      <li class="unnumbered invisible"><a href="#id-820be9c793f42fc455b5a57d40a37ffaa74bb023">Improvements</a></li>
+                      <li class="unnumbered invisible"><a href="#id-70fb84891b57bd5d056ed64d3de0e44b6e6a2aa4">Bug Fixes</a></li>
+                    </ul>
+                  </li>
+                  <li class="unnumbered visible">
+                    <a href="#version-06-2011-03-18">Version 0.6 (2011-03-18)</a>
+                    <ul>
+                      <li class="unnumbered invisible"><a href="#id-8e187e01809770c63ac08f1062fedf2066b003d8">Improvements</a></li>
+                      <li class="unnumbered invisible"><a href="#id-7fc93df009a267c9035758927209067e476c962e">Bug Fixes</a></li>
+                    </ul>
+                  </li>
+                  <li class="unnumbered visible">
+                    <a href="#version-05-2010-12-22">Version 0.5 (2010-12-22)</a>
+                    <ul>
+                      <li class="unnumbered invisible"><a href="#id-d276eacfea85f06f2021828b3b42d6f90e11c60c">New Features</a></li>
+                      <li class="unnumbered invisible"><a href="#id-db1c9399b1a332c97c16bf8f277d799174d5df39">Improvements</a></li>
+                      <li class="unnumbered invisible"><a href="#id-73f03efcd80b5fbcc99c91e3932e9271d481e4ee">Bug fixes</a></li>
+                    </ul>
+                  </li>
+                  <li class="unnumbered visible">
+                    <a href="#version-04-2010-08-06">Version 0.4 (2010-08-06)</a>
+                    <ul>
+                      <li class="unnumbered invisible"><a href="#id-c1a6a637f46b4ec41ae0d649d3bfa39c6d096e3a">New Features</a></li>
+                      <li class="unnumbered invisible"><a href="#id-05b1874403dd020894ff3e99a17815738393a85d">Improvements</a></li>
+                      <li class="unnumbered invisible"><a href="#id-e97477afbd39bf70d8352f34ad8ab038c836edc8">Bug fixes</a></li>
+                    </ul>
+                  </li>
+                  <li class="unnumbered visible">
+                    <a href="#version-03-2010-07-14">Version 0.3 (2010-07-14)</a>
+                    <ul>
+                      <li class="unnumbered invisible"><a href="#id-38f7baa70dc935ebb4715b5ae0a83f6c7b890bbe">Improvements</a></li>
+                      <li class="unnumbered invisible"><a href="#id-e0f1e032209e04544308e2bd614854b7a5ed89d2">Bug Fixes</a></li>
+                    </ul>
+                  </li>
+                  <li class="unnumbered visible">
+                    <a href="#version-02-2010-06-30">Version 0.2 (2010-06-30)</a>
+                    <ul>
+                      <li class="unnumbered invisible"><a href="#id-9ceaaf00307e2dfa6c1478cb9ffb47426a87754b">New Features</a></li>
+                      <li class="unnumbered invisible"><a href="#id-d8d09cbe7cf553fe12ef5076b5cde0d1832b0e74">Improvements</a></li>
+                    </ul>
+                  </li>
+                  <li class="unnumbered visible"><a href="#version-01-2010-03-09">Version 0.1 (2010-03-09)</a></li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+          <div class="main-content">
+            <h1 id="change-log">Change Log</h1>
+            <h2 id="version-100-2014-11-04">Version 1.0.0 (2014-11-04)</h2>
+            <h4 id="new-features">New Features</h4>
+            <ul>
+              <li>
+                [Log/File] You can specify a path of a log file and an authtoken file by <code>GROOVYSERV_WORK_DIR</code> and <code>GROOVYSERV_LOG_DIR</code> environmant variable. See <a href="userguide.html#files">User Guide</a>.
+                <ul>
+                  <li>Request 58: <a href="https://github.com/kobo/groovyserv/issues/58">https://github.com/kobo/groovyserv/issues/58</a></li>
+                </ul>
+              </li>
+              <li>[Setup] You can automatically choose appropriate binary files of user commands for your environment and remove unused otherse. See <a href="howtoinstall.html">How to Install</a>.</li>
+            </ul>
+            <h4 id="improvements">Improvements</h4>
+            <ul>
+              <li>[Command] User commands are thoroughly rewritten by Go language. Now you can use full-featured <code>groovyclient</code> and <code>groovyserver</code> at all environments Go language supports. Instead, commands written in Bash and Ruby are removed.</li>
+              <li>[Command] A server process can shut down itself by a special request. So, finally you can control a server process even on Windows by user commands.</li>
+              <li>[Command] A status code of a script is 1 when an exception causes like a normal Groovy.</li>
+              <li>[Command] A client command shows an error message when it could not changes working directory because another script is running on a different working directory.</li>
+              <li>[Log] A log format is tweaked.</li>
+              <li>[Env] <code>GROOVYSERVER_*</code> environment variables are renamed to <code>GROOVYSERV_*</code>. See <a href="userguide.html#environment-variables">User Guide</a>.</li>
+              <li>[Security] An implementation of an authtoken is changed to UUID.</li>
+              <li>[Internal] A package name is changed to <code>groovyx.groovyserv</code>.</li>
+              <li>
+                [Internal] A protocol between a user command and a server process is tweaked:
+                <ul>
+                  <li><code>Cwd</code> header is to be optional.</li>
+                  <li><code>AuthToken</code> header is renamed to just <code>Auth</code>.</li>
+                  <li>New &lsquo;Cmd&rsquo; header for request of both shutdown and interrupt is introduced.</li>
+                </ul>
+              </li>
+              <li>[Internal] Many many refactoring and restructuring.</li>
+            </ul>
+            <h4 id="bug-fixes">Bug Fixes</h4>
+            <ul>
+              <li>
+                Fixed 53: Memory leak due to ThreadGroup not being destroyed
+                <ul>
+                  <li><a href="https://github.com/kobo/groovyserv/issues/53">https://github.com/kobo/groovyserv/issues/53</a></li>
+                </ul>
+              </li>
+            </ul>
+            <h2 id="version-013-2013-07-26">Version 0.13 (2013-07-26)</h2>
+            <h4 id="id-73408aa5c7b33a55b2573f85437ccf568e628314">New Features</h4>
+            <ul>
+              <li>[Client] <code>groovyclient(.sh)</code> supports server operations by <code>-Cr/-Ck</code> options</li>
+              <li>[Install] <code>groovyserv-setup-nativeclient</code> command is added to platform independent package to build a native <code>groovyclient</code> and replace <code>groovyclient(.sh)</code> shell script with it.</li>
+            </ul>
+            <h4 id="id-e08a67c146aec9dfbe713b0e086e549f3c5b2751">Improvements</h4>
+            <ul>
+              <li><code>groovyclient.rb</code> supports <code>-Chost</code> and <code>-Cauthtoken</code></li>
+              <li><code>GROOVYSERVER_HOST</code> environment variable is supported to specify server address from client</li>
+              <li>(Improved some checks when starting server)</li>
+              <li>(Spock-nized all tests)</li>
+              <li>(Improved build system)</li>
+              <li>(Thoroughly refactored shell scripts)</li>
+            </ul>
+            <h4 id="id-b7bd675133273a0bed554b2d1444a743eeb983f0">Bug Fixes</h4>
+            <ul>
+              <li>
+                Fixed 48: <code>groovyclient(.sh)</code> installed by GVM causes an error
+                <ul>
+                  <li><a href="https://github.com/kobo/groovyserv/issues/48">https://github.com/kobo/groovyserv/issues/48</a></li>
+                </ul>
+              </li>
+              <li>
+                Fixed 49: <code>groovyclient</code> doesn&rsquo;t work with non-default ports
+                <ul>
+                  <li><a href="https://github.com/kobo/groovyserv/issues/49">https://github.com/kobo/groovyserv/issues/49</a></li>
+                </ul>
+              </li>
+            </ul>
+            <h2 id="version-012-2013-07-04">Version 0.12 (2013-07-04)</h2>
+            <h4 id="id-7d21ac5c8fe2f7d1a235bb6fd0cfb4dbedc254aa">New Features</h4>
+            <ul>
+              <li>[Client] groovyclient.sh is added. In the platform-independent binary package, its name is just &lsquo;groovyclient.&rsquo;</li>
+            </ul>
+            <h4 id="id-af43b33d74016e3207a2371e7243cba6cb210e13">Improvements</h4>
+            <ul>
+              <li>groovyclient.rb supports -Chost and -Cauthtoken</li>
+            </ul>
+            <h4 id="id-6cee00f40f3532ca702cec4de7c8e41a4271698f">Bug Fixes</h4>
+            <ul>
+              <li>
+                Fixed 47: Command line parameters &ndash;allow-from and &ndash;authtoken do not work on Windows 7
+                <ul>
+                  <li><a href="https://github.com/kobo/groovyserv/issues/47">https://github.com/kobo/groovyserv/issues/47</a></li>
+                </ul>
+              </li>
+            </ul>
+            <h2 id="version-011-2013-02-01">Version 0.11 (2013-02-01)</h2>
+            <h4 id="id-52de63f5089ae44b1599e803ddf25286abed8041">New Features</h4>
+            <ul>
+              <li>
+                [Client/Server] Supported fully remote access.
+                <ul>
+                  <li>[Client] groovyclient can send a valid request to groovyserver on the other machine by using -Chost and -Cauthtoken.</li>
+                  <li>[Server] you can provide an arbitrary authtoken when invoking groovyserver.</li>
+                </ul>
+              </li>
+            </ul>
+            <h4 id="id-d4a2c7dd458ca42b49c1a04451636d4e283475fe">Improvements</h4>
+            <ul>
+              <li>Renamed &ldquo;cookie&rdquo; to &ldquo;authtoken&rdquo;.</li>
+            </ul>
+            <h4 id="id-bc1b9af72f4e185421f5779de2356010b1e5b8d7">Bug Fixes</h4>
+            <ul>
+              <li>
+                FIxed 44: caused a freeze when reading from stdin on Linux
+                <ul>
+                  <li><a href="https://github.com/kobo/groovyserv/issues/44">https://github.com/kobo/groovyserv/issues/44</a></li>
+                </ul>
+              </li>
+              <li>
+                Fixed 45: cookie file permission is 644
+                <ul>
+                  <li><a href="https://github.com/kobo/groovyserv/issues/45">https://github.com/kobo/groovyserv/issues/45</a></li>
+                </ul>
+              </li>
+              <li>
+                Fixed 46: standard out/err doesn&rsquo;t flush at ruby client when the content includes no line separator
+                <ul>
+                  <li><a href="https://github.com/kobo/groovyserv/issues/46">https://github.com/kobo/groovyserv/issues/46</a></li>
+                </ul>
+              </li>
+            </ul>
+            <h2 id="version-010-2012-03-30">Version 0.10 (2012-03-30)</h2>
+            <h4 id="id-25be8444efe19831d09f7b5e02a6086eaf260309">New Features</h4>
+            <ul>
+              <li>[Client] -v option can also display the GroovyServ&rsquo;s version not only Groovy&rsquo;s version.</li>
+              <li>[Network] Supported &ndash;allow-from option at groovyserver(sh). If &lsquo;localhost&rsquo; is resolved except to loopback address in your environment, you can use &ndash;allow-from option with groovyserver(sh). In future, I want to support that groovyclient could access a groovyserver at remote host in security. This is the first step.</li>
+            </ul>
+            <h4 id="id-c37af22bc3a4b39fd1710f200be323ab8310fc7e">Bug Fixes</h4>
+            <ul>
+              <li>
+                Fixed 39: Processing of Groovy cmd line args is inconsistent
+                <ul>
+                  <li><a href="https://github.com/kobo/groovyserv/issues/39">https://github.com/kobo/groovyserv/issues/39</a></li>
+                </ul>
+              </li>
+              <li>
+                Fixed 40: &ldquo;System.env[name]&rdquo; cannot access environment variables at client side
+                <ul>
+                  <li><a href="https://github.com/kobo/groovyserv/issues/40">https://github.com/kobo/groovyserv/issues/40</a></li>
+                </ul>
+              </li>
+              <li>
+                Fixed 41: ruby client cannot invoke groovyserver automatically in windows 7
+                <ul>
+                  <li><a href="https://github.com/kobo/groovyserv/issues/41">https://github.com/kobo/groovyserv/issues/41</a></li>
+                </ul>
+              </li>
+              <li>And other small fixes and improvements are included.</li>
+            </ul>
+            <h2 id="version-09-2011-08-04">Version 0.9 (2011-08-04)</h2>
+            <h4 id="id-d7317c55a480ca637628733c77df71661308a671">Improvements</h4>
+            <ul>
+              <li>[Env] Now you can use PWD environment variable. PWD is individually changed to the current directory for each invocation of user script.</li>
+              <li>[Build] You can build GroovyServ by Gradle. Maven&rsquo;s pom.xml is temporarily still there, but maybe it will be removed at next version.</li>
+              <li>[Performance] The overhead at sequential invocation of groovyclient was reduced. You needed at least one second as an interval of each sequential invocation at v0.8, but at v0.9 you might not be able to notice the overhead.</li>
+              <li>[Internal] To close connections and to terminate threads are improved. GroovyServ will probably behave more similarly to the regular Groovy than before.</li>
+            </ul>
+            <h4 id="id-58a23d018933b029aad14450c8c71a019e603654">Bug Fixes</h4>
+            <ul>
+              <li>
+                Fixed #33 : When a path of GROOVY_HOME was including a white space, the invocation of groovyserver was failed at v0.8
+                <ul>
+                  <li><a href="https://github.com/kobo/groovyserv/issues/33">https://github.com/kobo/groovyserv/issues/33</a></li>
+                </ul>
+              </li>
+              <li>
+                Parsing options of Ruby client was wholly refactored. So, some bugs were fixed.
+                <ul>
+                  <li>
+                    Fixed #34 : When invoking &ldquo;groovyclient.rb -Cr -Cq&rdquo;, -Cq was ignored
+                    <ul>
+                      <li><a href="https://github.com/kobo/groovyserv/issues/34">https://github.com/kobo/groovyserv/issues/34</a></li>
+                    </ul>
+                  </li>
+                  <li>
+                    Fixed #35 : When transparently invoking groovyserver by groovyclient.rb, user script isn&rsquo;t invoked
+                    <ul>
+                      <li><a href="https://github.com/kobo/groovyserv/issues/35">https://github.com/kobo/groovyserv/issues/35</a></li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+              <li>And other small fixes and improvements are included.</li>
+            </ul>
+            <h4 id="contributions">Contributions</h4>
+            <ul>
+              <li>[Build] The spec file required to build a RPM package is there. See: <a href="howtobuild.html#rpm">Build RPM file</a> (Thanks, Oliver and Kazuhisya)</li>
+            </ul>
+            <h2 id="version-08-2011-06-16">Version 0.8 (2011-06-16)</h2>
+            <h4 id="id-b15222b95ba92b5747022775401aa352660dd121">Improvements</h4>
+            <ul>
+              <li>
+                [Windows/Cygwin] groovyserver.bat and groovyserver(sh) were wholly improved:
+                <ul>
+                  <li>When GROOVY_HOME or GROOVYSERV_HOME isn&rsquo;t set, it&rsquo;s automatically detected.</li>
+                  <li>JAVA_HOME, GROOVY_HOME, GROOVYSERV_HOME and CLASSPATH are converted to the appropriate path format if necessary.</li>
+                  <li>So, you can also use groovyclient.exe to start a groovyserver on Cygwin even if you&rsquo;ve set GROOVY_HOME or GROOVYSERV_HOME as an UNIX path format. (It had failed at v0.7.)</li>
+                  <li>Now there isn&rsquo;t the dirty hack using ping to sleep 1 sec.</li>
+                </ul>
+              </li>
+              <li>[Log File] The dump data in log file is more easy to read. Until v0.7, many printable characters except alphabet and number were printed as &ldquo;?&rdquo;, but now they become being printed as original character.</li>
+              <li>[Build] Makefile is added. You can more easily build a binary of groovyclient with &ldquo;make&rdquo; command if the downloaded binary doesn&rsquo;t work.</li>
+            </ul>
+            <h4 id="id-5451a6604cfe50efe998ca4f14dc7c617a2b637c">Bug Fixes</h4>
+            <ul>
+              <li>
+                Fixed #28: malloc/free error occurred with a &ndash;classpath option
+                <ul>
+                  <li><a href="https://github.com/kobo/groovyserv/issues/28">https://github.com/kobo/groovyserv/issues/28</a></li>
+                </ul>
+              </li>
+              <li>
+                Fixed #30: cannot invoke a script when transparently restarting server from client
+                <ul>
+                  <li><a href="https://github.com/kobo/groovyserv/issues/30">https://github.com/kobo/groovyserv/issues/30</a></li>
+                </ul>
+              </li>
+              <li>
+                Fixed #31: &ldquo;dgroovyclient -h&rdquo; on Windows shows unexpected behaviors
+                <ul>
+                  <li><a href="https://github.com/kobo/groovyserv/issues/31">https://github.com/kobo/groovyserv/issues/31</a></li>
+                </ul>
+              </li>
+              <li>
+                Fixed #32: using groovyclient.rb, user.dir is based on cygwin path format on Cygwin
+                <ul>
+                  <li><a href="https://github.com/kobo/groovyserv/issues/32">https://github.com/kobo/groovyserv/issues/32</a></li>
+                </ul>
+              </li>
+            </ul>
+            <h2 id="version-07-2011-04-27">Version 0.7 (2011-04-27)</h2>
+            <h4 id="id-820be9c793f42fc455b5a57d40a37ffaa74bb023">Improvements</h4>
+            <ul>
+              <li>You can see CLASSPATH information of a groovyserver at start-up messages (Mac OS X and Linux only).</li>
+              <li>Experimentally, the &ldquo;-server&rdquo; of JVM option was added to a groovyserver.  Hotspot may improve the performance of an execution of a script.</li>
+            </ul>
+            <h4 id="id-70fb84891b57bd5d056ed64d3de0e44b6e6a2aa4">Bug Fixes</h4>
+            <ul>
+              <li>
+                Fixed #14: groovyclient -Cenv -e &ldquo;println System.env.HI&rdquo; don&rsquo;t work expectedly
+                <ul>
+                  <li><a href="https://github.com/kobo/groovyserv/issues/14">https://github.com/kobo/groovyserv/issues/14</a></li>
+                </ul>
+              </li>
+              <li>
+                Fixed #23: buffer over flow of encoding arguments as base64 in groovyclient of C
+                <ul>
+                  <li><a href="https://github.com/kobo/groovyserv/issues/23">https://github.com/kobo/groovyserv/issues/23</a></li>
+                </ul>
+              </li>
+              <li>
+                Fixed #24: groovyserver process wrongly exits on failing decoding of base64
+                <ul>
+                  <li><a href="https://github.com/kobo/groovyserv/issues/24">https://github.com/kobo/groovyserv/issues/24</a></li>
+                </ul>
+              </li>
+              <li>
+                Fixed #25: native groovyclient of v0.6 cannot be invoked with Windows 7 64bits
+                <ul>
+                  <li><a href="https://github.com/kobo/groovyserv/issues/25">https://github.com/kobo/groovyserv/issues/25</a></li>
+                </ul>
+              </li>
+              <li>
+                Fixed #26: groovyserver(sh) doesn&rsquo;t take over CLASSPATH environment variable
+                <ul>
+                  <li><a href="https://github.com/kobo/groovyserv/issues/26">https://github.com/kobo/groovyserv/issues/26</a></li>
+                </ul>
+              </li>
+              <li>
+                Fixed #27: cannot access original environment variables of groovyserver
+                <ul>
+                  <li><a href="https://github.com/kobo/groovyserv/issues/27">https://github.com/kobo/groovyserv/issues/27</a></li>
+                </ul>
+              </li>
+            </ul>
+            <h2 id="version-06-2011-03-18">Version 0.6 (2011-03-18)</h2>
+            <h4 id="id-8e187e01809770c63ac08f1062fedf2066b003d8">Improvements</h4>
+            <ul>
+              <li>Supported for a multiline command argument. You can use an argument including newlines, by quoting the string with tripple-quotations appropriately.</li>
+              <li>Changed a log file name to include a port number as suffix.  So, all work files (e.g. log, cookie and pid) were fully separated for each ports.  Multiple instances of GroovyServ can be run simultaneously on separate ports.</li>
+              <li>Classpath never conflict. The user-specified classpath tears down at the end of each script invocation.  (At the previous versions, a classpath could be added but couldn&rsquo;t be removed after the invocation).</li>
+              <li>Using a positive number as exit status code which is defined by GroovyServ as a constant.  If your script depends on the return code from GroovyServ, you might need fix it.</li>
+              <li>Maven3.x support.</li>
+            </ul>
+            <h4 id="id-7fc93df009a267c9035758927209067e476c962e">Bug Fixes</h4>
+            <ul>
+              <li>
+                Fixed #15: Document bug about groovyserv bash script availability
+                <ul>
+                  <li><a href="https://github.com/kobo/groovyserv/issues/closed#issue/15">https://github.com/kobo/groovyserv/issues/closed#issue/15</a></li>
+                </ul>
+              </li>
+              <li>
+                Fixed #16: CWD is accidentally ovewritten by another session.
+                <ul>
+                  <li><a href="https://github.com/kobo/groovyserv/issues/closed#issue/16">https://github.com/kobo/groovyserv/issues/closed#issue/16</a></li>
+                </ul>
+              </li>
+              <li>
+                Fixed #17, #18: Wrong file privileges in *nix distribution.
+                <ul>
+                  <li><a href="https://github.com/kobo/groovyserv/issues/closed#issue/17">https://github.com/kobo/groovyserv/issues/closed#issue/17</a></li>
+                  <li><a href="https://github.com/kobo/groovyserv/issues/closed#issue/18">https://github.com/kobo/groovyserv/issues/closed#issue/18</a></li>
+                </ul>
+              </li>
+              <li>
+                Fixed #19: GROOVYSERV_HOME resolution fails when binaries are symbolic links when using SH.
+                <ul>
+                  <li><a href="https://github.com/kobo/groovyserv/issues/closed#issue/19">https://github.com/kobo/groovyserv/issues/closed#issue/19</a></li>
+                </ul>
+              </li>
+              <li>
+                Fixed #21: wrong check for -Cenv, -Cenv-exclude in groovyclient.rb.
+                <ul>
+                  <li><a href="https://github.com/kobo/groovyserv/issues/closed#issue/21">https://github.com/kobo/groovyserv/issues/closed#issue/21</a></li>
+                </ul>
+              </li>
+              <li>
+                Fixed #22: the first environment variable is sometimes not passed to server.
+                <ul>
+                  <li><a href="https://github.com/kobo/groovyserv/issues/closed#issue/22">https://github.com/kobo/groovyserv/issues/closed#issue/22</a></li>
+                </ul>
+              </li>
+            </ul>
+            <h2 id="version-05-2010-12-22">Version 0.5 (2010-12-22)</h2>
+            <h4 id="id-d276eacfea85f06f2021828b3b42d6f90e11c60c">New Features</h4>
+            <ul>
+              <li>Now groovyclient can take -C prefix options which are interpreted on groovyclient itself (don&rsquo;t pass to groovy command).</li>
+              <li>&lsquo;-Cr/-Ck&rsquo; client options restart/stop groovyserver process(Mac OS X and Linux only).  By using these options you can control groovyserver through groovyclient.</li>
+              <li>With &lsquo;-Cenv&rsquo; option of groovyclient, we can pass the environment variables which name matches with the specified pattern to groovyserver.  The values of matched variables on the client process are sent to the server process, and the values of same name environment variable on the server are set to or overwitten by the passed values.  This feature is especially useful for IDEs&rsquo; which uses environment variables to pass configuration information with invoking external command which is written Groovy.  Textmate is one of those IDEs reportedly.</li>
+              <li>Option &lsquo;-Cenv-all&rsquo; makes to pass all environment variables of the client process to groovyserver.  And option &lsquo;-Cenv-exclude&rsquo; excludes variables which name matches with the specified pattern.</li>
+              <li>You can specify port number easily by using -Cp/-Cport options and handle multiple groovyserver instance distinguished by the port number.</li>
+            </ul>
+            <h4 id="id-db1c9399b1a332c97c16bf8f277d799174d5df39">Improvements</h4>
+            <ul>
+              <li>Groovyserver&rsquo;s starting messages are now emit to stderr, so use of pipe or redirection is more useful with Groovy scripting.  Moreover -Cq/-Cqiuet options suppresses starting message of groovyserver.</li>
+              <li>Groovyserver now emit informative messages about GroovyServ&rsquo;s installed directory and which groovy command are used.  This is useful for trouble shooting.</li>
+              <li>[Only Linux/Mac OS X]Now GROOVY_HOME environment variable become optional. Supported some ways to find a groovy command in the following order:  (1)from PATH environment variable.  (2)as GROOVY_HOME/bin/groovy. If not exists, an intent revealing message  is emitted to the console.</li>
+            </ul>
+            <h4 id="id-73f03efcd80b5fbcc99c91e3932e9271d481e4ee">Bug fixes</h4>
+            <ul>
+              <li>Groovyclient can&rsquo;t invoke groovyserver when GroovyServ is installed on a directory which name includes white spaces(e.g. &rsquo;C:/Program Files/&hellip;).</li>
+              <li>On Linux, if the GroovyServ installed to the directory with symbolic link, it didn&rsquo;t work.  (because of Linux&rsquo;s which command don&rsquo;t support -s option so we changed the implementation to do it without -s.)</li>
+              <li>In Mac OS X, progress showing mark displayed &lsquo;-n .&rsquo; instead of &lsquo;&hellip;&rsquo;.</li>
+            </ul>
+            <h2 id="version-04-2010-08-06">Version 0.4 (2010-08-06)</h2>
+            <h4 id="id-c1a6a637f46b4ec41ae0d649d3bfa39c6d096e3a">New Features</h4>
+            <ul>
+              <li>groovyserver.bat shows a window which can be used to stop the server in Windows.</li>
+            </ul>
+            <h4 id="id-05b1874403dd020894ff3e99a17815738393a85d">Improvements</h4>
+            <ul>
+              <li>Supported -p, -n options of groovyclient (See help of groovy command).</li>
+              <li>Filters written in Groovy works well.</li>
+              <li>Using an environment variable USERPROFILE instead of HOME in Windows.</li>
+              <li>Improved support of invoking groovyserver on Cygwin.</li>
+              <li>Improved a process of invoking groovyserver.</li>
+              <li>Packaged not-compiled Groovy scripts into jar file in order not to depend on a particular JDK version.</li>
+              <li>Printing help message when groovyclient is run without options.</li>
+              <li>Appended date and time in debug log.</li>
+              <li>
+                <p>And you can also execute the following command:</p>
+                <p>$ ls | groovyclient -e &ldquo;System.in.eachLine{ println it }&rdquo;</p>
+              </li>
+            </ul>
+            <h4 id="id-e97477afbd39bf70d8352f34ad8ab038c836edc8">Bug fixes</h4>
+            <ul>
+              <li>Cannot print nothing after an error about pipe occurred once.</li>
+              <li>Segmentation fault occurs with too long arguments.</li>
+              <li>Some bugs makes segmentation faults around communication handling is fixed.</li>
+              <li>Fix for ignored CLASSPATH environment variable in groovyclient.rb</li>
+            </ul>
+            <h2 id="version-03-2010-07-14">Version 0.3 (2010-07-14)</h2>
+            <h4 id="id-38f7baa70dc935ebb4715b5ae0a83f6c7b890bbe">Improvements</h4>
+            <ul>
+              <li>Refactored groovyclient.c a little.</li>
+              <li>README has URL of the site of GitHub (and README.ja was deleted).</li>
+              <li>Upgraded Groovy 1.7.2 -&gt; 1.7.3.</li>
+              <li>Upgraded gmaven 1.2 -&gt; 1.3-SNAPSHOT (because GMAVEN-13 was fixed).</li>
+              <li>All tests result green in Windows environment.</li>
+              <li>
+                Tweaked handling of character encoding in a build sequence. you can use either of the following:
+                <ul>
+                  <li>default encoding (without -Dfile.encoding in JAVA_OPTS, _JAVA_OPTIONS)</li>
+                  <li>global encoding with -Dfile.encoding in _JAVA_OPTIONS (recommend: UTF-8)</li>
+                </ul>
+              </li>
+            </ul>
+            <h4 id="id-e0f1e032209e04544308e2bd614854b7a5ed89d2">Bug Fixes</h4>
+            <ul>
+              <li>Fixed that groovyserver.bat doesn&rsquo;t start up through groovyclient in Windows.</li>
+              <li>Fixed that loop count is wrong while starting server in groovyclient.c.</li>
+            </ul>
+            <h2 id="version-02-2010-06-30">Version 0.2 (2010-06-30)</h2>
+            <h4 id="id-9ceaaf00307e2dfa6c1478cb9ffb47426a87754b">New Features</h4>
+            <ul>
+              <li>Independence from cygwin.dll on Windows environment. Now it can be compiled with MinGW.</li>
+              <li>Added batch file version groovyserver startup script (for uses on Windows who don&rsquo;t want to install Cygwin).</li>
+            </ul>
+            <h4 id="id-d8d09cbe7cf553fe12ef5076b5cde0d1832b0e74">Improvements</h4>
+            <ul>
+              <li>Wholly refactored implementation.</li>
+              <li>Added unit tests and integration tests (some of integration tests are a little fragile still now).</li>
+              <li>Output more informative log with -v option.</li>
+              <li>All log output to ./groovy/groovyserv/groovyserver.log.</li>
+            </ul>
+            <h2 id="version-01-2010-03-09">Version 0.1 (2010-03-09)</h2>
+            <p>First release.</p>
+          </div>
+          <div class="content-nav content-nav-bottom">
+            <a class="prev-page" href="faq.html">
+            <i class="fa fa-angle-left"></i>
+            FAQ
+            </a>
+            <a class="next-page" href="download.html">
+            Download
+            <i class="fa fa-angle-right"></i>
+            </a>
+          </div>
+          <script>
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+            })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+            ga('create', 'UA-3438563-4', 'auto');
+            ga('send', 'pageview');
+          </script>
+          <div class="footer">
+            <p class="version text-muted">Version 1.0.0</p>
+            <p class="credit text-muted">Powered by <a href="https://github.com/kobo/gaiden">Gaiden</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="js/jquery-2.1.1.min.js"></script>
+    <script src="js/highlight.js"></script>
+    <script src="js/application.js"></script>
+    <script src="js/my.js"></script>
+  </body>
+</html>
