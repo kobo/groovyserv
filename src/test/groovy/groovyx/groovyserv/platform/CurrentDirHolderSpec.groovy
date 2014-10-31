@@ -19,9 +19,6 @@ import groovyx.groovyserv.exception.GServIllegalStateException
 import groovyx.groovyserv.test.UnitTest
 import spock.lang.Specification
 
-/**
- * Specifications for the {@link groovyx.groovyserv.platform.CurrentDirHolder} class.
- */
 @UnitTest
 class CurrentDirHolderSpec extends Specification {
 

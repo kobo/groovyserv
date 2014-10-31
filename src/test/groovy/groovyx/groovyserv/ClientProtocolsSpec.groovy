@@ -18,9 +18,6 @@ package groovyx.groovyserv
 import groovyx.groovyserv.test.UnitTest
 import spock.lang.Specification
 
-/**
- * Specifications for the {@link groovyx.groovyserv.ClientProtocols} class.
- */
 @UnitTest
 class ClientProtocolsSpec extends Specification {
 

@@ -20,14 +20,8 @@ import groovyx.groovyserv.test.TestUtils
 import spock.lang.Specification
 
 /**
- * Specifications for the {@code groovyclient}.
- * Before running this, you must start groovyserver.
- *
- * Because running this test method is too slow,
- * some test cases aggregated to one test method.
- *
- * Each env key includes test method name because
- * avoiding side effects of a previous test case.
+ * Some test cases aggregated to one test method because running this is too slow.
+ * Each env key includes test method name because avoiding side effects of a previous test case.
  */
 @IntegrationTest
 class EnvPropagateSpec extends Specification {

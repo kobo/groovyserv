@@ -18,9 +18,6 @@ package groovyx.groovyserv
 import groovyx.groovyserv.test.IntegrationTest
 import spock.lang.Specification
 
-/**
- * Specifications when using socket directly
- */
 @IntegrationTest
 class GroovyClientSpec extends Specification {
 

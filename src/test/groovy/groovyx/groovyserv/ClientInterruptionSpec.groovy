@@ -19,9 +19,6 @@ import groovyx.groovyserv.test.IntegrationTest
 import spock.lang.Specification
 
 /**
- * Specifications for the {@code groovyclient}.
- * Before running this, you must start groovyserver.
- *
  * NOTE: A main thread of a user script must be composed of interruptable code to succeed in interruption.
  * Otherwise, you couldn't stop it and the thread would keep working in background infinitely.
  * JDK's {@code Thread.sleep()} is interruptable. But GDK's {@code Object#sleep()} isn't interruptable.

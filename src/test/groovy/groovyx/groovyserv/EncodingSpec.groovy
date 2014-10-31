@@ -20,10 +20,6 @@ import groovyx.groovyserv.test.IntegrationTest
 import groovyx.groovyserv.test.TestUtils
 import spock.lang.Specification
 
-/**
- * Specifications for the {@code groovyclient}.
- * Before running this, you must start groovyserver.
- */
 @IntegrationTest
 class EncodingSpec extends Specification {
 

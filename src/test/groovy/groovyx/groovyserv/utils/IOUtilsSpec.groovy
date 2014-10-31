@@ -18,9 +18,6 @@ package groovyx.groovyserv.utils
 import groovyx.groovyserv.test.UnitTest
 import spock.lang.Specification
 
-/**
- * Specifications for the {@link groovyx.groovyserv.utils.IOUtils} class.
- */
 @UnitTest
 class IOUtilsSpec extends Specification {
 

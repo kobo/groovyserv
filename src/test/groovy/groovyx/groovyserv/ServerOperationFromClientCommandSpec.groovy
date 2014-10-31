@@ -22,10 +22,6 @@ import spock.lang.Timeout
 
 import java.util.concurrent.TimeUnit
 
-/**
- * Specifications for the {@code groovyclient}.
- * Before running this, you must start groovyserver.
- */
 @IntegrationTest
 @Timeout(value = 30, unit = TimeUnit.SECONDS)
 class ServerOperationFromClientCommandSpec extends Specification {

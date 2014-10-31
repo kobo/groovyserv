@@ -18,9 +18,6 @@ package groovyx.groovyserv.utils
 import groovyx.groovyserv.test.UnitTest
 import spock.lang.Specification
 
-/**
- * Specifications for the {@link LogUtils} class.
- */
 @UnitTest
 class LogUtilsSpec extends Specification {
 

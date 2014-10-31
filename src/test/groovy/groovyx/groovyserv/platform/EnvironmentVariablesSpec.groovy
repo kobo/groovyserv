@@ -18,9 +18,6 @@ package groovyx.groovyserv.platform
 import groovyx.groovyserv.test.UnitTest
 import spock.lang.Specification
 
-/**
- * Specifications for the {@link groovyx.groovyserv.platform.EnvironmentVariables} class.
- */
 @UnitTest
 class EnvironmentVariablesSpec extends Specification {
 
