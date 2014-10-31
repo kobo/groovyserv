@@ -1,7 +1,7 @@
 Change Log
 ==========
 
-## Version 1.0.0 (yyyy-MM-dd)
+## Version 1.0.0 (2014-11-04)
 
 #### New Features
 
@@ -17,6 +17,7 @@ Change Log
 * [Command] A server process can shut down itself by a special request.
     So, finally you can control a server process even on Windows by user commands.
 * [Command] A status code of a script is 1 when an exception causes like a normal Groovy.
+* [Command] A client command shows an error message when it could not changes working directory because another script is running on a different working directory.
 * [Log] A log format is tweaked.
 * [Env] `GROOVYSERVER_*` environment variables are renamed to `GROOVYSERV_*`. See [User Guide](userguide.md#environment-variables).
 * [Security] An implementation of an authtoken is changed to UUID.

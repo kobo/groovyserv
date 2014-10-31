@@ -584,10 +584,12 @@ There are some restrictions caused by issues or its architecture.
 ### Cannot run concurrently for different working directories
 
 You can't concurrently run a script for different working directory in a server process.
-For example, when two Groovy scripts are concurrently invoked by using a sub-shell and a pipe, an exception occurs internally and there is no output:
+For example, when two Groovy scripts are concurrently invoked by using a sub-shell and a pipe, the error occurs:
 
 ```sh
 $ ( cd /tmp/dir1; groovyclient -e "(1..3).each { println it }; sleep 3" ) | ( cd  /tmp/dir2; groovyclient -ne "println line * 2" )
+ERROR: could not change working directory
+Hint:  Another thread may be running on a different working directory. Wait a moment.
 ```
 
 Instead, this for the same directory works well:
@@ -599,7 +601,7 @@ $ ( cd /tmp/dir1; groovyclient -e "(1..3).each { println it }; sleep 3" ) | ( cd
 33
 ```
 
-You can use multiple servers [with different ports](#port-number) as a workaround.
+You can also use multiple servers [with different ports](#port-number) as a workaround.
 
 ```sh
 $ ( cd /tmp/dir1; groovyclient -Cport 1963 -e "(1..3).each { println it }; sleep 3" ) | ( cd  /tmp/dir2; groovyclient -Cport 1964 -ne "println line * 2" )
