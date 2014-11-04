@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package groovyx.groovyserv
+
 import groovyx.groovyserv.test.IntegrationTest
 import groovyx.groovyserv.test.TestUtils
 import spock.lang.Specification
@@ -22,6 +23,11 @@ import spock.lang.Specification
 class DynamicCurrentDirSpec extends Specification {
 
     static final String SEP = System.getProperty("line.separator")
+    static int port = GroovyServer.DEFAULT_PORT
+
+    def cleanupSpec() {
+        restartServer()
+    }
 
     def "executes with specified PWD"() {
         when:
@@ -51,6 +57,11 @@ class DynamicCurrentDirSpec extends Specification {
             it =~ /ERROR: could not change working directory/
             it =~ /Hint:  Another thread may be running on a different working directory\. Wait a moment\./
         }
+    }
+
+    private static restartServer() {
+        TestUtils.shutdownServerIfRunning(port)
+        TestUtils.startServerIfNotRunning(port)
     }
 
     private sysProp(String name) {
