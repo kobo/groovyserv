@@ -94,7 +94,7 @@ class ClientInterruptionSpec extends Specification {
         //given:
         def formattedScript = script.stripMargin().replaceAll(/\n/, '; ').replaceAll(/ +/, ' ').trim()
         client.run("-e", formattedScript)
-        Thread.sleep 500
+        Thread.sleep 1000
 
         //when:
         client.interrupt()
