@@ -50,8 +50,8 @@ GroovyServ Version: Client: <VERSION>
 
 
 The binary package includes binary files of user commands only for Mac OS X, Linux(amd64/i386) and Windows.
-But, no problem.
-In case that you want to install to other environments, it will be automatically built if only there is `go` command.
+In case that you want to install to other environments, you can easily build the commands if there is `go` command.
+See [How to build](howtobuild.md).
 
 
 ## Install by [Homebrew](http://mxcl.github.com/homebrew/) {#homebrew}
@@ -81,8 +81,8 @@ export PATH=/tmp/groovyserv-<VERSION>/bin:$PATH
 ```
 
 The binary package includes binary files of user commands only for Mac OS X, Linux(amd64/i386) and Windows.
-But, no problem.
-In case that you want to install to other environments, it will be automatically built if only there is `go` command.
+In case that you want to install to other environments, you can easily build the commands if there is `go` command.
+See [How to build](howtobuild.md).
 
 
 ## Install from a RPM package {#rpm}
