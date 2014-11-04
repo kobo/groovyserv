@@ -127,6 +127,9 @@ def srcSpec = copySpec {
     into("gradle") {
         from "$projectDir/gradle"
     }
+    into("buildSrc") {
+        from "$projectDir/buildSrc"
+    }
 }
 
 //----------------------------------
