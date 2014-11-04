@@ -49,7 +49,7 @@ class TestUtils {
     }
 
     static void startServerIfNotRunning(int port) {
-        def result = executeServerCommand(["-r", "-v", "-p", String.valueOf(port)])
+        def result = executeServerCommand(["-v", "-p", String.valueOf(port)])
         if (result.process.exitValue() != 0) {
             Assert.fail "ERROR: exitValue:${result.process.exitValue()}, in:[${result.out}], err:[${result.err}]"
         }
