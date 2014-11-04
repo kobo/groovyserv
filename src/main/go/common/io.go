@@ -55,6 +55,10 @@ func FileExists(name string) bool {
 }
 
 func ExpandPath(path string) string {
+	symlinkSrcPath, _ := filepath.EvalSymlinks(path)
+	if symlinkSrcPath != path {
+		return symlinkSrcPath
+	}
 	if filepath.IsAbs(path) {
 		return path
 	}

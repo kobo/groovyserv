@@ -35,5 +35,5 @@ func groovyServHome() string {
 	if err != nil {
 		panic(fmt.Sprintf("could not resolve a command path: %s", err.Error())) // using panic because here must be unreachable.
 	}
-	return cmn.ExpandPath(filepath.Join(filepath.Dir(cmdPath), ".."))
+	return cmn.ExpandPath(filepath.Join(filepath.Dir(cmn.ExpandPath(cmdPath)), ".."))
 }
