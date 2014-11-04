@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 package groovyx.groovyserv
-
-
 import groovyx.groovyserv.test.IntegrationTest
 import groovyx.groovyserv.test.TestUtils
 import spock.lang.Specification
 
 @IntegrationTest
-class CurrentDirSpec extends Specification {
+class DynamicCurrentDirSpec extends Specification {
 
     static final String SEP = System.getProperty("line.separator")
 
@@ -42,6 +40,7 @@ class CurrentDirSpec extends Specification {
         Thread.start {
             TestUtils.executeClientCommand(["-e", '"while(true) { Thread.sleep(500) }"'])
         }
+        sleep 500
 
         when:
         def result = TestUtils.executeClientCommandWithEnv(["-e", '"println(System.getProperty(\'user.dir\'))"'], [PWD: File.createTempDir().path])
