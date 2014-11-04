@@ -1,159 +1,119 @@
-
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Welcome! &mdash; GroovyServ documentation</title>
-    
-    <link rel="stylesheet" href="static/default.css" type="text/css" />
-    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
-        VERSION:     '0.13',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
-    <script type="text/javascript" src="static/jquery.js"></script>
-    <script type="text/javascript" src="static/underscore.js"></script>
-    <script type="text/javascript" src="static/doctools.js"></script>
-    <link rel="top" title="GroovyServ documentation" href="#" /> 
+    <meta charset="UTF-8">
+    <title>Home - GroovyServ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/highlight.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="extensions/admonition/css/admonition.css">
+    <link rel="stylesheet" href="css/my.css">
   </head>
   <body>
-<div class="container">
-  <div class="header">
-    <img class="logo" src="static/images/logo.png" alt="GroovyServ" />
-    <div class="project">
-      by <a href="http://github.com/kobo">kobo</a> project
-    </div>
-  </div>
-  
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body">
-            
-  <div class="section" id="welcome">
-<h1>Welcome!<a class="headerlink" href="#welcome" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
-<p><strong>GroovyServ makes Groovy&#8217;s startup time much faster, by pre-invoking Groovy as a server.</strong></p>
-<p>In software development with script languages, it&#8217;s very important that repeat velocity of &#8220;try-and-run&#8221; is fast enough.
-It is too long to wait for start-up of Groovy even for 1 second.
-GroovyServ reduces startup time of the JVM and Groovy significantly.
-It&#8217;s of course dependent on environments, but in most case, it is <em>10 to 20 times faster than regular Groovy</em>.</p>
-<p>See also <a class="reference internal" href="userguide_en.html#ref-userguide"><em>User Guide</em></a> (<a class="reference internal" href="userguide_ja.html#ref-userguide-ja"><em>Japanese</em></a>) and <a class="reference internal" href="screencast.html#ref-screencast"><em>Screencast</em></a>.</p>
-</div>
-<div class="section" id="features">
-<h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
-<p>GroovyServ supports following features:</p>
-<ul class="simple">
-<li>Faster invocation of Groovy script (about 10 times much).</li>
-<li>Transparent server invocation. If a server is not running when a client is invoked, the client invokes a server in background.</li>
-<li>Connect <cite>System.in/out/err</cite> through a socket stream.</li>
-<li>Simultaneous execution of scripts. See <a class="reference internal" href="faq.html#ref-faq-simultaneous"><em>FAQ</em></a>.</li>
-<li>Trap a call of System.exit() and send the exit status to the client.</li>
-<li>Signal handling on client side (e.g. Ctrl-C for termination).</li>
-<li>Changes current working directory as appropriately as possible. See <a class="reference internal" href="faq.html#ref-faq-cwd"><em>FAQ</em></a>.</li>
-<li>Propagation of a <cite>CLASSPATH</cite> environment variable.</li>
-<li>Propagation of environment variables from a client to a server.</li>
-<li>Shell script (limitted version), C (native binary) and Ruby client.</li>
-<li>Available without Cygwin in Windows.</li>
-<li>Shows a window to stop server process only in Windows.</li>
-<li>Automatic resolution of a &#8220;groovy&#8221; command path.</li>
-</ul>
-</div>
-</div>
-
-
+    <div class="wrapper">
+      <div class="header">
+        <i class="fa fa-bars sidebar-toggle"></i>
+        <span class="title"><a href="index.html">GroovyServ</a></span>
+      </div>
+      <div class="sidebar">
+        <ul>
+          <li><i class="fa fa-home"></i><a href="index.html">Home</a></li>
+          <li>
+            <i class="fa fa-book"></i>Documentation
+            <ul>
+              <li>
+                <i class="fa fa-graduation-cap"></i>Getting Started
+                <ul>
+                  <li><i class="fa fa-hdd-o"></i><a href="howtoinstall.html">How to Install</a></li>
+                  <li><i class="fa fa-hand-o-right"></i><a href="quickstart.html">Quick Start</a></li>
+                </ul>
+              </li>
+              <li>
+                <i class="fa fa-file-text"></i>Reference
+                <ul>
+                  <li><i class="fa fa-file-text-o"></i><a href="userguide.html">User Guide</a></li>
+                  <li><i class="fa fa-cog"></i><a href="howtobuild.html">How to Build</a></li>
+                  <li><i class="fa fa-question-circle"></i><a href="faq.html">FAQ</a></li>
+                  <li><i class="fa fa-list"></i><a href="changelog.html">Change Log</a></li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li><i class="fa fa-cloud-download"></i><a href="download.html">Download</a></li>
+          <li><i class="fa fa-comments-o"></i><a href="community.html">Community</a></li>
+        </ul>
+      </div>
+      <div class="content">
+        <div class="content-handle"></div>
+        <div class="content-container">
+          <div class="content-nav content-nav-top">
+            <a class="next-page" href="howtoinstall.html">
+            How to Install
+            <i class="fa fa-angle-right"></i>
+            </a>
+          </div>
+          <div class="main-content">
+            <p><img src="groovyserv-logo.png" class="brand-logo" /></p>
+            <h2 id="quick-startup-by-using-a-jvm-process-running-in-background" class="fa fa-forward">Quick startup, by using a JVM process running in background</h2>
+            <p>GroovyServ reduces startup time of the JVM for runnning Groovy significantly. It depends on your environments, but in most case, it&rsquo;s <strong>10 to 20 times faster than regular Groovy</strong>.</p>
+            <p><img src="groovyserv-demo.gif" alt="demo" class="demo"/></p>
+            <h2 id="features" class="fa fa-star">Features</h2>
+            <p>GroovyServ provides following features:</p>
+            <ul>
+              <li>Quick startup of Groovy script (about 10 to 20 times much).</li>
+              <li>
+                Transparent server operation.
+                <ul>
+                  <li>If a server is not running when a client is invoked, the client runs a server in background.</li>
+                </ul>
+              </li>
+              <li><code>System.in/out/err</code> is available through a socket stream.</li>
+              <li>
+                Trap a call of <code>System.exit()</code> and send the exit status to the client
+                <ul>
+                  <li>Server process keeps working.</li>
+                </ul>
+              </li>
+              <li>
+                Signal handling on a client side.
+                <ul>
+                  <li>Ctrl-C terminates only a client process.</li>
+                </ul>
+              </li>
+              <li>Changes a current working directory as appropriately as possible.</li>
+              <li>Automatic propagation of a <code>CLASSPATH</code> environment variable from a client to a server.</li>
+              <li>Selectable propagation of any environment variables from a client to a server.</li>
+              <li>User commands written by <a href="http://golang.org/">Go programming language</a>.</li>
+              <li>Works on Linux, Mac and even Windows without Cygwin.</li>
+            </ul>
+            <h2 id="license" class="fa fa-info-circle">License</h2>
+            <p>GroovyServ is released under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache 2.0 License</a>.</p>
+          </div>
+          <div class="content-nav content-nav-bottom">
+            <a class="next-page" href="howtoinstall.html">
+            How to Install
+            <i class="fa fa-angle-right"></i>
+            </a>
+          </div>
+          <script>
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+            })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+            ga('create', 'UA-3438563-4', 'auto');
+            ga('send', 'pageview');
+          </script>
+          <div class="footer">
+            <p class="version text-muted">Version 1.0.0</p>
+            <p class="credit text-muted">Powered by <a href="https://github.com/kobo/gaiden">Gaiden</a></p>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
-        <div class="sphinxsidebarwrapper"><div class="toctree-wrapper compound globaltoc">
-  <h3><a href="sitemenu.html">Site Menu</a></h3>
-  <ul>
-    <li class="toctree-l1"><a class="reference internal" href="index.html">Top</a></li>
-    <li class="toctree-l1"><a class="reference internal" href="document.html">Documentation</a>
-      <ul>
-        <li class="toctree-l2"><a class="reference internal" href="document.html#get-started">Get Started</a>
-          <ul>
-            <li class="toctree-l3"><a class="reference internal" href="howtoinstall.html">How to Install</a></li>
-            <li class="toctree-l3"><a class="reference internal" href="quickstart.html">Quick Start</a></li>
-            <li class="toctree-l3"><a class="reference internal" href="screencast.html">Screencast</a></li>
-          </ul>
-        </li>
-        <li class="toctree-l2"><a class="reference internal" href="document.html#reference">Reference</a>
-          <ul>
-            <li class="toctree-l3"><a class="reference internal" href="userguide_en.html">User&nbsp;Guide&nbsp;(English)</a></li>
-            <li class="toctree-l3"><a class="reference internal" href="userguide_ja.html">User&nbsp;Guide&nbsp;(Japanese)</a></li>
-            <li class="toctree-l3"><a class="reference internal" href="howtobuild.html">How to Build</a></li>
-            <li class="toctree-l3"><a class="reference internal" href="faq.html">FAQ</a></li>
-            <li class="toctree-l3"><a class="reference internal" href="license.html">License</a></li>
-            <li class="toctree-l3"><a class="reference internal" href="changelog.html">Change Log</a></li>
-          </ul>
-        </li>
-      </ul>
-    </li>
-    <li class="toctree-l1"><a class="reference internal" href="download.html">Download</a></li>
-    <li class="toctree-l1"><a class="reference internal" href="community.html">Community</a>
-      <ul>
-        <li class="toctree-l2"><a class="reference internal" href="community.html#mailing-list-google-group">Mailing List (Google Group)</a></li>
-        <li class="toctree-l2"><a class="reference internal" href="community.html#source-code-github">Source Code (GitHub)</a></li>
-        <li class="toctree-l2"><a class="reference internal" href="community.html#issues-github">Issues (GitHub)</a></li>
-      </ul>
-    </li>
-  </ul>
-</div>
-  <h3>Contents of This Page</h3>
-  <ul>
-<li><a class="reference internal" href="#">Welcome!</a><ul>
-<li><a class="reference internal" href="#overview">Overview</a></li>
-<li><a class="reference internal" href="#features">Features</a></li>
-</ul>
-</li>
-</ul>
-
-<div id="searchbox" style="display: none">
-  <h3>Quick search</h3>
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
     </div>
-</div>
-<script type="text/javascript">
-
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-3438563-4']);
-  _gaq.push(['_trackPageview']);
-
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
-
-</script>
-
+    <script src="js/jquery-2.1.1.min.js"></script>
+    <script src="js/highlight.js"></script>
+    <script src="js/application.js"></script>
+    <script src="js/my.js"></script>
   </body>
 </html>

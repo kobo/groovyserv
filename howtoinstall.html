@@ -1,221 +1,164 @@
-
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>How to Install &mdash; GroovyServ documentation</title>
-    
-    <link rel="stylesheet" href="static/default.css" type="text/css" />
-    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
-        VERSION:     '0.13',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
-    <script type="text/javascript" src="static/jquery.js"></script>
-    <script type="text/javascript" src="static/underscore.js"></script>
-    <script type="text/javascript" src="static/doctools.js"></script>
-    <link rel="top" title="GroovyServ documentation" href="index.html" /> 
+    <meta charset="UTF-8">
+    <title>How to Install - GroovyServ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/highlight.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="extensions/admonition/css/admonition.css">
+    <link rel="stylesheet" href="css/my.css">
   </head>
   <body>
-<div class="container">
-  <div class="header">
-    <img class="logo" src="static/images/logo.png" alt="GroovyServ" />
-    <div class="project">
-      by <a href="http://github.com/kobo">kobo</a> project
-    </div>
-  </div>
-  
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body">
-            
-  <div class="section" id="how-to-install">
-<h1>How to Install<a class="headerlink" href="#how-to-install" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="for-each-environment">
-<h2>For each environment<a class="headerlink" href="#for-each-environment" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="for-anywhere">
-<h3>For Anywhere<a class="headerlink" href="#for-anywhere" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li><a class="reference internal" href="#ref-howtoinstall-binary"><em>binary package (bin.zip)</em></a></li>
-</ul>
-</div>
-<div class="section" id="for-all-unix-platform">
-<h3>For all UNIX platform<a class="headerlink" href="#for-all-unix-platform" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li><a class="reference internal" href="#ref-howtoinstall-gvm"><em>GVM</em></a></li>
-</ul>
-</div>
-<div class="section" id="only-for-mac-os-x">
-<h3>Only for Mac OS X<a class="headerlink" href="#only-for-mac-os-x" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li><a class="reference internal" href="#ref-howtoinstall-homebrew"><em>Homebrew</em></a></li>
-</ul>
-</div>
-<div class="section" id="only-for-linux">
-<h3>Only for Linux<a class="headerlink" href="#only-for-linux" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li><a class="reference internal" href="#ref-howtoinstall-rpm"><em>An unofficial RPM package</em></a></li>
-</ul>
-</div>
-<div class="section" id="only-for-windows">
-<h3>Only for Windows<a class="headerlink" href="#only-for-windows" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li>Groovy&#8217;s Windows-Installer (including GroovyServ): <a class="reference external" href="http://groovy.codehaus.org/Download">http://groovy.codehaus.org/Download</a></li>
-</ul>
-</div>
-</div>
-<div class="section" id="install-from-binary-package">
-<span id="ref-howtoinstall-binary"></span><h2>Install from binary package<a class="headerlink" href="#install-from-binary-package" title="Permalink to this headline">¶</a></h2>
-<p>Download and expand GroovyServ distribution package from <a class="reference internal" href="download.html#ref-download"><em>Download page</em></a>, e.g. <cite>groovyserv-0.13-macosx-bin.zip</cite> to any directory:</p>
-<div class="highlight-python"><pre>$ mkdir ~/opt
-$ cd ~/opt
-$ unzip groovyserv-0.13-macosx-x86_64-bin.zip</pre>
-</div>
-<p>And add bin directory to <cite>PATH</cite> environment variable.
-For example in bash/bourne shell:</p>
-<div class="highlight-python"><pre>export PATH=~/opt/groovyserv-0.13/bin:$PATH</pre>
-</div>
-<p>That&#8217;s all for preparing.
-When you invoke groovyclient, groovyserver automatically starts in background.
-At first, you might have to wait for a few seconds to startup:</p>
-<div class="highlight-python"><pre>$ groovyclient -v
-Invoking server: '/opt/groovyserv-0.13/bin/groovyserver' -p 1961
-...
-groovyserver 24008(1961) is successfully started
-Groovy Version: 2.1.5 JVM: 1.7.0_25 Vendor: Oracle Corporation OS: Mac OS X
-GroovyServ Version: Server: 0.13
-GroovyServ Version: Client: 0.13 (.c)</pre>
-</div>
-<p>If the binary downloaded doesn&#8217;t work, try to build it from source code, according to <a class="reference internal" href="howtobuild.html#ref-howtobuild"><em>Build from source code</em></a>.</p>
-</div>
-<div class="section" id="install-by-gvm">
-<span id="ref-howtoinstall-gvm"></span><h2>Install by GVM<a class="headerlink" href="#install-by-gvm" title="Permalink to this headline">¶</a></h2>
-<p>To install:</p>
-<div class="highlight-python"><pre>$ gvm install groovyserv</pre>
-</div>
-<p><cite>groovyclient</cite> command installed by GVM is a limitted shell version.
-If you have <cite>make</cite> and <cite>gcc</cite>, you can easily replace it with a native client built by yourself.
-See <a class="reference internal" href="howtobuild.html#ref-howtobuild-gvm-nativeclient"><em>&#8216;Build native groovyclient on GVM&#8217;</em></a>.</p>
-<p>See also: <a class="reference external" href="http://gvmtool.net/">http://gvmtool.net/</a></p>
-</div>
-<div class="section" id="install-by-homebrew">
-<span id="ref-howtoinstall-homebrew"></span><h2>Install by Homebrew<a class="headerlink" href="#install-by-homebrew" title="Permalink to this headline">¶</a></h2>
-<p>To install:</p>
-<div class="highlight-python"><pre>$ brew install groovyserv</pre>
-</div>
-<p>See also: <a class="reference external" href="http://mxcl.github.com/homebrew/">http://mxcl.github.com/homebrew/</a></p>
-</div>
-<div class="section" id="install-from-rpm-package">
-<span id="ref-howtoinstall-rpm"></span><h2>Install from RPM package<a class="headerlink" href="#install-from-rpm-package" title="Permalink to this headline">¶</a></h2>
-<p>Currently we don&#8217;t produce a RPM package officially. But there is the contributed SPEC file which is need to buld a RPM file.
-So you can try to build it by yourself ;-)
-See <a class="reference internal" href="howtobuild.html#ref-howtobuild-rpm"><em>&#8216;Build RPM file&#8217;</em></a>.</p>
-</div>
-</div>
-
-
+    <div class="wrapper">
+      <div class="header">
+        <i class="fa fa-bars sidebar-toggle"></i>
+        <span class="title"><a href="index.html">GroovyServ</a></span>
+      </div>
+      <div class="sidebar">
+        <ul>
+          <li><i class="fa fa-home"></i><a href="index.html">Home</a></li>
+          <li>
+            <i class="fa fa-book"></i>Documentation
+            <ul>
+              <li>
+                <i class="fa fa-graduation-cap"></i>Getting Started
+                <ul>
+                  <li><i class="fa fa-hdd-o"></i><a href="howtoinstall.html">How to Install</a></li>
+                  <li><i class="fa fa-hand-o-right"></i><a href="quickstart.html">Quick Start</a></li>
+                </ul>
+              </li>
+              <li>
+                <i class="fa fa-file-text"></i>Reference
+                <ul>
+                  <li><i class="fa fa-file-text-o"></i><a href="userguide.html">User Guide</a></li>
+                  <li><i class="fa fa-cog"></i><a href="howtobuild.html">How to Build</a></li>
+                  <li><i class="fa fa-question-circle"></i><a href="faq.html">FAQ</a></li>
+                  <li><i class="fa fa-list"></i><a href="changelog.html">Change Log</a></li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li><i class="fa fa-cloud-download"></i><a href="download.html">Download</a></li>
+          <li><i class="fa fa-comments-o"></i><a href="community.html">Community</a></li>
+        </ul>
+      </div>
+      <div class="content">
+        <div class="content-handle"></div>
+        <div class="content-container">
+          <div class="content-nav content-nav-top">
+            <a class="prev-page" href="index.html">
+            <i class="fa fa-angle-left"></i>
+            Home
+            </a>
+            <a class="next-page" href="quickstart.html">
+            Quick Start
+            <i class="fa fa-angle-right"></i>
+            </a>
+          </div>
+          <div class="page-toc">
+            <ul>
+              <li class="unnumbered visible">
+                <a href="#how-to-install">How to Install</a>
+                <ul>
+                  <li class="unnumbered visible"><a href="#for-each-environment">For each environment</a></li>
+                  <li class="unnumbered visible"><a href="#gvm">Install by GVM</a></li>
+                  <li class="unnumbered visible"><a href="#homebrew">Install by Homebrew</a></li>
+                  <li class="unnumbered visible"><a href="#binary">Install from a binary package</a></li>
+                  <li class="unnumbered visible"><a href="#rpm">Install from a RPM package</a></li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+          <div class="main-content">
+            <h1 id="how-to-install">How to Install</h1>
+            <h2 id="for-each-environment">For each environment</h2>
+            <ul>
+              <li>
+                For all Un*x platform
+                <ul>
+                  <li><a href="#gvm">GVM</a></li>
+                </ul>
+              </li>
+              <li>
+                Only for Mac OS X
+                <ul>
+                  <li><a href="#homebrew">Homebrew</a></li>
+                </ul>
+              </li>
+              <li>
+                Only for Linux
+                <ul>
+                  <li><a href="#rpm">An unofficial RPM package</a></li>
+                </ul>
+              </li>
+              <li>
+                Only for Windows
+                <ul>
+                  <li><a href="http://groovy-lang.org/download.html">Groovy&rsquo;s Windows-Installer (including GroovyServ)</a></li>
+                </ul>
+              </li>
+              <li>
+                For Anywhere:
+                <ul>
+                  <li><a href="#binary">binary package (bin.zip)</a></li>
+                </ul>
+              </li>
+            </ul>
+            <h2 id="gvm">Install by <a href="http://gvmtool.net/">GVM</a></h2>
+            <p>You can install the latest GroovyServ:</p>
+            <pre><code class="sh">$ gvm install groovyserv
+</code></pre>
+            <p>User commands aren&rsquo;t available just after the installation by GVM. So you have to run a setup script:</p>
+            <pre><code class="sh">$ ~/.gvm/groovyserv/current/bin/setup.sh
+</code></pre>
+            <p>The binary package includes binary files of user commands only for Mac OS X, Linux(amd64/i386) and Windows. But, no problem. In case that you want to install to other environments, it will be automatically built if only there is <code>go</code> command.</p>
+            <h2 id="homebrew">Install by <a href="http://mxcl.github.com/homebrew/">Homebrew</a></h2>
+            <p>You can install the latest GroovyServ:</p>
+            <pre><code class="sh">$ brew install groovyserv
+</code></pre>
+            <h2 id="binary">Install from a binary package</h2>
+            <p>Download and expand a GroovyServ binary package from <a href="download.html">Download page</a>.</p>
+            <pre><code class="sh">$ cd /tmp
+$ unzip groovyserv-1.0.0-bin.zip
+$ groovyserv-1.0.0-bin/bin/setup.sh
+</code></pre>
+            <p>You should add the expanded <code>bin</code> directory to <code>PATH</code> environment variable. For example in bash/bourne shell:</p>
+            <pre><code class="sh">export PATH=/tmp/groovyserv-1.0.0/bin:$PATH
+</code></pre>
+            <p>The binary package includes binary files of user commands only for Mac OS X, Linux(amd64/i386) and Windows. But, no problem. In case that you want to install to other environments, it will be automatically built if only there is <code>go</code> command.</p>
+            <h2 id="rpm">Install from a RPM package</h2>
+            <p>Currently we don&rsquo;t provide a RPM package officially. But there is a contributed SPEC file which is required to build a RPM file. So you can try to build it if you want. See <a href="howtobuild.html#rpm">Build RPM file</a>.</p>
+          </div>
+          <div class="content-nav content-nav-bottom">
+            <a class="prev-page" href="index.html">
+            <i class="fa fa-angle-left"></i>
+            Home
+            </a>
+            <a class="next-page" href="quickstart.html">
+            Quick Start
+            <i class="fa fa-angle-right"></i>
+            </a>
+          </div>
+          <script>
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+            })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+            ga('create', 'UA-3438563-4', 'auto');
+            ga('send', 'pageview');
+          </script>
+          <div class="footer">
+            <p class="version text-muted">Version 1.0.0</p>
+            <p class="credit text-muted">Powered by <a href="https://github.com/kobo/gaiden">Gaiden</a></p>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
-        <div class="sphinxsidebarwrapper"><div class="toctree-wrapper compound globaltoc">
-  <h3><a href="sitemenu.html">Site Menu</a></h3>
-  <ul>
-    <li class="toctree-l1"><a class="reference internal" href="index.html">Top</a></li>
-    <li class="toctree-l1"><a class="reference internal" href="document.html">Documentation</a>
-      <ul>
-        <li class="toctree-l2"><a class="reference internal" href="document.html#get-started">Get Started</a>
-          <ul>
-            <li class="toctree-l3"><a class="reference internal" href="howtoinstall.html">How to Install</a></li>
-            <li class="toctree-l3"><a class="reference internal" href="quickstart.html">Quick Start</a></li>
-            <li class="toctree-l3"><a class="reference internal" href="screencast.html">Screencast</a></li>
-          </ul>
-        </li>
-        <li class="toctree-l2"><a class="reference internal" href="document.html#reference">Reference</a>
-          <ul>
-            <li class="toctree-l3"><a class="reference internal" href="userguide_en.html">User&nbsp;Guide&nbsp;(English)</a></li>
-            <li class="toctree-l3"><a class="reference internal" href="userguide_ja.html">User&nbsp;Guide&nbsp;(Japanese)</a></li>
-            <li class="toctree-l3"><a class="reference internal" href="howtobuild.html">How to Build</a></li>
-            <li class="toctree-l3"><a class="reference internal" href="faq.html">FAQ</a></li>
-            <li class="toctree-l3"><a class="reference internal" href="license.html">License</a></li>
-            <li class="toctree-l3"><a class="reference internal" href="changelog.html">Change Log</a></li>
-          </ul>
-        </li>
-      </ul>
-    </li>
-    <li class="toctree-l1"><a class="reference internal" href="download.html">Download</a></li>
-    <li class="toctree-l1"><a class="reference internal" href="community.html">Community</a>
-      <ul>
-        <li class="toctree-l2"><a class="reference internal" href="community.html#mailing-list-google-group">Mailing List (Google Group)</a></li>
-        <li class="toctree-l2"><a class="reference internal" href="community.html#source-code-github">Source Code (GitHub)</a></li>
-        <li class="toctree-l2"><a class="reference internal" href="community.html#issues-github">Issues (GitHub)</a></li>
-      </ul>
-    </li>
-  </ul>
-</div>
-  <h3>Contents of This Page</h3>
-  <ul>
-<li><a class="reference internal" href="#">How to Install</a><ul>
-<li><a class="reference internal" href="#for-each-environment">For each environment</a><ul>
-<li><a class="reference internal" href="#for-anywhere">For Anywhere</a></li>
-<li><a class="reference internal" href="#for-all-unix-platform">For all UNIX platform</a></li>
-<li><a class="reference internal" href="#only-for-mac-os-x">Only for Mac OS X</a></li>
-<li><a class="reference internal" href="#only-for-linux">Only for Linux</a></li>
-<li><a class="reference internal" href="#only-for-windows">Only for Windows</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#install-from-binary-package">Install from binary package</a></li>
-<li><a class="reference internal" href="#install-by-gvm">Install by GVM</a></li>
-<li><a class="reference internal" href="#install-by-homebrew">Install by Homebrew</a></li>
-<li><a class="reference internal" href="#install-from-rpm-package">Install from RPM package</a></li>
-</ul>
-</li>
-</ul>
-
-<div id="searchbox" style="display: none">
-  <h3>Quick search</h3>
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
     </div>
-</div>
-<script type="text/javascript">
-
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-3438563-4']);
-  _gaq.push(['_trackPageview']);
-
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
-
-</script>
-
+    <script src="js/jquery-2.1.1.min.js"></script>
+    <script src="js/highlight.js"></script>
+    <script src="js/application.js"></script>
+    <script src="js/my.js"></script>
   </body>
 </html>

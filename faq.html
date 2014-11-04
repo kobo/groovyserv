@@ -1,348 +1,178 @@
-
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>FAQ &mdash; GroovyServ documentation</title>
-    
-    <link rel="stylesheet" href="static/default.css" type="text/css" />
-    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
-        VERSION:     '0.13',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
-    <script type="text/javascript" src="static/jquery.js"></script>
-    <script type="text/javascript" src="static/underscore.js"></script>
-    <script type="text/javascript" src="static/doctools.js"></script>
-    <link rel="top" title="GroovyServ documentation" href="index.html" /> 
+    <meta charset="UTF-8">
+    <title>FAQ - GroovyServ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/highlight.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="extensions/admonition/css/admonition.css">
+    <link rel="stylesheet" href="css/my.css">
   </head>
   <body>
-<div class="container">
-  <div class="header">
-    <img class="logo" src="static/images/logo.png" alt="GroovyServ" />
-    <div class="project">
-      by <a href="http://github.com/kobo">kobo</a> project
-    </div>
-  </div>
-  
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body">
-            
-  <div class="section" id="faq">
-<span id="ref-faq"></span><h1><a class="toc-backref" href="#id1">FAQ</a><a class="headerlink" href="#faq" title="Permalink to this headline">¶</a></h1>
-<div class="contents topic" id="contents">
-<p class="topic-title first">Contents</p>
-<ul class="simple">
-<li><a class="reference internal" href="#faq" id="id1">FAQ</a><ul>
-<li><a class="reference internal" href="#why-does-groovyserv-use-jna-java-native-access" id="id2">Why does GroovyServ use JNA(Java Native Access)?</a></li>
-<li><a class="reference internal" href="#what-happens-if-i-invoke-two-groovy-scripts-which-have-different-current-working-directory-at-the-same-time" id="id3">What happens if I invoke two Groovy scripts which have different current working directory at the same time?</a></li>
-<li><a class="reference internal" href="#what-environments-are-supported" id="id4">What environments are supported?</a></li>
-<li><a class="reference internal" href="#does-groovyserv-for-windows-require-cygwin" id="id5">Does GroovyServ for Windows require Cygwin?</a></li>
-<li><a class="reference internal" href="#why-is-groovyclient-written-in-c-why-isn-t-it-written-in-java" id="id6">Why is groovyclient written in C? Why isn&#8217;t it written in Java?</a></li>
-<li><a class="reference internal" href="#what-is-the-server-client-communication-protocol" id="id7">What is the server-client communication protocol?</a></li>
-<li><a class="reference internal" href="#if-the-jvm-process-is-shared-by-each-script-session-static-variables-are-shared-too" id="id8">If the JVM process is shared by each script session, static variables are shared too?</a></li>
-<li><a class="reference internal" href="#how-can-i-invoke-the-original-groovy-command-when-groovy-has-been-aliased-to-groovyclient" id="id9">How can I invoke the original groovy command when &#8216;groovy&#8217; has been aliased to groovyclient?</a></li>
-<li><a class="reference internal" href="#where-is-there-a-log-file" id="id10">Where is there a log file?</a></li>
-<li><a class="reference internal" href="#how-can-i-restart-or-kill-groovyserver" id="id11">How can I restart or kill groovyserver?</a></li>
-<li><a class="reference internal" href="#why-is-the-name-of-this-software-groovyserv" id="id12">Why is the name of this software &#8216;GroovyServ&#8217;?</a></li>
-<li><a class="reference internal" href="#can-i-use-groovyserv-with-grape-s-grab-annotation" id="id13">Can I use GroovyServ with Grape&#8217;s &#64;Grab annotation?</a></li>
-<li><a class="reference internal" href="#can-i-use-jqs-java-quick-start-with-groovyserv-at-the-same-time" id="id14">Can I use JQS(Java Quick Start) with GroovyServ at the same time?</a></li>
-<li><a class="reference internal" href="#i-installed-groovyserv-but-it-doesn-t-work" id="id15">I installed GroovyServ, but it doesn&#8217;t work.</a></li>
-<li><a class="reference internal" href="#when-i-built-groovyserv-by-myself-in-windows-some-errors-occured-what-s-required" id="id16">When I built GroovyServ by myself in Windows, some errors occured. What&#8217;s required?</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="section" id="why-does-groovyserv-use-jna-java-native-access">
-<span id="ref-faq-cwd"></span><h2><a class="toc-backref" href="#id2">Why does GroovyServ use JNA(Java Native Access)?</a><a class="headerlink" href="#why-does-groovyserv-use-jna-java-native-access" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>Q:</dt>
-<dd>Why does GroovyServ use <a class="reference external" href="https://jna.dev.java.net/">JNA(Java Native Access)</a> ?</dd>
-<dt>A:</dt>
-<dd>Because to change current working directory.
-To be more specific, to call chdir(2) system call or _chdir win32 C runtime function.
-You might think &#8216;user.dir&#8217; system property can be used for same purpose,
-in Pure Java way, but it is not enough because it has no effect to all of
-Java functionality about current working directory.
-For example, it has no effect to call new FileInputStream(&#8221;.&#8221;).</dd>
-</dl>
-</div>
-<div class="section" id="what-happens-if-i-invoke-two-groovy-scripts-which-have-different-current-working-directory-at-the-same-time">
-<span id="ref-faq-simultaneous"></span><h2><a class="toc-backref" href="#id3">What happens if I invoke two Groovy scripts which have different current working directory at the same time?</a><a class="headerlink" href="#what-happens-if-i-invoke-two-groovy-scripts-which-have-different-current-working-directory-at-the-same-time" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>Q:</dt>
-<dd><p class="first">What happens if I invoke two Groovy scripts which have different current working directory at the same time?
-For example, using sub-shell and pipe, two Groovy scripts concurrently are invoked:</p>
-<div class="last highlight-python"><pre>$ (cd /tmp; groovyclient read.groovy ) | ( cd  /var/tmp; groovyclient output.groovy )</pre>
-</div>
-</dd>
-<dt>A:</dt>
-<dd><p class="first">This is the restricted case. Exception occurs when the second groovyclient command is invoked. Instead, the following works well:</p>
-<div class="last highlight-python"><pre>$ (cd /tmp; groovyclient read.groovy ) | ( cd /tmp; groovyclient output.groovy )</pre>
-</div>
-</dd>
-</dl>
-</div>
-<div class="section" id="what-environments-are-supported">
-<h2><a class="toc-backref" href="#id4">What environments are supported?</a><a class="headerlink" href="#what-environments-are-supported" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>Q:</dt>
-<dd>What environments are supported?</dd>
-<dt>A:</dt>
-<dd>So far Ubuntu Linux, Windows and Mac OS X are supported.
-Basically, GroovyServ can run on the environment which supports JDK and JNA.</dd>
-</dl>
-</div>
-<div class="section" id="does-groovyserv-for-windows-require-cygwin">
-<h2><a class="toc-backref" href="#id5">Does GroovyServ for Windows require Cygwin?</a><a class="headerlink" href="#does-groovyserv-for-windows-require-cygwin" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>Q:</dt>
-<dd>Does GroovyServ for Windows require Cygwin?</dd>
-<dt>A:</dt>
-<dd>No, it doesn&#8217;t. In GroovyServ 0.1 groovyclient.exe required cygwin.dll.
-In GroovyServ 0.2, however, we rewrote it to be able to compile with MinGW.
-So now, it doesn&#8217;t require cygwin.dll and Cygwin environment at all.
-New groovyserver.bat are provided instead of groovyserver shell script.</dd>
-</dl>
-</div>
-<div class="section" id="why-is-groovyclient-written-in-c-why-isn-t-it-written-in-java">
-<h2><a class="toc-backref" href="#id6">Why is groovyclient written in C? Why isn&#8217;t it written in Java?</a><a class="headerlink" href="#why-is-groovyclient-written-in-c-why-isn-t-it-written-in-java" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>Q:</dt>
-<dd>Why is groovyclient written in C? Why isn&#8217;t it written in Java?</dd>
-<dt>A:</dt>
-<dd>The purpose of GroovyServ is to reduce startup-time of Groovy script and quick response is the most important factor.
-So we could not use Java for groovyclient.</dd>
-</dl>
-</div>
-<div class="section" id="what-is-the-server-client-communication-protocol">
-<h2><a class="toc-backref" href="#id7">What is the server-client communication protocol?</a><a class="headerlink" href="#what-is-the-server-client-communication-protocol" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>Q:</dt>
-<dd>What is the server-client communication protocol?</dd>
-<dt>A:</dt>
-<dd>It is a original proprietary protocol. To know the sequence of the protocol,
-please read comments in ClientProtocols.groovy or groovyclient.rb for details.</dd>
-</dl>
-</div>
-<div class="section" id="if-the-jvm-process-is-shared-by-each-script-session-static-variables-are-shared-too">
-<h2><a class="toc-backref" href="#id8">If the JVM process is shared by each script session, static variables are shared too?</a><a class="headerlink" href="#if-the-jvm-process-is-shared-by-each-script-session-static-variables-are-shared-too" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>Q:</dt>
-<dd>If the JVM process is shared by each script session, static variables are shared too?</dd>
-<dt>A:</dt>
-<dd>Yes and No.
-If the static variables are defined in the script or Groovy classes you run,
-they are defined on a GroovyClassLoader created for each script session.
-In this case, static variables aren&#8217;t shared for each script because class loaders are different.
-On the other hand, if the static variables are defined by system/bootstrap class loaders, they are shared.
-For example, the values which you stored in System.getProperties() are shared among all scripts invoked on the GroovyServ.</dd>
-</dl>
-</div>
-<div class="section" id="how-can-i-invoke-the-original-groovy-command-when-groovy-has-been-aliased-to-groovyclient">
-<h2><a class="toc-backref" href="#id9">How can I invoke the original groovy command when &#8216;groovy&#8217; has been aliased to groovyclient?</a><a class="headerlink" href="#how-can-i-invoke-the-original-groovy-command-when-groovy-has-been-aliased-to-groovyclient" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>Q:</dt>
-<dd>How can I invoke the original groovy command when &#8216;groovy&#8217; has been aliased to groovyclient?</dd>
-<dt>A:</dt>
-<dd>Append the backslash as prefix like groovy(for bash or csh). Or specify groovy command in full path.</dd>
-</dl>
-</div>
-<div class="section" id="where-is-there-a-log-file">
-<h2><a class="toc-backref" href="#id10">Where is there a log file?</a><a class="headerlink" href="#where-is-there-a-log-file" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>Q:</dt>
-<dd>Where is there a log file?</dd>
-<dt>A:</dt>
-<dd><dl class="first last docutils">
-<dt>Linux, Mac OS X:</dt>
-<dd>$HOME/.groovy/groovyserver/groovyserver-&lt;port&gt;.log</dd>
-<dt>Windows:</dt>
-<dd>%USERPROFILE%/.groovy/groovyserver/groovyserver-&lt;port&gt;.log</dd>
-</dl>
-</dd>
-</dl>
-</div>
-<div class="section" id="how-can-i-restart-or-kill-groovyserver">
-<h2><a class="toc-backref" href="#id11">How can I restart or kill groovyserver?</a><a class="headerlink" href="#how-can-i-restart-or-kill-groovyserver" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>Q:</dt>
-<dd>How can I restart or kill groovyserver?</dd>
-<dt>A:</dt>
-<dd>In Mac OS X, Linux and Cygwin environment, you can use groovyserver shell script with -r (restart) and -k (kill) options. <strong>In addition, from GroovyServ 0.5, you can also use -Cr, and -Ck options with groovyclient command.</strong>
-In Windows, if you invoke directly groovyserver.bat or invoke groovyclient with a transparent server invocation which uses
-groovyserver.bat, groovyserver create a new minimum window for control the server. By closing the window you can stop the groovyserver.</dd>
-</dl>
-</div>
-<div class="section" id="why-is-the-name-of-this-software-groovyserv">
-<h2><a class="toc-backref" href="#id12">Why is the name of this software &#8216;GroovyServ&#8217;?</a><a class="headerlink" href="#why-is-the-name-of-this-software-groovyserv" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>Q:</dt>
-<dd>Why is the name of this software &#8216;GroovyServ&#8217;?</dd>
-<dt>A:</dt>
-<dd>Because this is like <a class="reference external" href="http://www.emacswiki.org/emacs/GnuClient">Gnuserv</a> for Emacs. Do you know it?</dd>
-</dl>
-</div>
-<div class="section" id="can-i-use-groovyserv-with-grape-s-grab-annotation">
-<h2><a class="toc-backref" href="#id13">Can I use GroovyServ with Grape&#8217;s &#64;Grab annotation?</a><a class="headerlink" href="#can-i-use-groovyserv-with-grape-s-grab-annotation" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>Q:</dt>
-<dd>Can I use Grape&#8217;s &#64;Grab annotation in GroovyServ?</dd>
-<dt>A:</dt>
-<dd><p class="first">Yes, you can.
-But you might see OutOfMemoryError of PermGen if you use transitive dependencies and invoke that script repeatedly.
-It is probably comes from the way to resolve transitive dependencies is different of resolving direct dependencies in Groovy.
-You can avoid this error by specify SystemClassLoader to use:</p>
-<div class="last highlight-python"><pre>@GrabConfig(systemClassLoader=true)
-@Grab("..")</pre>
-</div>
-</dd>
-</dl>
-</div>
-<div class="section" id="can-i-use-jqs-java-quick-start-with-groovyserv-at-the-same-time">
-<h2><a class="toc-backref" href="#id14">Can I use JQS(Java Quick Start) with GroovyServ at the same time?</a><a class="headerlink" href="#can-i-use-jqs-java-quick-start-with-groovyserv-at-the-same-time" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>Q:</dt>
-<dd>Can I use JQS(Java Quick Start) with GroovyServ at the same time?</dd>
-<dt>A:</dt>
-<dd>Yes, you can. No problem.</dd>
-</dl>
-</div>
-<div class="section" id="i-installed-groovyserv-but-it-doesn-t-work">
-<h2><a class="toc-backref" href="#id15">I installed GroovyServ, but it doesn&#8217;t work.</a><a class="headerlink" href="#i-installed-groovyserv-but-it-doesn-t-work" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>Q:</dt>
-<dd>I installed GroovyServ, but it doesn&#8217;t work.</dd>
-<dt>A:</dt>
-<dd><p class="first">I think it is caused by either reasons as follows:</p>
-<ul class="last simple">
-<li>GroovyServ requires HOME/USERPROFILE, JAVA_HOME and GROOVY_HOME environment variables. Please confirm if they exists.
-See <a class="reference internal" href="userguide_en.html#ref-userguide-env"><em>Environment variables in User Guide</em></a>.</li>
-<li>An executable file we built isn&#8217;t appropriate to your environment. Please build it by yourself.
-See <a class="reference internal" href="howtobuild.html#ref-howtobuild"><em>Build from source code in User Guide</em></a>.</li>
-</ul>
-</dd>
-</dl>
-</div>
-<div class="section" id="when-i-built-groovyserv-by-myself-in-windows-some-errors-occured-what-s-required">
-<h2><a class="toc-backref" href="#id16">When I built GroovyServ by myself in Windows, some errors occured. What&#8217;s required?</a><a class="headerlink" href="#when-i-built-groovyserv-by-myself-in-windows-some-errors-occured-what-s-required" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>Q:</dt>
-<dd>When I built GroovyServ by myself on Windows, some errors occured. What&#8217;s required?</dd>
-<dt>A:</dt>
-<dd>To build it in Windows, you need Cygwin and gcc-3 and MinGW.
-See <a class="reference internal" href="howtobuild.html#ref-howtobuild"><em>Build from source code in User Guide</em></a>.</dd>
-</dl>
-</div>
-</div>
-
-
+    <div class="wrapper">
+      <div class="header">
+        <i class="fa fa-bars sidebar-toggle"></i>
+        <span class="title"><a href="index.html">GroovyServ</a></span>
+      </div>
+      <div class="sidebar">
+        <ul>
+          <li><i class="fa fa-home"></i><a href="index.html">Home</a></li>
+          <li>
+            <i class="fa fa-book"></i>Documentation
+            <ul>
+              <li>
+                <i class="fa fa-graduation-cap"></i>Getting Started
+                <ul>
+                  <li><i class="fa fa-hdd-o"></i><a href="howtoinstall.html">How to Install</a></li>
+                  <li><i class="fa fa-hand-o-right"></i><a href="quickstart.html">Quick Start</a></li>
+                </ul>
+              </li>
+              <li>
+                <i class="fa fa-file-text"></i>Reference
+                <ul>
+                  <li><i class="fa fa-file-text-o"></i><a href="userguide.html">User Guide</a></li>
+                  <li><i class="fa fa-cog"></i><a href="howtobuild.html">How to Build</a></li>
+                  <li><i class="fa fa-question-circle"></i><a href="faq.html">FAQ</a></li>
+                  <li><i class="fa fa-list"></i><a href="changelog.html">Change Log</a></li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li><i class="fa fa-cloud-download"></i><a href="download.html">Download</a></li>
+          <li><i class="fa fa-comments-o"></i><a href="community.html">Community</a></li>
+        </ul>
+      </div>
+      <div class="content">
+        <div class="content-handle"></div>
+        <div class="content-container">
+          <div class="content-nav content-nav-top">
+            <a class="prev-page" href="howtobuild.html">
+            <i class="fa fa-angle-left"></i>
+            How to Build
+            </a>
+            <a class="next-page" href="changelog.html">
+            Change Log
+            <i class="fa fa-angle-right"></i>
+            </a>
+          </div>
+          <div class="page-toc">
+            <ul>
+              <li class="unnumbered visible">
+                <a href="#faq">FAQ</a>
+                <ul>
+                  <li class="unnumbered visible"><a href="#why-is-the-name-of-this-software-groovyserv">Why is the name of this software GroovyServ?</a></li>
+                  <li class="unnumbered visible"><a href="#what-environments-are-supported">What environments are supported?</a></li>
+                  <li class="unnumbered visible"><a href="#why-does-groovyserv-use-jna-java-native-access">Why does GroovyServ use JNA (Java Native Access)?</a></li>
+                  <li class="unnumbered visible"><a href="#why-are-user-commands-written-in-go-not-in-java-or-groovy">Why are user commands written in Go, not in Java or Groovy?</a></li>
+                  <li class="unnumbered visible"><a href="#does-groovyserv-for-windows-require-cygwin">Does GroovyServ for Windows require Cygwin?</a></li>
+                  <li class="unnumbered visible"><a href="#can-i-use-groovyserv-with-grapes-grab-annotation">Can I use GroovyServ with Grape&rsquo;s @Grab annotation?</a></li>
+                  <li class="unnumbered visible"><a href="#what-is-different-groovyserv-from-nailgun">What is different GroovyServ from NailGun?</a></li>
+                  <li class="unnumbered visible"><a href="#what-is-different-groovyserv-from-drip">What is different GroovyServ from Drip?</a></li>
+                  <li class="unnumbered visible"><a href="#is-groovyserv-dedicated-for-groovy">Is GroovyServ dedicated for Groovy?</a></li>
+                  <li class="unnumbered visible"><a href="#ctrl-c-doesnt-work-in-some-cases-why">Ctrl-C doesn&rsquo;t work in some cases. Why?</a></li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+          <div class="main-content">
+            <h1 id="faq">FAQ</h1>
+            <h3 id="why-is-the-name-of-this-software-groovyserv">Why is the name of this software <em>GroovyServ</em>?</h3>
+            <p>It&rsquo;s inspired by <a href="http://www.emacswiki.org/emacs/GnuClient">Gnuserv</a> for Emacs. A concept and an architecture of GroovyServ are very similar with it.</p>
+            <h3 id="what-environments-are-supported">What environments are supported?</h3>
+            <p>Linux, Windows and Mac OS X are supported, so far. GroovyServ can use on the environment which supports Java SDK, JNA and Go compiler.</p>
+            <h3 id="why-does-groovyserv-use-jna-java-native-access">Why does GroovyServ use <a href="https://jna.dev.java.net/">JNA (Java Native Access)</a>?</h3>
+            <p>Because it&rsquo;s to change a current working directory (CWD) dinamically for each a request. To be more specific, it&rsquo;s to call <code>chdir</code>(2) system call or <code>_chdir</code> win32 C runtime function. You might think <code>user.dir</code> system property can be used for same purpose, as a pure Java way. But it&rsquo;s not enough because JRE isn&rsquo;t used the <code>user.dir</code> for all of Java APIs. JRE still uses a native CWD of a JVM process. For example, <code>new FileInputStream(&quot;.&quot;)</code> is used not <code>user.dir</code> system property but a CWD.</p>
+            <h3 id="why-are-user-commands-written-in-go-not-in-java-or-groovy">Why are user commands written in Go, not in Java or Groovy?</h3>
+            <p>The purpose of GroovyServ is to reduce a startup time of a JVM process. So, you can never use Java to implement especially a <code>groovyclient</code>. Go programming language can cross-compile binaries for many environments on everywhere. It&rsquo;s a very powerful and useful feature for a multi-platform tool like GroovyServ.</p>
+            <h3 id="does-groovyserv-for-windows-require-cygwin">Does GroovyServ for Windows require Cygwin?</h3>
+            <p>No, it doesn&rsquo;t. Since 1.0, we rewrote user commands by Go language. So now, GroovyServ are pefectly free from Cygwin.</p>
+            <h3 id="can-i-use-groovyserv-with-grapes-grab-annotation">Can I use GroovyServ with Grape&rsquo;s @Grab annotation?</h3>
+            <p>Yes, you can. But you might see <code>OutOfMemoryError</code> of PermGen if you use transitive dependencies and run the script repeatedly. It probably comes from a way to resolve a transitive dependency. It seems different to resolve a direct dependency in Groovy. You can use a <code>SystemClassLoader</code> parameter as a workaround:</p>
+            <pre><code class="groovy">@GrabConfig(systemClassLoader=true)
+@Grab(&quot;...&quot;)
+</code></pre>
+            <h3 id="what-is-different-groovyserv-from-nailgun">What is different GroovyServ from <a href="http://www.martiansoftware.com/nailgun/">NailGun</a>?</h3>
+            <p>The purpose of NailGun is same as GroovyServ&rsquo;s. Besides, the architectures are very similar, too. NailGun is a great product which is older than GroovyServ. However, GroovyServ has some advantage, so far.</p>
+            <ul>
+              <li>
+                Both
+                <ul>
+                  <li>Reduces startup time of the JVM</li>
+                  <li>Supports standard I/O streams via TCP/IP</li>
+                  <li>Detoxicates System#exit()</li>
+                </ul>
+              </li>
+              <li>
+                Only GroovyServ
+                <ul>
+                  <li>Supports access control</li>
+                  <li>Supports propagation of CLASSPATH</li>
+                  <li>Supports propagation of environment variables</li>
+                  <li>Returns exit code</li>
+                  <li>
+                    Supports dynamic CWD
+                    <ul>
+                      <li>In NailGun, CWD is fixed at initial directory when a server process is started.</li>
+                    </ul>
+                  </li>
+                  <li>Supports interruption by CTRL-C</li>
+                </ul>
+              </li>
+              <li>
+                Only NailGun
+                <ul>
+                  <li>
+                    Implemented by pure Java
+                    <ul>
+                      <li>So you can use for bulit-in, like JRuby.</li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+            <p>IMO, NailGun is useful to implement a built-in system for something. On the other hand, GroovyServ is handy in case of running a script from console or other tools like a text editor.</p>
+            <h3 id="what-is-different-groovyserv-from-drip">What is different GroovyServ from <a href="https://github.com/ninjudd/drip">Drip</a>?</h3>
+            <p>The purpose of Drip is same as GroovyServ&rsquo;s. However, Drip has a very characteristic strategy: Drip starts up new process for each a combination of same arguments of JVM, classpath, a main class and CWD. And it reuses the process in a certain period. The process is automatically shut down after the period.</p>
+            <p>This approach brings quite simple architecture and implementation. It&rsquo;s so great and interesting. But, Drip requires a <code>bash</code> command so far. So, inevitably you can&rsquo;t use it without a <code>bash</code> command. IMO, Drip is handy to run a same script with same arguments repeatedly multiple times in UN*X-like OS.</p>
+            <h3 id="is-groovyserv-dedicated-for-groovy">Is GroovyServ dedicated for Groovy?</h3>
+            <p>No. you can use GroovyServ for other JVM languages. For example, you can run a Clojure script like this:</p>
+            <pre><code class="sh">$ CLASSPATH=/tmp/clojure.jar groovyserver
+$ groovyclient -e &#39;import clojure.main;main.main(args)&#39; -- -e &quot;(println &#39;Clojure)&quot;
+Clojure
+</code></pre>
+            <h3 id="ctrl-c-doesnt-work-in-some-cases-why">Ctrl-C doesn&rsquo;t work in some cases. Why?</h3>
+            <p>Is your script interruptable? If not, GroovyServ can&rsquo;t stop it unfortunately. See <a href="userguide.html#interrupt-by-ctrl-c">User Guide</a>.</p>
+          </div>
+          <div class="content-nav content-nav-bottom">
+            <a class="prev-page" href="howtobuild.html">
+            <i class="fa fa-angle-left"></i>
+            How to Build
+            </a>
+            <a class="next-page" href="changelog.html">
+            Change Log
+            <i class="fa fa-angle-right"></i>
+            </a>
+          </div>
+          <script>
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+            })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+            ga('create', 'UA-3438563-4', 'auto');
+            ga('send', 'pageview');
+          </script>
+          <div class="footer">
+            <p class="version text-muted">Version 1.0.0</p>
+            <p class="credit text-muted">Powered by <a href="https://github.com/kobo/gaiden">Gaiden</a></p>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
-        <div class="sphinxsidebarwrapper"><div class="toctree-wrapper compound globaltoc">
-  <h3><a href="sitemenu.html">Site Menu</a></h3>
-  <ul>
-    <li class="toctree-l1"><a class="reference internal" href="index.html">Top</a></li>
-    <li class="toctree-l1"><a class="reference internal" href="document.html">Documentation</a>
-      <ul>
-        <li class="toctree-l2"><a class="reference internal" href="document.html#get-started">Get Started</a>
-          <ul>
-            <li class="toctree-l3"><a class="reference internal" href="howtoinstall.html">How to Install</a></li>
-            <li class="toctree-l3"><a class="reference internal" href="quickstart.html">Quick Start</a></li>
-            <li class="toctree-l3"><a class="reference internal" href="screencast.html">Screencast</a></li>
-          </ul>
-        </li>
-        <li class="toctree-l2"><a class="reference internal" href="document.html#reference">Reference</a>
-          <ul>
-            <li class="toctree-l3"><a class="reference internal" href="userguide_en.html">User&nbsp;Guide&nbsp;(English)</a></li>
-            <li class="toctree-l3"><a class="reference internal" href="userguide_ja.html">User&nbsp;Guide&nbsp;(Japanese)</a></li>
-            <li class="toctree-l3"><a class="reference internal" href="howtobuild.html">How to Build</a></li>
-            <li class="toctree-l3"><a class="reference internal" href="faq.html">FAQ</a></li>
-            <li class="toctree-l3"><a class="reference internal" href="license.html">License</a></li>
-            <li class="toctree-l3"><a class="reference internal" href="changelog.html">Change Log</a></li>
-          </ul>
-        </li>
-      </ul>
-    </li>
-    <li class="toctree-l1"><a class="reference internal" href="download.html">Download</a></li>
-    <li class="toctree-l1"><a class="reference internal" href="community.html">Community</a>
-      <ul>
-        <li class="toctree-l2"><a class="reference internal" href="community.html#mailing-list-google-group">Mailing List (Google Group)</a></li>
-        <li class="toctree-l2"><a class="reference internal" href="community.html#source-code-github">Source Code (GitHub)</a></li>
-        <li class="toctree-l2"><a class="reference internal" href="community.html#issues-github">Issues (GitHub)</a></li>
-      </ul>
-    </li>
-  </ul>
-</div>
-  <h3>Contents of This Page</h3>
-  <ul>
-<li><a class="reference internal" href="#">FAQ</a><ul>
-<li><a class="reference internal" href="#why-does-groovyserv-use-jna-java-native-access">Why does GroovyServ use JNA(Java Native Access)?</a></li>
-<li><a class="reference internal" href="#what-happens-if-i-invoke-two-groovy-scripts-which-have-different-current-working-directory-at-the-same-time">What happens if I invoke two Groovy scripts which have different current working directory at the same time?</a></li>
-<li><a class="reference internal" href="#what-environments-are-supported">What environments are supported?</a></li>
-<li><a class="reference internal" href="#does-groovyserv-for-windows-require-cygwin">Does GroovyServ for Windows require Cygwin?</a></li>
-<li><a class="reference internal" href="#why-is-groovyclient-written-in-c-why-isn-t-it-written-in-java">Why is groovyclient written in C? Why isn&#8217;t it written in Java?</a></li>
-<li><a class="reference internal" href="#what-is-the-server-client-communication-protocol">What is the server-client communication protocol?</a></li>
-<li><a class="reference internal" href="#if-the-jvm-process-is-shared-by-each-script-session-static-variables-are-shared-too">If the JVM process is shared by each script session, static variables are shared too?</a></li>
-<li><a class="reference internal" href="#how-can-i-invoke-the-original-groovy-command-when-groovy-has-been-aliased-to-groovyclient">How can I invoke the original groovy command when &#8216;groovy&#8217; has been aliased to groovyclient?</a></li>
-<li><a class="reference internal" href="#where-is-there-a-log-file">Where is there a log file?</a></li>
-<li><a class="reference internal" href="#how-can-i-restart-or-kill-groovyserver">How can I restart or kill groovyserver?</a></li>
-<li><a class="reference internal" href="#why-is-the-name-of-this-software-groovyserv">Why is the name of this software &#8216;GroovyServ&#8217;?</a></li>
-<li><a class="reference internal" href="#can-i-use-groovyserv-with-grape-s-grab-annotation">Can I use GroovyServ with Grape&#8217;s &#64;Grab annotation?</a></li>
-<li><a class="reference internal" href="#can-i-use-jqs-java-quick-start-with-groovyserv-at-the-same-time">Can I use JQS(Java Quick Start) with GroovyServ at the same time?</a></li>
-<li><a class="reference internal" href="#i-installed-groovyserv-but-it-doesn-t-work">I installed GroovyServ, but it doesn&#8217;t work.</a></li>
-<li><a class="reference internal" href="#when-i-built-groovyserv-by-myself-in-windows-some-errors-occured-what-s-required">When I built GroovyServ by myself in Windows, some errors occured. What&#8217;s required?</a></li>
-</ul>
-</li>
-</ul>
-
-<div id="searchbox" style="display: none">
-  <h3>Quick search</h3>
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
     </div>
-</div>
-<script type="text/javascript">
-
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-3438563-4']);
-  _gaq.push(['_trackPageview']);
-
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
-
-</script>
-
+    <script src="js/jquery-2.1.1.min.js"></script>
+    <script src="js/highlight.js"></script>
+    <script src="js/application.js"></script>
+    <script src="js/my.js"></script>
   </body>
 </html>
