@@ -30,6 +30,25 @@ So you have to run a setup script:
 $ ~/.gvm/groovyserv/current/bin/setup.sh
 ```
 
+Instead, you can also use just a `groovyclient` and a `groovyserver` which are copy of `setup.sh` just after the installation.
+For example:
+
+```sh
+$ groovyclient -v
+Setup completed successfully for darwin_amd64.
+It's required only just after installation. Please run the same command once again.
+```
+
+When you run the same command again, it works well expectedly:
+
+```sh
+$ groovyclient -v
+Groovy Version: <GROOVY_VERSION> JVM: <JAVA_VERSION> Vendor: Oracle Corporation OS: Mac OS X
+GroovyServ Version: Server: <VERSION>
+GroovyServ Version: Client: <VERSION>
+```
+
+
 The binary package includes binary files of user commands only for Mac OS X, Linux(amd64/i386) and Windows.
 But, no problem.
 In case that you want to install to other environments, it will be automatically built if only there is `go` command.
