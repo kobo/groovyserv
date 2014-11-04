@@ -256,6 +256,9 @@ task unitTest(type: Test, description: "Run all unit tests.", group: "Verificati
 task integrationTest(type: Test, dependsOn: 'executables', description: "Run all integration tests.", group: "Verification") {
     mustRunAfter "unitTest"
 
+    // Avoiding run in parallel
+    maxParallelForks = 1
+
     reports.html.destination = file("$buildDir/reports/integration")
     reports.junitXml.destination = file("$buildDir/test-results/integration")
 
