@@ -9,7 +9,7 @@ See the [documentation](http://kobo.github.com/groovyserv/) for more information
 Code Status
 -----------
 
-[![Build Status](https://drone.io/github.com/kobo/groovyserv/status.png)](https://drone.io/github.com/kobo/groovyserv/latest)
+[![Build Status](https://travis-ci.org/kobo/groovyserv.svg?branch=master)](https://travis-ci.org/kobo/groovyserv)
 
 
 License
