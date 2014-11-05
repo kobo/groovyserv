@@ -37,7 +37,7 @@ class SystemExitSpec extends Specification {
         result2.err == ""
     }
 
-    def "a exit code of client is the argument of System.exit()"() {
+    def "an exit code of client is the argument of System.exit()"() {
         when:
         def result = TestUtils.executeClientCommand(['-e', "System.exit($exitArg)"])
 
@@ -53,7 +53,7 @@ class SystemExitSpec extends Specification {
         // The exit code of -1 or 256 (which is out of range) depends on OS.
     }
 
-    def "a exit code of client is 1 when an exception causes"() {
+    def "an exit code of client is 1 when an exception causes"() {
         when:
         def result = TestUtils.executeClientCommand(['-e', '"notDeclaredVariable"'])
 
