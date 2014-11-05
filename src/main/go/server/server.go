@@ -129,7 +129,7 @@ func (server Server) Alive() (alive bool, err error) {
 	}
 	defer connected.Close()
 	if statusCode, err := connected.Ping(); err != nil {
-		log.Println("Alive: could not ping normarlly:", statusCode, err.Error())
+		log.Println("Alive: could not ping normally:", statusCode, err.Error())
 		return false, err
 	}
 	return true, nil
