@@ -332,12 +332,12 @@ task publishToGhpages(dependsOn: "docs", description: "Copy documentation to gh-
 
 def restartGroovyServer() {
     ansi.printlnAsInfo ">> Restarting groovyserver..."
-    operateServer(["-r", "-v"])
+    operateServer(["-r", "-v", "--debug"])
 }
 
 def shutdownGroovyServer() {
     ansi.printlnAsInfo ">> Shutting down groovyserver..."
-    operateServer(["-k"])
+    operateServer(["-k", "--debug"])
 }
 
 def operateServer(List options) {
