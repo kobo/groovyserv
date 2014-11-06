@@ -28,9 +28,6 @@ class AnsiColorConsoleLogPlugin implements Plugin<Project> {
 
         project.afterEvaluate {
             project.tasks.withType(Test).each { task ->
-                // show standard out and standard error of the test JVM(s) on the console
-                task.testLogging.showStandardStreams = true
-
                 task.beforeTest { desc ->
                     def packageName = desc.className.replaceFirst(/\.[^.]*$/, '')
                     def shortenPackageName = packageName.split(/\./).collect { it[0] }.join(".")

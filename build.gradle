@@ -293,6 +293,17 @@ task integrationTest(type: Test, dependsOn: 'executables', description: "Run all
     }
 }
 
+tasks.withType(Test).each {
+    it.testLogging {
+        // show standard out and standard error of the test JVM(s) on the console
+        showStandardStreams = true
+
+        // show the message on failure
+        exceptionFormat "full"
+        events "failed"
+    }
+}
+
 //------------------------
 // Gradle wrapper
 
