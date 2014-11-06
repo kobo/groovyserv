@@ -25,4 +25,4 @@ before_script:
   - go version
 
 script:
-  - ./gradlew test distLocalBin || ( find build/test-results -name "*.xml" | xargs cat ; exit 1 )
+  - ./gradlew test distLocalBin
