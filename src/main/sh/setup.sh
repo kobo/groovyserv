@@ -48,7 +48,11 @@ case `uname -m` in
         arch=386
         ;;
 esac
-platform="${os}_${arch}"
+if [ $os = "windows" ]; then
+    platform="windows_386"
+else
+    platform="${os}_${arch}"
+fi
 
 # Confirming a platform directory existence
 from_dir="$current_dir/../platforms/$platform"
