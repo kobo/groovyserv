@@ -170,7 +170,6 @@ task compileGo {
             def env = [:]
             if (isWindows()) {
                 outputFileName += ".exe"
-                env += [GOOS: "windows", GOARCH: "386"] // using a '386' binary even in 64-bit Windows
             }
             compileGoSrc(srcFile, outputFileName, "local", env)
         }
