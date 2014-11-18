@@ -347,12 +347,12 @@ task publishToGhpages(dependsOn: "docs", description: "Copy documentation to gh-
 
 def restartGroovyServer() {
     ansi.printlnAsInfo ">> Restarting groovyserver..."
-    operateServer(["-r", "-v", "--debug"])
+    operateServer(["-r", "-v"])
 }
 
 def shutdownGroovyServer() {
     ansi.printlnAsInfo ">> Shutting down groovyserver..."
-    operateServer(["-k", "--debug"])
+    operateServer(["-k"])
 }
 
 def operateServer(List options) {
@@ -361,17 +361,12 @@ def operateServer(List options) {
     executeCommand([groovyserverPath, *options])
 }
 
-def executeCommand(List command, Map env = [:], File workDir = null) {
+def executeCommand(List command, Map additionalEnv = [:], File workDir = null) {
     ansi.printlnAsInfo ">> Executing command..."
     ansi.printlnAsInfo "\$ ${command.join(' ')}"
-    def processBuilder = new ProcessBuilder(command as String[]).directory(workDir)
-    processBuilder.environment() << env
-    def p = processBuilder.start()
-    p.consumeProcessOutput(System.out as OutputStream, System.err as OutputStream) // Gradle's wrapper stream writes nothing to console
-    int statusCode = p.waitFor()
-    if (statusCode != 0) {
-        ansi.printlnAsError "Exit for status code $statusCode"
-        throw new GradleScriptException("Exit for status code $statusCode while executing '${command.join(' ')}'", null)
+    exec {
+        commandLine command
+        environment additionalEnv
     }
 }
 
