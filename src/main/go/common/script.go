@@ -50,7 +50,7 @@ func EnvInt(name string, defaultValue int) int {
 	}
 	value, err := strconv.Atoi(rawValue)
 	if err != nil {
-		fmt.Printf("WARN: environment variable %s requires a number: %s\n", name, rawValue)
+		fmt.Fprintf(os.Stderr, "WARN: environment variable %s requires a number: %s\n", name, rawValue)
 		return defaultValue
 	}
 	return value
@@ -62,7 +62,7 @@ func CommandExists(name string) bool {
 }
 
 func Dump(obj interface{}) {
-	fmt.Printf("%#v\n", obj)
+	fmt.Fprintf(os.Stderr, "%#v\n", obj)
 }
 
 func ExitIfPanic() {
