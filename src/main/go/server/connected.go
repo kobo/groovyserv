@@ -143,14 +143,14 @@ func (server ConnectedServer) writeStreamRequest() {
 	for {
 		input, err := cmn.ReadLine(reader)
 		if err != nil {
-			server.write("Size: 0\n\n")
+			cmn.Write(server.conn, "Size: 0\n\n")
 			break
 		}
 		input += "\n" // an input line requires LF
-		if err := server.write(fmt.Sprintf("Size: %d\n\n", len(input))); err != nil {
+		if err := cmn.Write(server.conn, fmt.Sprintf("Size: %d\n\n", len(input))); err != nil {
 			log.Println("writeStreamRequest: Failed to write Size header:", err)
 		}
-		if err := server.write(input); err != nil { // without extra LF
+		if err := cmn.Write(server.conn, input); err != nil { // without extra LF
 			log.Println("writeStreamRequest: Failed to write Stdin:", input, err)
 		}
 	}
@@ -252,31 +252,23 @@ func (server ConnectedServer) writeInvocationRequest() (err error) {
 		log.Println("writeInvocationRequest: end:", err)
 	}()
 
-	if err := server.writeLine("Cwd: " + cmn.Env("PWD", ".")); err != nil {
-		return err
-	}
+	ew := cmn.NewErrWriter(server.conn)
+	ew.WriteLine("Cwd: " + cmn.Env("PWD", "."))
 	if authToken, err := server.authToken(); err != nil {
 		return err
 	} else {
-		if err = server.writeLine("Auth: " + authToken); err != nil {
-			return err
-		}
+		ew.WriteLine("Auth: " + authToken)
 	}
 	for _, arg := range server.Args {
-		if err := server.writeLine("Arg: " + b64.StdEncoding.EncodeToString([]byte(arg))); err != nil {
-			return err
-		}
+		ew.WriteLine("Arg: " + b64.StdEncoding.EncodeToString([]byte(arg)))
 	}
-	if err := server.writeEnv(); err != nil {
-		return err
-	}
+	server.writeEnv(ew)
 	if cp := cmn.Env("CLASSPATH", ""); cp != "" {
-		if err := server.writeLine("Cp: " + cp); err != nil {
-			return err
-		}
+		ew.WriteLine("Cp: " + cp)
 	}
-	if err := server.writeLine(""); err != nil {
-		return err
+	ew.WriteLine("")
+	if ew.Err() != nil {
+		return ew.Err()
 	}
 	return nil
 }
@@ -287,26 +279,24 @@ func (server ConnectedServer) writeCommandRequest(command string) (err error) {
 		log.Println("writeCommandRequest: end:", err)
 	}()
 
+	ew := cmn.NewErrWriter(server.conn)
 	if authToken, err := server.authToken(); err != nil {
 		return err
 	} else {
-		if err := server.writeLine("Auth: " + authToken); err != nil {
-			return err
-		}
+		ew.WriteLine("Auth: " + authToken)
 	}
-	if err := server.writeLine("Cmd: " + command); err != nil {
-		return err
-	}
-	if err := server.writeLine(""); err != nil {
-		return err
+	ew.WriteLine("Cmd: " + command)
+	ew.WriteLine("")
+	if ew.Err() != nil {
+		return ew.Err()
 	}
 	return nil
 }
 
-func (server ConnectedServer) writeEnv() (err error) {
+func (server ConnectedServer) writeEnv(ew *cmn.ErrWriter) {
 	log.Println("writeEnv: begin")
 	defer func() {
-		log.Println("writeEnv: end:", err)
+		log.Println("writeEnv: end:")
 	}()
 
 	for _, env := range os.Environ() {
@@ -316,20 +306,8 @@ func (server ConnectedServer) writeEnv() (err error) {
 		}
 		if server.EnvAll || cmn.ArrayFuncAny(server.EnvIncludeMask, maskMatcher) {
 			if !cmn.ArrayFuncAny(server.EnvExcludeMask, maskMatcher) {
-				err := server.writeLine("Env: " + env)
-				if err != nil {
-					return err
-				}
+				ew.WriteLine("Env: " + env)
 			}
 		}
 	}
-	return nil
-}
-
-func (server ConnectedServer) writeLine(line string) error {
-	return cmn.WriteLine(server.conn, line)
-}
-
-func (server ConnectedServer) write(line string) error {
-	return cmn.Write(server.conn, line)
 }

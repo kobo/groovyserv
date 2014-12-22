@@ -36,10 +36,6 @@ func ReadLine(reader *bufio.Reader) (line string, err error) {
 	return
 }
 
-func WriteLine(writer io.Writer, text string) error {
-	return Write(writer, text+"\n")
-}
-
 func Write(writer io.Writer, text string) error {
 	_, err := writer.Write([]byte(text))
 	if err != nil {
@@ -64,4 +60,29 @@ func ExpandPath(path string) string {
 	}
 	wd, _ := os.Getwd()
 	return filepath.Join(wd, path)
+}
+
+// http://jxck.hatenablog.com/entry/golang-error-handling-lesson-by-rob-pike
+type ErrWriter struct {
+	w   io.Writer
+	err error
+}
+
+func NewErrWriter(w io.Writer) *ErrWriter {
+	return &ErrWriter{w: w}
+}
+
+func (ew *ErrWriter) WriteLine(text string) {
+	ew.Write(text + "\n")
+}
+
+func (ew *ErrWriter) Write(text string) {
+	if ew.err != nil {
+		return
+	}
+	ew.err = Write(ew.w, text)
+}
+
+func (ew *ErrWriter) Err() error {
+	return ew.err
 }
