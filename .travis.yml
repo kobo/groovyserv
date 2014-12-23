@@ -6,6 +6,9 @@ jdk:
   - openjdk7
   - openjdk6
 
+# Use docker
+sudo: false
+
 # The latest Groovy should be installed because the Groovy version installed by default at travis is too old.
 # But GVM for Go is installed by default. So it needs some tricky way.
 install:
