@@ -243,8 +243,10 @@ task distLocalBin(type: Zip, dependsOn: ['assemble', 'compileGo'], description: 
 //----------------------------------
 // Test
 
-task test(overwrite: true, dependsOn: ['unitTest', 'integrationTest'], description: "Run all tests.", group: "Verification")
-check.dependsOn "test"
+test {
+    dependsOn 'unitTest', 'integrationTest'
+    enabled = false // This task is only to describe the above dependsOn tasks.
+}
 
 task unitTest(type: Test, description: "Run all unit tests.", group: "Verification") {
     reports.html.destination = file("$buildDir/reports/unit")
