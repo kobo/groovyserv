@@ -51,9 +51,7 @@ dependencies {
     testRuntime 'org.objenesis:objenesis:1.3' // for spock: enables mocking of without default constructor (together with CGLIB)
 }
 
-def defaultEncoding = 'UTF-8'
-tasks.withType(AbstractCompile)*.options*.encoding = defaultEncoding
-tasks.withType(GroovyCompile)*.groovyOptions*.encoding = defaultEncoding
+tasks.withType(AbstractCompile)*.options*.encoding = tasks.withType(GroovyCompile)*.groovyOptions*.encoding = 'UTF-8'
 
 //===========================================
 // Tasks
