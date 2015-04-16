@@ -74,5 +74,5 @@ If you want to run tests (including unit tests and integration tests), run Gradl
 
 ```sh
 $ export _JAVA_OPTIONS=-Dfile.encoding=UTF-8
-$ ./gradlew test
+$ ./gradlew check
 ```
