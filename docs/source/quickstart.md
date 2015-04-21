@@ -23,7 +23,7 @@ GroovyServ provides two commands: a `groovyclient` and a `groovyserver`.
 
 ### groovyclient
 
-A `groovyclient` is a main command for an user.
+A `groovyclient` is a main command for a user.
 When you run it, it passed an specified arguments and a standard input stream to a backend's server process (which is automatically started up if not exists).
 
 In many cases, a call of a `groovy` command can be simply replaced with a `groovyclient`:

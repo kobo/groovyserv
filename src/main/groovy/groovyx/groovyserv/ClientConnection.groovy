@@ -139,8 +139,8 @@ class ClientConnection implements Closeable {
 
     /**
      * To close PipedOutputStream as 'stdin'.
-     * It's import to stop an user script safety and quietly.
-     * When an user script is terminated, you must call this method.
+     * It's import to stop a user script safety and quietly.
+     * When a user script is terminated, you must call this method.
      * Or, IOException with the message of "Write end dead" will be occurred.
      * This method doesn't close the actual socket.
      * The piped input stream isn't closed here. because it's used by a user
