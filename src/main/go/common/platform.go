@@ -18,6 +18,7 @@ package common
 import (
 	"os"
 	"runtime"
+	"syscall"
 )
 
 func HomeDir() string {
@@ -25,6 +26,14 @@ func HomeDir() string {
 		return os.Getenv("USERPROFILE")
 	}
 	return os.Getenv("HOME")
+}
+
+func CurrentDir() string {
+	dir, err := syscall.Getwd()
+	if err != nil {
+		return "."
+	}
+	return dir
 }
 
 func ClasspathDelimiter() string {

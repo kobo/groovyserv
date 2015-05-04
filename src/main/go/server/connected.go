@@ -253,7 +253,7 @@ func (server ConnectedServer) writeInvocationRequest() (err error) {
 	}()
 
 	ew := cmn.NewErrWriter(server.conn)
-	ew.WriteLine("Cwd: " + cmn.Env("PWD", "."))
+	ew.WriteLine("Cwd: " + cmn.CurrentDir())
 	if authToken, err := server.authToken(); err != nil {
 		return err
 	} else {
