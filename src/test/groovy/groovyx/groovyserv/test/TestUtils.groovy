@@ -22,10 +22,10 @@ import org.junit.Assert
  */
 class TestUtils {
 
-    static ProcessResult executeClientCommandWithEnv(List<String> args, Map<String, String> envMap, Closure closure = null) {
+    static ProcessResult executeCommandWithBuilder(ProcessBuilder pb, Closure closure = null) {
         def out = new ByteArrayOutputStream()
         def err = new ByteArrayOutputStream()
-        def p = createProcessBuilder([clientExecutablePath, * args], envMap).start()
+        def p = pb.start()
         p.consumeProcessOutput(out, err)
         if (closure) closure.call(p)
         p.waitFor()
@@ -36,11 +36,14 @@ class TestUtils {
         return executeClientCommandWithEnv(args, null, closure)
     }
 
+    static ProcessResult executeClientCommandWithEnv(List<String> args, Map<String, String> envMap, Closure closure = null) {
+        def pb = createProcessBuilder([clientExecutablePath, * args], envMap)
+        return executeCommandWithBuilder(pb, closure)
+    }
+
     static ProcessResult executeClientCommandWithEnvSuccessfully(List<String> args, Map<String, String> envMap, Closure closure = null) {
         def result = executeClientCommandWithEnv(args, envMap, closure)
-        if (result.process.exitValue() != 0) {
-            Assert.fail "ERROR: exitValue:${result.process.exitValue()}, in:[${result.out}], err:[${result.err}]"
-        }
+        result.assertSuccess()
         return result
     }
 
@@ -48,31 +51,31 @@ class TestUtils {
         return executeClientCommandWithEnvSuccessfully(args, null, closure)
     }
 
+    static ProcessResult executeClientCommandWithWorkDir(List<String> args, File workDir) {
+        def pb = createProcessBuilder([clientExecutablePath, * args], null, workDir)
+        return executeCommandWithBuilder(pb)
+    }
+
     static void startServerIfNotRunning(int port) {
-        def result = executeServerCommand(["-v", "-p", String.valueOf(port)])
-        if (result.process.exitValue() != 0) {
-            Assert.fail "ERROR: exitValue:${result.process.exitValue()}, in:[${result.out}], err:[${result.err}]"
-        }
+        executeServerCommand(["-v", "-p", String.valueOf(port)]).assertSuccess()
     }
 
     static void shutdownServerIfRunning(int port) {
-        def result = executeServerCommand(["-k", "-p", String.valueOf(port)])
-        if (result.process.exitValue() != 0) {
-            Assert.fail "ERROR: exitValue:${result.process.exitValue()}, in:[${result.out}], err:[${result.err}]"
-        }
+        executeServerCommand(["-k", "-p", String.valueOf(port)]).assertSuccess()
     }
 
     static ProcessResult executeServerCommand(List<String> options) {
-        def out = new ByteArrayOutputStream()
-        def err = new ByteArrayOutputStream()
-        def p = createProcessBuilder([serverExecutablePath, * options]).start()
-        p.consumeProcessOutput(out, err)
-        p.waitFor()
-        return new ProcessResult(out: out.toString(), err: err.toString(), process: p)
+        def pb = createProcessBuilder([serverExecutablePath, * options])
+        return executeCommandWithBuilder(pb)
     }
 
-    private static createProcessBuilder(List<String> commandLine, Map<String, String> envMap = [:]) {
+    private static createProcessBuilder(List<String> commandLine, Map<String, String> envMap = [:], File workDir = null) {
         ProcessBuilder processBuilder = new ProcessBuilder()
+
+        if (workDir != null) {
+            processBuilder.directory(workDir)
+        }
+
         def actualCommand = processBuilder.command()
 
         // This doesn't work on Cygwin/Windows. The command line is somehow split by a white space.
@@ -105,5 +108,11 @@ class TestUtils {
         Process process
         String out
         String err
+
+        void assertSuccess() {
+            if (process.exitValue() != 0) {
+                Assert.fail "ERROR: exitValue:${process.exitValue()}, in:[${out}], err:[${err}]"
+            }
+        }
     }
 }

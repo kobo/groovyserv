@@ -31,14 +31,16 @@ class DynamicCurrentDirSpec extends Specification {
 
     def "executes with specified PWD"() {
         when:
-        def result = TestUtils.executeClientCommandWithEnvSuccessfully(["-e", '"println(System.getProperty(\'user.dir\'))"'], [PWD: pwd])
+        def result = TestUtils.executeClientCommandWithWorkDir(["-e", '"println(System.getProperty(\'user.dir\'))"'], new File(pwd))
 
         then:
+        result.assertSuccess()
         result.out == pwd + SEP
         result.err == ""
 
         where:
-        pwd << [sysProp("user.dir"), sysProp("temp.dir"), sysProp("user.home")]
+        // Not all directories are present on all platforms
+        pwd << [sysProp("user.dir"), sysProp("temp.dir"), sysProp("user.home"), sysProp("java.home")].findAll { it != null }
     }
 
     def "cannot change to different PWD simultaneously while a script is running on another PWD"() {
@@ -49,7 +51,7 @@ class DynamicCurrentDirSpec extends Specification {
         sleep 500
 
         when:
-        def result = TestUtils.executeClientCommandWithEnv(["-e", '"println(System.getProperty(\'user.dir\'))"'], [PWD: File.createTempDir().path])
+        def result = TestUtils.executeClientCommandWithWorkDir(["-e", '"println(System.getProperty(\'user.dir\'))"'], File.createTempDir())
 
         then:
         result.out == ""
