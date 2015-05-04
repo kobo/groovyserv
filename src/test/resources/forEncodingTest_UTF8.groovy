@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-println "あいうえお"
+println "あいうえお АБВГД"
