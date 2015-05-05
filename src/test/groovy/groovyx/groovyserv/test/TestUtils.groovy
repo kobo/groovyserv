@@ -26,9 +26,8 @@ class TestUtils {
         def out = new ByteArrayOutputStream()
         def err = new ByteArrayOutputStream()
         def p = pb.start()
-        p.consumeProcessOutput(out, err)
         if (closure) closure.call(p)
-        p.waitFor()
+        p.waitForProcessOutput(out, err)
         return new ProcessResult(out: out.toString(), err: err.toString(), process: p)
     }
 
