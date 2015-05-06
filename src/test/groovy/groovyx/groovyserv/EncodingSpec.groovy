@@ -25,14 +25,19 @@ class EncodingSpec extends Specification {
 
     static final String SEP = System.getProperty("line.separator")
 
+    // System.out always uses default platform encoding regardless of the -c flag.
+    // We must convert our test data using the default encoding as well for it to
+    // always match the test output.
+    static final String DATA = new String("あいうえお АБВГД".getBytes())
+
     def "executes a file written by UTF-8"() {
         expect:
-        TestUtils.executeClientCommandSuccessfully(["-c", "UTF-8", canonicalize("src/test/resources/forEncodingTest_UTF8.groovy")]).out == "あいうえお" + SEP
+        TestUtils.executeClientCommandSuccessfully(["-c", "UTF-8", canonicalize("src/test/resources/forEncodingTest_UTF8.groovy")]).out == DATA + SEP
     }
 
     def "executes a file written by Shift_JIS"() {
         expect:
-        TestUtils.executeClientCommandSuccessfully(["-c", "Shift_JIS", canonicalize("src/test/resources/forEncodingTest_SJIS.groovy")]).out == "あいうえお" + SEP
+        TestUtils.executeClientCommandSuccessfully(["-c", "Shift_JIS", canonicalize("src/test/resources/forEncodingTest_SJIS.groovy")]).out == DATA + SEP
     }
 
     private static canonicalize(path) {
