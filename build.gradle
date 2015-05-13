@@ -32,6 +32,7 @@ sourceCompatibility = 1.6
 targetCompatibility = 1.6
 
 repositories {
+    mavenLocal()
     mavenCentral()
     maven { url "http://repository.codehaus.org" }
     maven { url "http://snapshots.repository.codehaus.org" }
