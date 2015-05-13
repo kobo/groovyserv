@@ -41,7 +41,7 @@ case `uname` in
         ;;
 esac
 case `uname -m` in
-    "x86_64" | "i686")
+    *64)
         arch=amd64
         ;;
     *)
