@@ -17,10 +17,10 @@ RUN echo 'en_US UTF-8' >> /etc/locale.gen && \
     locale-gen
 ENV LANG en_US.UTF-8
 
-# GVM: Groovy
-RUN bash -lc "curl -s get.gvmtool.net | bash" && \
-    bash -lc "gvm install groovy"
-ENV PATH $PATH:/root/.gvm/groovy/current/bin
+# SDKMAN: Groovy
+RUN curl -s get.sdkman.io | bash && \
+    bash -lc "sdk install groovy"
+ENV PATH $PATH:/root/.sdkman/candidates/groovy/current/bin
 
 # Copy all here. Or you can replace it with PWD at runtime:
 COPY . /usr/src/app

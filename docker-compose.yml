@@ -1,0 +1,6 @@
+app:
+  build: .
+  volumes:
+    - $PWD:/usr/src/app
+    - $HOME/.gradle:/root/.gradle
+    - $HOME/.m2:/root/.m2
