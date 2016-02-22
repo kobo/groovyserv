@@ -10,15 +10,12 @@ jdk:
 sudo: false
 
 # The latest Groovy should be installed because the Groovy version installed by default at travis is too old.
-# But GVM for Go is installed by default. So it needs some tricky way.
 install:
-  - curl -s get.gvmtool.net > ~/install_gvm.sh
-  - chmod 775 ~/install_gvm.sh
-  - ~/install_gvm.sh
-  - echo "gvm_auto_answer=true" > ~/.gvm/etc/config
-  - source ~/.gvm/bin/gvm-init.sh
-  - gvm install groovy
-  - export GROOVY_HOME=~/.gvm/groovy/`ls -1 ~/.gvm/groovy | sort -r | grep -v current | head -n 1`
+  - curl -s get.sdkman.io | bash
+  - echo "sdkman_auto_answer=true" > ~/.sdkman/etc/config
+  - source ~/.sdkman/bin/sdkman-init.sh
+  - sdk install groovy
+  - export GROOVY_HOME=~/.sdkman/candidates/groovy/`ls -1 ~/.sdkman/candidates/groovy | sort -r | grep -v current | head -n 1`
 
 before_script:
   - $GROOVY_HOME/bin/groovy -version
