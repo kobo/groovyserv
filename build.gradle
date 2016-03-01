@@ -364,6 +364,6 @@ def isWindows() {
 }
 
 def compileGoSrc(File srcFile, String outputFileName, String platform, Map<String, String> env = [:]) {
-    executeCommand(["go", "build", "--ldflags", "-X main.GroovyServVersion=${project.version}", "-o", "$buildDir/platforms/$platform/$outputFileName", srcFile.path], env)
+    executeCommand(["go", "build", "--ldflags", "-w -s \"-X=main.GroovyServVersion=${project.version}\"", "-o", "$buildDir/platforms/$platform/$outputFileName", srcFile.path], env)
 }
 
