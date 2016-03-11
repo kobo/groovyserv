@@ -6,6 +6,10 @@
 #  $ docker build -t kobo/groovyserv .
 #  $ docker run -it --rm -v $PWD:/usr/src/app -v $HOME/.gradle:/root/.gradle -v $HOME/.m2:/root/.m2 kobo/groovyserv
 #
+#  or just
+#
+#  $ docker-compose up
+#
 FROM java:8
 
 # APT
