@@ -27,7 +27,7 @@ But if you build the user commands written in Go language, you can use them anyw
 To build by yourself is required:
 
 * [Java SDK 7+](http://www.oracle.com/technetwork/java/javase/downloads)
-* [Go 1.3+](http://golang.org/doc/install)
+* [Go 1.5+](http://golang.org/doc/install)
 
 
 ## Command usage

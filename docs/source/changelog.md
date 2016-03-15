@@ -1,6 +1,29 @@
 Change Log
 ==========
 
+## Version 1.1.0 (2016-07-22)
+
+#### New Features
+
+* Fixed 69: You can specify a timeiout waiting for starting up a server process (default: 20 sec)
+    - https://github.com/kobo/groovyserv/issues/69
+* Fixed 71: Avoid to change current working directory for each request by `-Ckeep-server-cwd` at groovyclient
+    - https://github.com/kobo/groovyserv/issues/71
+
+#### Improvements
+
+* [Internal] Update JNA to 4.2.2
+* [Internal] Update Groovy to 2.4.7 (used only for testing)
+* [Documentation] Add restrictions about #8
+
+#### Bug Fixes
+
+* Fixed 64: groovyserv exec format error on ubuntu 32 bit
+    - https://github.com/kobo/groovyserv/issues/64
+* Fixed 67: Avoid java.security.AccessControlException access denied
+    - https://github.com/kobo/groovyserv/issues/67
+
+
 ## Version 1.0.0 (2014-11-04)
 
 #### New Features
@@ -30,6 +53,8 @@ Change Log
 
 #### Bug Fixes
 
+* Fixed 52: missing output with consumeProcessOutput only when passed 'as Appendable' (the default)
+    - https://github.com/kobo/groovyserv/issues/52
 * Fixed 53: Memory leak due to ThreadGroup not being destroyed
     - https://github.com/kobo/groovyserv/issues/53
 
