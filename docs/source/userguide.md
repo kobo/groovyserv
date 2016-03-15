@@ -663,3 +663,10 @@ But `System.console()` cannot be used so far.
 $ groovyclient -e "println System.console()"
 null
 ```
+
+
+### AWT/Swing application
+
+The GUI application using AWT/Swing is not supported because a server process is running as a headless mode.
+Even if running as a non-headless mode, the application would suddenly exit.
+This restriction is related to "Detoxication of System.exit()" and the fix is difficult.
