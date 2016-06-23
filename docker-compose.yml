@@ -1,6 +1,23 @@
-app:
-  build: .
-  volumes:
-    - $PWD:/usr/src/app
-    - $HOME/.gradle:/root/.gradle
-    - $HOME/.m2:/root/.m2
+#
+# For testing
+#
+
+version: '2'
+
+services:
+  app:
+    build:
+      context: .
+      args:
+        # Pass proxy settings from well-known environment variables
+        HTTP_PROXY: ${HTTP_PROXY}
+        http_proxy: ${http_proxy}
+        https_proxy: ${https_proxy}
+    volumes:
+      - $PWD:/usr/src/app
+      - $HOME/.gradle:/root/.gradle
+      - $HOME/.m2:/root/.m2
+    environment:
+      # Specify two original environment variables to set proxy configuration for Java If you need
+      _JAVA_OPTIONS: -DproxyHost=${MY_PROXY_HOST} -DproxyPort=${MY_PROXY_PORT}
+
