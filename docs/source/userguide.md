@@ -74,6 +74,24 @@ When you want a server to be running, you can always use the option like:
 $ groovyserver -r
 ```
 
+If your machine is very slow, the command would be timed out like this:
+
+```sh
+$ groovyserver
+...
+Starting server....................................................
+ERROR: timed out while waiting for server startup
+```
+
+You can use `-t/--timeout` to specify long timeout value (unit: second):
+
+```sh
+$ groovyserver -t 100
+...
+Starting server...............................................................
+Server is successfully started up on 1961 port
+```
+
 
 ### Run a Groovy script
 
@@ -111,6 +129,7 @@ Those options are analyzed and consumed by `groovyclient`, and aren't passed to 
   -Ca,-Cauthtoken <authtoken>      specify authtoken
   -Ck,-Ckill-server                kill the running server
   -Cr,-Crestart-server             restart the running server
+  -Ct,-Ctimeout <second>           specify a timeout waiting for starting up a server process (default: 20 sec)
   -Cq,-Cquiet                      suppress statring messages
   -Cenv <substr>                   pass environment variables of which a name includes specified substr
   -Cenv-all                        pass all environment variables
@@ -128,6 +147,7 @@ Options of `groovyserver` command are as follows:
   -h,--help                        show this usage
   -k,--kill                        kill the running server
   -r,--restart                     restart the running server
+  -t,--timeout <second>            specify a timeout waiting for starting up a server process (default: 20 sec)
   -q,--quiet                       suppress statring messages
   -v,--verbose                     verbose output to a log file
   -p,--port <port>                 specify port to listen
