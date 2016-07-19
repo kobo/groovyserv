@@ -35,6 +35,8 @@ options:
   -Ca,-Cauthtoken <authtoken>      specify authtoken
   -Ck,-Ckill-server                kill the running server
   -Cr,-Crestart-server             restart the running server
+  -Ct,-Ctimeout <second>           specify a timeout waiting for starting up a
+                                   server process (default: 20 sec)
   -Cq,-Cquiet                      suppress statring messages
   -Cenv <substr>                   pass environment variables of which a name
                                    includes specified substr
@@ -70,6 +72,7 @@ type (
 		args    []string
 		kill    bool
 		restart bool
+		timeout int
 	}
 
 	Options struct {
@@ -98,6 +101,7 @@ func NewOptions() *Options {
 			args:    []string{},
 			kill:    false,
 			restart: false,
+			timeout: srv.DefaultTimeout,
 		},
 	}
 }
@@ -153,6 +157,13 @@ func ParseOptions(args cmn.Args) *Options {
 			opts.server.kill = true
 		case "-Cr", "-Crestart-server":
 			opts.server.restart = true
+		case "-Ct", "-Ctimeout":
+			i, param = args.Param(i, arg)
+			timeout, err := strconv.Atoi(param)
+			if err != nil {
+				panic(fmt.Sprintf("could not parse timeout '%s'", param))
+			}
+			opts.server.timeout = timeout * 1000
 		default:
 			if m, _ := regexp.MatchString("^-C.*", arg); m {
 				panic(fmt.Sprintf("unrecognized option %s", arg))
@@ -220,7 +231,7 @@ func main() {
 
 	// Starting a server if not running
 	if server.Dead() {
-		if err := server.Start(); err != nil {
+		if err := server.Start(opts.server.timeout); err != nil {
 			panic(err.Error())
 		}
 	}

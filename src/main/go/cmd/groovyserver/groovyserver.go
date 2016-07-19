@@ -31,6 +31,7 @@ options:
   -h,--help                        show this usage
   -k,--kill                        kill the running server
   -r,--restart                     restart the running server
+  -t,--timeout <second>            specify a timeout waiting for starting up a server process (default: 20 sec)
   -q,--quiet                       suppress statring messages
   -v,--verbose                     verbose output to a log file
   -p,--port <port>                 specify port to listen
@@ -43,6 +44,7 @@ type Options struct {
 	help            bool
 	kill            bool
 	restart         bool
+	timeout         int
 	quiet           bool
 	verbose         bool
 	port            int
@@ -57,6 +59,7 @@ func NewOptions() *Options {
 		help:            false,
 		kill:            false,
 		restart:         false,
+		timeout:         srv.DefaultTimeout,
 		quiet:           false,
 		verbose:         false,
 		port:            cmn.EnvInt("GROOVYSERV_PORT", srv.DefaultPort),
@@ -78,6 +81,13 @@ func ParseOptions(args cmn.Args) *Options {
 			opts.kill = true
 		case "-r", "--restart":
 			opts.restart = true
+		case "-t", "--timeout":
+			i, param = args.Param(i, arg)
+			timeout, err := strconv.Atoi(param)
+			if err != nil {
+				panic(fmt.Sprintf("could not parse timeout '%s'", param))
+			}
+			opts.timeout = timeout * 1000
 		case "-q", "--quiet":
 			opts.quiet = true
 		case "-v", "--verbose":
@@ -151,7 +161,7 @@ func main() {
 			os.Exit(0)
 		}
 	}
-	if err := server.Start(); err != nil {
+	if err := server.Start(opts.timeout); err != nil {
 		panic(err.Error())
 	}
 }

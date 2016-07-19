@@ -28,8 +28,10 @@ import (
 )
 
 const (
-	DefaultHost = "localhost"
-	DefaultPort = 1961
+	DefaultHost            = "localhost"
+	DefaultPort            = 1961
+	DefaultTimeout         = 20000 // msec
+	intervalForWaitingLoop = 200   // msec
 )
 
 var (
@@ -186,7 +188,7 @@ func (server Server) Shutdown() (err error) {
 	// Waiting for server up
 	for {
 		server.printConsole(".")
-		time.Sleep(200 * time.Millisecond)
+		time.Sleep(intervalForWaitingLoop * time.Millisecond)
 		if !server.authTokenExists() && server.Dead() {
 			break
 		}
@@ -196,7 +198,7 @@ func (server Server) Shutdown() (err error) {
 	return nil
 }
 
-func (server Server) Start() (err error) {
+func (server Server) Start(timeout int) (err error) {
 	log.Println("Start: begin")
 	defer func() {
 		log.Println("Start: end:", err)
@@ -226,12 +228,12 @@ func (server Server) Start() (err error) {
 
 	// Waiting for server up
 	for i := 0; ; i++ {
-		if i > 100 { // 200 * 100 = 20sec
+		if i > (timeout / intervalForWaitingLoop) {
 			server.printlnConsole("")
 			return fmt.Errorf("timed out while waiting for server startup")
 		}
 		server.printConsole(".")
-		time.Sleep(200 * time.Millisecond)
+		time.Sleep(intervalForWaitingLoop * time.Millisecond)
 		if server.authTokenExists() {
 			if alive, _ := server.Alive(); alive {
 				break
