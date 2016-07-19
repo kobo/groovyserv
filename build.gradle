@@ -44,7 +44,7 @@ configurations {
 dependencies {
     compile "org.codehaus.groovy:groovy-all:${groovyVersion}"
     compile 'commons-cli:commons-cli:1.3.1'
-    archives 'net.java.dev.jna:jna:4.2.1'
+    archives 'net.java.dev.jna:jna:4.2.2'
     testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
     testRuntime 'cglib:cglib-nodep:3.1'       // for spock: enables mocking of classes (in addition to interfaces)
     testRuntime 'org.objenesis:objenesis:2.1' // for spock: enables mocking of without default constructor (together with CGLIB)
