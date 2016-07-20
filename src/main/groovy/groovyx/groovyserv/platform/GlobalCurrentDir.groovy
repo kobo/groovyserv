@@ -24,9 +24,9 @@ import groovyx.groovyserv.exception.GServCurrentDirConflictedException
 class GlobalCurrentDir {
 
     private static final String ORIGINAL_USER_DIR = System.properties["user.dir"]
-    private static final String ORIGINAL_PWD = System.getenv("PWD")
+    static final String ORIGINAL_PWD = System.getenv("PWD")
 
-    private volatile currentDir
+    private volatile String currentDir
 
     /**
      * @throws GServCurrentDirConflictedException

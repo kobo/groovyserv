@@ -44,6 +44,8 @@ options:
   -Cenv-exclude <substr>           don't pass environment variables of which a
                                    name includes specified substr
   -Cv,-Cversion                    display the version
+  -Ckeep-server-cwd                avoid to change directory to current working
+                                   directory of client
   -Cdebug                          display console log`
 )
 
@@ -64,6 +66,7 @@ type (
 		help           bool
 		version        bool
 		debug          bool
+		keepServerCwd  bool
 	}
 
 	ServerOptions struct {
@@ -94,6 +97,7 @@ func NewOptions() *Options {
 			help:           false,
 			version:        false,
 			debug:          false,
+			keepServerCwd:  false,
 		},
 		server: ServerOptions{
 			help:    false,
@@ -153,6 +157,8 @@ func ParseOptions(args cmn.Args) *Options {
 			opts.server.args = append(opts.server.args, arg)
 		case "-Cdebug":
 			opts.client.debug = true
+		case "-Ckeep-server-cwd":
+			opts.client.keepServerCwd = true
 		case "-Ck", "-Ckill-server":
 			opts.server.kill = true
 		case "-Cr", "-Crestart-server":
@@ -217,6 +223,7 @@ func main() {
 		Version:        opts.client.version,
 		Verbose:        false,
 		Debug:          opts.client.debug,
+		KeepServerCwd:  opts.client.keepServerCwd,
 	}
 
 	// Shutting down a server when specified

@@ -17,8 +17,8 @@ package groovyx.groovyserv
 
 import groovyx.groovyserv.exception.GServIllegalStateException
 import groovyx.groovyserv.exception.InvalidRequestHeaderException
-import groovyx.groovyserv.platform.GlobalCurrentDir
 import groovyx.groovyserv.platform.EnvironmentVariables
+import groovyx.groovyserv.platform.GlobalCurrentDir
 import groovyx.groovyserv.utils.LogUtils
 
 /**
@@ -50,11 +50,14 @@ class GroovyInvokeHandler implements Runnable {
     void run() {
         Thread.currentThread().name = "Thread:${GroovyInvokeHandler.simpleName}"
         LogUtils.debugLog "Thread started"
-        boolean shouldResetCurrentDir = false
         try {
             if (request.cwd) {
-                shouldResetCurrentDir = true
-                GlobalCurrentDir.instance.setDir(request.cwd)
+                if (!request.shouldKeepServerCwd()) {
+                    LogUtils.debugLog "Use request CWD globally: server.cwd=${GlobalCurrentDir.ORIGINAL_PWD}, requet.cwd=${request.resolvedCwd}"
+                    GlobalCurrentDir.instance.setDir(request.resolvedCwd)
+                } else {
+                    LogUtils.debugLog "Use server CWD globally: server.cwd=${GlobalCurrentDir.ORIGINAL_PWD}, requet.cwd=${request.resolvedCwd}"
+                }
             }
             setupEnvVars(request.envVars)
             String classpath = removeClasspathFromArgs(request)
@@ -66,7 +69,6 @@ class GroovyInvokeHandler implements Runnable {
             LogUtils.debugLog "Thread interrupted: ${e.message}"
         }
         catch (GServIllegalStateException e) {
-            shouldResetCurrentDir = false
             throw e
         }
         catch (RuntimeException e) { // TODO using GServInterruptedException
@@ -78,8 +80,7 @@ class GroovyInvokeHandler implements Runnable {
         }
         finally {
             killAllSubThreadsIfExist()
-            if (shouldResetCurrentDir) {
-                // only if not throwing any exception
+            if (!request.shouldKeepServerCwd()) {
                 GlobalCurrentDir.instance.reset()
             }
             LogUtils.debugLog "Thread is dead"

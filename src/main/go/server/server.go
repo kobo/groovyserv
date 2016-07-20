@@ -53,6 +53,7 @@ type Server struct {
 	Version        bool
 	Verbose        bool
 	Debug          bool
+	KeepServerCwd  bool
 }
 
 func (server Server) RunScript() (statusCode int, err error) {

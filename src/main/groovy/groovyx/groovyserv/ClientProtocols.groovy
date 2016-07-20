@@ -45,7 +45,7 @@ import groovyx.groovyserv.utils.LogUtils
  *    LF
  *
  *   where:
- *     <cwd> is current working directory. (optional)
+ *     <cwd> is current working directory. If you want to avoid to apply the client cwd as global, append '!' as a first letter. (optional)
  *     <arg1>,<arg2>..<argN> are commandline arguments which must be encoded by Base64. (optional)
  *     <env1>,<env2>..<envN> are environment variable names which sent to the server. (optional)
  *     <value1>,<value2>..<valueN> are environment variable values which sent to the server. (optional)

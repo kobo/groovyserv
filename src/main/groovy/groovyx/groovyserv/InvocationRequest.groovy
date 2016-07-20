@@ -44,4 +44,15 @@ class InvocationRequest {
             throw new InvalidAuthTokenException("Authentication failed. AuthToken is unmatched: ${clientAuthToken} <=> ******")
         }
     }
+
+    boolean shouldKeepServerCwd() {
+        cwd?.startsWith("!")
+    }
+
+    String getResolvedCwd() {
+        if (shouldKeepServerCwd()) {
+            return cwd.substring(1)
+        }
+        cwd
+    }
 }
