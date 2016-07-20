@@ -132,10 +132,10 @@ class GroovyInvokeHandler implements Runnable {
     private invokeGroovy(List<String> args, String classpath) {
         LogUtils.debugLog "Invoking groovy: ${args} with classpath=${classpath}"
         GroovyMain2.processArgs(args as String[], System.out, classpath)
-        appendServerVersion(args)
+        appendServerVersionIfNeeded(args)
     }
 
-    private appendServerVersion(List<String> args) {
+    private appendServerVersionIfNeeded(List<String> args) {
         if (args.any { it.startsWith("-v") } || args.contains("--version")) {
             println "GroovyServ Version: Server: @GROOVYSERV_VERSION@"
         }
