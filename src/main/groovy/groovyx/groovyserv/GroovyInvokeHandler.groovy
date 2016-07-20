@@ -17,7 +17,7 @@ package groovyx.groovyserv
 
 import groovyx.groovyserv.exception.GServIllegalStateException
 import groovyx.groovyserv.exception.InvalidRequestHeaderException
-import groovyx.groovyserv.platform.CurrentDirHolder
+import groovyx.groovyserv.platform.GlobalCurrentDir
 import groovyx.groovyserv.platform.EnvironmentVariables
 import groovyx.groovyserv.utils.LogUtils
 
@@ -54,7 +54,7 @@ class GroovyInvokeHandler implements Runnable {
         try {
             if (request.cwd) {
                 shouldResetCurrentDir = true
-                CurrentDirHolder.instance.setDir(request.cwd)
+                GlobalCurrentDir.instance.setDir(request.cwd)
             }
             setupEnvVars(request.envVars)
             String classpath = removeClasspathFromArgs(request)
@@ -80,7 +80,7 @@ class GroovyInvokeHandler implements Runnable {
             killAllSubThreadsIfExist()
             if (shouldResetCurrentDir) {
                 // only if not throwing any exception
-                CurrentDirHolder.instance.reset()
+                GlobalCurrentDir.instance.reset()
             }
             LogUtils.debugLog "Thread is dead"
         }

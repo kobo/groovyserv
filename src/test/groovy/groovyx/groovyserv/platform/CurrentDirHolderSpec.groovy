@@ -22,7 +22,7 @@ import spock.lang.Specification
 @UnitTest
 class CurrentDirHolderSpec extends Specification {
 
-    CurrentDirHolder holder = CurrentDirHolder.instance
+    GlobalCurrentDir holder = GlobalCurrentDir.instance
     String workDir
 
     def setup() {
@@ -87,7 +87,7 @@ class CurrentDirHolderSpec extends Specification {
 
     private void assertReset() {
         assert holder.currentDir == null
-        assert System.properties['user.dir'] == CurrentDirHolder.ORIGINAL_USER_DIR
+        assert System.properties['user.dir'] == GlobalCurrentDir.ORIGINAL_USER_DIR
     }
 
 }

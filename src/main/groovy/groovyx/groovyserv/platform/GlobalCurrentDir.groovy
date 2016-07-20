@@ -21,7 +21,7 @@ import groovyx.groovyserv.exception.GServCurrentDirConflictedException
  * @author NAKANO Yasuharu
  */
 @Singleton
-class CurrentDirHolder {
+class GlobalCurrentDir {
 
     private static final String ORIGINAL_USER_DIR = System.properties["user.dir"]
     private static final String ORIGINAL_PWD = System.getenv("PWD")
