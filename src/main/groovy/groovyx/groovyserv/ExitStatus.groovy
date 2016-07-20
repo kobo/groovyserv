@@ -27,7 +27,7 @@ public enum ExitStatus {
     TERMINATED(5),
     INTERRUPTED(6),
     FORCELY_SHUTDOWN(7),
-    // NOTE: no change as follows because it's used from a user command
+    // NOTE: do not change the followings because it could be used by a user command
     INVALID_AUTHTOKEN(201),
     CLIENT_NOT_ALLOWED(202),
     CURRENT_DIR_CONFLICTED(203),

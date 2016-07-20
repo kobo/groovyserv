@@ -84,7 +84,7 @@ class LogUtils {
     private static String sanitizeStackTrace(String stackTrace) {
         def sw = new StringWriter()
         stackTrace.eachLine { line ->
-            if (line=~/at (sun\.|org.codehaus.groovy)/) return
+            if (line =~ /at (sun\.|org.codehaus.groovy)/) return
             sw.println line
         }
         sw.print("\t(sanitized)")
@@ -123,7 +123,7 @@ class LogUtils {
     private static toDisplayAscii(b) {
         if (b) {
             char c = (char) b
-            return (c==~/\p{Print}/) ? c : "?"
+            return (c ==~ /\p{Print}/) ? c : "?"
         }
         return ""
     }

@@ -15,8 +15,6 @@
  */
 package groovyx.groovyserv.exception
 
-import groovyx.groovyserv.ExitStatus
-
 /**
  * @author NAKANO Yasuharu
  */

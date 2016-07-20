@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package groovyx.groovyserv
+
 import groovyx.groovyserv.exception.EmptyRequestException
 import groovyx.groovyserv.exception.GServException
 import groovyx.groovyserv.utils.Holders
@@ -29,6 +30,7 @@ import java.util.concurrent.ThreadFactory
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
+
 /**
  * @author UEHARA Junji
  * @author NAKANO Yasuharu

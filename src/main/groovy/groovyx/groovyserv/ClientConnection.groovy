@@ -22,9 +22,9 @@ import groovyx.groovyserv.exception.InvalidAuthTokenException
 import groovyx.groovyserv.exception.InvalidRequestHeaderException
 import groovyx.groovyserv.stream.StreamRequestInputStream
 import groovyx.groovyserv.stream.StreamResponseOutputStream
-import groovyx.groovyserv.utils.LogUtils
 import groovyx.groovyserv.utils.Holders
 import groovyx.groovyserv.utils.IOUtils
+import groovyx.groovyserv.utils.LogUtils
 
 /**
  * @author NAKANO Yasuharu
