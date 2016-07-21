@@ -26,7 +26,7 @@ class ExecScriptSpec extends Specification {
 
     def "executes an simple one-liner"() {
         when:
-        def result = TestUtils.executeClientCommandSuccessfully(["-e", '"println(\'hello\')"'])
+        def result = TestUtils.executeClientCommandSuccessfully(["-e", '''"println('hello')"'''])
 
         then:
         result.out == "hello" + SEP
@@ -62,7 +62,7 @@ class ExecScriptSpec extends Specification {
 
     def "executes an one-liner which prints a lot of text over a buffer of command"() {
         when:
-        def result = TestUtils.executeClientCommandSuccessfully(["-e", '"println(\'x\'*10000)"'])
+        def result = TestUtils.executeClientCommandSuccessfully(["-e", '''"println('x'*10000)"'''])
 
         then:
         result.out == "x" * 10000 + SEP
