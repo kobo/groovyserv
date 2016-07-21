@@ -22,7 +22,7 @@ before_script:
   - go version
 
 script:
-    - ./gradlew clean check distLocalBin || ( find build/test-results -name "*.xml" | xargs cat ; exit 1 )
+  - ./gradlew clean check distLocalBin || ( echo "=============================="; find build/test-results -name "*.xml" | xargs cat ; exit 1 )
 
 cache:
   directories:
