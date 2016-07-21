@@ -18,6 +18,7 @@ package groovyx.groovyserv
 import groovyx.groovyserv.test.IntegrationTest
 import groovyx.groovyserv.test.TestUtils
 import spock.lang.Specification
+import spock.lang.Unroll
 
 @IntegrationTest
 class DynamicCurrentDirSpec extends Specification {
@@ -29,7 +30,8 @@ class DynamicCurrentDirSpec extends Specification {
         restartServer()
     }
 
-    def "executes with specified PWD"() {
+    @Unroll
+    def "executes with specified PWD (#pwd)"() {
         when:
         def result = TestUtils.executeClientCommandWithWorkDir(["-e", '"println(System.getProperty(\'user.dir\'))"'], new File(pwd))
 
@@ -60,6 +62,29 @@ class DynamicCurrentDirSpec extends Specification {
             it =~ /Hint:  Another thread may be running on a different working directory\. Wait a moment\./
         }
     }
+
+    @Unroll
+    def "can run a script under different PWD (#pwd) simultaneously with '-Ckeep-server-cwd' option while a script is running on another PWD"() {
+        given:
+        def serverCwd = new File(sysProp("user.dir"))
+        Thread.start {
+            TestUtils.executeClientCommandWithWorkDir(["-e", '"while(true) { Thread.sleep(500) }"'], serverCwd)
+        }
+        sleep 500
+
+        when:
+        def result = TestUtils.executeClientCommandWithWorkDir(["-Ckeep-server-cwd", "-e", '"println(System.getProperty(\'user.dir\'))"'], new File(pwd))
+
+        then:
+        result.assertSuccess()
+        result.out == serverCwd.absolutePath + SEP // keeping the server CWD
+        result.err == ""
+
+        where:
+        // Not all directories are present on all platforms
+        pwd << [sysProp("temp.dir"), sysProp("user.home"), sysProp("java.home")].findAll { it != null }
+    }
+
 
     private static restartServer() {
         TestUtils.shutdownServerIfRunning(port)
