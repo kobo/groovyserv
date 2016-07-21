@@ -29,6 +29,11 @@ public class NoExitSecurityManager2 extends SecurityManager {
     }
 
     @Override
+    public void checkPermission(final Permission perm, final Object context) {
+        // Do nothing
+    }
+
+    @Override
     public void checkExit(final int code) {
         throw new SystemExitException(code, "System.exit(" + code + ") is called");
     }
