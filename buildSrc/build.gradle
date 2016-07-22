@@ -20,6 +20,6 @@ repositories {
 }
 
 dependencies {
-    runtime 'org.fusesource.jansi:jansi:1.13'
+    compile 'org.fusesource.jansi:jansi:1.13'
 }
 
