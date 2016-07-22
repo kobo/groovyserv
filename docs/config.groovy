@@ -31,7 +31,7 @@ numbering = false
 
 // Build information
 groovyVersion = System.getenv("GROOVY_VERSION") ?: "X.X.X"
-javaVersion = "1.8.0_25"
+javaVersion = "1.8.0_92"
 
 // Filters
 filters = {
