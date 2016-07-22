@@ -135,6 +135,8 @@ Those options are analyzed and consumed by `groovyclient`, and aren't passed to 
   -Cenv-all                        pass all environment variables
   -Cenv-exclude <substr>           don't pass environment variables of which a name includes specified substr
   -Cv,-Cversion                    display the version
+  -Ckeep-server-cwd                avoid to change directory to current working
+                                   directory of client
   -Cdebug                          display console log
 ```
 
@@ -612,7 +614,7 @@ ERROR: could not change working directory
 Hint:  Another thread may be running on a different working directory. Wait a moment.
 ```
 
-Instead, this for the same directory works well:
+Instead, this works well because the both are in the same directory:
 
 ```sh
 $ ( cd /tmp/dir1; groovyclient -e "(1..3).each { println it }; sleep 3" ) | ( cd  /tmp/dir1; groovyclient -ne "println line * 2" )
@@ -621,7 +623,16 @@ $ ( cd /tmp/dir1; groovyclient -e "(1..3).each { println it }; sleep 3" ) | ( cd
 33
 ```
 
-You can also use multiple servers [with different ports](#port-number) as a workaround.
+If you don't need to use client't current directory as a current working directory in your script, you can use `-Ckeep-server-cwd` option as a workaround:
+
+```sh
+$ ( cd /tmp/dir1; groovyclient -e "(1..3).each { println it }; sleep 3" ) | ( cd  /tmp/dir2; groovyclient -Ckeep-server-cwd -ne "println line * 2" )
+11
+22
+33
+```
+
+You can also use multiple servers [with different ports](#port-number) as another workaround:
 
 ```sh
 $ ( cd /tmp/dir1; groovyclient -Cport 1963 -e "(1..3).each { println it }; sleep 3" ) | ( cd  /tmp/dir2; groovyclient -Cport 1964 -ne "println line * 2" )
