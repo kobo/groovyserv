@@ -1,0 +1,13 @@
+#
+# For testing in travis (because docker engine at travis is too old for docker-compose version 2 format)
+#
+
+app:
+  build: .
+  volumes:
+    - $PWD:/usr/src/app
+    - $HOME/.gradle:/root/.gradle
+    - $HOME/.m2:/root/.m2
+  working_dir: /usr/src/app
+  command: bash -c './gradlew clean check distLocalBin || ( find build/test-results -name "*.xml" | xargs cat ; exit 1 )'
+

@@ -1,28 +1,23 @@
-language: go
+sudo: required
 
-jdk:
-  - oraclejdk8
-  - oraclejdk7
-  - openjdk7
-  - openjdk6
+services:
+  - docker
 
-# Use docker
-sudo: false
+env:
+  DOCKER_COMPOSE_VERSION: 1.4.2
 
-# The latest Groovy should be installed because the Groovy version installed by default at travis is too old.
-install:
-  - curl -s get.sdkman.io | bash
-  - echo "sdkman_auto_answer=true" > ~/.sdkman/etc/config
-  - source ~/.sdkman/bin/sdkman-init.sh
-  - sdk install groovy
-  - export GROOVY_HOME=~/.sdkman/candidates/groovy/`ls -1 ~/.sdkman/candidates/groovy | sort -r | grep -v current | head -n 1`
+before_install:
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
 
 before_script:
-  - $GROOVY_HOME/bin/groovy -version
-  - go version
+  - docker --version
+  - docker-compose --version
 
 script:
-  - ./gradlew clean check distLocalBin || ( echo "=============================="; find build/test-results -name "*.xml" | xargs cat ; exit 1 )
+  - docker-compose -f docker-compose-travis.yml up
 
 cache:
   directories:
