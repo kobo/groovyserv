@@ -13,8 +13,8 @@ Change Log
 #### Improvements
 
 * [Internal] Update JNA to 4.2.2
-* [Internal] Update Groovy to 2.4.7 (used only for testing)
 * [Documentation] Add restrictions about #8
+    - https://github.com/kobo/groovyserv/issues/8
 
 #### Bug Fixes
 
