@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="css/font-awesome.min.css">
     <link rel="stylesheet" href="css/highlight.css">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/print.css" media="print">
     <link rel="stylesheet" href="extensions/admonition/css/admonition.css">
     <link rel="stylesheet" href="css/my.css">
   </head>
@@ -63,11 +64,19 @@
                 <a href="#change-log">Change Log</a>
                 <ul>
                   <li class="unnumbered visible">
-                    <a href="#version-100-2014-11-04">Version 1.0.0 (2014-11-04)</a>
+                    <a href="#version-110-2016-07-22">Version 1.1.0 (2016-07-22)</a>
                     <ul>
                       <li class="unnumbered invisible"><a href="#new-features">New Features</a></li>
                       <li class="unnumbered invisible"><a href="#improvements">Improvements</a></li>
                       <li class="unnumbered invisible"><a href="#bug-fixes">Bug Fixes</a></li>
+                    </ul>
+                  </li>
+                  <li class="unnumbered visible">
+                    <a href="#version-100-2014-11-04">Version 1.0.0 (2014-11-04)</a>
+                    <ul>
+                      <li class="unnumbered invisible"><a href="#id-200c2d2b128e2b121465c789a75038f37a6e1aac">New Features</a></li>
+                      <li class="unnumbered invisible"><a href="#id-76bc8f11258b548bfa58f2f3496c3afa3bf13253">Improvements</a></li>
+                      <li class="unnumbered invisible"><a href="#id-87c56e01b051280ac7b5077bbc6a1c3e2e75fe53">Bug Fixes</a></li>
                     </ul>
                   </li>
                   <li class="unnumbered visible">
@@ -167,8 +176,49 @@
           </div>
           <div class="main-content">
             <h1 id="change-log">Change Log</h1>
-            <h2 id="version-100-2014-11-04">Version 1.0.0 (2014-11-04)</h2>
+            <h2 id="version-110-2016-07-22">Version 1.1.0 (2016-07-22)</h2>
             <h4 id="new-features">New Features</h4>
+            <ul>
+              <li>
+                Fixed 69: You can specify a timeiout waiting for starting up a server process (default: 20 sec)
+                <ul>
+                  <li><a href="https://github.com/kobo/groovyserv/issues/69">https://github.com/kobo/groovyserv/issues/69</a></li>
+                </ul>
+              </li>
+              <li>
+                Fixed 71: Avoid to change current working directory for each request by <code>-Ckeep-server-cwd</code> at groovyclient
+                <ul>
+                  <li><a href="https://github.com/kobo/groovyserv/issues/71">https://github.com/kobo/groovyserv/issues/71</a></li>
+                </ul>
+              </li>
+            </ul>
+            <h4 id="improvements">Improvements</h4>
+            <ul>
+              <li>[Internal] Update JNA to 4.2.2</li>
+              <li>
+                [Documentation] Add restrictions about #8
+                <ul>
+                  <li><a href="https://github.com/kobo/groovyserv/issues/8">https://github.com/kobo/groovyserv/issues/8</a></li>
+                </ul>
+              </li>
+            </ul>
+            <h4 id="bug-fixes">Bug Fixes</h4>
+            <ul>
+              <li>
+                Fixed 64: groovyserv exec format error on ubuntu 32 bit
+                <ul>
+                  <li><a href="https://github.com/kobo/groovyserv/issues/64">https://github.com/kobo/groovyserv/issues/64</a></li>
+                </ul>
+              </li>
+              <li>
+                Fixed 67: Avoid java.security.AccessControlException access denied
+                <ul>
+                  <li><a href="https://github.com/kobo/groovyserv/issues/67">https://github.com/kobo/groovyserv/issues/67</a></li>
+                </ul>
+              </li>
+            </ul>
+            <h2 id="version-100-2014-11-04">Version 1.0.0 (2014-11-04)</h2>
+            <h4 id="id-200c2d2b128e2b121465c789a75038f37a6e1aac">New Features</h4>
             <ul>
               <li>
                 [Log/File] You can specify a path of a log file and an authtoken file by <code>GROOVYSERV_WORK_DIR</code> and <code>GROOVYSERV_LOG_DIR</code> environmant variable. See <a href="userguide.html#files">User Guide</a>.
@@ -178,7 +228,7 @@
               </li>
               <li>[Setup] You can automatically choose appropriate binary files of user commands for your environment and remove unused otherse. See <a href="howtoinstall.html">How to Install</a>.</li>
             </ul>
-            <h4 id="improvements">Improvements</h4>
+            <h4 id="id-76bc8f11258b548bfa58f2f3496c3afa3bf13253">Improvements</h4>
             <ul>
               <li>[Command] User commands are thoroughly rewritten by Go language. Now you can use full-featured <code>groovyclient</code> and <code>groovyserver</code> at all environments Go language supports. Instead, commands written in Bash and Ruby are removed.</li>
               <li>[Command] A server process can shut down itself by a special request. So, finally you can control a server process even on Windows by user commands.</li>
@@ -198,8 +248,14 @@
               </li>
               <li>[Internal] Many many refactoring and restructuring.</li>
             </ul>
-            <h4 id="bug-fixes">Bug Fixes</h4>
+            <h4 id="id-87c56e01b051280ac7b5077bbc6a1c3e2e75fe53">Bug Fixes</h4>
             <ul>
+              <li>
+                Fixed 52: missing output with consumeProcessOutput only when passed &lsquo;as Appendable&rsquo; (the default)
+                <ul>
+                  <li><a href="https://github.com/kobo/groovyserv/issues/52">https://github.com/kobo/groovyserv/issues/52</a></li>
+                </ul>
+              </li>
               <li>
                 Fixed 53: Memory leak due to ThreadGroup not being destroyed
                 <ul>
@@ -598,7 +654,7 @@
             ga('send', 'pageview');
           </script>
           <div class="footer">
-            <p class="version text-muted">Version 1.0.0</p>
+            <p class="version text-muted">Version 1.1.0</p>
             <p class="credit text-muted">Powered by <a href="https://github.com/kobo/gaiden">Gaiden</a></p>
           </div>
         </div>

@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="css/font-awesome.min.css">
     <link rel="stylesheet" href="css/highlight.css">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/print.css" media="print">
     <link rel="stylesheet" href="extensions/admonition/css/admonition.css">
     <link rel="stylesheet" href="css/my.css">
   </head>
@@ -123,6 +124,7 @@
                       <li class="unnumbered visible"><a href="#cannot-run-concurrently-for-different-working-directories">Cannot run concurrently for different working directories</a></li>
                       <li class="unnumbered visible"><a href="#global-variables-are-request-globally-shared">Global variables are request-globally shared</a></li>
                       <li class="unnumbered visible"><a href="#console-io">Console I/O</a></li>
+                      <li class="unnumbered visible"><a href="#awtswing-application">AWT/Swing application</a></li>
                     </ul>
                   </li>
                 </ul>
@@ -137,8 +139,8 @@
             <h2 id="requirements">Requirements</h2>
             <p>GroovyServ needs the following programs Version of JDK/Groovy using at build is following:</p>
             <ul>
-              <li><a href="http://www.oracle.com/technetwork/java/javase/downloads">Java SDK 7+</a> (1.8.0_25 on build-time)</li>
-              <li><a href="http://groovy-lang.org/download.html">Groovy</a> (2.3.7 on build-time)</li>
+              <li><a href="http://www.oracle.com/technetwork/java/javase/downloads">Java SDK 7+</a> (1.8.0_92 on build-time)</li>
+              <li><a href="http://groovy-lang.org/download.html">Groovy</a> (2.4.7 on build-time)</li>
             </ul>
             <p>There are binary files for following environment/OS as default:</p>
             <ul>
@@ -149,7 +151,7 @@
             <p>But if you build the user commands written in Go language, you can use them anywhere. To build by yourself is required:</p>
             <ul>
               <li><a href="http://www.oracle.com/technetwork/java/javase/downloads">Java SDK 7+</a></li>
-              <li><a href="http://golang.org/doc/install">Go 1.3+</a></li>
+              <li><a href="http://golang.org/doc/install">Go 1.5+</a></li>
             </ul>
             <h2 id="command-usage">Command usage</h2>
             <h3 id="startstop-a-server-process">Start/stop a server process</h3>
@@ -164,9 +166,9 @@ Original classpath: (none)
 GroovyServ default classpath: /Users/me/.groovy/groovyserv/lib/*
 Starting server..............
 Server is successfully started up on 1961 port
-Groovy Version: 2.3.7 JVM: 1.8.0_25 Vendor: Oracle Corporation OS: Mac OS X
-GroovyServ Version: Server: 1.0.0
-GroovyServ Version: Client: 1.0.0
+Groovy Version: 2.4.7 JVM: 1.8.0_92 Vendor: Oracle Corporation OS: Mac OS X
+GroovyServ Version: Server: 1.1.0
+GroovyServ Version: Client: 1.1.0
 </code></pre>
             <p>The another way is using a <code>groovyserver</code> command:</p>
             <pre><code class="sh">$ groovyserver
@@ -176,6 +178,18 @@ GroovyServ Version: Client: 1.0.0
 </code></pre>
             <p>A <code>-r/--restart</code> option is handy because it can start a new server when there is no server process. When you want a server to be running, you can always use the option like:</p>
             <pre><code class="sh">$ groovyserver -r
+</code></pre>
+            <p>If your machine is very slow, the command would be timed out like this:</p>
+            <pre><code class="sh">$ groovyserver
+...
+Starting server....................................................
+ERROR: timed out while waiting for server startup
+</code></pre>
+            <p>You can use <code>-t/--timeout</code> to specify long timeout value (unit: second):</p>
+            <pre><code class="sh">$ groovyserver -t 100
+...
+Starting server...............................................................
+Server is successfully started up on 1961 port
 </code></pre>
             <h3 id="run-a-groovy-script">Run a Groovy script</h3>
             <p>You can run a Groovy script by a <code>groovyclient</code> command instead of a <code>groovy</code> command. In most of cases, you can specify an one-liner script as a parameter of <code>-e</code> option:</p>
@@ -198,11 +212,14 @@ Hello from a file.
   -Ca,-Cauthtoken &lt;authtoken&gt;      specify authtoken
   -Ck,-Ckill-server                kill the running server
   -Cr,-Crestart-server             restart the running server
+  -Ct,-Ctimeout &lt;second&gt;           specify a timeout waiting for starting up a server process (default: 20 sec)
   -Cq,-Cquiet                      suppress statring messages
   -Cenv &lt;substr&gt;                   pass environment variables of which a name includes specified substr
   -Cenv-all                        pass all environment variables
   -Cenv-exclude &lt;substr&gt;           don&#39;t pass environment variables of which a name includes specified substr
   -Cv,-Cversion                    display the version
+  -Ckeep-server-cwd                avoid to change directory to current working
+                                   directory of client
   -Cdebug                          display console log
 </code></pre>
             <h4 id="groovyserver">groovyserver</h4>
@@ -210,6 +227,7 @@ Hello from a file.
             <pre><code class="nohighlight">  -h,--help                        show this usage
   -k,--kill                        kill the running server
   -r,--restart                     restart the running server
+  -t,--timeout &lt;second&gt;            specify a timeout waiting for starting up a server process (default: 20 sec)
   -q,--quiet                       suppress statring messages
   -v,--verbose                     verbose output to a log file
   -p,--port &lt;port&gt;                 specify port to listen
@@ -542,13 +560,19 @@ Can you read me?
 ERROR: could not change working directory
 Hint:  Another thread may be running on a different working directory. Wait a moment.
 </code></pre>
-            <p>Instead, this for the same directory works well:</p>
+            <p>Instead, this works well because the both are in the same directory:</p>
             <pre><code class="sh">$ ( cd /tmp/dir1; groovyclient -e &quot;(1..3).each { println it }; sleep 3&quot; ) | ( cd  /tmp/dir1; groovyclient -ne &quot;println line * 2&quot; )
 11
 22
 33
 </code></pre>
-            <p>You can also use multiple servers <a href="#port-number">with different ports</a> as a workaround.</p>
+            <p>If you don&rsquo;t need to use client&rsquo;t current directory as a current working directory in your script, you can use <code>-Ckeep-server-cwd</code> option as a workaround:</p>
+            <pre><code class="sh">$ ( cd /tmp/dir1; groovyclient -e &quot;(1..3).each { println it }; sleep 3&quot; ) | ( cd  /tmp/dir2; groovyclient -Ckeep-server-cwd -ne &quot;println line * 2&quot; )
+11
+22
+33
+</code></pre>
+            <p>You can also use multiple servers <a href="#port-number">with different ports</a> as another workaround:</p>
             <pre><code class="sh">$ ( cd /tmp/dir1; groovyclient -Cport 1963 -e &quot;(1..3).each { println it }; sleep 3&quot; ) | ( cd  /tmp/dir2; groovyclient -Cport 1964 -ne &quot;println line * 2&quot; )
 11
 22
@@ -571,6 +595,8 @@ Hello
             <pre><code class="sh">$ groovyclient -e &quot;println System.console()&quot;
 null
 </code></pre>
+            <h3 id="awtswing-application">AWT/Swing application</h3>
+            <p>The GUI application using AWT/Swing is not supported because a server process is running as a headless mode. Even if running as a non-headless mode, the application would suddenly exit. This restriction is related to &ldquo;Detoxication of System.exit()&rdquo; and the fix is difficult.</p>
           </div>
           <div class="content-nav content-nav-bottom">
             <a class="prev-page" href="quickstart.html">
@@ -591,7 +617,7 @@ null
             ga('send', 'pageview');
           </script>
           <div class="footer">
-            <p class="version text-muted">Version 1.0.0</p>
+            <p class="version text-muted">Version 1.1.0</p>
             <p class="credit text-muted">Powered by <a href="https://github.com/kobo/gaiden">Gaiden</a></p>
           </div>
         </div>
