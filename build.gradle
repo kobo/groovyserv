@@ -351,6 +351,7 @@ def executeCommand(List command, Map additionalEnv = [:], File workDir = null) {
     exec {
         commandLine command
         environment additionalEnv
+        if (workDir) workingDir workDir
     }
 }
 
