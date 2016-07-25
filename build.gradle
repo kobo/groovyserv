@@ -24,6 +24,7 @@ import org.apache.tools.ant.filters.ReplaceTokens
 apply plugin: 'groovy'
 apply plugin: 'idea'
 apply plugin: AnsiColorConsoleLogPlugin
+apply plugin: "io.sdkman.vendors"
 
 defaultTasks 'clean', 'check', 'dist' // whole tasks
 
@@ -323,6 +324,22 @@ task publishToGhpages(dependsOn: "docs", description: "Copy documentation to gh-
         into "$projectDir"
         from docs.outputDir
     }
+}
+
+//------------------------
+// Deployment
+
+sdkman {
+    api = "https://vendors.sdkman.io/"
+
+    // You must set these variables in $HOME/.gradle/gradle.properties
+    consumerKey = sdkmanConsumerKey
+    consumerToken = sdkmanConsumerToken
+
+    candidate = "groovyserv"
+    version = project.version
+    url = "https://bitbucket.org/kobo/groovyserv-mirror/downloads/groovyserv-${project.version}-bin.zip"
+    hashtag = "#groovyserv"
 }
 
 //===========================================

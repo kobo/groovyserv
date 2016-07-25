@@ -17,9 +17,12 @@
 repositories {
     mavenLocal()
     mavenCentral()
+    maven {
+        url "https://plugins.gradle.org/m2/"
+    }
 }
 
 dependencies {
     compile 'org.fusesource.jansi:jansi:1.13'
+    compile "gradle.plugin.io.sdkman:gradle-sdkvendor-plugin:1.1.0"
 }
-
