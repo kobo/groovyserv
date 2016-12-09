@@ -1,42 +1,39 @@
-Summary: GroovyServ, a process server for Groovy
-Name: groovyserv
-Version: 1.0.0
-Release: 1%{?dist}
-License: Apache License, Version 2.0
-Group: Development/Languages
-Provides: groovyserv
-Requires: java >= 1.7
-Requires: groovy >= 2.3.7
-Source0: https://bitbucket.org/kobo/groovyserv-mirror/downloads/%{name}-%{version}-src.zip
-BuildRoot: %{_tmppath}/%{name}-%{version}-root
-Packager: Kazuhisa Hara <kazuhisya@gmail.com>
+%define debug_package %{nil}
+
+Summary:       GroovyServ, a process server for Groovy
+Name:          groovyserv
+Version:       1.1.0
+Release:       1%{?dist}
+License:       Apache License, Version 2.0
+Group:         Development/Languages
+Requires:      java >= 1.8
+Requires:      groovy >= 2.3.7
+Source0:       https://github.com/kobo/%{name}/archive/v%{version}.tar.gz
+BuildRoot:     %{_tmppath}/%{name}-%{version}-root
+Packager:      Kazuhisa Hara <kazuhisya@gmail.com>
 BuildRequires: groovy >= 2.3.7
 BuildRequires: golang >= 1.3
-BuildRequires: java >= 1.7
+BuildRequires: java >= 1.8
+BuildRequires: java-devel >= 1.8
 
 %description
 Provides the GroovyServ mechanism for faster groovy execution.
 
 %prep
-rm %{_sourcedir}/groovyserv-%{version}*bin.zip -rf
-rm %{_sourcedir}/groovyserv-%{version} -rf
+%setup -q -n %{name}-%{version}
 
 %build
-cd %{_sourcedir}
-unzip groovyserv-%{version}-src.zip
-cd groovyserv-%{version}
 export _JAVA_OPTIONS=-Dfile.encoding=UTF-8
 ./gradlew clean distLocalBin
-cd %{_sourcedir}
-mv groovyserv-%{version}/build/distributions/groovyserv-%{version}-bin-local.zip .
-rm groovyserv-%{version} -rf
-unzip groovyserv-%{version}-bin-local.zip
+mv build/distributions/%{name}-%{version}-bin-local.zip ../
+cd ../ && rm -rf %{name}-%{version}
+unzip %{name}-%{version}-bin-local.zip
 
 %install
 mkdir -p $RPM_BUILD_ROOT/opt $RPM_BUILD_ROOT/usr/bin
-cp -Rp %{_sourcedir}/groovyserv-%{version} $RPM_BUILD_ROOT/opt/groovyserv
+cp -Rp $RPM_BUILD_DIR/%{name}-%{version} $RPM_BUILD_ROOT/opt/%{name}
 for file in groovyserver groovyclient ; do
-  ln -s /opt/groovyserv/bin/$file $RPM_BUILD_ROOT/usr/bin
+  ln -s /opt/%{name}/bin/$file $RPM_BUILD_ROOT/usr/bin
 done
 
 %clean
@@ -52,7 +49,13 @@ rm -Rf $RPM_BUILD_ROOT
 /usr/bin/groovyclient
 
 %changelog
-* Thu Nov  6 2014 Kazuhisa Hara <kazuhisya@gmail.com>
+* Thu Dec  8 2016 Kazuhisa Hara <kazuhisya@gmail.com> - 1.1.0-1
+- Updated to 1.1.0-release
+- Update source zip to tar.gz version
+- Fixed to pass the test  for rpmlint
+- Added prebuilt rpm link from Fedora Copr
+
+* Thu Nov  6 2014 Kazuhisa Hara <kazuhisya@gmail.com> - 1.0.0-1
 - Updated to 1.0.0-release
 - Commands written in Ruby is removed
 - [rpm] Added golang in BuildRequires
