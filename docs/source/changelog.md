@@ -1,6 +1,16 @@
 Change Log
 ==========
 
+## Version 1.2.0 (2018-03-13)
+
+#### Bug Fixes
+
+* Fixed 78: Groovyserv broken on macOS 10.13 High Sierra
+    - https://github.com/kobo/groovyserv/issues/78
+* Fix #79: An error occurs when specifying JAVA_OPTS
+    - https://github.com/kobo/groovyserv/issues/79
+
+
 ## Version 1.1.0 (2016-07-22)
 
 #### New Features
