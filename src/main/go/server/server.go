@@ -282,12 +282,12 @@ func (server Server) startInBackground() (err error) {
 	// JAVA_OPTS
 	javaOpts := cmn.Env("JAVA_OPTS", "") +
 		// -server: for performance (experimental)
-		"-server " +
+		" -server" +
 		// -Djava.awt.headless=true: without this, annoying to switch an active process to it when new process is created as daemon
-		"-Djava.awt.headless=true " +
+		" -Djava.awt.headless=true" +
 		// gy-like parameters (experimental)
 		// http://bbook.hatenablog.jp/entry/2015/03/09/205354
-		"-XX:+TieredCompilation -XX:TieredStopAtLevel=1 "
+		" -XX:+TieredCompilation -XX:TieredStopAtLevel=1"
 
 	// Preparing a command
 	groovyServOpts := cmn.Env("GROOVYSERV_OPTS", "")
