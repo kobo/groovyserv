@@ -5,8 +5,8 @@ How to Build
 
 To build is required:
 
-* [Java SDK 7+](http://www.oracle.com/technetwork/java/javase/downloads)
-* [Go 1.3+](http://golang.org/doc/install)
+* Java 8+
+* Go 1.19+
 
 
 > **WARNING**: For Windows users

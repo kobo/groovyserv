@@ -4,7 +4,7 @@ services:
   - docker
 
 env:
-  DOCKER_COMPOSE_VERSION: 1.4.2
+  DOCKER_COMPOSE_VERSION: 1.19.0
 
 before_install:
   - sudo rm /usr/local/bin/docker-compose
@@ -17,7 +17,7 @@ before_script:
   - docker-compose --version
 
 script:
-  - docker-compose -f docker-compose-travis.yml up
+  - docker-compose run app ./gradlew clean check distLocalBin || ( find build/test-results -name "*.xml" | xargs cat ; exit 1 )
 
 cache:
   directories:

@@ -14,8 +14,8 @@ If you know gnuserv(gnudoit)/emacsserver/emacsclient, this is similar to them.
 GroovyServ needs the following programs
 Version of JDK/Groovy using at build is following:
 
-* [Java SDK 7+](http://www.oracle.com/technetwork/java/javase/downloads) (<JAVA_VERSION> on build-time)
-* [Groovy](http://groovy-lang.org/download.html) (<GROOVY_VERSION> on build-time)
+* Java 8+
+* Groovy (<GROOVY_VERSION> on build-time)
 
 There are binary files for following environment/OS as default:
 
@@ -26,8 +26,8 @@ There are binary files for following environment/OS as default:
 But if you build the user commands written in Go language, you can use them anywhere.
 To build by yourself is required:
 
-* [Java SDK 7+](http://www.oracle.com/technetwork/java/javase/downloads)
-* [Go 1.5+](http://golang.org/doc/install)
+* Java 8+
+* Go 1.19+
 
 
 ## Command usage
