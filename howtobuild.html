@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="css/font-awesome.min.css">
     <link rel="stylesheet" href="css/highlight.css">
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/print.css" media="print">
     <link rel="stylesheet" href="extensions/admonition/css/admonition.css">
     <link rel="stylesheet" href="css/my.css">
   </head>
@@ -77,8 +76,8 @@
             <h2 id="requirements">Requirements</h2>
             <p>To build is required:</p>
             <ul>
-              <li><a href="http://www.oracle.com/technetwork/java/javase/downloads">Java SDK 7+</a></li>
-              <li><a href="http://golang.org/doc/install">Go 1.3+</a></li>
+              <li>Java 8+</li>
+              <li>Go 1.19+</li>
             </ul>
             <div class="admonition admonition-warning">
               <div class="admonition-icon">
@@ -92,25 +91,25 @@
               </div>
             </div>
             <h2 id="build-a-binary-package-dedicated-to-your-environment">Build a binary package dedicated to your environment</h2>
-            <p>After downloading and expanding a GroovyServ&rsquo;s source package <code>groovyserv-1.1.0-src.zip</code> to any directory, build it with Gradle as follows:</p>
+            <p>After downloading and expanding a GroovyServ&rsquo;s source package <code>groovyserv-1.2.0-src.zip</code> to any directory, build it with Gradle as follows:</p>
             <pre><code class="sh">$ cd /tmp
-$ unzip groovyserv-1.1.0-src.zip
-$ cd groovyserv-1.1.0-src
+$ unzip groovyserv-1.2.0-src.zip
+$ cd groovyserv-1.2.0-src
 $ ./gradlew clean distLocalBin
 </code></pre>
             <p>Then a ZIP file will be generated.</p>
-            <pre><code class="nohighlight">build/distributions/groovyserv-1.1.0-bin-local.zip
+            <pre><code class="nohighlight">build/distributions/groovyserv-1.2.0-bin-local.zip
 </code></pre>
             <p>This zip file is dedicated to your environment. So you can use it immediately just after expanding it.</p>
             <h2 id="build-a-general-binary-package">Build a general binary package</h2>
-            <p>After downloading and expanding a GroovyServ&rsquo;s source package <code>groovyserv-1.1.0-src.zip</code> to any directory, build it with Gradle as follows:</p>
+            <p>After downloading and expanding a GroovyServ&rsquo;s source package <code>groovyserv-1.2.0-src.zip</code> to any directory, build it with Gradle as follows:</p>
             <pre><code class="sh">$ cd /tmp
-$ unzip groovyserv-1.1.0-src.zip
-$ cd groovyserv-1.1.0-src
+$ unzip groovyserv-1.2.0-src.zip
+$ cd groovyserv-1.2.0-src
 $ ./gradlew clean dist
 </code></pre>
             <p>Then some ZIP files will be generated.</p>
-            <pre><code class="nohighlight">build/distributions/groovyserv-1.1.0-bin.zip
+            <pre><code class="nohighlight">build/distributions/groovyserv-1.2.0-bin.zip
 </code></pre>
             <p>According to <a href="howtoinstall.html#binary">Install from binary package</a>, install it.</p>
             <h2 id="rpm">Build a RPM package</h2>
@@ -140,7 +139,7 @@ $ ./gradlew check
             ga('send', 'pageview');
           </script>
           <div class="footer">
-            <p class="version text-muted">Version 1.1.0</p>
+            <p class="version text-muted">Version 1.2.0</p>
             <p class="credit text-muted">Powered by <a href="https://github.com/kobo/gaiden">Gaiden</a></p>
           </div>
         </div>
