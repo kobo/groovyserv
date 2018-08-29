@@ -150,7 +150,7 @@ Options of `groovyserver` command are as follows:
   -k,--kill                        kill the running server
   -r,--restart                     restart the running server
   -t,--timeout <second>            specify a timeout waiting for starting up a server process (default: 20 sec)
-  -q,--quiet                       suppress statring messages
+  -q,--quiet                       suppress starting messages
   -v,--verbose                     verbose output to a log file
   -p,--port <port>                 specify port to listen
      --allow-from <addresses>      specify optional acceptable client addresses (delimiter: comma)
