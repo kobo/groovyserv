@@ -37,7 +37,7 @@ options:
   -Cr,-Crestart-server             restart the running server
   -Ct,-Ctimeout <second>           specify a timeout waiting for starting up a
                                    server process (default: 20 sec)
-  -Cq,-Cquiet                      suppress statring messages
+  -Cq,-Cquiet                      suppress starting messages
   -Cenv <substr>                   pass environment variables of which a name
                                    includes specified substr
   -Cenv-all                        pass all environment variables
