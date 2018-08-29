@@ -16,7 +16,7 @@ GroovyServ can use on the environment which supports Java SDK, JNA and Go compil
 
 ### Why does GroovyServ use [JNA (Java Native Access)](https://jna.dev.java.net/)?
 
-Because it's to change a current working directory (CWD) dinamically for each a request.
+Because it's to change a current working directory (CWD) dynamically for each a request.
 To be more specific, it's to call `chdir`(2) system call or `_chdir` win32 C runtime function.
 You might think `user.dir` system property can be used for same purpose, as a pure Java way.
 But it's not enough because JRE isn't used the `user.dir` for all of Java APIs.
