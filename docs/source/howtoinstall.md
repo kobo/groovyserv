@@ -4,7 +4,7 @@ How to Install
 ## For each environment
 
 * For all Un*x platform
-    - [GVM](#gvm)
+    - [SDKMAN](#sdk)
 * Only for Mac OS X
     - [Homebrew](#homebrew)
 * Only for Linux
@@ -15,22 +15,27 @@ How to Install
     - [binary package (bin.zip)](#binary)
 
 
-## Install by [GVM](http://gvmtool.net/) {#gvm}
+## Install by [SDKMAN](https://sdkman.io) {#sdk}
 
 You can install the latest GroovyServ:
 
 ```sh
-$ gvm install groovyserv
+$ sdk install groovyserv
+Downloading: groovyserv 1.2.0
+
+In progress...
+
+###################### 100.0%
+
+Installing: groovyserv 1.2.0
+Done installing!
+
+Do you want groovyserv 1.2.0 to be set as default? (Y/n):
+
+Setting groovyserv 1.2.0 as default.
 ```
 
-User commands aren't available just after the installation by GVM.
-So you have to run a setup script:
-
-```sh
-$ ~/.gvm/groovyserv/current/bin/setup.sh
-```
-
-Instead, you can also use just a `groovyclient` and a `groovyserver` which are copy of `setup.sh` just after the installation.
+Then, you can use just `groovyclient` and a `groovyserver` just after the installation.
 For example:
 
 ```sh
