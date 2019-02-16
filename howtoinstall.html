@@ -63,7 +63,7 @@
                 <a href="#how-to-install">How to Install</a>
                 <ul>
                   <li class="unnumbered visible"><a href="#for-each-environment">For each environment</a></li>
-                  <li class="unnumbered visible"><a href="#gvm">Install by GVM</a></li>
+                  <li class="unnumbered visible"><a href="#sdk">Install by SDKMAN</a></li>
                   <li class="unnumbered visible"><a href="#homebrew">Install by Homebrew</a></li>
                   <li class="unnumbered visible"><a href="#binary">Install from a binary package</a></li>
                   <li class="unnumbered visible"><a href="#rpm">Install from a RPM package</a></li>
@@ -78,7 +78,7 @@
               <li>
                 For all Un*x platform
                 <ul>
-                  <li><a href="#gvm">GVM</a></li>
+                  <li><a href="#sdk">SDKMAN</a></li>
                 </ul>
               </li>
               <li>
@@ -106,14 +106,23 @@
                 </ul>
               </li>
             </ul>
-            <h2 id="gvm">Install by <a href="http://gvmtool.net/">GVM</a></h2>
+            <h2 id="sdk">Install by <a href="https://sdkman.io">SDKMAN</a></h2>
             <p>You can install the latest GroovyServ:</p>
-            <pre><code class="sh">$ gvm install groovyserv
+            <pre><code class="sh">$ sdk install groovyserv
+Downloading: groovyserv 1.2.0
+
+In progress...
+
+###################### 100.0%
+
+Installing: groovyserv 1.2.0
+Done installing!
+
+Do you want groovyserv 1.2.0 to be set as default? (Y/n):
+
+Setting groovyserv 1.2.0 as default.
 </code></pre>
-            <p>User commands aren&rsquo;t available just after the installation by GVM. So you have to run a setup script:</p>
-            <pre><code class="sh">$ ~/.gvm/groovyserv/current/bin/setup.sh
-</code></pre>
-            <p>Instead, you can also use just a <code>groovyclient</code> and a <code>groovyserver</code> which are copy of <code>setup.sh</code> just after the installation. For example:</p>
+            <p>Then, you can use just <code>groovyclient</code> and a <code>groovyserver</code> just after the installation. For example:</p>
             <pre><code class="sh">$ groovyclient -v
 Setup completed successfully for darwin_amd64.
 It&#39;s required only just after installation. Please run the same command once again.
